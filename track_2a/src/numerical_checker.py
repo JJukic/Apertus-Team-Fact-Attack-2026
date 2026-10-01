@@ -20,7 +20,11 @@ class NumericalEntity(BaseModel):
 
     @property
     def num_type(self) -> str:
-        return "year" if self.unit == "year" else "quantity"
+        if self.unit == "year":
+            return "year"
+        if self.unit == "percent":
+            return "percent"
+        return "quantity"
 
 
 class NumericalConflictResult(BaseModel):
@@ -180,6 +184,30 @@ def extract_numerical_entities(text: str) -> List[NumericalEntity]:
                 context_tokens=_tokenize_context(ctx),
             )
         )
+
+    # Pattern 5: Percentages (e.g. "10%", "8,5 %", "15 Prozent", "12 pour cent", "10 per cento")
+    p5 = re.compile(r"\b(\d+(?:[.,]\d+)?)\s*(%|prozent\b|pour cent\b|per cento\b)", re.IGNORECASE)
+    for m in p5.finditer(cleaned):
+        start, end = m.start(), m.end()
+        if any(s <= start and end <= e for s, e in seen_spans):
+            continue
+        raw_num = m.group(1).replace(",", ".")
+        try:
+            val = float(raw_num)
+            seen_spans.add((start, end))
+            ctx = cleaned[max(0, start - 50) : min(len(cleaned), end + 50)]
+            entities.append(
+                NumericalEntity(
+                    raw_text=m.group(0),
+                    value=val,
+                    unit="percent",
+                    start_char=start,
+                    end_char=end,
+                    context_tokens=_tokenize_context(ctx),
+                )
+            )
+        except ValueError:
+            pass
 
     return entities
 

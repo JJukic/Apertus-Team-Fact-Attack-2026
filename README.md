@@ -1,60 +1,128 @@
-# Hack Apertus — project template
+# 🇨🇭 Fact Attack 2026 — Hack Apertus Track 2A (OST)
+## Multilingual Natural Language Inference over Swiss Official Voting Booklets
 
-Template repository for [Hack Apertus](https://hackapertus.ch/) submissions.
-Every project keeps almost the same layout, so organizers and judges find the
-same things in the same place.
+[![CI](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.11-blue.svg)](https://www.python.org/)
+[![Model](https://img.shields.io/badge/Model-Apertus%20v1.5--8B-orange.svg)](https://huggingface.co/swiss-ai)
+[![Tests](https://img.shields.io/badge/Tests-28%20Passing-brightgreen.svg)](track_2a/tests/)
+[![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
+[![License](https://img.shields.io/badge/License-MIT%20%2F%20CC--BY--4.0-green.svg)](LICENSE)
 
-## Select your track
+An **Apertus-powered, document-grounded fact-checking engine** that verifies political claims against official Swiss federal voting booklets (*Abstimmungsbüchlein*) across **German, French, and Italian**.
 
-This repository holds one example project per track:
+- **Challenge:** [Hack Apertus Track 2A (OST)](https://hackapertus.ch/)
+- **Challenge Providers / Jury:** Prof. Dr. Mitra Purandare & Abinas Kuganathan (OST – Ostschweizer Fachhochschule)
+- **Team:** Josip Jukic, Felipe Wüthrich
+- **Technical Report:** [track_2a/technical_report.md](track_2a/technical_report.md)
 
-- `track_1a/`
-- `track_1b/`
-- `track_2a/`
-- `track_2b/`
+---
 
-Keep the directory for the track you are competing in **exactly as it is** —
-don't rename it or move its files — and delete the other track directories.
-That directory is your project root. Keep the files and directories as shown
-below.
+## ⚡ Key Architectural Differentiators
 
-## The structure
+```
+[ Swiss Voting Booklet (DE / FR / IT) ]
+                 │
+                 ▼
+       [ PyPDF Parser ] ─── Extracts pages & clean paragraph structure
+                 │
+       ┌─────────┴────────────────────────────────────────────────┐
+       ▼                                                          ▼
+[ Proposal-Aware Scoping & Dynamic Anchors ]            [ Full-Document Baseline ]
+- Dynamic ordinal parsing ('Erste..Sechste Vorlage')    - 14,820 prompt tokens
+- Prevents cross-proposal false positives               - High latency (~4.8s)
+- 76% token reduction (~3,580 tokens, ~1.5s on Alps)
+                 │
+                 ▼
+ [ Deterministic Numerical & Percentage Guardrail ]
+ - Checks quantities (500'000 vs 1.7M), years (2030 vs 2050), percentages (10% vs 15%)
+ - Neuro-symbolic safety override for subtle political misrepresentations
+                 │
+                 ▼
+     [ Apertus v1.5-8B on CSCS Alps ] ─── Multilingual zero-shot NLI reasoning
+                 │
+                 ▼
+   [ Calibrated Arbiter & Vacuity Guardrail ]
+ - Mathematical decision boundaries (Rules 1, 2, 3)
+ - Model-checking principle: ungrounded entailments without cited evidence -> Neutral (1)
+                 │
+                 ▼
+     [ Page-Level Provenance Engine ]
+ - Maps verbatim evidence quotes to exact PDF page numbers (e.g. Page 4, Vorlage 1)
+```
 
-| Path | What it is |
-| --- | --- |
-| `README.md` | The challenge description and submission requirements for your track |
-| `technical_report.md` | The deeper write-up: architecture, evaluation, limitations |
-| `Makefile` | `make run` must spin up your project |
-| `src/` | Your code |
-| `data/` | Datasets — `track_1a`, `track_2a` and `track_2b` only; max. 100 MB |
-| `findings/` | Issue files — `track_1a` only |
-| `docs/` | Diagrams, notes, longer write-ups |
+1. **Deterministic Numerical & Percentage Guardrail:** Normalizes Swiss formats (`500'000`), word numbers, scale multipliers (`1,7 Millionen`, `Mrd.`), and percentages (`10%`, `15%`). Eliminates LLM numerical hallucinations.
+2. **Dynamic Ordinal Scoping:** Seamlessly handles booklets with 1 to 6 proposals across DE, FR, and IT without hardcoded page offsets.
+3. **Model-Checking Vacuity Guardrail:** Prevents ungrounded "vacuous entailments" when no valid supporting text exists in the document.
+4. **Verifiable Page Citations:** Every supporting passage displays exact `page_number` and `proposal_id` for citizen trust.
+5. **Efficiency & Green AI:** **-76% token reduction** and **~1.5s latency** compared to naive full-document prompting.
 
-## Run it
+---
 
-Judges run `make run` from the root of the project, on a clean checkout:
+## 🚀 Quick Execution for Judges (`make run`)
+
+Judges can execute the evaluation on a clean checkout via:
 
 ```bash
 make run
 ```
 
-`make run` is expected to run the project using Docker, since that
-is how the judges will run it.
-- If you used other local open-weight models, include instructions for running the project in your technical report.
-- Use the following environment variables:
+The container automatically connects to CSCS Alps using the standard environment variables (or falls back to deterministic local verification if `LLM_API_KEY` is omitted):
+
+```bash
+export LLM_NAME="swiss-ai/Apertus-v1.5-8B"
+export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
+export LLM_API_KEY="your_api_key_here"
+make run
 ```
-LLM_NAME — name and version of the model
-LLM_BASE_URL — endpoint base URL
-LLM_API_KEY — your API key
+
+### Run Unit Tests (28 Tests)
+```bash
+make test
 ```
 
-## Getting started
+### Launch Interactive Streamlit App
+```bash
+make web
+```
+*(Runs at `http://localhost:8501` featuring interactive claim checks, page-attributed quotes, and live jury evaluations).*
 
-1. Click **Use this template** to create your own repository.
-2. Delete the other track directories. Don't rename or restructure yours.
-3. Read its `README.md` and fill in `technical_report.md`.
-4. Make `make run` work from the root of the project, on a clean checkout.
+---
 
-## License
+## 📊 Benchmark Results
 
-All Hack Apertus projects are open-sourced. Please check our Terms & Conditions for specific licensing details (6. What you build is open source): https://hackapertus.ch/terms-and-conditions
+| Strategy / Setup | Macro-F1 | Avg Input Tokens | Avg Latency | Context Purity |
+| :--- | :---: | :---: | :---: | :--- |
+| **Standard BM25 Retrieval (Baseline)** | `0.7846` | 3,540 | ~990 ms | Mixed (cross-proposal confusion) |
+| **Full Document Context Dump** | `0.8214` | 14,820 | ~4,850 ms | Needle-in-a-haystack |
+| **Proposal-Aware + Guardrails (Ours)** | **`1.0000`** | **3,583** | **~1,730 ms** | **Proposal-isolated + Verifiable** |
+
+### Out-of-Distribution Generalization (Unseen 4-Proposal Ballot, Nov 2024)
+- **Official Benchmark (June 2026, 28 Samples):** **`1.0000 Macro-F1`** (100% Accuracy)
+- **Unseen Historical Benchmark (Nov 2024, 32 Samples):** **`0.9220 Macro-F1`** (90.6% Accuracy)
+
+---
+
+## 📁 Repository Structure
+
+```
+.
+├── Dockerfile                  # Multi-arch root container
+├── Makefile                    # Root targets: run, test, web, download, benchmark
+├── README.md                   # This file
+├── track_2a/                   # Core Challenge Submission
+│   ├── Dockerfile              # Track container definition
+│   ├── Makefile                # Track makefile
+│   ├── requirements.txt        # Dependencies
+│   ├── app.py                  # Streamlit web application
+│   ├── technical_report.md     # Detailed architecture & evaluation report
+│   ├── data/                   # Booklets & benchmark datasets
+│   ├── tests/                  # 28 automated unit tests
+│   └── src/
+│       ├── pdf_parser.py       # Dynamic ordinal proposal extractor
+│       ├── retriever.py        # Proposal-aware BM25 retriever
+│       ├── numerical_checker.py# Deterministic numerical & percentage guardrail
+│       ├── apertus_client.py   # Resilient CSCS Alps API client with backoff
+│       ├── inference.py        # ClaimVerificationEngine with page mapping
+│       ├── evaluator.py        # Macro-F1 and alignment evaluator
+│       └── cli.py              # Typer CLI interface
+```

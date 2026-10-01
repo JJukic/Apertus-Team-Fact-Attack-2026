@@ -341,17 +341,33 @@ with tab_factcheck:
                         st.caption(f"Angewendete Entscheidungsregel: **{rule_label}**")
 
                 with col_res2:
-                    st.markdown("#### ⏱️ Effizienz-Metriken")
+                    st.markdown("#### ⏱️ Effizienz & Green AI")
                     st.write(f"- **Inferenz-Latenz:** `{result.latency_ms:.1f} ms`")
                     st.write(f"- **Eingabe-Tokens:** `{result.tokens_prompt}` Tokens")
                     st.write(f"- **Gesamt-Tokens:** `{result.tokens_total}` Tokens")
-                    st.write(f"- **Modell:** `{config.LLM_NAME}` auf CSCS Alps")
+                    saved_tokens = max(0, 14820 - result.tokens_prompt)
+                    saved_pct = (saved_tokens / 14820) * 100
+                    st.write(f"- **Token-Ersparnis:** `~{saved_tokens:,} ({saved_pct:.1f}%)` vs. Full-Doc")
+                    st.write(f"- **Modell & Host:** `{config.LLM_NAME}` auf CSCS Alps")
 
                 if getattr(result, "numerical_conflict", None):
                     st.markdown(f"""
                     <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;">
-                        <div style="font-weight: 700; color: #f87171; font-size: 1.05rem;">⚠️ Deterministischer Zahlenkonflikt erkannt:</div>
+                        <div style="font-weight: 700; color: #f87171; font-size: 1.05rem;">⚠️ Deterministischer Guardrail-Override (Zahlenkonflikt):</div>
                         <div style="margin-top: 0.3rem; font-size: 0.95rem; color: #fca5a5;">{result.numerical_conflict}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                elif "Vacuity" in str(getattr(result, "decision_rule", "")):
+                    st.markdown(f"""
+                    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;">
+                        <div style="font-weight: 700; color: #fbbf24; font-size: 1.05rem;">⚠️ Formaler Vacuity-Schutz (Model Checking Guardrail):</div>
+                        <div style="margin-top: 0.3rem; font-size: 0.95rem; color: #fde68a;">{result.decision_rule}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div style="background: rgba(16, 185, 129, 0.10); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 0.6rem 1rem; margin: 0.8rem 0;">
+                        <span style="font-size: 0.9rem; color: #34d399; font-weight: 600;">🛡️ Neuro-Symbolische Guardrails: Formale Konsistenz gewahrt</span>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -361,6 +377,7 @@ with tab_factcheck:
                 evidence_sources = getattr(result, "evidence_sources", [])
                 if evidence_sources:
                     st.markdown("#### 📑 Gefundene Belegstellen im Abstimmungsbüchlein (Exakt referenziert):")
+                    b_data = engine._get_booklet_data(pdf_path)
                     for idx, src in enumerate(evidence_sources, 1):
                         badges = []
                         if src.page_number is not None:
@@ -375,6 +392,14 @@ with tab_factcheck:
                             <i>"{src.quote}"</i>
                         </div>
                         """, unsafe_allow_html=True)
+
+                        if src.page_number:
+                            with st.expander(f"📖 Vollständigen Textabschnitt auf Seite {src.page_number} anzeigen"):
+                                page_match = next((p["text"] for p in b_data["pages"] if p["page_number"] == src.page_number), None)
+                                if page_match:
+                                    st.markdown(f'<div style="font-size: 0.85rem; color: #cbd5e1; white-space: pre-wrap; max-height: 220px; overflow-y: auto; background: #11141c; padding: 10px; border-radius: 6px;">{page_match}</div>', unsafe_allow_html=True)
+                                else:
+                                    st.caption("Kein Volltext für diese Seite verfügbar.")
                 elif result.evidence:
                     st.markdown("#### 📑 Gefundene Belegstellen im Abstimmungsbüchlein:")
                     for idx, ev in enumerate(result.evidence, 1):

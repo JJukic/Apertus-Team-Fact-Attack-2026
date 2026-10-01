@@ -2,7 +2,14 @@
 Unit tests for end-to-end ClaimVerificationEngine and BenchmarkEvaluator.
 """
 
+import sys
+from pathlib import Path
 import unittest
+
+_pkg_root = Path(__file__).resolve().parent.parent
+if str(_pkg_root) not in sys.path:
+    sys.path.insert(0, str(_pkg_root))
+
 from src.inference import ClaimVerificationEngine, PredictionResult
 from src.evaluator import BenchmarkEvaluator
 from src.apertus_client import ApertusClient

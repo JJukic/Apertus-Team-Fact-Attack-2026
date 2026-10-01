@@ -2,7 +2,14 @@
 Unit tests for deterministic numerical conflict detection and evidence source attribution.
 """
 
+import sys
+from pathlib import Path
 import unittest
+
+_pkg_root = Path(__file__).resolve().parent.parent
+if str(_pkg_root) not in sys.path:
+    sys.path.insert(0, str(_pkg_root))
+
 from src.numerical_checker import extract_numbers, detect_numerical_conflict, NumberEntity
 from src.inference import ClaimVerificationEngine, EvidenceSource, PredictionResult
 from src.apertus_client import ApertusClient
@@ -71,6 +78,17 @@ class TestNumericalChecker(unittest.TestCase):
         conflict = detect_numerical_conflict(claim, context)
         self.assertIsNone(conflict)
 
+    def test_extract_percentages_and_conflict(self):
+        claim = "Der Bundesrat verlangt einen Mindestsatz von 10% für die Besteuerung."
+        context = "Der Bundesrat empfiehlt einen Mindestsatz von 15 Prozent für die Besteuerung."
+        entities = extract_numbers(claim)
+        self.assertTrue(any(e.unit == "percent" and abs(e.value - 10.0) < 0.01 for e in entities))
+
+        conflict = detect_numerical_conflict(claim, context)
+        self.assertIsNotNone(conflict)
+        self.assertIn("10%", conflict)
+        self.assertIn("15 Prozent", conflict)
+
 
 class TestEvidenceAttribution(unittest.TestCase):
     def test_evidence_source_page_mapping(self):
@@ -100,6 +118,40 @@ class TestEvidenceAttribution(unittest.TestCase):
         # Verify page number is populated
         self.assertIsNotNone(first_src.page_number)
         self.assertGreater(first_src.page_number, 0)
+
+    def test_vacuity_guardrail_prevents_ungrounded_entailment(self):
+        from unittest.mock import MagicMock
+        from src.apertus_client import NLIOutput
+
+        # Create a mock client that hallucinates Entailment (label 0) without citing any evidence
+        hallucinating_client = MagicMock()
+        hallucinating_client.infer.return_value = NLIOutput(
+            label=0,
+            p_entail=0.95,
+            p_neutral=0.05,
+            p_contra=0.0,
+            reasoning="Hallucinated confirmation without evidence",
+            evidence=[],  # Empty evidence!
+            tokens_prompt=100,
+            tokens_completion=20,
+            tokens_total=120,
+            latency_ms=10.0,
+        )
+
+        engine = ClaimVerificationEngine(apertus_client=hallucinating_client)
+        booklet = config.BOOKLETS_DIR / "2026-06-14_de.pdf"
+        if not booklet.exists():
+            self.skipTest(f"Booklet not found at {booklet}")
+
+        result = engine.verify_claim(
+            claim="Ein unbegründeter Anspruch ohne jeden Beleg im Text.",
+            booklet_pdf=booklet,
+            claim_language="de",
+        )
+
+        # Vacuity guardrail must override label 0 to 1 (Neutral)
+        self.assertEqual(result.label, 1)
+        self.assertIn("Vacuity Guardrail", str(result.decision_rule))
 
 
 if __name__ == "__main__":

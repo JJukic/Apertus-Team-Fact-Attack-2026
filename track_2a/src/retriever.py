@@ -155,14 +155,11 @@ class PassageRetriever:
         claim_lower = claim.lower()
         rec_words = ["empfiehl", "empfehlung", "ablehn", "annahme", "recommande", "recommandation", "rejeter", "accepter", "raccomanda", "raccomandazione", "respingere", "approvare", "bundesrat", "conseil fédéral", "consiglio federale"]
         if any(w in claim_lower for w in rec_words):
-            anchor_page = 5 if prop_id == 1 else (7 if prop_id == 2 else 5)
-            # Check if anchor page is already present
-            if not any(p['page_number'] == anchor_page for p in results):
-                anchor_paras = [p for p in candidate_paras if p['page_number'] == anchor_page]
-                if anchor_paras:
-                    # Insert at the top of results
-                    para = anchor_paras[0].copy()
-                    para["retrieval_score"] = 999.0
-                    results = [para] + results[:-1]
+            rec_pattern = re.compile(r"(?:empfehl|recommand|raccomand).*(?:bundesrat|conseil f[eé]d[eé]ral|consiglio federale|parlament)", re.IGNORECASE)
+            rec_paras = [p for p in candidate_paras if rec_pattern.search(p.get("text", ""))]
+            if rec_paras and not any(p.get("page_number") == rec_paras[0].get("page_number") for p in results):
+                para = rec_paras[0].copy()
+                para["retrieval_score"] = 999.0
+                results = [para] + results[:-1]
 
         return results

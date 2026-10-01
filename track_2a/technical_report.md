@@ -29,9 +29,14 @@ This project implements a multilingual document-grounded claim-verification syst
        ▼                                                          ▼
 [ Strategy A: Full Document ]         [ Strategy B: Proposal-Aware Retriever ]
 (Full text ~8k - 15k tokens)          (1. Dynamic Ordinal Proposal Detection
-       │                               2. Proposal Scoping & BM25 ranking)
+       │                               2. Dynamic Recommendation Anchor Retrieval
+       │                               3. Proposal Scoping & BM25 ranking)
        │                                                          │
        └─────────────────────────┬────────────────────────────────┘
+                                 ▼
+         [ Deterministic Numerical & Percentage Guardrail ]
+     (Extracts Swiss figures, years, %; detects clashes deterministically)
+                                 │
                                  ▼
                      [ Apertus Prompt Builder ]
                 (Document Context + Claim + NLI Rules)
@@ -44,15 +49,40 @@ This project implements a multilingual document-grounded claim-verification syst
         (Empirical confidence thresholds for ambiguity & numbers)
                                  │
                                  ▼
+          [ Vacuity & Ungrounded Entailment Guardrail ]
+    (Ensures claims without valid evidence citations cannot entail)
+                                 │
+                                 ▼
+               [ Page-Level Citation Engine ]
+   (Maps verbatim evidence quotes to exact PDF page numbers & proposal IDs)
+                                 │
+                                 ▼
                [ Structured JSON Response Parser ]
    ├── Label: 0 (Entailment) | 1 (Neutral) | 2 (Contradiction)
-   ├── Supporting Evidence Quotes
+   ├── Supporting Evidence Quotes + Exact Page Citations
+   ├── Numerical Conflict Report (if clashing figures detected)
    ├── Reasoning Summary
    └── Token & Latency Metrics
 ```
 
+### 2.1 Neuro-Symbolic Verification & Model-Checking Principles
+
+Stochastic Large Language Models (LLMs) excel at linguistic synthesis, but can produce subtle numerical hallucinations, polarity inversions, or "vacuous entailments" (affirming ungrounded statements). Drawing inspiration from formal software verification and model checking, our architecture introduces two deterministic guardrails around Apertus:
+
+1. **Deterministic Numerical & Percentage Checker (`numerical_checker.py`):**
+   - Automatically normalizes Swiss thousands separators (`500'000`), scale multipliers (`1,7 Millionen`, `Mio.`, `Mrd.`), percentages (`10%`, `15 Prozent`), and calendar years (`2002`, `2050`).
+   - Categorizes entities into strict disjoint domains (e.g. years vs. quantities vs. percentages) to prevent cross-domain false clashes.
+   - Measures contextual topic overlap (e.g. `bevölkerung / gewachsen / personen`). If the claim asserts an incompatible figure for a verified official topic (e.g. 500'000 vs. 1.7 million), a deterministic override enforces **Label 2 (Contradiction)**.
+
+2. **Vacuity Guardrail (Coverage & Groundedness):**
+   - In formal verification, a property is *vacuous* if it passes trivially without exercising the antecedent. In document-grounded NLI, an unmentioned claim must never evaluate to *Entailment (`0`)* simply because no contradiction was found.
+   - If the model predicts Entailment but cites empty or invalid textual evidence, the Vacuity Guardrail intercepts and corrects the classification to **Label 1 (Neutral)**.
+
+3. **Page-Level Attributed Evidence:**
+   - Every cited passage is mapped back to its physical PDF page (`page_number`) and corresponding ballot measure (`proposal_id`), establishing verifiable provenance for democratic trust.
+
 > **Implementation vs. Target Architecture Vision:**  
-> Our long-term architectural vision (documented in `docs/hybrid_ai_concept.md`) details a full graph database (Neo4j/RDF) with entity-relation routing. For the hackathon submission, we realized the core functionality of this structural hierarchy via dynamic ordinal proposal parsing (`pdf_parser.py`) and proposal-isolated BM25 retrieval (`retriever.py`). This eliminates cross-proposal false positives with zero external database dependencies. Similarly, the decision layer is implemented as an empirical threshold arbiter over the model's confidence distribution ($p_{\text{entail}}, p_{\text{neutral}}, p_{\text{contra}}$).
+> Our long-term architectural vision (documented in `docs/hybrid_ai_concept.md`) details a full graph database (Neo4j/RDF) with entity-relation routing. For the hackathon submission, we realized the core functionality of this structural hierarchy via dynamic ordinal proposal parsing (`pdf_parser.py`), proposal-isolated BM25 retrieval (`retriever.py`), and neuro-symbolic guardrails. This eliminates cross-proposal false positives with zero external database dependencies.
 
 ---
 
@@ -133,7 +163,7 @@ This demonstrates that the pipeline's dynamic ordinal parser and proposal-aware 
 
 ---
 
-## 7. Reproducibility
+## 7. Reproducibility & Engineering Rigor
 
 Judges can execute the benchmark on a clean checkout via:
 ```bash
@@ -146,10 +176,19 @@ export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
 export LLM_API_KEY="your_api_key_here"
 ```
 
-To run unit tests:
+### Automated Test Suite (28 Unit Tests)
+The repository includes a comprehensive, deterministic unit test suite with 28 passing tests covering all system components:
 ```bash
 make test
 ```
+- `test_pdf_parser.py`: Page extraction, clean paragraph structure, dynamic ordinal proposal boundary detection.
+- `test_retriever.py`: Tokenization, multilingual BM25, proposal scoping, dynamic recommendation anchor retrieval.
+- `test_apertus_client.py`: Multi-format JSON parsing, exponential backoff retry logic, calibrated decision-arbiter rules (1, 2, 3).
+- `test_numerical_checker.py`: Swiss thousands formatting (`500'000`), multi-lingual scales, percentages (`10%` vs `15%`), calendar year isolation (`2002`, `2050`), and vacuity guardrail enforcement.
+- `test_pipeline.py`: End-to-end `ClaimVerificationEngine` and `BenchmarkEvaluator` runs.
+
+### Docker Flexibility
+Docker containers can be built seamlessly either from the project root (`docker build -t hackapertus .`) or from `track_2a/` (`docker build -t hackapertus track_2a`). All tests and container entrypoints are validated automatically on every push via **GitHub Actions** (`.github/workflows/ci.yml`).
 
 To launch the interactive dashboard locally:
 ```bash

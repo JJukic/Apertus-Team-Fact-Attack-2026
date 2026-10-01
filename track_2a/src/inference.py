@@ -119,6 +119,16 @@ class ClaimVerificationEngine:
             p_contra = max(0.95, p_contra)
             decision_rule = f"Decision-Rule 1b: Numerical Clash ({num_conflict.claim_entity} vs {num_conflict.booklet_entity})"
 
+        # Vacuity Guardrail (Formal Verification Principle):
+        # A claim cannot be an Entailment (0) if no valid supporting evidence passage was cited from the booklet.
+        if final_label == 0:
+            has_valid_evidence = any(len(ev.strip()) >= 15 for ev in nli_output.evidence)
+            if not has_valid_evidence:
+                final_label = 1
+                p_neutral = max(0.85, p_neutral)
+                p_entail = 0.10
+                decision_rule = "Vacuity Guardrail: Ungrounded entailment prevented (no cited evidence) -> Neutral (1)"
+
         label_name = config.LABEL_MAPPING.get(final_label, "Unknown")
 
         # 3. Match evidence quotes to exact source page numbers & proposals
