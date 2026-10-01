@@ -1,62 +1,141 @@
-# Academia Challenges
+# Hack Apertus — Track 2A: OST Challenge
+## Multilingual Natural Language Inference over Swiss Official Voting Booklets
 
-Submissions must use the Apertus model family.
-For Track 2 this means that submitted solutions must be built with Apertus. Other open-weights models can be used to support development, e.g. as automatic judges during evaluation. Their role must be clearly described in the submission report.
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
+[![Model](https://img.shields.io/badge/Model-Apertus%20v1.5-orange.svg)](https://huggingface.co/swiss-ai)
+[![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
+[![License](https://img.shields.io/badge/License-MIT%20%2F%20CC--BY--4.0-green.svg)](LICENSE)
 
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+An Apertus-powered multilingual claim-verification system that checks political claims against official Swiss voting booklets (*Abstimmungsbüchlein*).
 
-## How it works
-Pick from 5 academia challenges provided by Swiss academic institutions:
+---
 
-- **FHGR:** AI-Powered Job Interview Coach
-- **OpenParlData:** Extracting Parliamentary Affairs from PDFs into One Common Structure
-- **OST:** Multilingual Natural Language Inference over Swiss Official Voting Booklets
-- **UZH:** Detecting Cross-Lingual Semantic Differences in Swiss Government Websites
-- **ZHAW:** See It, Say It, Pick It: Vision-Language Grounding for a Real Robot Arm
+## 🎯 The Challenge & Task
 
-The challenges incl. submission and judging criteria are described in our **Getting Started guide**:
-https://hackapertus.notion.site/getting-started-guide-onlinehack
+Given an official Swiss voting booklet (PDF in German, French, or Italian) and a natural-language claim:
+1. **Classify the claim-document relationship:**
+   - **`0` — Entailment:** The booklet strictly supports the claim.
+   - **`1` — Neutral:** The booklet does not provide enough information either way.
+   - **`2` — Contradiction:** The booklet contradicts the claim.
+2. **Extract transparent evidence:** Returns verbatim passages from the booklet that justify the classification.
+3. **Report efficiency:** Measures prompt tokens, completion tokens, total tokens, and latency.
+4. **Compare architectures:** Evaluates **Full Document Context** vs. **Passage Retrieval (BM25/chunking)**.
 
-## Run it
+---
 
-Keep `track_2a/` as it is: don't rename it or move its files, just delete the
-other track directories.
+## 🚀 Quickstart
 
-From the root of the project:
+### 1. Requirements & Setup
+
+Create a virtual environment and install dependencies:
+
+```bash
+# Using uv (fast) or standard pip
+uv venv .venv
+# On Windows:
+.venv\Scripts\activate
+# On Linux/macOS:
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment Variables
+
+Copy `.env.example` to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Configure your CSCS Apertus API key:
+```ini
+LLM_NAME=swiss-ai/Apertus-8B-Instruct
+LLM_BASE_URL=https://api.cscs.ch/v1
+LLM_API_KEY=your_cscs_api_key_here
+NLI_STRATEGY=retrieval
+MOCK_APERTUS=false
+```
+
+*(Note: If `LLM_API_KEY` is empty or `MOCK_APERTUS=true`, the system runs in offline mock mode so you can test the pipeline immediately.)*
+
+---
+
+## 💻 CLI Usage
+
+The system provides a full CLI via `python -m src`:
+
+### 1. Verify a Single Claim (`predict`)
+```bash
+python -m src predict --claim "Die Initiative verlangt, die Wohnbevölkerung zu begrenzen." --lang de
+```
+
+Options:
+- `--claim`, `-c`: The claim text to verify.
+- `--booklet`, `-b`: Path to booklet PDF (default: `data/booklets/2026-06-14_de.pdf`).
+- `--lang`, `-l`: Claim language (`de`, `fr`, `it`).
+- `--strategy`, `-s`: `retrieval` (default, top-k passages) or `full` (entire booklet).
+- `--top-k`, `-k`: Number of passages to retrieve (default: 5).
+
+### 2. Run Benchmark Evaluation (`benchmark`)
+Evaluates the official held-out benchmark and outputs Macro-F1 across 0, 1, 2, plus per-language metrics:
+```bash
+python -m src benchmark --strategy retrieval
+```
+
+### 3. Compare Strategies (`compare`)
+Runs side-by-side comparison between **Passage Retrieval** and **Full Document**:
+```bash
+python -m src compare --limit 5
+```
+
+### 4. Download / Refresh Data (`download`)
+```bash
+python -m src download
+```
+
+---
+
+## 🐳 Docker & Submission (`make run`)
+
+Judges run `make run` from the project root:
 
 ```bash
 make run
 ```
 
-Fill in the [Makefile](Makefile) so that it works on a clean checkout. It is
-expected to run the project in a Docker container, since that is how the judges
-will run it, without relying on anything already installed on your machine.
+This builds the Docker image and executes the benchmark inside the container using the environment variables passed:
+```bash
+export LLM_NAME="swiss-ai/Apertus-8B-Instruct"
+export LLM_BASE_URL="https://api.cscs.ch/v1"
+export LLM_API_KEY="your_api_key"
+make run
+```
 
-Requirements: `runtime, hardware, API keys, model weights`
+---
 
-## Data
-The `data/` directory must not exceed 100 MB.
+## 📁 Project Structure
 
-
-## 📦 Submission Requirements & Deliverables
-❗️ Submissions are not handled on Devpost. Submit through our website only:
-http://hackapertus.ch/online-hack/submissions
-
-Requirements differ by challenge. See the description of the challenge you are entering for the exact deliverables.
-
-
-## ⚖️ Judging Criteria
-Judging criteria also differ by challenge. See the respective challenge description.
-
-
-## Support
-
-**Licensing requirements**
-Please check our Terms & Conditions (6. What you build is open source):
-https://hackapertus.ch/terms-and-conditions
-
-## FAQ
-💡 https://hackapertus.ch/faq
-
-## Contact
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+```
+track_2a/
+├── Dockerfile                  # Container definition for reproducible evaluation
+├── Makefile                    # Target `make run` for judges
+├── requirements.txt            # Python dependencies
+├── .env.example                # Template for Apertus CSCS credentials
+├── README.md                   # This file
+├── technical_report.md         # Deep-dive report & benchmark numbers
+├── data/
+│   ├── demo_dataset.jsonl      # Official benchmark dataset from Hugging Face
+│   └── booklets/               # Official Swiss voting booklets (DE, FR, IT)
+└── src/
+    ├── __init__.py
+    ├── __main__.py             # Entry point
+    ├── config.py               # Env vars and label definitions
+    ├── pdf_parser.py           # Extracts pages and clean paragraphs from PDF
+    ├── retriever.py            # BM25 passage retrieval for claims
+    ├── apertus_client.py       # Apertus API client, metrics & mock fallback
+    ├── inference.py            # Claim verification engine (Full vs. Retrieval)
+    ├── evaluator.py            # Computes Macro-F1 & efficiency metrics
+    ├── download_data.py        # Automated data downloader
+    └── cli.py                  # Typer & Rich CLI
+```
