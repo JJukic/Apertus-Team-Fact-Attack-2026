@@ -4,7 +4,6 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
@@ -12,10 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application source and data
-COPY src/ ./src/
-COPY data/ ./data/
+# Copy code and data
+COPY . .
 
-# Default entrypoint runs the benchmark
-ENTRYPOINT ["python", "-m", "src"]
-CMD ["benchmark"]
+# Ensure data and official booklets are downloaded
+RUN python -m src.download_data
+
+EXPOSE 8501
+
+ENV PORT=8501
+ENV PYTHONUNBUFFERED=1
+
+CMD ["sh", "-c", "streamlit run app.py --server.port=${PORT:-8501} --server.address=0.0.0.0"]
