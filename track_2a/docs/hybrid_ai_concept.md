@@ -1,9 +1,20 @@
 # Konzept: Hybrid-AI für Track 2A (OST)
-## Neuro-Symbolic Claim Verification: Verbindung von Apertus mit Dokumenten-Graphen & Fuzzy-Logic
+## Zielarchitektur & Vision: Neuro-Symbolic Claim Verification mit Dokumenten-Graphen & Kalibriertem Arbiter
 
-**Team:** Fact Attack 2026  
+> [!NOTE]
+> **Architektur-Vision vs. MVP-Implementierung:**  
+> Dieses Dokument beschreibt das **theoretische Zielmodell (Target Architecture / Vision)** unseres Projekts.  
+> In der für die Hackathon-Einreichung vorliegenden Implementierung (`track_2a/src/`) ist das funktionale Fundament dieser Architektur realisiert:
+> 1. **Strukturelle Dokument-Isolation:** Umgesetzt durch den dynamischen *Proposal-Aware Retriever* (`pdf_parser.py`, `retriever.py`), der Vorlagengrenzen mehrsprachig erkennt und Cross-Proposal-Verwechslungen eliminiert (entspricht Säule 1 ohne externe Graph-DB).
+> 2. **Probabilistisches NLI-Modell:** Apertus v1.5-8B auf CSCS Alps via strukturierter JSON-Inferenz mit Konfidenzen ($p_{\text{entail}}, p_{\text{neutral}}, p_{\text{contra}}$).
+> 3. **Entscheidungs-Arbiter:** Umgesetzt als kalibrierter Schwellenwert-Arbiter (`apertus_client.py`), der Grenzfälle und Zahlenkonflikte deterministisch auflöst.
+> 
+> Vollwertige Neo4j/RDF-Wissensgraphen und kontinuierliche Fuzzy-Inferenzsysteme (Mamdani/Sugeno) sind als zukünftige Ausbaustufe (siehe Roadmap) konzipiert.
+
+**Team:** Fact Attack 2026 (Josip Jukic, Felipe Wüthrich)  
 **Challenge:** OST — Multilingual Natural Language Inference over Swiss Official Voting Booklets  
-**Modell:** Apertus v1.5 (8B / 70B auf CSCS Alps)
+**Modell:** Apertus v1.5 (8B / 70B auf CSCS Alps)  
+**Demo:** [https://fact-attack-2026.onrender.com](https://fact-attack-2026.onrender.com)  
 
 ---
 

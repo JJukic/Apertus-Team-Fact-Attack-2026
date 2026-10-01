@@ -72,11 +72,11 @@ def predict(
     table.add_row("Classification", f"[{label_color}]{result.label} — {result.label_name}[/{label_color}]")
     table.add_row("Meaning", config.LABEL_EXPLANATIONS.get(result.label, ""))
     table.add_row(
-        "Fuzzy Confidences",
+        "Calibrated Confidences",
         f"Entail (0): {result.p_entail:.2f} | Neutral (1): {result.p_neutral:.2f} | Contra (2): {result.p_contra:.2f}",
     )
     if result.fuzzy_rule:
-        table.add_row("Fuzzy Arbiter", f"[bold cyan]{result.fuzzy_rule}[/bold cyan]")
+        table.add_row("Decision Arbiter", f"[bold cyan]{result.fuzzy_rule}[/bold cyan]")
     table.add_row("Reasoning", result.reasoning)
     table.add_row("Strategy", result.strategy)
     table.add_row("Prompt Tokens", str(result.tokens_prompt))
@@ -140,6 +140,18 @@ def download():
     Download benchmark dataset and official voting booklets from admin.ch.
     """
     download_assets()
+
+
+@app.command()
+def web(
+    port: int = typer.Option(8501, "--port", "-p", help="Port to run Streamlit on"),
+):
+    """
+    Launch interactive Streamlit web dashboard.
+    """
+    import subprocess
+    cmd = [sys.executable, "-m", "streamlit", "run", str(_pkg_root / "app.py"), f"--server.port={port}", "--server.address=0.0.0.0"]
+    subprocess.run(cmd)
 
 
 if __name__ == "__main__":

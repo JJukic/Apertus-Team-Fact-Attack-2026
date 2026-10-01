@@ -1,0 +1,81 @@
+"""
+Unit tests for ApertusClient, JSON parsing, and Decision Arbiter.
+"""
+
+import unittest
+from src.apertus_client import ApertusClient, NLIOutput
+
+
+class TestApertusClient(unittest.TestCase):
+    def setUp(self):
+        # Force mock mode for fast and deterministic unit testing
+        self.client = ApertusClient(mock=True)
+
+    def test_calibrated_decision_arbiter_conflict(self):
+        # Rule 1: Conflict dominant
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.10, p_neutral=0.20, p_contra=0.70, raw_label=0
+        )
+        self.assertEqual(label, 2)
+        self.assertIn("Conflict dominant", rule)
+
+    def test_calibrated_decision_arbiter_support(self):
+        # Rule 2: Direct support dominant
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.85, p_neutral=0.10, p_contra=0.05, raw_label=1
+        )
+        self.assertEqual(label, 0)
+        self.assertIn("Direct support dominant", rule)
+
+    def test_calibrated_decision_arbiter_neutrality(self):
+        # Rule 3: High neutrality
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.20, p_neutral=0.65, p_contra=0.15, raw_label=0
+        )
+        self.assertEqual(label, 1)
+        self.assertIn("High neutrality", rule)
+
+    def test_calibrated_decision_arbiter_ambiguity(self):
+        # Rule 3: Epistemic ambiguity zone (|p_entail - p_contra| < 0.15)
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.48, p_neutral=0.06, p_contra=0.46, raw_label=0
+        )
+        self.assertEqual(label, 1)
+        self.assertIn("Epistemic ambiguity zone", rule)
+
+    def test_backward_compatible_fuzzy_alias(self):
+        label, rule = ApertusClient._apply_fuzzy_decision(
+            p_entail=0.85, p_neutral=0.10, p_contra=0.05, raw_label=1
+        )
+        self.assertEqual(label, 0)
+
+    def test_parse_json_clean(self):
+        raw = '{"label": 0, "reasoning": "Supports statement", "evidence": ["Text sample"], "p_entail": 0.9}'
+        parsed = ApertusClient._parse_json(raw)
+        self.assertEqual(parsed["label"], 0)
+        self.assertEqual(parsed["p_entail"], 0.9)
+
+    def test_parse_json_markdown_blocks(self):
+        raw = '```json\n{"label": 2, "reasoning": "Contradicts", "evidence": [], "p_contra": 0.8}\n```'
+        parsed = ApertusClient._parse_json(raw)
+        self.assertEqual(parsed["label"], 2)
+        self.assertEqual(parsed["p_contra"], 0.8)
+
+    def test_parse_json_embedded_fallback(self):
+        raw = 'Here is the analysis result: {"label": 1, "reasoning": "Neutral topic"} Hope this helps!'
+        parsed = ApertusClient._parse_json(raw)
+        self.assertEqual(parsed["label"], 1)
+
+    def test_mock_infer(self):
+        context = "Die Volksinitiative verlangt, dass die ständige Wohnbevölkerung vor 2050 10 Millionen nicht überschreitet."
+        claim = "Die Bevölkerung darf gemäss Initiative 10 Millionen Menschen nicht überschreiten."
+        out = self.client.infer(context, claim, claim_language="de")
+
+        self.assertIsInstance(out, NLIOutput)
+        self.assertIn(out.label, (0, 1, 2))
+        self.assertGreater(out.tokens_total, 0)
+        self.assertGreater(out.latency_ms, 0.0)
+
+
+if __name__ == "__main__":
+    unittest.main()

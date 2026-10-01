@@ -1,8 +1,11 @@
-.PHONY: run build test benchmark compare download install
+.PHONY: run build test benchmark compare download install web
 
 # Forward all targets to track_2a/Makefile
 run:
 	$(MAKE) -C track_2a run
+
+test:
+	$(MAKE) -C track_2a test
 
 install:
 	$(MAKE) -C track_2a install
@@ -15,3 +18,6 @@ benchmark:
 
 compare:
 	$(MAKE) -C track_2a compare
+
+web:
+	$(MAKE) -C track_2a web

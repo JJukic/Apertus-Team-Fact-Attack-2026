@@ -1,4 +1,4 @@
-.PHONY: run build test benchmark compare download install
+.PHONY: run build test benchmark compare download install web
 
 IMAGE_NAME ?= hackapertus-track2a
 
@@ -7,11 +7,14 @@ IMAGE_NAME ?= hackapertus-track2a
 run:
 	docker build -t $(IMAGE_NAME) .
 	docker run --rm \
-		-e LLM_NAME="$${LLM_NAME:-swiss-ai/Apertus-8B-Instruct}" \
-		-e LLM_BASE_URL="$${LLM_BASE_URL:-https://api.cscs.ch/v1}" \
+		-e LLM_NAME="$${LLM_NAME:-swiss-ai/Apertus-v1.5-8B}" \
+		-e LLM_BASE_URL="$${LLM_BASE_URL:-https://api.inference.cscs.ch/v1}" \
 		-e LLM_API_KEY="$${LLM_API_KEY}" \
 		-e NLI_STRATEGY="$${NLI_STRATEGY:-retrieval}" \
 		$(IMAGE_NAME) benchmark
+
+test:
+	python -m unittest discover -s tests -p "test_*.py"
 
 # Local helper targets (without Docker)
 install:
@@ -25,3 +28,6 @@ benchmark:
 
 compare:
 	python -m src compare
+
+web:
+	streamlit run app.py

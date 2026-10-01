@@ -1,6 +1,6 @@
 """
 Apertus Client for Natural Language Inference.
-Interacts with Apertus-8B / Apertus-70B using the OpenAI-compatible endpoint.
+Interacts with Apertus v1.5 (8B / 70B) using the OpenAI-compatible CSCS endpoint.
 Measures token consumption and inference latency.
 """
 
@@ -19,10 +19,11 @@ class NLIOutput(BaseModel):
     label: int = Field(..., description="0 = Entailment, 1 = Neutral, 2 = Contradiction")
     reasoning: str = Field(..., description="Short explanation of the relationship")
     evidence: List[str] = Field(default_factory=list, description="Exact supporting passage(s) from document")
-    p_entail: float = Field(default=0.0, description="Fuzzy membership for Entailment [0..1]")
-    p_neutral: float = Field(default=0.0, description="Fuzzy membership for Neutral [0..1]")
-    p_contra: float = Field(default=0.0, description="Fuzzy membership for Contradiction [0..1]")
-    fuzzy_rule_applied: Optional[str] = Field(default=None, description="Applied fuzzy decision rule")
+    p_entail: float = Field(default=0.0, description="Calibrated confidence for Entailment [0..1]")
+    p_neutral: float = Field(default=0.0, description="Calibrated confidence for Neutral [0..1]")
+    p_contra: float = Field(default=0.0, description="Calibrated confidence for Contradiction [0..1]")
+    fuzzy_rule_applied: Optional[str] = Field(default=None, description="Applied decision rule (alias)")
+    decision_rule_applied: Optional[str] = Field(default=None, description="Applied calibrated decision rule")
     tokens_prompt: int = 0
     tokens_completion: int = 0
     tokens_total: int = 0
@@ -54,6 +55,8 @@ class ApertusClient:
                 self.mock = True
         else:
             self.client = None
+            if not self.api_key:
+                logger.info("No LLM_API_KEY provided; operating in local heuristic mock mode.")
 
     def infer(self, context: str, claim: str, claim_language: Optional[str] = None) -> NLIOutput:
         """
@@ -128,8 +131,8 @@ class ApertusClient:
             p_neutral = float(parsed_json.get("p_neutral", 0.0))
             p_contra = float(parsed_json.get("p_contra", 0.0))
 
-            # Apply Fuzzy Decision Arbiter
-            final_label, fuzzy_rule = self._apply_fuzzy_decision(p_entail, p_neutral, p_contra, raw_label)
+            # Apply Calibrated Decision Arbiter
+            final_label, decision_rule = self._apply_calibrated_decision(p_entail, p_neutral, p_contra, raw_label)
 
             evidence = parsed_json.get("evidence", [])
             if isinstance(evidence, str):
@@ -142,7 +145,8 @@ class ApertusClient:
                 p_entail=p_entail,
                 p_neutral=p_neutral,
                 p_contra=p_contra,
-                fuzzy_rule_applied=fuzzy_rule,
+                fuzzy_rule_applied=decision_rule,
+                decision_rule_applied=decision_rule,
                 tokens_prompt=tokens_prompt,
                 tokens_completion=tokens_completion,
                 tokens_total=tokens_total,
@@ -162,11 +166,17 @@ class ApertusClient:
                 latency_ms=round(latency_ms, 2),
             )
 
+    @classmethod
+    def _apply_fuzzy_decision(cls, p_entail: float, p_neutral: float, p_contra: float, raw_label: int) -> Tuple[int, Optional[str]]:
+        """Backward-compatible alias for _apply_calibrated_decision."""
+        return cls._apply_calibrated_decision(p_entail, p_neutral, p_contra, raw_label)
+
     @staticmethod
-    def _apply_fuzzy_decision(p_entail: float, p_neutral: float, p_contra: float, raw_label: int) -> Tuple[int, Optional[str]]:
+    def _apply_calibrated_decision(p_entail: float, p_neutral: float, p_contra: float, raw_label: int) -> Tuple[int, Optional[str]]:
         """
-        Fuzzy decision logic:
-        Resolves continuous membership degrees [0..1] and handles boundary ambiguity.
+        Calibrated decision arbiter:
+        Applies empirical threshold rules over the model's confidence distribution
+        [p_entail, p_neutral, p_contra] to resolve epistemic ambiguity and numerical conflicts.
         """
         total_p = p_entail + p_neutral + p_contra
         if total_p == 0.0:
@@ -174,17 +184,17 @@ class ApertusClient:
 
         # Rule 1: Strong contradiction or numerical conflict signal
         if p_contra >= 0.40 and p_contra > p_entail:
-            return 2, "Fuzzy-Rule 1: Conflict dominant"
+            return 2, "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)"
 
         # Rule 2: Strong direct support
         if p_entail >= 0.60 and p_contra < 0.25:
-            return 0, "Fuzzy-Rule 2: Direct support dominant"
+            return 0, "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)"
 
         # Rule 3: High neutral probability or genuine ambiguity between entail and contra
         if p_neutral >= 0.40:
-            return 1, "Fuzzy-Rule 3: High neutrality"
+            return 1, "Decision-Rule 3: High neutrality (p_neutral >= 0.40)"
         if (p_entail > 0.0 or p_contra > 0.0) and abs(p_entail - p_contra) < 0.15:
-            return 1, "Fuzzy-Rule 3: Epistemic ambiguity zone"
+            return 1, "Decision-Rule 3: Epistemic ambiguity zone (|p_entail - p_contra| < 0.15)"
 
         return raw_label, None
 

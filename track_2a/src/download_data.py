@@ -42,12 +42,19 @@ def download_file(url: str, dest_path: Path, desc: str):
         return dest_path
 
     print(f"  [DOWNLOADING] {desc} from {url}...")
-    req = urllib.request.Request(url, headers={"User-Agent": "HackApertus-Track2A-Client/1.0"})
-    with urllib.request.urlopen(req) as resp, open(dest_path, "wb") as out_file:
-        data = resp.read()
-        out_file.write(data)
-    print(f"  [SAVED] {desc} -> {dest_path} ({len(data) / 1024:.1f} KB)")
-    return dest_path
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "HackApertus-Track2A-Client/1.0"})
+        with urllib.request.urlopen(req, timeout=25) as resp, open(dest_path, "wb") as out_file:
+            data = resp.read()
+            out_file.write(data)
+        print(f"  [SAVED] {desc} -> {dest_path} ({len(data) / 1024:.1f} KB)")
+        return dest_path
+    except Exception as e:
+        if dest_path.exists() and dest_path.stat().st_size > 0:
+            print(f"  [WARNING] Download failed for {desc}: {e}. Retaining existing cached file.")
+            return dest_path
+        print(f"  [WARNING] Could not download {desc}: {e}")
+        return None
 
 
 def main():

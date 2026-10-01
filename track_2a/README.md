@@ -1,6 +1,7 @@
 # Hack Apertus — Track 2A: OST Challenge
 ## Multilingual Natural Language Inference over Swiss Official Voting Booklets
 
+[![CI](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Model](https://img.shields.io/badge/Model-Apertus%20v1.5-orange.svg)](https://huggingface.co/swiss-ai)
 [![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
@@ -50,9 +51,9 @@ cp .env.example .env
 
 Configure your CSCS Apertus API key:
 ```ini
-LLM_NAME=swiss-ai/Apertus-8B-Instruct
-LLM_BASE_URL=https://api.cscs.ch/v1
-LLM_API_KEY=your_cscs_api_key_here
+LLM_NAME=swiss-ai/Apertus-v1.5-8B
+LLM_BASE_URL=https://api.inference.cscs.ch/v1
+LLM_API_KEY=your_api_key_here
 NLI_STRATEGY=retrieval
 MOCK_APERTUS=false
 ```
@@ -112,10 +113,15 @@ make run
 
 This builds the Docker image and executes the benchmark inside the container using the environment variables passed:
 ```bash
-export LLM_NAME="swiss-ai/Apertus-8B-Instruct"
-export LLM_BASE_URL="https://api.cscs.ch/v1"
-export LLM_API_KEY="your_api_key"
+export LLM_NAME="swiss-ai/Apertus-v1.5-8B"
+export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
+export LLM_API_KEY="your_api_key_here"
 make run
+```
+
+To run test suites:
+```bash
+make test
 ```
 
 ---

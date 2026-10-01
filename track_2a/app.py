@@ -164,7 +164,7 @@ st.markdown("""
 tab_factcheck, tab_benchmark, tab_methodology = st.tabs([
     "🔍 Interaktiver Faktencheck",
     "📊 Jury Benchmark Dashboard",
-    "🧠 Architektur & Zero-Overfitting",
+    "🧠 Architektur & Generalisierung",
 ])
 
 # =============================================================================
@@ -363,12 +363,13 @@ with tab_factcheck:
 # TAB 2: JURY BENCHMARK DASHBOARD
 # =============================================================================
 with tab_benchmark:
-    st.markdown("### 🏆 Offizielle Benchmark-Ergebnisse & Zero-Overfitting Nachweis")
+    st.markdown("### 🏆 Offizielle Benchmark-Ergebnisse & Out-of-Distribution Generalisierung")
     st.markdown("""
     Unser System wurde auf zwei voneinander unabhängigen Benchmarks evaluiert:
     1. Dem **offiziellen 28-Sample-Benchmark** (Juni 2026, OST / Hugging Face).
-    2. Einem **ungesehenen 32-Sample Out-of-Distribution Benchmark** (November 2024, 4 Vorlagen), um **Zero Overfitting** wissenschaftlich zu beweisen.
+    2. Einem **ungesehenen 32-Sample Out-of-Distribution Benchmark** (November 2024, 4 Vorlagen), um die **Generalisierung auf ungesehene Vorlagen** empirisch zu überprüfen.
     """)
+    st.caption("ℹ️ *Hinweis: Die folgenden Tabellen fassen den auf CSCS Alps evaluierten Testlauf zusammen. Jeder Benchmark kann live im Terminal via `python -m src benchmark` oder via `make run` repliziert werden.*")
 
     # Top KPI Metrics Cards
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
@@ -461,15 +462,15 @@ with tab_methodology:
         """)
 
     with col_arch2:
-        st.markdown("#### 3. Kalibrierter Fuzzy-Arbiter")
+        st.markdown("#### 3. Kalibrierter Entscheidungs-Arbiter (Threshold-Regeln)")
         st.markdown("""
         LLMs neigen bei subtilen politischen Formulierungen zu übervorsichtigen *Neutral*-Entscheidungen oder Halluzinationen.
         
         - Apertus liefert Konfidenz-Zugehörigkeiten für $p(\\text{Entailment})$, $p(\\text{Neutral})$, $p(\\text{Contradiction})$.
-        - Unser Fuzzy-Arbiter wendet deterministische Entscheidungsregeln an:
-          - **Regel 1 (Widerspruchs-Dominanz):** $p(\\text{Contra}) > 0.40 \\implies$ Contradiction (2).
-          - **Regel 2 (Beleg-Dominanz):** $p(\\text{Entail}) > 0.50$ und Beleg vorhanden $\\implies$ Entailment (0).
-          - **Regel 3 (Substanz-Regel):** Wenn weder Beleg noch Widerspruch $\\implies$ Neutral (1).
+        - Unser kalibrierter Entscheidungs-Arbiter wendet deterministische Schwellenwertregeln an:
+          - **Regel 1 (Widerspruchs-Dominanz):** $p(\\text{Contra}) \\ge 0.40$ und $p(\\text{Contra}) > p(\\text{Entail}) \\implies$ Contradiction (2).
+          - **Regel 2 (Beleg-Dominanz):** $p(\\text{Entail}) \\ge 0.60$ und $p(\\text{Contra}) < 0.25 \\implies$ Entailment (0).
+          - **Regel 3 (Ambiguitäts-/Neutralitäts-Filter):** Wenn $p(\\text{Neutral}) \\ge 0.40$ oder $|p(\\text{Entail}) - p(\\text{Contra})| < 0.15 \\implies$ Neutral (1).
         """)
         
         st.markdown("#### 4. Vollständige Reproduzierbarkeit")
