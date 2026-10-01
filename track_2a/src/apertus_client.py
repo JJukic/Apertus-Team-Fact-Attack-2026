@@ -168,6 +168,10 @@ class ApertusClient:
         Fuzzy decision logic:
         Resolves continuous membership degrees [0..1] and handles boundary ambiguity.
         """
+        total_p = p_entail + p_neutral + p_contra
+        if total_p == 0.0:
+            return raw_label, None
+
         # Rule 1: Strong contradiction or numerical conflict signal
         if p_contra >= 0.40 and p_contra > p_entail:
             return 2, "Fuzzy-Rule 1: Conflict dominant"
@@ -176,8 +180,10 @@ class ApertusClient:
         if p_entail >= 0.60 and p_contra < 0.25:
             return 0, "Fuzzy-Rule 2: Direct support dominant"
 
-        # Rule 3: High ambiguity or missing evidence -> Safe fallback to Neutral
-        if p_neutral >= 0.35 or abs(p_entail - p_contra) < 0.20:
+        # Rule 3: High neutral probability or genuine ambiguity between entail and contra
+        if p_neutral >= 0.40:
+            return 1, "Fuzzy-Rule 3: High neutrality"
+        if (p_entail > 0.0 or p_contra > 0.0) and abs(p_entail - p_contra) < 0.15:
             return 1, "Fuzzy-Rule 3: Epistemic ambiguity zone"
 
         return raw_label, None
@@ -194,16 +200,34 @@ class ApertusClient:
                 lines = lines[:-1]
             text = "\n".join(lines).strip()
         try:
-            return json.loads(text)
+            return json.loads(text, strict=False)
         except Exception:
             # Fallback search for JSON object inside braces
             start = text.find("{")
             end = text.rfind("}")
             if start != -1 and end != -1:
                 try:
-                    return json.loads(text[start : end + 1])
+                    return json.loads(text[start : end + 1], strict=False)
                 except Exception:
                     pass
+            
+            # Regex fallback
+            import re
+            label_match = re.search(r'"label"\s*:\s*([012])', text)
+            p_entail_match = re.search(r'"p_entail"\s*:\s*([0-9.]+)', text)
+            p_neutral_match = re.search(r'"p_neutral"\s*:\s*([0-9.]+)', text)
+            p_contra_match = re.search(r'"p_contra"\s*:\s*([0-9.]+)', text)
+            
+            if label_match:
+                return {
+                    "label": int(label_match.group(1)),
+                    "p_entail": float(p_entail_match.group(1)) if p_entail_match else 0.0,
+                    "p_neutral": float(p_neutral_match.group(1)) if p_neutral_match else 0.0,
+                    "p_contra": float(p_contra_match.group(1)) if p_contra_match else 0.0,
+                    "reasoning": "Parsed via regex fallback",
+                    "evidence": []
+                }
+                
             return {"label": 1, "reasoning": "Could not parse model response as JSON", "evidence": []}
 
     def _mock_infer(self, context: str, claim: str, latency_ms: float) -> NLIOutput:

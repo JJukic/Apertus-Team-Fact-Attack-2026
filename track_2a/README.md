@@ -94,6 +94,12 @@ python -m src compare --limit 5
 python -m src download
 ```
 
+### 5. Launch Interactive Web Demo (`app.py`)
+Launch the interactive voting booklet verification demo in your browser:
+```bash
+streamlit run app.py
+```
+
 ---
 
 ## 🐳 Docker & Submission (`make run`)

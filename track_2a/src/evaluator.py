@@ -109,6 +109,7 @@ class BenchmarkEvaluator:
             "avg_prompt_tokens": round(avg_prompt_tokens, 1),
             "avg_total_tokens": round(avg_total_tokens, 1),
             "by_language": lang_metrics,
+            "results": results,
             "detailed_classification": classification_report(
                 y_true,
                 y_pred,
