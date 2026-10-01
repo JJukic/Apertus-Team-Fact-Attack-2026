@@ -332,12 +332,13 @@ with tab_factcheck:
                 col_res1, col_res2 = st.columns([1, 1], gap="medium")
                 
                 with col_res1:
-                    st.markdown("#### 🧠 Kalibrierte Konfidenzen (Fuzzy-Arbiter)")
+                    st.markdown("#### 🧠 Kalibrierte Konfidenzen (Entscheidungs-Arbiter)")
                     st.progress(float(result.p_entail), text=f"Entailment (0): {result.p_entail * 100:.1f}%")
                     st.progress(float(result.p_neutral), text=f"Neutral (1): {result.p_neutral * 100:.1f}%")
                     st.progress(float(result.p_contra), text=f"Contradiction (2): {result.p_contra * 100:.1f}%")
-                    if result.fuzzy_rule:
-                        st.caption(f"Angewendete Entscheidungsregel: **{result.fuzzy_rule}**")
+                    rule_label = getattr(result, "decision_rule", None) or getattr(result, "fuzzy_rule", None)
+                    if rule_label:
+                        st.caption(f"Angewendete Entscheidungsregel: **{rule_label}**")
 
                 with col_res2:
                     st.markdown("#### ⏱️ Effizienz-Metriken")
@@ -346,10 +347,35 @@ with tab_factcheck:
                     st.write(f"- **Gesamt-Tokens:** `{result.tokens_total}` Tokens")
                     st.write(f"- **Modell:** `{config.LLM_NAME}` auf CSCS Alps")
 
+                if getattr(result, "numerical_conflict", None):
+                    st.markdown(f"""
+                    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0;">
+                        <div style="font-weight: 700; color: #f87171; font-size: 1.05rem;">⚠️ Deterministischer Zahlenkonflikt erkannt:</div>
+                        <div style="margin-top: 0.3rem; font-size: 0.95rem; color: #fca5a5;">{result.numerical_conflict}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
                 st.markdown("#### 💬 Begründung (Reasoning)")
                 st.info(result.reasoning)
 
-                if result.evidence:
+                evidence_sources = getattr(result, "evidence_sources", [])
+                if evidence_sources:
+                    st.markdown("#### 📑 Gefundene Belegstellen im Abstimmungsbüchlein (Exakt referenziert):")
+                    for idx, src in enumerate(evidence_sources, 1):
+                        badges = []
+                        if src.page_number is not None:
+                            badges.append(f'<span style="background: rgba(213, 43, 30, 0.25); border: 1px solid rgba(213, 43, 30, 0.5); border-radius: 4px; padding: 2px 7px; font-size: 0.8rem; font-weight: 600; color: #fca5a5;">📄 Seite {src.page_number}</span>')
+                        if src.proposal_id is not None:
+                            badges.append(f'<span style="background: rgba(255, 255, 255, 0.1); border-radius: 4px; padding: 2px 7px; font-size: 0.8rem; color: #cbd5e1;">🏛️ Vorlage {src.proposal_id}</span>')
+                        badge_html = f'<div style="margin-bottom: 0.4rem;">{" ".join(badges)}</div>' if badges else ""
+                        st.markdown(f"""
+                        <div class="evidence-box">
+                            {badge_html}
+                            <b>Beleg {idx}:</b><br>
+                            <i>"{src.quote}"</i>
+                        </div>
+                        """, unsafe_allow_html=True)
+                elif result.evidence:
                     st.markdown("#### 📑 Gefundene Belegstellen im Abstimmungsbüchlein:")
                     for idx, ev in enumerate(result.evidence, 1):
                         st.markdown(f"""
@@ -520,7 +546,20 @@ with tab_methodology:
           - **Regel 3 (Ambiguitäts-/Neutralitäts-Filter):** Wenn $p(\\text{Neutral}) \\ge 0.40$ oder $|p(\\text{Entail}) - p(\\text{Contra})| < 0.15 \\implies$ Neutral (1).
         """)
         
-        st.markdown("#### 4. Vollständige Reproduzierbarkeit")
+        st.markdown("#### 4. Deterministischer Zahlen- & Faktenabgleich")
+        st.markdown("""
+        Zahlen und Jahreszahlen (z. B. 500'000 vs. 1,7 Millionen, Fristen vor 2050) werden deterministisch aus Behauptung und Büchlein-Kontext abgeglichen:
+        - Schweizer Tausendertrennzeichen (`500'000`) und Wort-Multiplikatoren (`1,7 Millionen`, `Mio.`) werden automatisch normalisiert.
+        - Bei thematisch gekoppelten Zahlenabweichungen greift ein Sicherheits-Override, der Halluzinationen eliminiert.
+        """)
+
+        st.markdown("#### 5. Transparente Seiten-Attributierung (Page-Level Citations)")
+        st.markdown("""
+        Jeder Beleg im NLI-Output wird exakt auf die physische Seite im Original-PDF und die zugehörige Abstimmungsvorlage kartiert.
+        Bürgerinnen und Bürger können die Fundstelle unmittelbar im Originaldokument nachschlagen.
+        """)
+
+        st.markdown("#### 6. Vollständige Reproduzierbarkeit")
         st.markdown("""
         Die gesamte Pipeline ist in der CLI via 1-Zeiler aufrufbar:
         ```bash

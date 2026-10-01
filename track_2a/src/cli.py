@@ -16,13 +16,22 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+if sys.platform == "win32":
+    try:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")
+        if hasattr(sys.stderr, "reconfigure"):
+            sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from src.inference import ClaimVerificationEngine
 from src.evaluator import BenchmarkEvaluator
 from src.download_data import main as download_assets
 from src import config
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
-console = Console()
+console = Console(legacy_windows=False)
 
 
 @app.command()
@@ -77,6 +86,8 @@ def predict(
     )
     if result.fuzzy_rule:
         table.add_row("Decision Arbiter", f"[bold cyan]{result.fuzzy_rule}[/bold cyan]")
+    if result.numerical_conflict:
+        table.add_row("Numerical Check", f"[bold red][CONFLICT] {result.numerical_conflict}[/bold red]")
     table.add_row("Reasoning", result.reasoning)
     table.add_row("Strategy", result.strategy)
     table.add_row("Prompt Tokens", str(result.tokens_prompt))
@@ -85,7 +96,13 @@ def predict(
 
     console.print(table)
 
-    if result.evidence:
+    if result.evidence_sources:
+        console.print("\n[bold underline]Supporting Evidence Passages (with Page Citations):[/bold underline]")
+        for i, src in enumerate(result.evidence_sources, 1):
+            page_info = f" [bold yellow](Page {src.page_number})[/bold yellow]" if src.page_number else ""
+            prop_info = f" [magenta](Vorlage {src.proposal_id})[/magenta]" if src.proposal_id else ""
+            console.print(f"[cyan]Passage {i}{page_info}{prop_info}:[/cyan] {src.quote}\n")
+    elif result.evidence:
         console.print("\n[bold underline]Supporting Evidence Passages:[/bold underline]")
         for i, ev in enumerate(result.evidence, 1):
             console.print(f"[cyan]Passage {i}:[/cyan] {ev}\n")
