@@ -17,9 +17,21 @@ DATASET_URL = (
 )
 
 BOOKLETS = {
-    "de": "https://www.bk.admin.ch/dam/de/sd-web/WeUrKyC0FyPc/2026-06-14_erlaeuterungen_des_bundesrates.pdf",
-    "fr": "https://www.bk.admin.ch/dam/fr/sd-web/WeUrKyC0FyPc/2026-06-14_explications_du_conseil_federal.pdf",
-    "it": "https://www.bk.admin.ch/dam/it/sd-web/WeUrKyC0FyPc/2026-06-14_spiegazioni_del_consigliofederale.pdf",
+    "2026-06-14": {
+        "de": "https://www.bk.admin.ch/dam/de/sd-web/WeUrKyC0FyPc/2026-06-14_erlaeuterungen_des_bundesrates.pdf",
+        "fr": "https://www.bk.admin.ch/dam/fr/sd-web/WeUrKyC0FyPc/2026-06-14_explications_du_conseil_federal.pdf",
+        "it": "https://www.bk.admin.ch/dam/it/sd-web/WeUrKyC0FyPc/2026-06-14_spiegazioni_del_consigliofederale.pdf",
+    },
+    "2024-11-24": {
+        "de": "https://www.bk.admin.ch/dam/de/sd-web/wHXT9BH3VlYQ/2024-11-24_erlaeuterungen_des_bundesrates.pdf",
+        "fr": "https://www.bk.admin.ch/dam/fr/sd-web/wHXT9BH3VlYQ/2024-11-24_explications_du_conseil_federal.pdf",
+        "it": "https://www.bk.admin.ch/dam/it/sd-web/wHXT9BH3VlYQ/2024-11-24_spiegazioni_del_consigliofederale.pdf",
+    },
+    "2024-09-22": {
+        "de": "https://www.bk.admin.ch/dam/de/sd-web/iWYLyEPfLvhn/2024-09-22_erlaeuterungen_des_bundesrates.pdf",
+        "fr": "https://www.bk.admin.ch/dam/fr/sd-web/iWYLyEPfLvhn/2024-09-22_explications_du_conseil_federal.pdf",
+        "it": "https://www.bk.admin.ch/dam/it/sd-web/iWYLyEPfLvhn/2024-09-22_spiegazioni_del_consigliofederale.pdf",
+    },
 }
 
 
@@ -47,10 +59,11 @@ def main():
     dataset_dest = DATA_DIR / "demo_dataset.jsonl"
     download_file(DATASET_URL, dataset_dest, "HF Benchmark Dataset")
 
-    # 2. Download official voting booklets
-    for lang, url in BOOKLETS.items():
-        pdf_dest = BOOKLETS_DIR / f"2026-06-14_{lang}.pdf"
-        download_file(url, pdf_dest, f"Booklet PDF ({lang.upper()})")
+    # 2. Download official voting booklets (current + historical)
+    for date_str, lang_dict in BOOKLETS.items():
+        for lang, url in lang_dict.items():
+            pdf_dest = BOOKLETS_DIR / f"{date_str}_{lang}.pdf"
+            download_file(url, pdf_dest, f"Booklet PDF {date_str} ({lang.upper()})")
 
     # Check total size
     total_size = sum(f.stat().st_size for f in DATA_DIR.rglob("*") if f.is_file())

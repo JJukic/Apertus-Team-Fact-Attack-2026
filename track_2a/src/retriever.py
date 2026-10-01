@@ -18,25 +18,95 @@ class PassageRetriever:
         else:
             self.bm25 = None
 
+        # Dynamically build keyword signatures for each proposal found in this booklet
+        self.proposal_keywords: Dict[int, set] = self._extract_proposal_keywords(paragraphs)
+
     @staticmethod
     def _tokenize(text: str) -> List[str]:
         # Lowercase and split on words across languages
         return re.findall(r"\w+", text.lower(), flags=re.UNICODE)
 
-    @staticmethod
-    def _detect_proposal(claim: str) -> int:
+    @classmethod
+    def _extract_proposal_keywords(cls, paragraphs: List[Dict[str, Any]]) -> Dict[int, set]:
+        """
+        Dynamically extract distinctive signature keywords from the title/intro
+        of each proposal in the booklet.
+        """
+        keywords_by_prop: Dict[int, set] = {}
+        title_re = re.compile(
+            r"(?:erste|zweite|dritte|vierte|fünfte|sechste|"
+            r"premier|deuxi[eè]me|troisi[eè]me|quatri[eè]me|cinqui[eè]me|sixi[eè]me|"
+            r"primo|secondo|terzo|quarto|quinto|sesto)\s+"
+            r"(?:vorlage|objet|oggetto)\s*:\s*([^\n\r]+)",
+            re.IGNORECASE,
+        )
+        stopwords = {
+            "vorlage", "erste", "zweite", "dritte", "vierte", "fünfte", "sechste",
+            "premier", "deuxième", "troisième", "quatrième", "cinquième", "sixième",
+            "primo", "secondo", "terzo", "quarto", "quinto", "sesto",
+            "objet", "oggetto", "detail", "bundesbeschluss", "über", "einen", "blick",
+            "bundesrat", "parlament", "empfiehlt", "schweiz", "volk", "stände",
+            "pour", "dans", "avec", "delle", "della", "dello", "dalla", "dalle",
+            "dass", "wird", "werden", "noch", "damit", "viele", "mehr", "oder", "auch", "aber",
+            "nach", "eine", "einer", "eines", "einem", "einen", "nicht", "kann", "können", "soll",
+            "sollen", "muss", "müssen", "haben", "hatte", "sein", "waren", "wurde", "wurden",
+            "durch", "unter", "zwischen", "sont", "être", "avoir", "plus", "tout", "tous",
+            "sono", "essere", "avere", "hanno", "questo", "questa", "anche", "più",
+        }
+
+        for p in paragraphs:
+            pid = p.get("proposal_id", 0)
+            if pid > 0 and pid not in keywords_by_prop:
+                txt = p.get("text", "")[:400]
+                m = title_re.search(txt)
+                title_text = m.group(1) if m else txt[:150]
+                quotes = re.findall(r'[«"“]([^»"”]+)[»"”]', txt)
+                combined = title_text + " " + " ".join(quotes)
+                tokens = set(re.findall(r"[a-zäöüéèà]{4,}", combined.lower()))
+                keywords_by_prop[pid] = tokens - stopwords
+
+        return keywords_by_prop
+
+    def _detect_proposal(self, claim: str) -> int:
+        """
+        Detect which proposal a claim targets using dynamic keyword and subword overlap
+        with proposal titles, falling back to heuristic keywords.
+        """
+        stopwords = {
+            "dass", "wird", "werden", "noch", "damit", "viele", "mehr", "oder", "auch", "aber",
+            "nach", "eine", "einer", "eines", "einem", "einen", "nicht", "kann", "können", "soll",
+            "sollen", "muss", "müssen", "haben", "hatte", "sein", "waren", "wurde", "wurden",
+            "bundesrat", "parlament", "empfiehlt", "schweiz", "volk", "stände",
+            "conseil", "fédéral", "fédérale", "selon", "texte", "vote", "projet", "mesures", "mesure",
+            "consiglio", "federale", "secondo", "testo", "voto", "progetto", "misure", "misura",
+        }
         claim_lower = claim.lower()
+        claim_tokens = set(re.findall(r"[a-zäöüéèà]{4,}", claim_lower)) - stopwords
+
+        # 1. Dynamic overlap with proposal title keywords (exact or subword for compounds like 'volksinitiative')
+        if self.proposal_keywords:
+            scores = {}
+            for pid, kws in self.proposal_keywords.items():
+                matches = sum(1 for ct in claim_tokens if any(ct == kw or (len(ct) >= 5 and ct in kw) for kw in kws))
+                scores[pid] = matches
+
+            best_score = max(scores.values()) if scores else 0
+            if best_score > 0:
+                best_pid = max(scores, key=scores.get)
+                return best_pid
+
+        # 2. Universal fallback rules
         v2_words = ["zivildienst", "militär", "ersatzdienst", "zdg", "armee", "service civil", "armée", "servizio civile", "militare", "esercito"]
-        v1_words = ["initiative", "nachhaltig", "10-millionen", "10 million", "zuwanderung", "wohnbevölkerung", "personenfreizügigkeit", "schengen", "dublin", "durabilité", "immigration", "sostenibilità", "popolazione", "libera circolazione"]
+        v1_words = ["nachhaltig", "10-millionen", "10 million", "zuwanderung", "wohnbevölkerung", "personenfreizügigkeit", "schengen", "dublin", "durabilité", "immigration", "sostenibilità", "popolazione", "libera circolazione"]
         
         has_v2 = any(w in claim_lower for w in v2_words)
         has_v1 = any(w in claim_lower for w in v1_words)
-        
         if has_v2 and not has_v1:
             return 2
         if has_v1 and not has_v2:
             return 1
-        # Default to Vorlage 1 if general initiative
+
+        # Default to Vorlage 1 if general initiative mentioned
         return 1 if ("initiative" in claim_lower or "iniziativa" in claim_lower) else 0
 
     def retrieve(self, claim: str, top_k: int = 5) -> List[Dict[str, Any]]:
@@ -47,7 +117,7 @@ class PassageRetriever:
             return []
 
         prop_id = self._detect_proposal(claim)
-        if prop_id in (1, 2):
+        if prop_id > 0 and any(p.get('proposal_id', 0) == prop_id for p in self.paragraphs):
             candidate_paras = [p for p in self.paragraphs if p.get('proposal_id', 0) == prop_id]
         else:
             candidate_paras = self.paragraphs

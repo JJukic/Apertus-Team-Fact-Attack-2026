@@ -110,12 +110,20 @@ class PDFParser:
             (re.compile(r"\bzweite\s+vorlage\b", re.IGNORECASE), 2),
             (re.compile(r"\bdritte\s+vorlage\b", re.IGNORECASE), 3),
             (re.compile(r"\bvierte\s+vorlage\b", re.IGNORECASE), 4),
+            (re.compile(r"\bfünfte\s+vorlage\b", re.IGNORECASE), 5),
+            (re.compile(r"\bsechste\s+vorlage\b", re.IGNORECASE), 6),
             (re.compile(r"\bpremier\s+objet\b", re.IGNORECASE), 1),
             (re.compile(r"\bdeuxi[eè]me\s+objet\b", re.IGNORECASE), 2),
-            (re.compile(r"\btroisième\s+objet\b", re.IGNORECASE), 3),
+            (re.compile(r"\btroisi[eè]me\s+objet\b", re.IGNORECASE), 3),
+            (re.compile(r"\bquatri[eè]me\s+objet\b", re.IGNORECASE), 4),
+            (re.compile(r"\bcinqui[eè]me\s+objet\b", re.IGNORECASE), 5),
+            (re.compile(r"\bsixi[eè]me\s+objet\b", re.IGNORECASE), 6),
             (re.compile(r"\bprimo\s+oggetto\b", re.IGNORECASE), 1),
             (re.compile(r"\bsecondo\s+oggetto\b", re.IGNORECASE), 2),
             (re.compile(r"\bterzo\s+oggetto\b", re.IGNORECASE), 3),
+            (re.compile(r"\bquarto\s+oggetto\b", re.IGNORECASE), 4),
+            (re.compile(r"\bquinto\s+oggetto\b", re.IGNORECASE), 5),
+            (re.compile(r"\bsesto\s+oggetto\b", re.IGNORECASE), 6),
         ]
 
         seen_ordinals: set = set()

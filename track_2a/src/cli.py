@@ -93,14 +93,15 @@ def predict(
 
 @app.command()
 def benchmark(
+    dataset: Optional[Path] = typer.Option(None, "--dataset", "-d", help="Path to JSONL benchmark dataset"),
     strategy: str = typer.Option("retrieval", "--strategy", "-s", help="Strategy: 'retrieval' or 'full'"),
     limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit number of evaluation samples"),
 ):
     """
-    Run evaluation over the official benchmark dataset and output Macro-F1 report.
+    Run evaluation over the official or custom benchmark dataset and output Macro-F1 report.
     """
     evaluator = BenchmarkEvaluator()
-    evaluator.evaluate(strategy=strategy, limit=limit)
+    evaluator.evaluate(dataset_path=dataset, strategy=strategy, limit=limit)
 
 
 @app.command()

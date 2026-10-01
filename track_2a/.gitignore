@@ -25,3 +25,7 @@ build/
 .DS_Store
 .idea/
 .vscode/
+
+# Downloaded historical booklets (downloaded dynamically via download_data.py)
+data/booklets/2024-*.pdf
+data/booklets/2025-*.pdf

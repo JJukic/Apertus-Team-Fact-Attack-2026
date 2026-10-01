@@ -25,7 +25,7 @@ class BenchmarkEvaluator:
         strategy: str = "retrieval",
         limit: Optional[int] = None,
     ) -> Dict[str, Any]:
-        path = dataset_path or config.BENCHMARK_PATH
+        path = Path(dataset_path) if dataset_path else config.BENCHMARK_PATH
         if not path.exists():
             raise FileNotFoundError(f"Benchmark dataset not found at: {path}")
 
@@ -55,10 +55,11 @@ class BenchmarkEvaluator:
             booklet_lang = record.get("booklet_language", claim_lang)
 
             # Map to local booklet PDF
-            pdf_path = config.BOOKLETS_DIR / f"2026-06-14_{booklet_lang}.pdf"
+            booklet_date = record.get("booklet_date", "2026-06-14")
+            pdf_path = config.BOOKLETS_DIR / f"{booklet_date}_{booklet_lang}.pdf"
             if not pdf_path.exists():
-                # Fallback to German booklet if specific language is missing
-                pdf_path = config.BOOKLETS_DIR / "2026-06-14_de.pdf"
+                # Fallback to German booklet of same date if specific language is missing
+                pdf_path = config.BOOKLETS_DIR / f"{booklet_date}_de.pdf"
 
             pred: PredictionResult = self.engine.verify_claim(
                 claim=claim,
