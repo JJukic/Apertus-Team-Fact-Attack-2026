@@ -47,12 +47,16 @@ class BenchmarkEvaluator:
         prompt_tokens = []
         total_tokens = []
         results = []
+        evidence_hits = []
+
+        import re
 
         for record in tqdm(records, desc="Evaluating"):
             claim = record["claim"]
             true_label = int(record["entailment_label"])
             claim_lang = record.get("claim_language", "de")
             booklet_lang = record.get("booklet_language", claim_lang)
+            gold_reference = record.get("reference_string", "").strip()
 
             # Map to local booklet PDF
             booklet_date = record.get("booklet_date", "2026-06-14")
@@ -68,6 +72,21 @@ class BenchmarkEvaluator:
                 strategy=strategy,
             )
 
+            # Evaluate evidence match against gold reference string
+            evidence_matched = False
+            if gold_reference and pred.evidence:
+                gold_words = set(re.findall(r"\w+", gold_reference.lower()))
+                for ev in pred.evidence:
+                    ev_words = set(re.findall(r"\w+", ev.lower()))
+                    if not ev_words or not gold_words:
+                        continue
+                    overlap = len(gold_words & ev_words) / min(len(ev_words), len(gold_words))
+                    if overlap >= 0.30 or ev.lower() in gold_reference.lower() or gold_reference.lower() in ev.lower():
+                        evidence_matched = True
+                        break
+            if gold_reference:
+                evidence_hits.append(1 if evidence_matched else 0)
+
             y_true.append(true_label)
             y_pred.append(pred.label)
             languages.append(claim_lang)
@@ -82,6 +101,8 @@ class BenchmarkEvaluator:
                 "pred_label": pred.label,
                 "reasoning": pred.reasoning,
                 "evidence": pred.evidence,
+                "gold_reference": gold_reference[:120] + "..." if len(gold_reference) > 120 else gold_reference,
+                "evidence_matched": evidence_matched,
                 "latency_ms": pred.latency_ms,
                 "tokens": pred.tokens_total,
             })
@@ -90,6 +111,7 @@ class BenchmarkEvaluator:
         avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
         avg_prompt_tokens = sum(prompt_tokens) / len(prompt_tokens) if prompt_tokens else 0
         avg_total_tokens = sum(total_tokens) / len(total_tokens) if total_tokens else 0
+        evidence_alignment = sum(evidence_hits) / len(evidence_hits) if evidence_hits else 1.0
 
         # Language breakdown
         lang_metrics = {}
@@ -106,6 +128,8 @@ class BenchmarkEvaluator:
             "strategy": strategy,
             "sample_count": len(records),
             "macro_f1": round(macro_f1, 4),
+            "evidence_alignment_rate": round(evidence_alignment, 4),
+            "reference_string_count": len(evidence_hits),
             "avg_latency_ms": round(avg_latency, 2),
             "avg_prompt_tokens": round(avg_prompt_tokens, 1),
             "avg_total_tokens": round(avg_total_tokens, 1),
@@ -132,6 +156,8 @@ class BenchmarkEvaluator:
         print(f"Strategy:            {report['strategy']}")
         print(f"Total Samples:       {report['sample_count']}")
         print(f"PRIMARY METRIC:      Macro-F1 = {report['macro_f1']:.4f}")
+        if report.get("reference_string_count", 0) > 0:
+            print(f"Evidence Alignment:  {report['evidence_alignment_rate'] * 100:.1f}% ({report['reference_string_count']} gold reference passages)")
         print(f"Avg Input Tokens:    {report['avg_prompt_tokens']}")
         print(f"Avg Total Tokens:    {report['avg_total_tokens']}")
         print(f"Avg Latency:         {report['avg_latency_ms']} ms")

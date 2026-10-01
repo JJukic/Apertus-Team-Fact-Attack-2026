@@ -83,7 +83,7 @@ class PassageRetriever:
         claim_lower = claim.lower()
         claim_tokens = set(re.findall(r"[a-zäöüéèà]{4,}", claim_lower)) - stopwords
 
-        # 1. Dynamic overlap with proposal title keywords (exact or subword for compounds like 'volksinitiative')
+        # 1. Dynamic overlap with proposal title keywords (exact or subword for compounds)
         if self.proposal_keywords:
             scores = {}
             for pid, kws in self.proposal_keywords.items():
@@ -92,22 +92,29 @@ class PassageRetriever:
 
             best_score = max(scores.values()) if scores else 0
             if best_score > 0:
-                best_pid = max(scores, key=scores.get)
-                return best_pid
+                return max(scores, key=scores.get)
 
-        # 2. Universal fallback rules
-        v2_words = ["zivildienst", "militär", "ersatzdienst", "zdg", "armee", "service civil", "armée", "servizio civile", "militare", "esercito"]
-        v1_words = ["nachhaltig", "10-millionen", "10 million", "zuwanderung", "wohnbevölkerung", "personenfreizügigkeit", "schengen", "dublin", "durabilité", "immigration", "sostenibilità", "popolazione", "libera circolazione"]
-        
-        has_v2 = any(w in claim_lower for w in v2_words)
-        has_v1 = any(w in claim_lower for w in v1_words)
-        if has_v2 and not has_v1:
-            return 2
-        if has_v1 and not has_v2:
-            return 1
+        # 2. Generic BM25 proposal affinity:
+        # If title keywords do not trigger a match, calculate max BM25 score per proposal
+        if self.bm25:
+            tokens = self._tokenize(claim)
+            if tokens:
+                all_scores = self.bm25.get_scores(tokens)
+                prop_max_scores: Dict[int, float] = {}
+                for idx, p in enumerate(self.paragraphs):
+                    pid = p.get("proposal_id", 0)
+                    if pid > 0:
+                        s = float(all_scores[idx])
+                        if s > prop_max_scores.get(pid, 0.0):
+                            prop_max_scores[pid] = s
 
-        # Default to Vorlage 1 if general initiative mentioned
-        return 1 if ("initiative" in claim_lower or "iniziativa" in claim_lower) else 0
+                if prop_max_scores:
+                    best_pid = max(prop_max_scores, key=prop_max_scores.get)
+                    if prop_max_scores[best_pid] > 0.0:
+                        return best_pid
+
+        # If no proposal clearly dominates, return 0 to search all candidate paragraphs
+        return 0
 
     def retrieve(self, claim: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """

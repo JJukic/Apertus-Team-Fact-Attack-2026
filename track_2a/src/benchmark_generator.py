@@ -62,11 +62,32 @@ Antworte ausschliesslich mit einem gültigen JSON-Array von 3 Objekten im folgen
             max_tokens=600,
         )
         content = response.choices[0].message.content.strip()
-        # Parse JSON from response
-        match = re.search(r"\[\s*\{.*\}\s*\]", content, re.DOTALL)
+        # Clean markdown code blocks if present
+        if content.startswith("```"):
+            lines = content.splitlines()
+            if lines and lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].startswith("```"):
+                lines = lines[:-1]
+            content = "\n".join(lines).strip()
+
+        # Parse JSON array directly using boundary brackets
+        start = content.find("[")
+        end = content.rfind("]")
+        if start != -1 and end != -1 and end > start:
+            try:
+                items = json.loads(content[start : end + 1])
+                if isinstance(items, list):
+                    return items
+            except Exception:
+                pass
+
+        # Non-greedy regex fallback
+        match = re.search(r"\[\s*\{.*?\}\s*\]", content, re.DOTALL)
         if match:
             items = json.loads(match.group(0))
-            return items
+            if isinstance(items, list):
+                return items
     except Exception as e:
         logger.error(f"Error generating claims: {e}")
     return []

@@ -363,51 +363,98 @@ with tab_factcheck:
 # TAB 2: JURY BENCHMARK DASHBOARD
 # =============================================================================
 with tab_benchmark:
-    st.markdown("### 🏆 Offizielle Benchmark-Ergebnisse & Out-of-Distribution Generalisierung")
+    st.markdown("### 🏆 Benchmark-Ergebnisse & Out-of-Distribution Generalisierung")
     st.markdown("""
-    Unser System wurde auf zwei voneinander unabhängigen Benchmarks evaluiert:
+    Unser System wurde auf zwei voneinander unabhängigen Testreihen evaluiert:
     1. Dem **offiziellen 28-Sample-Benchmark** (Juni 2026, OST / Hugging Face).
     2. Einem **ungesehenen 32-Sample Out-of-Distribution Benchmark** (November 2024, 4 Vorlagen), um die **Generalisierung auf ungesehene Vorlagen** empirisch zu überprüfen.
     """)
-    st.caption("ℹ️ *Hinweis: Die folgenden Tabellen fassen den auf CSCS Alps evaluierten Testlauf zusammen. Jeder Benchmark kann live im Terminal via `python -m src benchmark` oder via `make run` repliziert werden.*")
+    st.info("📊 **Reported Results:** Die folgenden Kacheln und Tabellen zeigen den vollständigen Referenz-Evaluierungslauf auf **CSCS Alps** (`api.inference.cscs.ch`). Sie können unten zudem jederzeit einen Live-Benchmark-Lauf direkt im Browser starten oder im Terminal via `make run` ausführen.")
 
-    # Top KPI Metrics Cards
+    # Top KPI Metrics Cards (Reported Snapshot)
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     with kpi1:
         st.markdown("""
         <div class="metric-card">
             <div class="metric-value" style="color: #34d399;">1.0000</div>
-            <div class="metric-label">Offizieller Benchmark (28 Samples)</div>
+            <div class="metric-label">Reported Macro-F1 (28 Samples, Juni 2026)</div>
         </div>
         """, unsafe_allow_html=True)
     with kpi2:
         st.markdown("""
         <div class="metric-card">
             <div class="metric-value" style="color: #60a5fa;">0.9220</div>
-            <div class="metric-label">Ungesehener Benchmark 2024 (32 Samples)</div>
+            <div class="metric-label">Reported OOD Macro-F1 (32 Samples, Nov 2024)</div>
         </div>
         """, unsafe_allow_html=True)
     with kpi3:
         st.markdown("""
         <div class="metric-card">
             <div class="metric-value" style="color: #fbbf24;">1.6s</div>
-            <div class="metric-label">Durchschnittliche Latenz</div>
+            <div class="metric-label">Reported Ø Inferenzzeit (CSCS Alps)</div>
         </div>
         """, unsafe_allow_html=True)
     with kpi4:
         st.markdown("""
         <div class="metric-card">
             <div class="metric-value" style="color: #a78bfa;">-76%</div>
-            <div class="metric-label">Token-Ersparnis vs. Full-Doc</div>
+            <div class="metric-label">Reported Token-Ersparnis vs. Full-Doc</div>
         </div>
         """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Interactive Live Evaluation for Jury
+    with st.expander("🧪 Live-Benchmark im Browser ausführen (Replikation durch Jury)", expanded=False):
+        st.markdown("Führen Sie den Evaluator live aus, um die Pipeline direkt in dieser Sitzung zu testen:")
+        c_ds, c_strat, c_lim = st.columns([2, 2, 1])
+        with c_ds:
+            eval_dataset = st.selectbox(
+                "Benchmark-Datensatz",
+                ["Offizieller Benchmark (Juni 2026)", "Historischer OOD-Benchmark (November 2024)"],
+            )
+        with c_strat:
+            eval_strat = st.selectbox("Strategie", ["retrieval", "full"])
+        with c_lim:
+            eval_lim = st.selectbox("Sample-Limit", [3, 5, 10, "Alle"], index=0)
+
+        if st.button("🚀 Live-Evaluierung starten", key="btn_run_live_eval"):
+            selected_path = config.BENCHMARK_PATH if "2026" in eval_dataset else (config.DATA_DIR / "benchmark_2024-11-24.jsonl")
+            lim_val = None if eval_lim == "Alle" else int(eval_lim)
+            with st.spinner(f"Evaluiere {eval_lim} Samples mit Strategie '{eval_strat}'..."):
+                evaluator = BenchmarkEvaluator()
+                live_report = evaluator.evaluate(dataset_path=selected_path, strategy=eval_strat, limit=lim_val)
+
+            st.success(f"Live-Benchmark abgeschlossen für {live_report['sample_count']} Samples!")
+            lr1, lr2, lr3, lr4 = st.columns(4)
+            lr1.metric("Live Macro-F1", f"{live_report['macro_f1']:.4f}")
+            lr2.metric("Evidence Alignment", f"{live_report.get('evidence_alignment_rate', 1.0) * 100:.1f}%")
+            lr3.metric("Ø Input Tokens", f"{live_report['avg_prompt_tokens']:.0f}")
+            lr4.metric("Ø Latenz", f"{live_report['avg_latency_ms']:.1f} ms")
+
+            st.markdown("##### Detail-Ergebnisse des Live-Laufs:")
+            st.dataframe(
+                [
+                    {
+                        "Behauptung": r["claim"][:80] + "...",
+                        "Sprache": r["claim_lang"].upper(),
+                        "True Label": r["true_label"],
+                        "Pred Label": r["pred_label"],
+                        "Korrekt": "✅" if r["true_label"] == r["pred_label"] else "❌",
+                        "Tokens": r["tokens"],
+                        "Latenz (ms)": f"{r['latency_ms']:.0f}",
+                    }
+                    for r in live_report["results"]
+                ],
+                use_container_width=True,
+            )
 
     st.markdown("---")
 
     col_bench1, col_bench2 = st.columns([1, 1], gap="large")
 
     with col_bench1:
-        st.markdown("#### 🇨🇭 Offizieller Testset (Juni 2026)")
+        st.markdown("#### 🇨🇭 Offizieller Testset (Juni 2026 — Reported)")
         st.table({
             "Sprache": ["Deutsch (DE)", "Français (FR)", "Italiano (IT)", "Gesamt (Overall)"],
             "Anzahl Samples": [11, 8, 9, 28],
@@ -416,7 +463,7 @@ with tab_benchmark:
         })
 
     with col_bench2:
-        st.markdown("#### 🛡️ Ungesehenes Abstimmungsbüchlein (November 2024)")
+        st.markdown("#### 🛡️ Ungesehenes Abstimmungsbüchlein (November 2024 — Reported)")
         st.table({
             "Sprache": ["Deutsch (DE)", "Français (FR)", "Italiano (IT)", "Gesamt (Overall)"],
             "Anzahl Samples": [12, 10, 10, 32],
@@ -425,9 +472,9 @@ with tab_benchmark:
         })
 
     st.markdown("---")
-    st.markdown("#### ⚡ Strategien-Vergleich (Ablation)")
+    st.markdown("#### ⚡ Strategien-Vergleich (Ablation — Reported)")
     st.table({
-        "Strategie": ["Standard BM25 (Baseline)", "Full Document (Naive Context Dump)", "Proposal-Aware BM25 + Fuzzy Arbiter (Ours)"],
+        "Strategie": ["Standard BM25 (Baseline)", "Full Document (Naive Context Dump)", "Proposal-Aware BM25 + Calibrated Arbiter (Ours)"],
         "Macro-F1": ["0.7846", "0.8214", "1.0000"],
         "Avg Input Tokens": ["3,540 Tokens", "14,820 Tokens", "3,583 Tokens"],
         "Avg Latenz": ["992 ms", "4,850 ms", "1,736 ms"],

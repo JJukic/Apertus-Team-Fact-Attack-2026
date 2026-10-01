@@ -103,25 +103,53 @@ class ApertusClient:
             "Output JSON only:"
         )
 
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.0,
-                max_tokens=512,
-            )
-            latency_ms = (time.time() - start_time) * 1000
+        max_retries = 3
+        response = None
+        last_exception = None
 
+        for attempt in range(max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.0,
+                    max_tokens=512,
+                    timeout=45.0,
+                )
+                break
+            except Exception as e:
+                last_exception = e
+                if attempt < max_retries - 1:
+                    sleep_sec = (2 ** attempt) * 1.5
+                    logger.warning(f"Apertus API attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {sleep_sec:.1f}s...")
+                    time.sleep(sleep_sec)
+                else:
+                    logger.error(f"Apertus API query failed after {max_retries} attempts: {e}")
+
+        if response is None:
+            latency_ms = (time.time() - start_time) * 1000
+            return NLIOutput(
+                label=1,
+                reasoning=f"API Error after {max_retries} attempts: {str(last_exception)}",
+                evidence=[],
+                tokens_prompt=0,
+                tokens_completion=0,
+                tokens_total=0,
+                latency_ms=round(latency_ms, 2),
+            )
+
+        try:
+            latency_ms = (time.time() - start_time) * 1000
             content = response.choices[0].message.content.strip()
             parsed_json = self._parse_json(content)
 
-            usage = response.usage
-            tokens_prompt = usage.prompt_tokens if usage else len(user_prompt.split())
-            tokens_completion = usage.completion_tokens if usage else len(content.split())
-            tokens_total = usage.total_tokens if usage else (tokens_prompt + tokens_completion)
+            usage = getattr(response, "usage", None)
+            tokens_prompt = usage.prompt_tokens if (usage and getattr(usage, "prompt_tokens", None)) else self._estimate_tokens(user_prompt)
+            tokens_completion = usage.completion_tokens if (usage and getattr(usage, "completion_tokens", None)) else self._estimate_tokens(content)
+            tokens_total = usage.total_tokens if (usage and getattr(usage, "total_tokens", None)) else (tokens_prompt + tokens_completion)
 
             raw_label = int(parsed_json.get("label", 1))
             if raw_label not in (0, 1, 2):
@@ -153,12 +181,11 @@ class ApertusClient:
                 latency_ms=round(latency_ms, 2),
             )
         except Exception as e:
-            logger.error(f"Error querying Apertus API: {e}")
+            logger.error(f"Error parsing Apertus response: {e}")
             latency_ms = (time.time() - start_time) * 1000
-            # Fallback safe prediction
             return NLIOutput(
                 label=1,
-                reasoning=f"API Error: {str(e)}",
+                reasoning=f"Response Parse Error: {str(e)}",
                 evidence=[],
                 tokens_prompt=0,
                 tokens_completion=0,
@@ -237,15 +264,24 @@ class ApertusClient:
                     "reasoning": "Parsed via regex fallback",
                     "evidence": []
                 }
-                
             return {"label": 1, "reasoning": "Could not parse model response as JSON", "evidence": []}
+
+    @staticmethod
+    def _estimate_tokens(text: str) -> int:
+        """
+        Multilingual token estimation for Swiss languages (DE, FR, IT).
+        Empirically calibrated to Apertus/Llama tokenizers: ~3.7 characters per token.
+        """
+        if not text:
+            return 0
+        return max(1, int(len(text) / 3.7))
 
     def _mock_infer(self, context: str, claim: str, latency_ms: float) -> NLIOutput:
         """
         Mock inference for offline testing.
         Uses lexical overlap heuristics to generate a plausible response.
         """
-        prompt_est = len(context.split()) + len(claim.split()) + 50
+        prompt_est = self._estimate_tokens(context) + self._estimate_tokens(claim) + 50
         comp_est = 45
 
         # Heuristic: check if claim words appear in context

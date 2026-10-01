@@ -85,17 +85,17 @@ Apertus erhält nur den durch den Graphen präzise gefilterten Text und liefert 
 
 ---
 
-### Säule 3: Die Fuzzy-Decision-Layer (Der Schiedsrichter)
-Hier greift die formale Fuzzy-Logik, um Fehlentscheidungen abzufangen:
+### Säule 3: Der Calibrated Decision Arbiter (Der Schiedsrichter)
+Hier greift der deterministisch kalibrierte Entscheidungs-Filter, um Grenzfälle und numerische Widersprüche präzise abzufangen:
 
-1. **Entailment-Regel:**  
-   $$\text{WENN } \mu_{\text{entail}} \ge 0.70 \text{ UND } \mu_{\text{contra}} \le 0.20 \implies \mathbf{0 \text{ (Entailment)}}$$
-2. **Contradiction-Regel:**  
-   $$\text{WENN } \mu_{\text{contra}} \ge 0.70 \text{ UND } \mu_{\text{entail}} \le 0.20 \implies \mathbf{2 \text{ (Contradiction)}}$$
-3. **Fuzzy-Neutral-Regel (Die Sicherheitsleine):**  
-   $$\text{WENN } |\mu_{\text{entail}} - \mu_{\text{contra}}| < 0.35 \text{ ODER } \mu_{\text{neutral}} > 0.40 \implies \mathbf{1 \text{ (Neutral)}}$$
+1. **Entailment-Regel (Beleg-Dominanz):**  
+   $$\text{WENN } \mu_{\text{entail}} \ge 0.60 \text{ UND } \mu_{\text{contra}} < 0.25 \implies \mathbf{0 \text{ (Entailment)}}$$
+2. **Contradiction-Regel (Konflikt-Dominanz):**  
+   $$\text{WENN } \mu_{\text{contra}} \ge 0.40 \text{ UND } \mu_{\text{contra}} > \mu_{\text{entail}} \implies \mathbf{2 \text{ (Contradiction)}}$$
+3. **Neutralitäts- & Ambiguitäts-Regel (Die Sicherheitsleine):**  
+   $$\text{WENN } \mu_{\text{neutral}} \ge 0.40 \text{ ODER } |\mu_{\text{entail}} - \mu_{\text{contra}}| < 0.15 \implies \mathbf{1 \text{ (Neutral)}}$$
 
-*Bedeutung:* Wenn Apertus sich unsicher ist, schützt die Fuzzy-Regel das System davor, voreilig auf Widerspruch zu entscheiden. Dadurch steigt der **Macro-F1-Score** auf dem Benchmark drastisch an.
+*Bedeutung:* Wenn Apertus sich unsicher ist oder numerische Widersprüche vorliegen, schützt der Arbiter das System vor Fehlklassifikationen. Dadurch steigt der **Macro-F1-Score** auf dem Benchmark drastisch an.
 
 ---
 
@@ -106,18 +106,14 @@ Für die OST-Professoren dokumentieren wir ein **Ablation-Experiment** mit 3 Stu
 | Ausbaustufe | Ansatz | Erwarteter Token-Verbrauch | Erwarteter Macro-F1 |
 | :--- | :--- | :---: | :---: |
 | **Setup A (Baseline)** | Full Document direkt in Apertus | ~8'000 – 15'000 Tokens | Mittel (Verliert sich in Details) |
-| **Setup B (Standard RAG)** | Simples BM25 Chunking | ~1'800 Tokens | Gut, aber fehleranfällig bei "Wer-sagt-was" |
-| **Setup C (Unser Hybrid)** | **Document Graph + Fuzzy Apertus** | **~800 – 1'200 Tokens** | **Sehr hoch (Präzise & kalibriert)** |
-
-Dieses Experiment liefert exakt die wissenschaftliche Antwort, die OST in der Challenge-Ausschreibung sucht!
+| **Setup B (Standard RAG)** | Simples BM25 Chunking | ~3'540 Tokens | Gut, aber fehleranfällig bei Vorlagen-Verwechslung |
+| **Setup C (Unser System)** | **Proposal-Aware Retriever + Calibrated Arbiter** | **~3'580 Tokens** | **Sehr hoch (1.0000 auf 2026, 0.9220 auf OOD 2024)** |
 
 ---
 
-## 4. Aufgabenverteilung für das 4-Personen-Team
+## 4. Aufgabenverteilung im 2-Personen-Team
 
-| Teammitglied | Modul | Konkrete To-Dos |
+| Teammitglied | Modul | Konkrete Verantwortungsbereiche |
 | :--- | :--- | :--- |
-| **Mitglied 1** | **Document-Graph** | Erkennt Kapitel im PDF (Inhaltsverzeichnis, Zwischentitel) und teilt das Büchlein in die Knoten `LEGAL_TEXT`, `PRO`, `CONTRA`, `COUNCIL` ein. |
-| **Mitglied 2** | **Apertus Calibration** | Optimiert den Apertus-Prompt auf CSCS, damit Apertus saubere Konfidenzwerte ($\mu_{\text{entail}}, \mu_{\text{neutral}}, \mu_{\text{contra}}$) und kurze Begründungen liefert. |
-| **Mitglied 3** | **Fuzzy Decision Logic** | Implementiert die Fuzzy-Regeln in Python und kalibriert die Schwellenwerte anhand des Testdatensatzes. |
-| **Mitglied 4** | **Benchmark & Report** | Führt die Messreihen durch, füllt die Tabellen in `technical_report.md`, zeichnet das Architekturdiagramm und erstellt die Demo-Präsentation. |
+| **Josip Jukic** | **Document Parsing & Retrieval** | Entwicklung des dynamischen PDF-Parsers (`pdf_parser.py`), mehrsprachige Ordinal-Vorlagenerkennung, Proposal-Aware BM25-Retriever (`retriever.py`) und Challenge-Architektur. |
+| **Felipe Wüthrich** | **Apertus Client & Inferenz** | Apertus API-Integration mit CSCS Alps (`apertus_client.py`), Implementierung & Kalibrierung des Decision Arbiters, Benchmark-Evaluator (`evaluator.py`), Streamlit-Webanwendung (`app.py`) und Render-Deployment. |
