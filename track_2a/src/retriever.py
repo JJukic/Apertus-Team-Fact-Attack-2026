@@ -5,7 +5,7 @@ the most relevant passages for a given claim.
 """
 
 import re
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from rank_bm25 import BM25Okapi
 
 
@@ -116,14 +116,20 @@ class PassageRetriever:
         # If no proposal clearly dominates, return 0 to search all candidate paragraphs
         return 0
 
-    def retrieve(self, claim: str, top_k: int = 5) -> List[Dict[str, Any]]:
+    def retrieve(self, claim: str, top_k: int = 5, target_vote: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Retrieve top_k most relevant paragraphs for a claim using proposal-aware filtering.
+        Optionally accepts target_vote (proposal title) from the official benchmark schema.
         """
         if not self.paragraphs:
             return []
 
-        prop_id = self._detect_proposal(claim)
+        prop_id = 0
+        if target_vote:
+            prop_id = self._detect_proposal(target_vote)
+        if prop_id == 0:
+            prop_id = self._detect_proposal(claim)
+
         if prop_id > 0 and any(p.get('proposal_id', 0) == prop_id for p in self.paragraphs):
             candidate_paras = [p for p in self.paragraphs if p.get('proposal_id', 0) == prop_id]
         else:

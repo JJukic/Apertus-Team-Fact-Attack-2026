@@ -25,9 +25,11 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-from src.inference import ClaimVerificationEngine
+import json
+from src.inference import ClaimVerificationEngine, PredictionResult
 from src.evaluator import BenchmarkEvaluator
 from src.download_data import main as download_assets
+from src.apertus_client import ApertusClient
 from src import config
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
@@ -43,6 +45,8 @@ def predict(
         "-b",
         help="Path to the official Swiss voting booklet PDF",
     ),
+    vote: Optional[str] = typer.Option(None, "--vote", "-v", help="Specific proposal / vote title in booklet (Advanced Task)"),
+    reference: Optional[str] = typer.Option(None, "--reference", "-r", help="Direct reference premise string (Beginner Task)"),
     lang: str = typer.Option("de", "--lang", "-l", help="Language of claim ('de', 'fr', 'it')"),
     strategy: str = typer.Option(
         config.DEFAULT_STRATEGY,
@@ -51,26 +55,53 @@ def predict(
         help="Strategy: 'retrieval' (selected passages) or 'full' (full document)",
     ),
     top_k: int = typer.Option(5, "--top-k", "-k", help="Number of passages to retrieve when using retrieval strategy"),
+    json_output: bool = typer.Option(False, "--json", help="Output strictly conforming to official OST JSON format"),
+    case_id: Optional[str] = typer.Option("case-0001", "--id", help="Case identifier for official JSON output"),
+    mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
 ):
     """
-    Verify a political claim against a voting booklet (0 = Entailment, 1 = Neutral, 2 = Contradiction).
+    Verify a political claim against a voting booklet or direct premise
+    (0 = Entailment, 1 = Neutral, 2 = Contradiction).
     """
-    if not booklet.exists():
-        console.print(f"[bold red]Error:[/bold red] Booklet PDF not found at {booklet}. Run 'download' first.")
-        raise typer.Exit(code=1)
+    client = ApertusClient(mock=True) if mock else None
+    engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
+
+    if reference:
+        # Beginner Task: Direct premise verification
+        result = engine.verify_premise(
+            claim=claim,
+            reference=reference,
+            claim_language=lang,
+            case_id=case_id,
+        )
+    else:
+        # Advanced Task: Booklet PDF verification
+        if not booklet.exists():
+            # Check fallback in booklets directory
+            fallback = config.BOOKLETS_DIR / booklet.name
+            if fallback.exists():
+                booklet = fallback
+            else:
+                console.print(f"[bold red]Error:[/bold red] Booklet PDF not found at {booklet}. Run 'download' first.")
+                raise typer.Exit(code=1)
+
+        result = engine.verify_claim(
+            claim=claim,
+            booklet_pdf=booklet,
+            claim_language=lang,
+            strategy=strategy,
+            top_k=top_k,
+            vote=vote,
+            case_id=case_id,
+        )
+
+    if json_output:
+        official_data = result.to_official_dict(case_id=case_id)
+        print(json.dumps(official_data, indent=2, ensure_ascii=False))
+        return
 
     console.print(Panel(f"[bold cyan]Verifying Claim with Apertus[/bold cyan]\n[italic]\"{claim}\"[/italic]", expand=False))
-    engine = ClaimVerificationEngine(strategy=strategy)
 
-    result = engine.verify_claim(
-        claim=claim,
-        booklet_pdf=booklet,
-        claim_language=lang,
-        strategy=strategy,
-        top_k=top_k,
-    )
-
-    # Style by label
     color_map = {0: "green", 1: "yellow", 2: "red"}
     label_color = color_map.get(result.label, "white")
 
@@ -106,6 +137,92 @@ def predict(
         console.print("\n[bold underline]Supporting Evidence Passages:[/bold underline]")
         for i, ev in enumerate(result.evidence, 1):
             console.print(f"[cyan]Passage {i}:[/cyan] {ev}\n")
+
+
+@app.command(name="run")
+def run_batch(
+    input_path: Path = typer.Option(..., "--input", "-i", help="Path to input JSON or JSONL file conforming to OST task schema"),
+    output_path: Optional[Path] = typer.Option(None, "--output", "-o", help="Optional path to output JSON/JSONL file"),
+    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'retrieval' or 'full'"),
+    top_k: int = typer.Option(5, "--top-k", "-k", help="Passages to retrieve"),
+    mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
+):
+    """
+    Execute verification across an official OST evaluation file (JSON or JSONL).
+    Supports both Beginner Task (direct reference) and Advanced Task (booklet + vote).
+    Outputs results strictly adhering to the Hack Apertus Track 2A schema.
+    """
+    if not input_path.exists():
+        console.print(f"[bold red]Error:[/bold red] Input file not found: {input_path}")
+        raise typer.Exit(code=1)
+
+    with open(input_path, "r", encoding="utf-8") as f:
+        content = f.read().strip()
+
+    cases = []
+    if content.startswith("["):
+        cases = json.loads(content)
+    elif content.startswith("{") and "\n{" not in content:
+        try:
+            cases = [json.loads(content)]
+        except Exception:
+            cases = [json.loads(line) for line in content.splitlines() if line.strip()]
+    else:
+        cases = [json.loads(line) for line in content.splitlines() if line.strip()]
+
+    client = ApertusClient(mock=True) if mock else None
+    engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
+    official_results = []
+
+    for idx, item in enumerate(cases, 1):
+        cid = item.get("id", f"case-{idx:04d}")
+
+        claim_obj = item.get("claim", "")
+        claim_text = claim_obj.get("text", "") if isinstance(claim_obj, dict) else str(claim_obj)
+
+        ref_obj = item.get("reference")
+        ref_text = (ref_obj.get("text", "") if isinstance(ref_obj, dict) else str(ref_obj)) if ref_obj else None
+
+        if ref_text:
+            res = engine.verify_premise(
+                claim=claim_text,
+                reference=ref_text,
+                case_id=cid,
+            )
+        else:
+            booklet_obj = item.get("booklet", "")
+            booklet_path_str = booklet_obj.get("path", "") if isinstance(booklet_obj, dict) else str(booklet_obj)
+            booklet_pdf = Path(booklet_path_str) if booklet_path_str else (config.BOOKLETS_DIR / "2026-06-14_de.pdf")
+
+            if not booklet_pdf.exists():
+                fallback = config.BOOKLETS_DIR / booklet_pdf.name
+                if fallback.exists():
+                    booklet_pdf = fallback
+
+            vote_title = item.get("vote")
+            res = engine.verify_claim(
+                claim=claim_text,
+                booklet_pdf=booklet_pdf,
+                vote=vote_title,
+                strategy=strategy,
+                top_k=top_k,
+                case_id=cid,
+            )
+
+        official_results.append(res.to_official_dict(case_id=cid))
+
+    if output_path:
+        with open(output_path, "w", encoding="utf-8") as out_f:
+            if str(output_path).endswith(".jsonl"):
+                for r in official_results:
+                    out_f.write(json.dumps(r, ensure_ascii=False) + "\n")
+            else:
+                out_payload = official_results if len(official_results) > 1 else official_results[0]
+                out_f.write(json.dumps(out_payload, indent=2, ensure_ascii=False) + "\n")
+        console.print(f"[bold green]Successfully processed {len(official_results)} case(s) -> {output_path}[/bold green]")
+    else:
+        out_payload = official_results if len(official_results) > 1 else official_results[0]
+        print(json.dumps(out_payload, indent=2, ensure_ascii=False))
 
 
 @app.command()
