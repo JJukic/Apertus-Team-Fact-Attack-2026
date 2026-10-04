@@ -2,154 +2,110 @@
 ## Multilingual Natural Language Inference over Swiss Official Voting Booklets
 
 [![CI](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Model](https://img.shields.io/badge/Model-Apertus%20v1.5-orange.svg)](https://huggingface.co/swiss-ai)
 [![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
-[![License](https://img.shields.io/badge/License-MIT%20%2F%20CC--BY--4.0-green.svg)](LICENSE)
 
-An Apertus-powered multilingual claim-verification system that checks political claims against official Swiss voting booklets (*Abstimmungsbüchlein*).
+An Apertus-powered system that decides whether an official Swiss voting booklet **entails (0)**, is **neutral to (1)**
+or **contradicts (2)** a claim, and cites the booklet pages that justify the decision — for every combination of
+German, French and Italian.
 
----
+- **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.920** macro-F1, beginner task **0.975**
+- **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ·
+  **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
-## 🎯 The Challenge & Task
-
-Given an official Swiss voting booklet (PDF in German, French, or Italian) and a natural-language claim:
-1. **Classify the claim-document relationship:**
-   - **`0` — Entailment:** The booklet strictly supports the claim.
-   - **`1` — Neutral:** The booklet does not provide enough information either way.
-   - **`2` — Contradiction:** The booklet contradicts the claim.
-2. **Extract transparent evidence:** Returns verbatim passages from the booklet that justify the classification.
-3. **Report efficiency:** Measures prompt tokens, completion tokens, total tokens, and latency.
-4. **Compare architectures:** Evaluates **Full Document Context** vs. **Passage Retrieval (BM25/chunking)**.
+> Predictions describe the relationship between a claim and the official booklet. They are not political advice.
 
 ---
 
-## 🚀 Quickstart
-
-### 1. Requirements & Setup
-
-Create a virtual environment and install dependencies:
+## 🚀 Quick start
 
 ```bash
-# Using uv (fast) or standard pip
-uv venv .venv
-# On Windows:
-.venv\Scripts\activate
-# On Linux/macOS:
-source .venv/bin/activate
-
 pip install -r requirements.txt
+cp .env.example .env          # then set LLM_API_KEY
 ```
 
-### 2. Configure Environment Variables
+Configuration (environment variables or `.env`):
 
-Copy `.env.example` to `.env`:
-
-```bash
-cp .env.example .env
-```
-
-Configure your CSCS Apertus API key:
 ```ini
 LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
 LLM_BASE_URL=https://api.inference.cscs.ch/v1
 LLM_API_KEY=your_api_key_here
-NLI_STRATEGY=hybrid
+NLI_STRATEGY=hybrid      # 'hybrid' (default) | 'retrieval' | 'full'
 NLI_TOP_K=10
-PROMPT_MODE=ids
-MOCK_APERTUS=false
+PROMPT_MODE=ids          # 'ids' (default) | 'json' | 'compact'
 ```
 
-*(Note: If `LLM_API_KEY` is empty or `MOCK_APERTUS=true`, the system runs in offline mock mode so you can test the pipeline immediately.)*
+Without `LLM_API_KEY` the system runs in an offline heuristic mock mode (for tests only).
 
 ---
 
-## 💻 CLI Usage
+## 💻 CLI
 
-The system provides a full CLI via `python -m src`:
-
-### 1. Verify a Single Claim (`predict`)
 ```bash
-python -m src predict --claim "Die Initiative verlangt, die Wohnbevölkerung zu begrenzen." --lang de
+# Advanced task: booklet + claim (+ vote title)
+python -m src predict -b data/booklets/2026-06-14_fr.pdf \
+  -c "Der Bundesrat empfiehlt, die Initiative abzulehnen." \
+  -v "Initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) »" --json
+
+# Beginner task: reference text + claim
+python -m src predict -r "Der Bundesrat lehnt die Initiative ab." -c "Le Conseil fédéral recommande d'accepter l'initiative." --json
+
+# Batch file in the official OST format (JSON or JSONL) -> one prediction per case
+python -m src run -i cases.jsonl -o predictions.jsonl
+
+# Evaluation on the OST dataset
+python -m src.hf_dataset                                    # dataset, 60 booklets, dev/test split
+python -m src benchmark -d data/hf/test.jsonl -t advanced   # report saved to results/
+python -m src benchmark -d data/hf/test.jsonl -t beginner
+python -m src.results_summary                               # results/summary.json for the app
+
+# Utilities
+python -m src warm-cache                                    # pre-parse booklets into the disk cache
+python -m src web                                           # Streamlit demo at http://localhost:8501
 ```
 
-Options:
-- `--claim`, `-c`: The claim text to verify.
-- `--booklet`, `-b`: Path to booklet PDF (default: `data/booklets/2026-06-14_de.pdf`).
-- `--lang`, `-l`: Claim language (`de`, `fr`, `it`).
-- `--strategy`, `-s`: `retrieval` (default, top-k passages) or `full` (entire booklet).
-- `--top-k`, `-k`: Number of passages to retrieve (default: 5).
-
-### 2. Run Benchmark Evaluation (`benchmark`)
-Evaluates the official held-out benchmark and outputs Macro-F1 across 0, 1, 2, plus per-language metrics:
-```bash
-python -m src benchmark --strategy retrieval
-```
-
-### 3. Compare Strategies (`compare`)
-Runs side-by-side comparison between **Passage Retrieval** and **Full Document**:
-```bash
-python -m src compare --limit 5
-```
-
-### 4. Download / Refresh Data (`download`)
-```bash
-python -m src download
-```
-
-### 5. Launch Interactive Web Demo (`app.py`)
-Launch the interactive voting booklet verification demo in your browser:
-```bash
-streamlit run app.py
-```
+The input/output format is documented in the [overview README](../README.md#official-input--output-format).
 
 ---
 
-## 🐳 Docker & Submission (`make run`)
-
-Judges run `make run` from the project root:
+## 🐳 Docker (`make run`)
 
 ```bash
-make run
-```
-
-This builds the Docker image and executes the benchmark inside the container using the environment variables passed:
-```bash
-export LLM_NAME="swiss-ai/Apertus-v1.5-70B-thinking"
-export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
 export LLM_API_KEY="your_api_key_here"
-make run
+make run      # builds the image (downloads + pre-parses the booklets) and runs the benchmark
+make test     # unit tests, no API calls
 ```
 
-To run test suites:
-```bash
-make test
-```
+Other commands run inside the container the same way, e.g. `docker run --rm -e LLM_API_KEY -v $PWD/cases:/cases
+hackapertus-track2a run -i /cases/cases.jsonl -o /cases/predictions.jsonl`.
 
 ---
 
-## 📁 Project Structure
+## 📁 Project structure
 
 ```
 track_2a/
-├── Dockerfile                  # Container definition for reproducible evaluation
-├── Makefile                    # Target `make run` for judges
-├── requirements.txt            # Python dependencies
-├── .env.example                # Template for Apertus CSCS credentials
-├── README.md                   # This file
-├── technical_report.md         # Deep-dive report & benchmark numbers
+├── app.py                    # Streamlit demo (fact check, benchmark dashboard, architecture)
+├── technical_report.md       # Architecture, evaluation, findings, limitations
+├── docs/experiments.md       # Every experiment with its numbers
+├── results/                  # Saved benchmark runs + summary.json
 ├── data/
-│   ├── demo_dataset.jsonl      # Official benchmark dataset from Hugging Face
-│   └── booklets/               # Official Swiss voting booklets (DE, FR, IT)
+│   ├── booklets/             # 2026-06-14 booklets (others are downloaded)
+│   ├── demo_dataset.jsonl    # Early 28-pair demo set
+│   ├── demo_cases.json       # Verified demo examples for the app (with cached results)
+│   └── demo_votes.json       # Vote titles per demo booklet
+├── tests/                    # Unit tests
 └── src/
-    ├── __init__.py
-    ├── __main__.py             # Entry point
-    ├── config.py               # Env vars and label definitions
-    ├── pdf_parser.py           # Extracts pages and clean paragraphs from PDF
-    ├── retriever.py            # BM25 passage retrieval for claims
-    ├── apertus_client.py       # Apertus API client, metrics & mock fallback
-    ├── inference.py            # Claim verification engine (Full vs. Retrieval)
-    ├── evaluator.py            # Computes Macro-F1 & efficiency metrics
-    ├── download_data.py        # Automated data downloader
-    └── cli.py                  # Typer & Rich CLI
+    ├── cli.py                # predict / run / benchmark / compare / warm-cache / download / web
+    ├── inference.py          # ClaimVerificationEngine: retrieval -> Apertus -> evidence pages; booklet cache
+    ├── retriever.py          # Hybrid booklet-wide BM25 (claim + vote title) and proposal-filtered retrieval
+    ├── pdf_parser.py         # Pages, section labels, proposal boundaries
+    ├── apertus_client.py     # CSCS client, prompts (ids / json / compact), retries
+    ├── text_utils.py         # De-hyphenation, chunking, snippet selection, language detection
+    ├── numerical_checker.py  # Swiss number normalisation; reports numerical conflicts
+    ├── evaluator.py          # Macro-F1, language pairs, evidence grounding, p95 latency
+    ├── hf_dataset.py         # OST dataset + booklet download, dev/test split by voting date
+    ├── results_summary.py    # Collects saved runs for the app and README
+    ├── download_data.py      # Demo dataset + 2026/2024 booklets
+    └── config.py             # Environment configuration
 ```

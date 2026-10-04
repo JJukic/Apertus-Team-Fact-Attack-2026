@@ -1,7 +1,7 @@
 """
 Fact Attack 2026 - Multilingual Voting Booklet NLI & Fact-Checker
 Streamlit Web Application for Hack Apertus Track 2A (OST).
-Showcases document-grounded claim verification using Apertus-v1.5-8B on CSCS Alps.
+Showcases document-grounded claim verification with Apertus v1.5 (CSCS): hybrid retrieval, cited booklet pages, efficiency per check.
 """
 
 import sys
