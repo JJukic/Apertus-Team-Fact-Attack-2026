@@ -123,7 +123,7 @@ python -m src predict --booklet data/booklets/2026-06-14_fr.pdf \
 # Beginner task: reference text + claim
 python -m src predict --reference "…" --claim "…" --json
 
-# Batch file (JSON/JSONL) -> official output format
+# Batch file (JSON/JSONL) in the official OST format -> one prediction per case
 python -m src run --input cases.jsonl --output predictions.jsonl
 
 # Reproduce the evaluation
@@ -132,6 +132,23 @@ python -m src benchmark -d data/hf/test.jsonl -t advanced  # saves a report to r
 python -m src benchmark -d data/hf/test.jsonl -t beginner
 python -m src.results_summary                              # results/summary.json for the app
 ```
+
+### Official input / output format
+
+```jsonc
+// advanced task                                   // beginner task
+{"id": "case-0042",                                {"id": "case-0043",
+ "booklet": {"path": "booklets/2024_11_24_de.pdf"},  "reference": {"text": "Der Bundesrat ... lehnen die Volksinitiative ab."},
+ "vote": "Étape d'aménagement 2023 des routes nationales",
+ "claim": {"text": "La proposition entraînera une augmentation de la TVA."}}
+                                                    "claim": {"text": "Le Conseil fédéral recommande d'accepter l'initiative."}}
+```
+
+Each case yields `{"id", "label", "label_name", "evidence": [{"page", "text"}], "metrics": {"input_tokens",
+"output_tokens", "inference_time_ms"}}`; evidence is empty for neutral. The claim language is detected
+automatically, booklet paths are resolved robustly, and a failing case is reported on stderr and returned as a
+valid neutral record instead of aborting the batch. The Docker build downloads and pre-parses all 60 known
+booklets (disk cache keyed by file hash), so PDF parsing does not slow down the first claim per booklet.
 
 ---
 

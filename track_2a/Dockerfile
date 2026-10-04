@@ -21,6 +21,8 @@ RUN chmod +x entrypoint.sh
 RUN python -m src.download_data || true
 
 # Pre-parse the booklets so the first claim per booklet does not pay for PDF parsing
+# Also fetch all 60 booklets of the OST dataset so known booklets are pre-parsed (falls back silently offline)
+RUN python -m src.hf_dataset || true
 RUN python -m src warm-cache || true
 
 EXPOSE 8501

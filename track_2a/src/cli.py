@@ -26,9 +26,11 @@ if sys.platform == "win32":
         pass
 
 import json
+import re
 from src.inference import ClaimVerificationEngine, PredictionResult
 from src.apertus_client import ApertusClient
 from src import config
+from src.text_utils import guess_language
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
 console = Console(legacy_windows=False)
@@ -137,6 +139,23 @@ def predict(
             console.print(f"[cyan]Passage {i}:[/cyan] {ev}\n")
 
 
+def resolve_booklet_path(path_str: str, input_dir: Path) -> Path:
+    """
+    Find the booklet PDF for a case: as given, relative to the input file, or by file name in the booklets folder
+    (accepting both '2024_11_24_de.pdf' and '2024-11-24_de.pdf').
+    """
+    if not path_str:
+        raise FileNotFoundError("case has no booklet path")
+    given = Path(path_str)
+    name = given.name
+    names = [name, name.replace("_", "-", 2), re.sub(r"^(\d{4})-(\d{2})-(\d{2})", r"\1_\2_\3", name)]
+    candidates = [given, input_dir / given] + [config.BOOKLETS_DIR / n for n in names]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    raise FileNotFoundError(f"booklet not found: {path_str}")
+
+
 @app.command(name="run")
 def run_batch(
     input_path: Path = typer.Option(..., "--input", "-i", help="Path to input JSON or JSONL file conforming to OST task schema"),
@@ -174,40 +193,40 @@ def run_batch(
 
     for idx, item in enumerate(cases, 1):
         cid = item.get("id", f"case-{idx:04d}")
+        try:
+            claim_obj = item.get("claim", "")
+            claim_text = claim_obj.get("text", "") if isinstance(claim_obj, dict) else str(claim_obj)
+            claim_lang = guess_language(claim_text)  # the input format carries no language field
 
-        claim_obj = item.get("claim", "")
-        claim_text = claim_obj.get("text", "") if isinstance(claim_obj, dict) else str(claim_obj)
+            ref_obj = item.get("reference")
+            ref_text = (ref_obj.get("text", "") if isinstance(ref_obj, dict) else str(ref_obj)) if ref_obj else None
 
-        ref_obj = item.get("reference")
-        ref_text = (ref_obj.get("text", "") if isinstance(ref_obj, dict) else str(ref_obj)) if ref_obj else None
-
-        if ref_text:
-            res = engine.verify_premise(
-                claim=claim_text,
-                reference=ref_text,
-                case_id=cid,
-            )
-        else:
-            booklet_obj = item.get("booklet", "")
-            booklet_path_str = booklet_obj.get("path", "") if isinstance(booklet_obj, dict) else str(booklet_obj)
-            booklet_pdf = Path(booklet_path_str) if booklet_path_str else (config.BOOKLETS_DIR / "2026-06-14_de.pdf")
-
-            if not booklet_pdf.exists():
-                fallback = config.BOOKLETS_DIR / booklet_pdf.name
-                if fallback.exists():
-                    booklet_pdf = fallback
-
-            vote_title = item.get("vote")
-            res = engine.verify_claim(
-                claim=claim_text,
-                booklet_pdf=booklet_pdf,
-                vote=vote_title,
-                strategy=strategy,
-                top_k=top_k,
-                case_id=cid,
-            )
-
-        official_results.append(res.to_official_dict(case_id=cid))
+            if ref_text:
+                res = engine.verify_premise(claim=claim_text, reference=ref_text, claim_language=claim_lang, case_id=cid)
+            else:
+                booklet_obj = item.get("booklet", "")
+                booklet_path_str = booklet_obj.get("path", "") if isinstance(booklet_obj, dict) else str(booklet_obj)
+                booklet_pdf = resolve_booklet_path(booklet_path_str, input_path.parent)
+                res = engine.verify_claim(
+                    claim=claim_text,
+                    booklet_pdf=booklet_pdf,
+                    claim_language=claim_lang,
+                    vote=item.get("vote"),
+                    strategy=strategy,
+                    top_k=top_k,
+                    case_id=cid,
+                )
+            official_results.append(res.to_official_dict(case_id=cid))
+        except Exception as exc:
+            # One broken case must never cost the whole batch: emit a valid (neutral) record and continue
+            print(f"[warning] {cid}: {type(exc).__name__}: {exc}", file=sys.stderr)
+            official_results.append({
+                "id": cid,
+                "label": 1,
+                "label_name": "neutral",
+                "evidence": [],
+                "metrics": {"input_tokens": 0, "output_tokens": 0, "inference_time_ms": 0},
+            })
 
     if output_path:
         with open(output_path, "w", encoding="utf-8") as out_f:

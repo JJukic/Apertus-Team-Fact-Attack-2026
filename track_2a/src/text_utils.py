@@ -87,3 +87,17 @@ def best_snippet(page_text: str, claim: str, max_chars: int = 360) -> str:
         snippet = f"{snippet} {sentences[best + 1]}"
     snippet = re.sub(r"^\d{1,3}\s+", "", snippet)  # leading page number from the PDF text layer
     return snippet if len(snippet) <= max_chars else snippet[:max_chars].rsplit(" ", 1)[0] + " …"
+
+
+_LANG_HINTS = {
+    "de": {"der", "die", "das", "und", "nicht", "ist", "wird", "dass", "mit", "für", "den", "eine", "laut", "bundesrat"},
+    "fr": {"le", "la", "les", "des", "et", "est", "que", "une", "pour", "dans", "du", "selon", "conseil", "fédéral"},
+    "it": {"il", "lo", "gli", "della", "che", "è", "per", "una", "del", "non", "secondo", "consiglio", "federale", "di"},
+}
+
+
+def guess_language(text: str) -> str:
+    """Cheap DE/FR/IT detection from function words (the OST input format has no language field)."""
+    words = re.findall(r"[a-zàâçéèêëîïôûùüäöè]+", text.lower())
+    scores = {lang: sum(w in hints for w in words) for lang, hints in _LANG_HINTS.items()}
+    return max(scores, key=scores.get) if any(scores.values()) else "de"

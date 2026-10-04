@@ -25,7 +25,7 @@ from src.apertus_client import ApertusClient
 from src.inference import ClaimVerificationEngine, PredictionResult, EvidenceSource
 from src.evaluator import BenchmarkEvaluator
 from src.results_summary import build_summary
-from src.text_utils import best_snippet
+from src.text_utils import best_snippet, guess_language
 from src import config
 
 # Page Configuration
@@ -1284,17 +1284,6 @@ def find_cached_case(claim: str, booklet_file: str, vote: Optional[str]) -> Opti
     return None
 
 
-_LANG_HINTS = {
-    "de": {"der", "die", "das", "und", "nicht", "ist", "wird", "dass", "mit", "für", "den", "eine", "laut", "bundesrat"},
-    "fr": {"le", "la", "les", "des", "et", "est", "que", "une", "pour", "dans", "du", "selon", "conseil", "fédéral"},
-    "it": {"il", "lo", "gli", "della", "che", "è", "per", "una", "del", "non", "secondo", "consiglio", "federale", "di"},
-}
-
-
-def guess_language(text: str) -> str:
-    words = re.findall(r"[a-zàâçéèêëîïôûùüäöè]+", text.lower())
-    scores = {lang: sum(w in hints for w in words) for lang, hints in _LANG_HINTS.items()}
-    return max(scores, key=scores.get) if any(scores.values()) else "de"
 
 
 # =============================================================================
