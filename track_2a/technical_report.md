@@ -153,6 +153,7 @@ efficiency measure but also improves NLI quality.
 | One-sentence reasoning before the confidences | no gain on a full run, +40 output tokens | rejected |
 | Second, focused verification pass for every "contradiction" | fixed 0 of 23 errors, broke 24 correct answers (0.908 → 0.852) | rejected |
 | Speaker-aware retrieval (hide the opposing side's argument pages) | 0.908 → 0.896 | rejected |
+| Few-shot examples for committee vs. Federal Council claims | 0.908 → 0.906; errors shift from E→C to E→N | rejected |
 | Confidence threshold on label logprobs | wrong answers are as confident as correct ones | rejected |
 | Apertus 8B instead of 70B (450 dev pairs) | 0.851 vs. 0.908 F1, p95 1.2 s vs. 4.5 s | 70B kept (quality first) |
 
@@ -169,7 +170,7 @@ noise; close decisions were re-run on 450 pairs.
   Confidence thresholds cannot filter its errors.
 - **Speaker attribution is its main weakness.** Claims attributed to the initiative/referendum committee have a 19 %
   error rate (5–7 % for all others): Apertus cites the Federal Council's counter-arguments as a contradiction, even when
-  instructed not to, when asked to verify, and largely even when the opposing argument pages are removed.
+  instructed not to, when asked to verify, with worked examples, and largely even when the opposing argument pages are removed.
 - **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.79); French claims
   against Italian booklets reach 1.00.
 - **8B vs. 70B.** Apertus 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker, mostly on cross-lingual pairs and
@@ -218,7 +219,7 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 2. Error analysis of Entailment → Contradiction cases on booklets with opposing viewpoints.
 3. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
 4. Layout-aware parsing (e.g. Docling) for tables and graphical headings.
-5. Few-shot examples of committee-attributed claims, the error class that resisted prompt rules and retrieval changes.
+5. Fine-tuning or a stronger model for speaker attribution, the error class that resisted prompting and retrieval changes.
 
 ---
 

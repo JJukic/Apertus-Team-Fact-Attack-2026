@@ -160,6 +160,27 @@ class ApertusClient:
                 return {k: round(v / total, 4) for k, v in cands.items()}
         return {}
 
+    # Worked examples for the main error class: claims attributed to one side of the booklet.
+    # Text from the 2026-06-14 booklet; the claims are written for this prompt (not taken from the dataset).
+    FEW_SHOT_EXAMPLES = (
+        "\n\nEXAMPLES (same passages for all three claims):\n"
+        "[P1] (p. 16; Arguments of the initiative/referendum committee) Die ständige Wohnbevölkerung hat innerhalb "
+        "von 12 Jahren um 1 Million Menschen zugenommen. Der Hauptgrund ist die massive Zuwanderung. "
+        "Die Mieten werden immer teurer.\n"
+        "[P2] (p. 18; Arguments of the Federal Council and Parliament) Die Initiative schadet dem Wohlstand. "
+        "Schweizer Unternehmen sind auf ausländische Arbeitskräfte angewiesen. Die Wirtschaft und der Wohlstand "
+        "der Schweiz würden leiden.\n"
+        "CLAIM (fr): Selon le comité, l'immigration massive est la principale raison de la croissance démographique.\n"
+        '{"p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "label": 0, "evidence_ids": [1]}\n'
+        "(The committee says this in P1. P2 argues against the initiative but does not contradict the committee's statement.)\n"
+        "CLAIM (it): Secondo il comitato, la popolazione residente è diminuita negli ultimi dodici anni.\n"
+        '{"p_entail": 0.0, "p_neutral": 0.0, "p_contra": 1.0, "label": 2, "evidence_ids": [1]}\n'
+        "(The committee says the population grew by 1 million.)\n"
+        "CLAIM (de): Der Bundesrat erwartet, dass die Initiative die Mieten in den Städten senkt.\n"
+        '{"p_entail": 0.0, "p_neutral": 1.0, "p_contra": 0.0, "label": 1, "evidence_ids": []}\n'
+        "(No passage says what the Federal Council expects for rents.)\n"
+    )
+
     def _chat(self, messages: List[Dict[str, str]], max_tokens: int, logprobs: bool = False, max_retries: int = 3):
         last_exception = None
         for attempt in range(max_retries):
@@ -231,6 +252,8 @@ class ApertusClient:
             '  "evidence": ["<verbatim supporting quote or passage from the document>"]\n'
             "}"
         )
+        if passages is not None and config.FEW_SHOT:
+            system_prompt = system_prompt + self.FEW_SHOT_EXAMPLES
         if passages is not None and config.IDS_REASON:
             system_prompt = system_prompt.replace(
                 '{\n  "p_entail"',

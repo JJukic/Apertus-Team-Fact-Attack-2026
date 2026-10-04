@@ -248,6 +248,7 @@ class BenchmarkEvaluator:
                 "passage_chars": config.PASSAGE_CHARS if task == "advanced" else None,
                 "ids_reason": config.IDS_REASON,
                 "speaker_aware": config.SPEAKER_AWARE,
+                "few_shot": config.FEW_SHOT,
                 "dataset": str(path.name),
                 "seed": seed,
                 "workers": workers,

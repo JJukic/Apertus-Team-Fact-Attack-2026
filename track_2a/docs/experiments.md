@@ -153,8 +153,9 @@ cites a Federal Council statement as the contradiction, despite an explicit prom
 | Baseline (hybrid k=10, section labels) | – | – | **0.908** | kept |
 | Second, focused verification pass for every "contradiction" | 0 of 23 | 24 | 0.852 | rejected |
 | Speaker-aware retrieval (hide the opposing side's argument pages) | 3 (0 committee) | 8 | 0.896 | rejected (`SPEAKER_AWARE=false`) |
+| Three worked examples (few-shot) for committee vs. Federal Council claims | 8 (2 committee) | 9 | 0.906 | rejected (`FEW_SHOT=false`) |
 
-Opposing statements also appear together on the unlabelled overview pages, so hiding labelled argument pages
+Few-shot examples shifted the errors instead of removing them: Entailment → Contradiction fell from 23 to 8, but Entailment → Neutral rose from 4 to 15 (+360 input tokens per claim). Opposing statements also appear together on the unlabelled overview pages, so hiding labelled argument pages
 does not remove them; asking again only makes the model repeat its decision.
 
 ### No "lost in the middle" effect

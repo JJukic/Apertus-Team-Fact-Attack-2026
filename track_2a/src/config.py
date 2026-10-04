@@ -37,6 +37,9 @@ PROMPT_MODE = os.getenv("PROMPT_MODE", "ids")
 # 'ids' mode: let the model write one short sentence before its confidences (a minimal reasoning step)
 IDS_REASON = os.getenv("IDS_REASON", "false").lower() in ("true", "1", "yes")
 
+# 'ids' mode: add worked examples for claims attributed to one side of the booklet
+FEW_SHOT = os.getenv("FEW_SHOT", "false").lower() in ("true", "1", "yes")
+
 # Speaker-aware retrieval: hide the opposing side's argument pages when a claim names who says something
 SPEAKER_AWARE = os.getenv("SPEAKER_AWARE", "false").lower() in ("true", "1", "yes")
 
