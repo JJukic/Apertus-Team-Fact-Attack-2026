@@ -151,9 +151,29 @@ efficiency measure but also improves NLI quality.
 | Viewpoint and recommendation rules in the prompt | advanced 0.862 → 0.870, beginner 0.980 → 0.993 | adopted |
 | 600-character passages instead of pages (n = 450, paired) | 0.831 vs. 0.908; better evidence precision, fewer tokens | rejected |
 | One-sentence reasoning before the confidences | no gain on a full run, +40 output tokens | rejected |
+| Second, focused verification pass for every "contradiction" | fixed 0 of 23 errors, broke 24 correct answers (0.908 → 0.852) | rejected |
+| Speaker-aware retrieval (hide the opposing side's argument pages) | 0.908 → 0.896 | rejected |
+| Confidence threshold on label logprobs | wrong answers are as confident as correct ones | rejected |
+| Apertus 8B instead of 70B (450 dev pairs) | 0.851 vs. 0.908 F1, p95 1.2 s vs. 4.5 s | 70B kept (quality first) |
 
 Full tables: [docs/experiments.md](docs/experiments.md). Runs on 150 pairs carry about ±3 F1 points of sampling
 noise; close decisions were re-run on 450 pairs.
+
+### 5.4 What we learned about Apertus
+
+- **Selected context beats more context.** With the whole booklet (~60k tokens) Apertus 70B reaches 0.73 macro-F1,
+  with 10 selected pages 0.93. We found no position effect ("lost in the middle"): the full-document runs fail even
+  when the answer is in the first third of the booklet, so the degradation is general distraction.
+- **Apertus is over-confident.** Its self-reported confidences are 0 or 1 in 97–99 % of cases, and the probability of
+  the label token is ~1.0 for wrong answers as well as for correct ones (41 wrong vs. 40 correct dev answers).
+  Confidence thresholds cannot filter its errors.
+- **Speaker attribution is its main weakness.** Claims attributed to the initiative/referendum committee have a 19 %
+  error rate (5–7 % for all others): Apertus cites the Federal Council's counter-arguments as a contradiction, even when
+  instructed not to, when asked to verify, and largely even when the opposing argument pages are removed.
+- **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.79); French claims
+  against Italian booklets reach 1.00.
+- **8B vs. 70B.** Apertus 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker, mostly on cross-lingual pairs and
+  contradictions.
 
 ---
 
@@ -161,14 +181,13 @@ noise; close decisions were re-run on 450 pairs.
 
 - **Italian claims against German booklets** are the weakest pair (0.79 F1). Lexical retrieval relies on the vote
   title for cross-lingual pairs; multilingual dense retrieval would likely help.
-- **Entailment → Contradiction** accounts for 16 of the 32 remaining advanced errors on the test split, often
-  where the booklet contains both sides of an argument.
+- **Entailment → Contradiction** accounts for 16 of the 32 remaining advanced errors on the test split, mostly
+  claims attributed to the committee (see 5.4); prompt rules, a verification pass and speaker-aware retrieval did not fix them.
 - **Evidence precision:** with whole pages as passages, ~75 % of cited pages lie inside the gold reference section.
   Smaller passages raise this to ~90 % but cost F1 (5.3).
 - **Layout:** section headings are detected from text; older booklets set some headings as graphics. Tables and
   charts are read as plain text.
-- **Model coverage:** only `Apertus-v1.5-70B-thinking` was accessible with our key, so the faster 8B model could
-  not be evaluated. Latency was measured client-side on a shared endpoint.
+- **Latency** was measured client-side on a shared endpoint; the organisers measure it themselves.
 - **Not political advice:** outputs describe the relationship between a claim and the official booklet only.
 
 ---
@@ -178,13 +197,14 @@ noise; close decisions were re-run on 450 pairs.
 ```bash
 export LLM_API_KEY="your_api_key_here"
 make run                    # Docker build + benchmark on the demo set
-make test                   # 41 unit tests, no API calls
+make test                   # unit tests, no API calls
 
 cd track_2a
 python -m src.hf_dataset                                   # dataset, booklets, dev/test split
 python -m src benchmark -d data/hf/test.jsonl -t advanced  # writes results/<timestamp>_....json
 python -m src benchmark -d data/hf/test.jsonl -t beginner
 python -m src.results_summary                              # results/summary.json (used by the app)
+python -m src warm-cache                                   # pre-parse booklets (disk cache keyed by file hash)
 ```
 
 Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `LLM_API_KEY`,
@@ -198,7 +218,7 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 2. Error analysis of Entailment → Contradiction cases on booklets with opposing viewpoints.
 3. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
 4. Layout-aware parsing (e.g. Docling) for tables and graphical headings.
-5. Evaluate Apertus 8B against 70B for the speed/quality trade-off.
+5. Few-shot examples of committee-attributed claims, the error class that resisted prompt rules and retrieval changes.
 
 ---
 

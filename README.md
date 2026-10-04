@@ -43,6 +43,16 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 0.19 F1 with ~10× fewer tokens**: with up to 70k tokens of context the relevant passage gets lost.
 Every number comes from a saved run in [`track_2a/results/`](track_2a/results/).
 
+### What we learned about Apertus
+
+- **More context hurts:** the whole booklet (~60k tokens) scores 0.73, ten selected pages 0.93.
+- **Over-confident:** the label probability is ~1.0 for wrong answers too, so confidence thresholds cannot catch errors.
+- **Speaker attribution is the main weakness:** claims attributed to the initiative committee fail 19 % of the time
+  (5–7 % otherwise) — Apertus cites the Federal Council's counter-arguments as a contradiction.
+- **8B vs. 70B:** 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker (0.851 vs. 0.908 on 450 dev pairs).
+
+Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
+
 ---
 
 ## ⚙️ How it works
@@ -86,7 +96,7 @@ Every number comes from a saved run in [`track_2a/results/`](track_2a/results/).
 ```bash
 export LLM_API_KEY="your_api_key_here"
 make run          # builds the Docker image and runs the benchmark
-make test         # 41 unit tests (no API calls)
+make test         # unit tests (no API calls)
 make web          # Streamlit app at http://localhost:8501
 ```
 

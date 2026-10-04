@@ -280,6 +280,7 @@ class PDFParser:
         pdf_path: Union[str, Path],
         min_length: int = 40,
         passage_chars: Optional[int] = 600,
+        pages: Optional[List[Dict[str, Any]]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Segment the booklet into passages with page attribution.
@@ -289,7 +290,7 @@ class PDFParser:
         `passage_chars` set, each page is de-hyphenated and split at sentence boundaries into
         passages of at most that many characters (None restores the page-level behaviour).
         """
-        pages = self.extract_pages(pdf_path)
+        pages = pages if pages is not None else self.extract_pages(pdf_path)
         page_to_proposal, proposal_starts = self._detect_proposal_boundaries(pages)
 
         paragraphs = []

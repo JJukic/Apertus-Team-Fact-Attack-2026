@@ -33,3 +33,6 @@ data/booklets/20[0-2][0-9]-*.pdf
 !data/booklets/2026-06-14_*.pdf
 data/hf/
 results/*.raw.jsonl
+
+# Parsed booklet cache
+.cache/

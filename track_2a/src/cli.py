@@ -27,8 +27,6 @@ if sys.platform == "win32":
 
 import json
 from src.inference import ClaimVerificationEngine, PredictionResult
-from src.evaluator import BenchmarkEvaluator
-from src.download_data import main as download_assets
 from src.apertus_client import ApertusClient
 from src import config
 
@@ -245,6 +243,8 @@ def benchmark(
         apertus_client=ApertusClient(mock=True) if mock else None,
         prompt_mode=prompt_mode,
     )
+    from src.evaluator import BenchmarkEvaluator  # lazy: sklearn is slow to import
+
     evaluator = BenchmarkEvaluator(engine=engine)
     evaluator.evaluate(
         dataset_path=dataset, strategy=strategy, limit=limit, task=task,
@@ -260,6 +260,8 @@ def compare(
     Compare 'retrieval' vs 'full' document strategies on tokens, latency, and Macro-F1.
     """
     console.print(Panel("[bold]Comparing Strategies: 'Retrieval' vs 'Full Document'[/bold]"))
+    from src.evaluator import BenchmarkEvaluator  # lazy: sklearn is slow to import
+
     evaluator = BenchmarkEvaluator()
 
     console.print("\n[bold cyan]1. Evaluating 'Retrieval' Strategy...[/bold cyan]")
@@ -287,7 +289,26 @@ def download():
     """
     Download benchmark dataset and official voting booklets from admin.ch.
     """
+    from src.download_data import main as download_assets
+
     download_assets()
+
+
+@app.command(name="warm-cache")
+def warm_cache(
+    booklets_dir: Path = typer.Option(config.BOOKLETS_DIR, "--dir", "-d", help="Folder with booklet PDFs"),
+):
+    """
+    Parse every booklet PDF once and store it in the on-disk cache (used by the Docker build).
+    """
+    from src.inference import load_parsed_booklet
+    from src.pdf_parser import PDFParser
+
+    parser = PDFParser()
+    pdfs = sorted(booklets_dir.glob("*.pdf"))
+    for pdf in pdfs:
+        load_parsed_booklet(pdf, parser)
+    console.print(f"[bold green]Cached {len(pdfs)} booklet(s) in {config.BOOKLET_CACHE_DIR}[/bold green]")
 
 
 @app.command()

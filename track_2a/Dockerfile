@@ -20,6 +20,9 @@ RUN chmod +x entrypoint.sh
 # Ensure data and official booklets are present (offline safe)
 RUN python -m src.download_data || true
 
+# Pre-parse the booklets so the first claim per booklet does not pay for PDF parsing
+RUN python -m src warm-cache || true
+
 EXPOSE 8501
 
 ENV PORT=8501

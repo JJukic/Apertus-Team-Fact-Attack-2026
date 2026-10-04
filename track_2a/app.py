@@ -1824,7 +1824,9 @@ with tab_methodology:
             "- **Ganzes Büchlein senden:** F1 0.73 bei ~60'000 Tokens\n"
             "- **Harter Zahlen-Override:** 5 von 5 Eingriffen falsch\n"
             "- **Nur Label-Ziffer abfragen:** schwach bei «Neutral» (F1 0.72)\n"
-            "- **Kleine Textstücke statt Seiten:** präzisere Belege, aber F1 0.83 statt 0.91"
+            "- **Kleine Textstücke statt Seiten:** präzisere Belege, aber F1 0.83 statt 0.91\n"
+            "- **Zweitprüfung bei «Widerspruch»:** 0 von 23 Fehlern behoben, 24 neue\n"
+            "- **Apertus 8B statt 70B:** 3,5× schneller, aber F1 0.85 statt 0.91"
         )
 
     st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)

@@ -4,6 +4,8 @@ Coordinates PDF parsing, passage retrieval, numerical conflict detection,
 page-attributed evidence extraction, and Apertus LLM inference.
 """
 
+import hashlib
+import json
 import re
 import time
 from pathlib import Path
@@ -86,6 +88,56 @@ class PredictionResult(BaseModel):
 
 
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
+_PARSE_CACHE_VERSION = 2  # bump when parsing or section detection changes
+
+_COMMITTEE_SECTION = "Arguments of the initiative/referendum committee"
+_FEDERAL_COUNCIL_SECTION = "Arguments of the Federal Council and Parliament"
+_COMMITTEE_RE = re.compile(
+    r"komitee|initiant|urheber|comit[eé]|auteurs de l.initiative|comitato|promotori", re.IGNORECASE)
+_FEDERAL_COUNCIL_RE = re.compile(
+    r"bundesrat|parlament|conseil f[eé]d[eé]ral|consiglio federale|parlamento", re.IGNORECASE)
+
+
+def opposing_sections(claim: str) -> Optional[set]:
+    """
+    Speaker-aware retrieval: if a claim attributes a statement to one side, hide the other side's argument pages.
+    Apertus otherwise cites the Federal Council's counter-arguments as a 'contradiction' of a committee claim,
+    even when told not to (committee-attributed claims had a 19 % error rate vs. 5-7 % for all others on dev).
+    """
+    committee = bool(_COMMITTEE_RE.search(claim))
+    federal_council = bool(_FEDERAL_COUNCIL_RE.search(claim))
+    if committee and not federal_council:
+        return {_FEDERAL_COUNCIL_SECTION}
+    if federal_council and not committee:
+        return {_COMMITTEE_SECTION}
+    return None
+
+
+def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[str, Any]:
+    """
+    Parse a booklet once (pages, passages, full text) and cache the result on disk.
+    The cache key is the file's content hash, so it survives a different mount path in the judges' container.
+    Cache I/O failures (e.g. a read-only filesystem) silently fall back to parsing.
+    """
+    pdf_path = Path(pdf_path)
+    digest = hashlib.sha1(pdf_path.read_bytes()).hexdigest()[:16]
+    cache_file = config.BOOKLET_CACHE_DIR / f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
+    try:
+        if cache_file.exists():
+            return json.loads(cache_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        pass
+
+    pages = parser.extract_pages(pdf_path)
+    paragraphs = parser.extract_paragraphs(pdf_path, passage_chars=config.PASSAGE_CHARS or None, pages=pages)
+    full_text = "\n\n".join(f"--- Page {p['page_number']} ---\n{p['text']}" for p in pages)
+    parsed = {"pages": pages, "paragraphs": paragraphs, "full_text": full_text}
+    try:
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        cache_file.write_text(json.dumps(parsed, ensure_ascii=False), encoding="utf-8")
+    except OSError:
+        pass
+    return parsed
 
 
 def chunk_reference(text: str, max_chars: int = 700, min_chars: int = 80) -> List[str]:
@@ -129,16 +181,8 @@ class ClaimVerificationEngine:
     def _get_booklet_data(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:
         path_str = str(Path(pdf_path).resolve())
         if path_str not in _GLOBAL_BOOKLET_CACHE:
-            pages = self.pdf_parser.extract_pages(path_str)
-            paragraphs = self.pdf_parser.extract_paragraphs(path_str, passage_chars=config.PASSAGE_CHARS or None)
-            full_text = self.pdf_parser.extract_full_text(path_str)
-            retriever = PassageRetriever(paragraphs)
-            _GLOBAL_BOOKLET_CACHE[path_str] = {
-                "pages": pages,
-                "paragraphs": paragraphs,
-                "full_text": full_text,
-                "retriever": retriever,
-            }
+            parsed = load_parsed_booklet(path_str, self.pdf_parser)
+            _GLOBAL_BOOKLET_CACHE[path_str] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
         return _GLOBAL_BOOKLET_CACHE[path_str]
 
     def verify_claim(
@@ -168,7 +212,10 @@ class ClaimVerificationEngine:
             retriever: PassageRetriever = booklet_data["retriever"]
             if strat == "hybrid":
                 # Strategy 3: booklet-wide BM25(claim) + BM25(vote title), no hard proposal filter
-                candidate_paras = retriever.retrieve_hybrid(claim, top_k=top_k, target_vote=vote)
+                candidate_paras = retriever.retrieve_hybrid(
+                    claim, top_k=top_k, target_vote=vote,
+                    exclude_sections=opposing_sections(claim) if config.SPEAKER_AWARE else None,
+                )
             else:
                 candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
             context_blocks = []

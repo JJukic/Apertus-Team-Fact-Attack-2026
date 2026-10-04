@@ -116,6 +116,70 @@ the vote→proposal mapping picks the wrong proposal. The vote title is written 
 language, so BM25 on it is a reliable anchor even for cross-lingual claims. Higher recall with small
 passages did not translate into higher F1 (see above).
 
+## What we learned about Apertus (dev split)
+
+### 8B vs. 70B (same 450 dev pairs, hybrid k=10, `ids`)
+
+| Model | Macro-F1 | Cross-lingual F1 | Latency mean / p95 |
+|---|---:|---:|---:|
+| `Apertus-v1.5-70B-thinking` | **0.908** | **0.898** | 3.0 s / 4.5 s* |
+| `Apertus-v1.5-8B` | 0.851 | 0.808 | **0.9 s / 1.2 s** |
+
+\* measured while other runs shared the endpoint. 8B is ~3.5× faster but loses ~6 F1 points, mostly on
+cross-lingual pairs and on contradictions (23 contradictions predicted as entailment). Because NLI quality
+has priority, 70B stays the default; `LLM_NAME` switches the model.
+
+### Apertus is over-confident
+
+We read the probability of the label token (logprobs) for 41 wrong and 40 correct dev answers:
+
+| | Median | Minimum | Share < 0.9 |
+|---|---:|---:|---:|
+| Wrong answers | 1.000 | 0.679 | 2 % |
+| Correct answers | 1.000 | 1.000 | 0 % |
+
+The model is as certain when it is wrong as when it is right, and its self-reported confidences are 0/1 in
+97–99 % of cases. Confidence thresholds (or fuzzy decision rules on these values) therefore cannot filter
+errors; the existing decision rules only confirm the model's label.
+
+### The remaining errors are speaker confusions — and they resist every fix we tried
+
+Claims attributed to the initiative/referendum committee had a 19 % error rate on dev (18 of 41 errors),
+versus 5–7 % for all other claims. In the typical error, the claim says "the committee argues X" and Apertus
+cites a Federal Council statement as the contradiction, despite an explicit prompt rule against this.
+
+| Attempted fix | Fixed | Broke | Macro-F1 (450 dev) | Decision |
+|---|---:|---:|---:|---|
+| Baseline (hybrid k=10, section labels) | – | – | **0.908** | kept |
+| Second, focused verification pass for every "contradiction" | 0 of 23 | 24 | 0.852 | rejected |
+| Speaker-aware retrieval (hide the opposing side's argument pages) | 3 (0 committee) | 8 | 0.896 | rejected (`SPEAKER_AWARE=false`) |
+
+Opposing statements also appear together on the unlabelled overview pages, so hiding labelled argument pages
+does not remove them; asking again only makes the model repeat its decision.
+
+### No "lost in the middle" effect
+
+With the full booklet (150 test pairs), accuracy did not drop with the position of the gold passage: 69 % when
+the gold text is in the first third of the booklet, 77 % in the middle third (hybrid: 94 % / 86 %). The
+full-document weakness is general distraction by ~60k tokens of context, not a position effect.
+
+### Rejected for efficiency reasons
+
+A cascade (5 pages first, 10 only if the answer is Neutral) would save ~15 % tokens but needs two calls for
+every Neutral claim (a third of the data), which worsens p95 latency — one of the judged metrics.
+
+## Latency of a single CLI call
+
+Judges may call the CLI once per claim, so start-up and PDF parsing can count towards inference time.
+
+| Step | Before | After |
+|---|---:|---:|
+| PDF parsing per call | 0.9–2.5 s (PDF read 3×) | 0.04 s (read once, disk cache keyed by file hash) |
+| Importing scikit-learn for `predict` | always | only for `benchmark` / `compare` |
+| Full `predict` call, warm (incl. ~1 s model call) | 8.9 s | 3.3 s |
+
+`python -m src warm-cache` pre-parses all booklets; the Docker build runs it.
+
 ## Findings that changed the design
 
 1. **The hard numerical override hurt.** On the beginner baseline it fired 5 times and was wrong 5 times
@@ -137,4 +201,4 @@ passages did not translate into higher F1 (see above).
 - Section headings are text-based; older booklets (≈2021) set them as graphics, so labels are partial there.
 - Proposal boundary detection misses proposals in 2021-06-13, 2022-09-25 and 2024-03-03 (IT); hybrid
   retrieval does not depend on it, but the legacy `retrieval` strategy does.
-- Only `70B-thinking` is accessible with our key; 8B (faster) could not be evaluated.
+- Committee-attributed claims remain the main error source (see above).

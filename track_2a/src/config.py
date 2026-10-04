@@ -37,6 +37,9 @@ PROMPT_MODE = os.getenv("PROMPT_MODE", "ids")
 # 'ids' mode: let the model write one short sentence before its confidences (a minimal reasoning step)
 IDS_REASON = os.getenv("IDS_REASON", "false").lower() in ("true", "1", "yes")
 
+# Speaker-aware retrieval: hide the opposing side's argument pages when a claim names who says something
+SPEAKER_AWARE = os.getenv("SPEAKER_AWARE", "false").lower() in ("true", "1", "yes")
+
 # Hard override of the model label on a detected numerical clash.
 # Off by default: on the OST benchmark it flipped correct Neutral predictions to Contradiction
 # (claims citing a year the booklet never mentions are Neutral, not contradicted).
@@ -57,6 +60,9 @@ LABEL_EXPLANATIONS = {
     1: "The booklet does not provide enough information either way.",
     2: "The booklet contradicts the statement.",
 }
+
+# Parsed booklets are cached on disk, keyed by file content (so a re-mounted PDF path still hits the cache)
+BOOKLET_CACHE_DIR = Path(os.getenv("BOOKLET_CACHE_DIR", str(BASE_DIR / ".cache" / "booklets")))
 
 # Directories
 DATA_DIR = BASE_DIR / "data"
