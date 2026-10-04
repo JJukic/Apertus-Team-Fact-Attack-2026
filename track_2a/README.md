@@ -51,10 +51,12 @@ cp .env.example .env
 
 Configure your CSCS Apertus API key:
 ```ini
-LLM_NAME=swiss-ai/Apertus-v1.5-8B
+LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
 LLM_BASE_URL=https://api.inference.cscs.ch/v1
 LLM_API_KEY=your_api_key_here
-NLI_STRATEGY=retrieval
+NLI_STRATEGY=hybrid
+NLI_TOP_K=10
+PROMPT_MODE=ids
 MOCK_APERTUS=false
 ```
 
@@ -113,7 +115,7 @@ make run
 
 This builds the Docker image and executes the benchmark inside the container using the environment variables passed:
 ```bash
-export LLM_NAME="swiss-ai/Apertus-v1.5-8B"
+export LLM_NAME="swiss-ai/Apertus-v1.5-70B-thinking"
 export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
 export LLM_API_KEY="your_api_key_here"
 make run

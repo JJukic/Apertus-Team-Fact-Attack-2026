@@ -43,6 +43,8 @@ class PredictionResult(BaseModel):
     tokens_completion: int
     tokens_total: int
     latency_ms: float
+    error: Optional[str] = None
+    context_pages: List[int] = Field(default_factory=list)  # booklet pages supplied to Apertus
 
     def to_official_dict(self, case_id: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -86,13 +88,41 @@ class PredictionResult(BaseModel):
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
 
 
+def chunk_reference(text: str, max_chars: int = 700, min_chars: int = 80) -> List[str]:
+    """Split a reference string into passage-sized chunks (paragraphs, then sentences)."""
+    blocks = [" ".join(b.split()) for b in re.split(r"\n\s*\n", text) if b.strip()]
+    pieces: List[str] = []
+    for b in blocks:
+        if len(b) <= max_chars:
+            pieces.append(b)
+            continue
+        current = ""
+        for sent in re.split(r"(?<=[.!?;])\s+", b):
+            if current and len(current) + len(sent) + 1 > max_chars:
+                pieces.append(current)
+                current = sent
+            else:
+                current = f"{current} {sent}".strip()
+        if current:
+            pieces.append(current)
+    merged: List[str] = []
+    for piece in pieces:
+        if merged and len(merged[-1]) < min_chars:
+            merged[-1] = f"{merged[-1]} {piece}"
+        else:
+            merged.append(piece)
+    return merged or [text.strip()]
+
+
 class ClaimVerificationEngine:
     def __init__(
         self,
         strategy: str = config.DEFAULT_STRATEGY,
         apertus_client: Optional[ApertusClient] = None,
+        prompt_mode: str = config.PROMPT_MODE,
     ):
         self.strategy = strategy
+        self.prompt_mode = prompt_mode
         self.client = apertus_client or ApertusClient()
         self.pdf_parser = PDFParser()
 
@@ -100,7 +130,7 @@ class ClaimVerificationEngine:
         path_str = str(Path(pdf_path).resolve())
         if path_str not in _GLOBAL_BOOKLET_CACHE:
             pages = self.pdf_parser.extract_pages(path_str)
-            paragraphs = self.pdf_parser.extract_paragraphs(path_str)
+            paragraphs = self.pdf_parser.extract_paragraphs(path_str, passage_chars=config.PASSAGE_CHARS or None)
             full_text = self.pdf_parser.extract_full_text(path_str)
             retriever = PassageRetriever(paragraphs)
             _GLOBAL_BOOKLET_CACHE[path_str] = {
@@ -117,7 +147,7 @@ class ClaimVerificationEngine:
         booklet_pdf: Union[str, Path],
         claim_language: Optional[str] = None,
         strategy: Optional[str] = None,
-        top_k: int = 5,
+        top_k: int = config.DEFAULT_TOP_K,
         vote: Optional[str] = None,
         case_id: Optional[str] = None,
     ) -> PredictionResult:
@@ -136,7 +166,11 @@ class ClaimVerificationEngine:
         else:
             # Strategy 2: Retrieve top-k relevant paragraphs (with proposal isolation & vote targeting)
             retriever: PassageRetriever = booklet_data["retriever"]
-            candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
+            if strat == "hybrid":
+                # Strategy 3: booklet-wide BM25(claim) + BM25(vote title), no hard proposal filter
+                candidate_paras = retriever.retrieve_hybrid(claim, top_k=top_k, target_vote=vote)
+            else:
+                candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
             context_blocks = []
             for p in candidate_paras:
                 context_blocks.append(f"[Page {p['page_number']}] {p['text']}")
@@ -145,6 +179,18 @@ class ClaimVerificationEngine:
         # 1. Deterministic Numerical Conflict Check
         num_conflict: Optional[NumericalConflictResult] = detect_numerical_conflict(claim, context)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
+
+        if self.prompt_mode in ("compact", "ids"):
+            return self._compact_predict(
+                passages=candidate_paras,
+                claim=claim,
+                claim_language=claim_language,
+                vote=vote,
+                case_id=case_id,
+                strategy=strat,
+                booklet_path=str(booklet_pdf),
+                numerical_conflict_msg=numerical_conflict_msg,
+            )
 
         # 2. Apertus Model Inference
         nli_output: NLIOutput = self.client.infer(
@@ -160,7 +206,7 @@ class ClaimVerificationEngine:
         p_neutral = nli_output.p_neutral
 
         # If deterministic numerical conflict was detected, override to Contradiction (2)
-        if num_conflict and final_label != 2:
+        if config.NUMERIC_OVERRIDE and num_conflict and final_label != 2:
             final_label = 2
             p_contra = max(0.95, p_contra)
             decision_rule = f"Decision-Rule 1b: Numerical Clash ({num_conflict.claim_entity} vs {num_conflict.booklet_entity})"
@@ -247,6 +293,7 @@ class ClaimVerificationEngine:
             tokens_completion=nli_output.tokens_completion,
             tokens_total=nli_output.tokens_total,
             latency_ms=nli_output.latency_ms,
+            error=nli_output.error,
         )
 
     def verify_premise(
@@ -266,6 +313,19 @@ class ClaimVerificationEngine:
         num_conflict = detect_numerical_conflict(claim, reference)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
+        if self.prompt_mode in ("compact", "ids"):
+            chunks = [{"text": c, "page_number": None, "proposal_id": None} for c in chunk_reference(reference)]
+            return self._compact_predict(
+                passages=chunks,
+                claim=claim,
+                claim_language=claim_language,
+                vote=None,
+                case_id=case_id,
+                strategy="direct_reference",
+                booklet_path="supplied_reference",
+                numerical_conflict_msg=numerical_conflict_msg,
+            )
+
         # 2. Apertus Model Inference over premise text
         nli_output = self.client.infer(
             context=reference,
@@ -279,7 +339,7 @@ class ClaimVerificationEngine:
         p_contra = nli_output.p_contra
         p_neutral = nli_output.p_neutral
 
-        if num_conflict and final_label != 2:
+        if config.NUMERIC_OVERRIDE and num_conflict and final_label != 2:
             final_label = 2
             p_contra = max(0.95, p_contra)
             decision_rule = f"Decision-Rule 1b: Numerical Clash ({num_conflict.claim_entity} vs {num_conflict.booklet_entity})"
@@ -325,4 +385,67 @@ class ClaimVerificationEngine:
             tokens_completion=nli_output.tokens_completion,
             tokens_total=nli_output.tokens_total,
             latency_ms=elapsed_ms,
+            error=nli_output.error,
+        )
+
+    def _compact_predict(
+        self,
+        passages: List[Dict[str, Any]],
+        claim: str,
+        claim_language: Optional[str],
+        vote: Optional[str],
+        case_id: Optional[str],
+        strategy: str,
+        booklet_path: str,
+        numerical_conflict_msg: Optional[str],
+    ) -> PredictionResult:
+        """Compact mode: numbered passages in, '<label>|<passage ids>' out; evidence is verbatim passage text."""
+        def label(p: Dict[str, Any]) -> str:
+            parts = [f"p. {p['page_number']}"] if p.get("page_number") else []
+            if p.get("section"):
+                parts.append(p["section"])  # who is speaking: committee vs. Federal Council, legal text, ...
+            return f"({'; '.join(parts)}) {p['text']}" if parts else p["text"]
+
+        texts = [label(p) for p in passages]
+        if self.prompt_mode == "ids":
+            out = self.client.infer(context="", claim=claim, claim_language=claim_language, passages=texts)
+        else:
+            out = self.client.infer_compact(texts, claim, claim_language=claim_language, vote=vote)
+
+        ids = list(out.evidence_ids)
+        decision_rule = out.decision_rule_applied
+        if out.label != 1 and not ids and passages:
+            ids = [1]  # model cited nothing: fall back to the top-ranked passage
+            decision_rule = f"{decision_rule or ''} | evidence fallback: top passage".strip(" |")
+
+        sources: List[EvidenceSource] = []
+        evidence: List[str] = []
+        if out.label != 1:
+            for i in ids:
+                p = passages[i - 1]
+                evidence.append(p["text"])
+                sources.append(EvidenceSource(quote=p["text"], page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
+
+        return PredictionResult(
+            id=case_id or "case-0001",
+            claim=claim,
+            label=out.label,
+            label_name=config.LABEL_MAPPING.get(out.label, "Unknown"),
+            reasoning=out.reasoning,
+            evidence=evidence,
+            evidence_sources=sources,
+            numerical_conflict=numerical_conflict_msg,
+            p_entail=out.p_entail,
+            p_neutral=out.p_neutral,
+            p_contra=out.p_contra,
+            fuzzy_rule=decision_rule,
+            decision_rule=decision_rule,
+            strategy=strategy,
+            booklet_path=booklet_path,
+            tokens_prompt=out.tokens_prompt,
+            tokens_completion=out.tokens_completion,
+            tokens_total=out.tokens_total,
+            latency_ms=out.latency_ms,
+            error=out.error,
+            context_pages=list(dict.fromkeys(p["page_number"] for p in passages if p.get("page_number"))),
         )

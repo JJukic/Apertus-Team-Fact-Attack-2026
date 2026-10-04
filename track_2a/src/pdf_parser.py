@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import List, Dict, Any, Union, Optional, Tuple
 import pypdf
 
+from src.text_utils import split_passages
+
 
 # PRIMARY: Numbered voting object headings — these appear exactly once per proposal intro page
 # and are the most reliable signal across all Swiss booklet languages
@@ -54,6 +56,56 @@ _COMPILED_SUMMARY = [re.compile(p, re.IGNORECASE) for p in _SUMMARY_PAGE_PATTERN
 _TOC_PATTERNS = [
     re.compile(r"inhalt|inhaltsverzeichnis|sommaire|indice|table\s+des\s+mati", re.IGNORECASE),
 ]
+
+
+# Section headings (DE / FR / IT) -> canonical label shown to the model with each passage.
+# Who is speaking matters: the committee's arguments are not the Federal Council's position.
+_SECTION_HEADINGS = [
+    ("Arguments of the initiative/referendum committee", re.compile(
+        r"argumente\s+(?:des\s+)?(?:initiativ|referendums)komitees?"
+        r"|arguments\s+(?:du\s+)?comit[eé]\s+(?:d.initiative|r[eé]f[eé]rendaire)"
+        r"|argomenti\s+(?:del\s+)?comitato\s+(?:d.iniziativa|referendario)", re.IGNORECASE)),
+    ("Arguments of the Federal Council and Parliament", re.compile(
+        r"argumente\s+(?:von\s+|des\s+)?bundesrate?s?"
+        r"|arguments\s+(?:du\s+)?conseil\s+f[eé]d[eé]ral"
+        r"|argomenti\s+(?:del\s+)?consiglio\s+federale", re.IGNORECASE)),
+    ("Voting text (legal text)", re.compile(
+        r"abstimmungstext|texte\s+soumis\s+au\s+vote|testo\s+in\s+votazione", re.IGNORECASE)),
+    ("Official explanation in detail", re.compile(
+        r"(?:vorlage\s+)?im\s+detail|en\s+d[eé]tail|in\s+dettaglio", re.IGNORECASE)),
+    ("Overview / summary", re.compile(r"in\s+k[uü]rze|l.essentiel\s+en\s+bref|in\s+breve", re.IGNORECASE)),
+]
+# Disclaimer printed on committee pages ("Der Text auf dieser Doppelseite stammt vom Initiativkomitee")
+_COMMITTEE_DISCLAIMER = re.compile(
+    r"doppelseite\s+stammt\s+vom\s+(?:initiativ|referendums)komitee"
+    r"|comit[eé]\s+(?:d.initiative|r[eé]f[eé]rendaire)\s+est\s+seul\s+responsable"
+    r"|comitato\s+(?:d.iniziativa|referendario)\s+[eè]\s+l.autore", re.IGNORECASE)
+
+
+TOC_SECTION = "__toc__"
+
+
+def detect_section_heading(page_text: str) -> Optional[str]:
+    """
+    Return the canonical section label if the page starts with a section heading,
+    TOC_SECTION for a table-of-contents page, or None if the page has no heading.
+    """
+    zone = " ".join(" ".join(page_text.splitlines()[:5]).split())
+    found = []
+    for label, pattern in _SECTION_HEADINGS:
+        for m in pattern.finditer(zone):
+            # Tables of contents list headings followed by page numbers ("Argumente Referendumskomitee 42")
+            if re.match(r"\s*\d", zone[m.end():m.end() + 6]):
+                return TOC_SECTION
+            found.append((m.start(), label))
+    if found:
+        return min(found)[1]
+    if _COMMITTEE_DISCLAIMER.search(" ".join(page_text.split())):
+        return _SECTION_HEADINGS[0][0]
+    # Legal voting text pages are marked with a paragraph sign in older booklets
+    if any(line.strip() == "§" for line in page_text.splitlines()[:3]):
+        return "Voting text (legal text)"
+    return None
 
 
 class PDFParser:
@@ -223,21 +275,41 @@ class PDFParser:
     # Main extraction
     # ------------------------------------------------------------------
 
-    def extract_paragraphs(self, pdf_path: Union[str, Path], min_length: int = 40) -> List[Dict[str, Any]]:
+    def extract_paragraphs(
+        self,
+        pdf_path: Union[str, Path],
+        min_length: int = 40,
+        passage_chars: Optional[int] = 600,
+    ) -> List[Dict[str, Any]]:
         """
-        Segment the booklet into paragraphs with page attribution.
+        Segment the booklet into passages with page attribution.
         Uses DYNAMIC proposal boundary detection — no hardcoded page numbers.
+
+        pypdf output contains no blank lines, so splitting on them yields whole pages. With
+        `passage_chars` set, each page is de-hyphenated and split at sentence boundaries into
+        passages of at most that many characters (None restores the page-level behaviour).
         """
         pages = self.extract_pages(pdf_path)
         page_to_proposal, proposal_starts = self._detect_proposal_boundaries(pages)
 
         paragraphs = []
         para_id = 0
+        current_section: Optional[str] = None
+        current_section_proposal = None
 
         for page in pages:
             pg = page["page_number"]
             page_text = page["text"]
             proposal_id = page_to_proposal.get(pg, 0)
+
+            # A heading applies to its page and the following pages until the next heading or proposal
+            heading = detect_section_heading(page_text)
+            if heading == TOC_SECTION:
+                current_section, current_section_proposal = None, proposal_id
+            elif heading:
+                current_section, current_section_proposal = heading, proposal_id
+            elif proposal_id != current_section_proposal:
+                current_section = None
 
             # Determine section type
             if self._is_toc_page(page_text, pg):
@@ -259,7 +331,10 @@ class PDFParser:
                 else:
                     section_type = "legal_text"
 
-            raw_chunks = page_text.split("\n\n")
+            if passage_chars:
+                raw_chunks = split_passages(page_text, max_chars=passage_chars)
+            else:
+                raw_chunks = page_text.split("\n\n")
             for chunk in raw_chunks:
                 clean_chunk = " ".join(chunk.split()).strip()
                 if len(clean_chunk) >= min_length:
@@ -268,6 +343,7 @@ class PDFParser:
                         "page_number": pg,
                         "proposal_id": proposal_id,
                         "section_type": section_type,
+                        "section": current_section,
                         "text": clean_chunk,
                     })
                     para_id += 1

@@ -7,6 +7,8 @@ Measures token consumption and inference latency.
 import time
 import json
 import logging
+import math
+import re
 from typing import Dict, Any, Optional, List, Tuple
 from pydantic import BaseModel, Field
 
@@ -28,6 +30,8 @@ class NLIOutput(BaseModel):
     tokens_completion: int = 0
     tokens_total: int = 0
     latency_ms: float = 0.0
+    error: Optional[str] = None
+    evidence_ids: List[int] = Field(default_factory=list, description="1-based ids of cited passages (compact mode)")
 
 
 class ApertusClient:
@@ -58,12 +62,138 @@ class ApertusClient:
             if not self.api_key:
                 logger.info("No LLM_API_KEY provided; operating in local heuristic mock mode.")
 
-    def infer(self, context: str, claim: str, claim_language: Optional[str] = None) -> NLIOutput:
+    COMPACT_SYSTEM_PROMPT = (
+        "You are a natural language inference (NLI) judge for official Swiss federal voting booklets.\n"
+        "The passages and the claim may be in different languages (German, French, Italian): compare meaning, not wording.\n"
+        "Decide how the PASSAGES relate to the CLAIM:\n"
+        "0 = entailment: the passages support the claim.\n"
+        "1 = neutral: the passages do not provide enough information to confirm or refute the claim "
+        "(e.g. the detail, number, date or topic is not mentioned).\n"
+        "2 = contradiction: the passages state something incompatible with the claim "
+        "(e.g. a different number or date, the opposite recommendation, a negated statement).\n"
+        "Judge only against the passages, never against world knowledge.\n"
+        "Important: if the passages are about a different topic or simply do not address the specific statement of the claim, "
+        "the answer is 1 (neutral), even if the claim sounds false. Choose 2 only when a passage explicitly states the opposite "
+        "or a conflicting fact about the same subject.\n"
+        "Answer format: the label digit, then '|', then the ids of the passages that justify the label, "
+        "e.g. '0|P2' or '2|P3,P7'. For neutral answer '1|'. No other text."
+    )
+
+    def infer_compact(
+        self,
+        passages: List[str],
+        claim: str,
+        claim_language: Optional[str] = None,
+        vote: Optional[str] = None,
+    ) -> NLIOutput:
+        """
+        Token-efficient NLI: passages are numbered [P1]..[Pn]; the model answers '<label>|<ids>'.
+        Label probabilities come from the logprobs of the first output token, and evidence is
+        returned as passage ids, so quotes are always verbatim booklet text.
+        """
+        start_time = time.time()
+        numbered = "\n\n".join(f"[P{i}] {txt}" for i, txt in enumerate(passages, 1))
+        lang = f" ({claim_language})" if claim_language else ""
+        vote_line = f"VOTE: {vote}\n" if vote else ""
+        user_prompt = f"PASSAGES:\n{numbered}\n\n{vote_line}CLAIM{lang}: {claim}\nAnswer:"
+
+        if self.mock:
+            out = self._mock_infer("\n".join(passages), claim, 15.0)
+            out.evidence_ids = [1] if out.label != 1 and passages else []
+            return out
+
+        response, err = self._chat(
+            [{"role": "system", "content": self.COMPACT_SYSTEM_PROMPT}, {"role": "user", "content": user_prompt}],
+            max_tokens=24,
+            logprobs=True,
+        )
+        latency_ms = round((time.time() - start_time) * 1000, 2)
+        if response is None:
+            return NLIOutput(label=1, reasoning=f"API Error: {err}", error=f"api: {err}", latency_ms=latency_ms)
+
+        choice = response.choices[0]
+        content = (choice.message.content or "").strip()
+        m = re.match(r"\s*\**\s*([012])", content)
+        probs = self._label_probs(choice)
+        if m:
+            label = int(m.group(1))
+        elif probs:
+            label = max(probs, key=probs.get)
+        else:
+            return NLIOutput(label=1, reasoning=f"Unparseable answer: {content!r}", error=f"parse: {content!r}", latency_ms=latency_ms)
+
+        ids_part = content.split("|", 1)[1] if "|" in content else ""
+        ids = []
+        for tok in re.findall(r"\d+", ids_part):
+            i = int(tok)
+            if 1 <= i <= len(passages) and i not in ids:
+                ids.append(i)
+
+        usage = getattr(response, "usage", None)
+        tp = getattr(usage, "prompt_tokens", None) or self._estimate_tokens(self.COMPACT_SYSTEM_PROMPT + user_prompt)
+        tc = getattr(usage, "completion_tokens", None) or self._estimate_tokens(content)
+        return NLIOutput(
+            label=label,
+            reasoning=f"Apertus answer: {content}",
+            evidence=[passages[i - 1] for i in ids],
+            evidence_ids=ids,
+            p_entail=probs.get(0, 0.0),
+            p_neutral=probs.get(1, 0.0),
+            p_contra=probs.get(2, 0.0),
+            decision_rule="logprob argmax" if probs else None,
+            tokens_prompt=tp,
+            tokens_completion=tc,
+            tokens_total=tp + tc,
+            latency_ms=latency_ms,
+        )
+
+    @staticmethod
+    def _label_probs(choice) -> Dict[int, float]:
+        """Normalised P(label) from the top logprobs of the first label-like output token."""
+        lp = getattr(choice, "logprobs", None)
+        if not lp or not lp.content:
+            return {}
+        for tok in lp.content[:3]:
+            cands = {int(t.token.strip()): math.exp(t.logprob) for t in (tok.top_logprobs or []) if t.token.strip() in ("0", "1", "2")}
+            if cands:
+                total = sum(cands.values())
+                return {k: round(v / total, 4) for k, v in cands.items()}
+        return {}
+
+    def _chat(self, messages: List[Dict[str, str]], max_tokens: int, logprobs: bool = False, max_retries: int = 3):
+        last_exception = None
+        for attempt in range(max_retries):
+            try:
+                kwargs = dict(model=self.model_name, messages=messages, temperature=0.0, max_tokens=max_tokens, timeout=60.0)
+                if logprobs:
+                    kwargs.update(logprobs=True, top_logprobs=5)
+                return self.client.chat.completions.create(**kwargs), None
+            except Exception as e:
+                last_exception = e
+                if attempt < max_retries - 1:
+                    sleep_sec = (2 ** attempt) * 1.5
+                    logger.warning(f"Apertus API attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {sleep_sec:.1f}s...")
+                    time.sleep(sleep_sec)
+        logger.error(f"Apertus API query failed after {max_retries} attempts: {last_exception}")
+        return None, last_exception
+
+    def infer(
+        self,
+        context: str,
+        claim: str,
+        claim_language: Optional[str] = None,
+        passages: Optional[List[str]] = None,
+    ) -> NLIOutput:
         """
         Evaluate whether the booklet context entails, contradicts, or is neutral towards the claim.
         Returns NLIOutput with label (0, 1, 2), reasoning, evidence, tokens, and latency.
+
+        If `passages` is given ('ids' mode), they are numbered [P1]..[Pn] and replace `context`;
+        the model cites passage ids instead of writing quotes and reasoning (far fewer output tokens).
         """
         start_time = time.time()
+        if passages is not None:
+            context = "\n\n".join(f"[P{i}] {txt}" for i, txt in enumerate(passages, 1))
 
         if self.mock:
             # Deterministic heuristic mock for offline development and testing
@@ -81,6 +211,12 @@ class ApertusClient:
             "CRITICAL CHECKLIST:\n"
             "1. NUMBERS, QUANTITIES & DATES: If a claim cites a number, date, or percentage that differs from the document (e.g. 500'000 vs 1.7 million, or 2030 vs 2050), it is a DIRECT CONTRADICTION (2)!\n"
             "2. UNMENTIONED TOPICS: If a claim is about a topic not mentioned in the text, you MUST choose 1 (Neutral), never 2.\n"
+            "2b. VIEWPOINTS: The booklet deliberately contains opposing viewpoints (Federal Council and Parliament vs. the "
+            "initiative or referendum committee). If the claim attributes a statement to an actor (e.g. 'the committee argues...', "
+            "'the Federal Council recommends...', 'according to the summary...'), check only whether THAT actor's text supports it. "
+            "Arguments of the other side are NOT a contradiction.\n"
+            "2c. RECOMMENDATIONS: 'recommends rejecting X' is supported (0) by text where the Federal Council/Parliament recommend "
+            "'No' on X or reject X; it is contradicted (2) only if they recommend 'Yes'.\n"
             "3. CONTINUOUS CONFIDENCE: Estimate fuzzy membership degrees [0.0 to 1.0] for:\n"
             "   - p_entail: confidence of direct textual support\n"
             "   - p_neutral: confidence of missing/unaddressed information\n"
@@ -95,6 +231,22 @@ class ApertusClient:
             '  "evidence": ["<verbatim supporting quote or passage from the document>"]\n'
             "}"
         )
+        if passages is not None and config.IDS_REASON:
+            system_prompt = system_prompt.replace(
+                '{\n  "p_entail"',
+                '{\n  "reason": "<max. 15 words: what the most relevant passage says about the claim>",\n  "p_entail"',
+            )
+        if passages is not None:
+            system_prompt = system_prompt.replace(
+                '  "reasoning": "<concise explanation in the claim language>",\n'
+                '  "evidence": ["<verbatim supporting quote or passage from the document>"]\n',
+                '  "evidence_ids": [<ids of the passages that justify the label, e.g. 2, 5; empty for 1>]\n',
+            ).replace(
+                "Evaluate the logical relationship between the document context and the given claim.\n",
+                "Evaluate the logical relationship between the document context and the given claim. "
+                "The context is a list of numbered passages [P1], [P2], ... and may be in a different "
+                "language (German, French, Italian) than the claim: compare meaning, not wording.\n",
+            )
 
         user_prompt = (
             f"=== DOCUMENT CONTEXT ===\n{context}\n\n"
@@ -116,7 +268,7 @@ class ApertusClient:
                         {"role": "user", "content": user_prompt},
                     ],
                     temperature=0.0,
-                    max_tokens=512,
+                    max_tokens=512 if passages is None else 160,
                     timeout=45.0,
                 )
                 break
@@ -135,6 +287,7 @@ class ApertusClient:
                 label=1,
                 reasoning=f"API Error after {max_retries} attempts: {str(last_exception)}",
                 evidence=[],
+                error=f"api: {last_exception}",
                 tokens_prompt=0,
                 tokens_completion=0,
                 tokens_total=0,
@@ -166,10 +319,20 @@ class ApertusClient:
             if isinstance(evidence, str):
                 evidence = [evidence]
 
+            evidence_ids: List[int] = []
+            if passages is not None:
+                raw_ids = parsed_json.get("evidence_ids", [])
+                for tok in re.findall(r"\d+", json.dumps(raw_ids)):
+                    i = int(tok)
+                    if 1 <= i <= len(passages) and i not in evidence_ids:
+                        evidence_ids.append(i)
+                evidence = [passages[i - 1] for i in evidence_ids]
+
             return NLIOutput(
                 label=final_label,
-                reasoning=parsed_json.get("reasoning", ""),
+                reasoning=parsed_json.get("reasoning", "") or f"Apertus answer: {content}",
                 evidence=evidence,
+                evidence_ids=evidence_ids,
                 p_entail=p_entail,
                 p_neutral=p_neutral,
                 p_contra=p_contra,
@@ -187,6 +350,7 @@ class ApertusClient:
                 label=1,
                 reasoning=f"Response Parse Error: {str(e)}",
                 evidence=[],
+                error=f"parse: {e}",
                 tokens_prompt=0,
                 tokens_completion=0,
                 tokens_total=0,
@@ -255,8 +419,10 @@ class ApertusClient:
             p_neutral_match = re.search(r'"p_neutral"\s*:\s*([0-9.]+)', text)
             p_contra_match = re.search(r'"p_contra"\s*:\s*([0-9.]+)', text)
             
+            ids_match = re.search(r'"evidence_ids"\s*:\s*\[([^\]]*)\]', text)
             if label_match:
                 return {
+                    "evidence_ids": re.findall(r"\d+", ids_match.group(1)) if ids_match else [],
                     "label": int(label_match.group(1)),
                     "p_entail": float(p_entail_match.group(1)) if p_entail_match else 0.0,
                     "p_neutral": float(p_neutral_match.group(1)) if p_neutral_match else 0.0,

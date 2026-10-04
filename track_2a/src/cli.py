@@ -54,7 +54,7 @@ def predict(
         "-s",
         help="Strategy: 'retrieval' (selected passages) or 'full' (full document)",
     ),
-    top_k: int = typer.Option(5, "--top-k", "-k", help="Number of passages to retrieve when using retrieval strategy"),
+    top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Number of passages to retrieve when using retrieval strategy"),
     json_output: bool = typer.Option(False, "--json", help="Output strictly conforming to official OST JSON format"),
     case_id: Optional[str] = typer.Option("case-0001", "--id", help="Case identifier for official JSON output"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
@@ -143,8 +143,8 @@ def predict(
 def run_batch(
     input_path: Path = typer.Option(..., "--input", "-i", help="Path to input JSON or JSONL file conforming to OST task schema"),
     output_path: Optional[Path] = typer.Option(None, "--output", "-o", help="Optional path to output JSON/JSONL file"),
-    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'retrieval' or 'full'"),
-    top_k: int = typer.Option(5, "--top-k", "-k", help="Passages to retrieve"),
+    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
+    top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
 ):
     """
@@ -228,14 +228,28 @@ def run_batch(
 @app.command()
 def benchmark(
     dataset: Optional[Path] = typer.Option(None, "--dataset", "-d", help="Path to JSONL benchmark dataset"),
-    strategy: str = typer.Option("retrieval", "--strategy", "-s", help="Strategy: 'retrieval' or 'full'"),
-    limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit number of evaluation samples"),
+    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
+    limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Label-balanced sample size"),
+    task: str = typer.Option("advanced", "--task", "-t", help="'advanced' (booklet PDF) or 'beginner' (reference string)"),
+    top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve when using retrieval strategy"),
+    workers: int = typer.Option(1, "--workers", "-w", help="Parallel API requests"),
+    seed: int = typer.Option(42, "--seed", help="Sampling seed"),
+    tag: str = typer.Option("", "--tag", help="Label appended to the saved results file"),
+    mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
+    prompt_mode: str = typer.Option(config.PROMPT_MODE, "--prompt-mode", "-p", help="'ids', 'json' or 'compact'"),
 ):
     """
-    Run evaluation over the official or custom benchmark dataset and output Macro-F1 report.
+    Run evaluation over a benchmark (e.g. data/hf/dev.jsonl) and save a Macro-F1 report to results/.
     """
-    evaluator = BenchmarkEvaluator()
-    evaluator.evaluate(dataset_path=dataset, strategy=strategy, limit=limit)
+    engine = ClaimVerificationEngine(
+        apertus_client=ApertusClient(mock=True) if mock else None,
+        prompt_mode=prompt_mode,
+    )
+    evaluator = BenchmarkEvaluator(engine=engine)
+    evaluator.evaluate(
+        dataset_path=dataset, strategy=strategy, limit=limit, task=task,
+        top_k=top_k, workers=workers, seed=seed, tag=tag,
+    )
 
 
 @app.command()

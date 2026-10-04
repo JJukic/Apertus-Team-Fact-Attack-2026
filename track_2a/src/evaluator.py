@@ -1,187 +1,328 @@
 """
 Benchmark Evaluator for Track 2A (OST).
-Calculates Macro-F1 across Entailment (0), Neutral (1), and Contradiction (2),
-breaks down metrics by language (DE, FR, IT), and tracks token and latency efficiency.
+
+Mirrors the official judging criteria:
+- Macro-F1 over Entailment (0), Neutral (1), Contradiction (2)  [primary]
+- Breakdown by claim -> reference language pair (incl. cross-lingual pairs)
+- Evidence grounding: do returned passages come from the gold reference section?
+- Efficiency: input/output tokens, mean and p95 inference time
+
+Supports both tasks:
+- advanced: claim + booklet PDF (+ vote title)
+- beginner: claim + reference_string
+
+Every run is saved to results/ with model, strategy, git commit and per-sample rows.
 """
 
 import json
+import random
+import re
+import subprocess
+import time
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
-from typing import Optional, List, Dict, Any
-from sklearn.metrics import classification_report, f1_score
+from typing import Any, Dict, List, Optional
+
+from sklearn.metrics import classification_report, confusion_matrix, f1_score
 from tabulate import tabulate
 from tqdm import tqdm
 
-from src.inference import ClaimVerificationEngine, PredictionResult
 from src import config
+from src.inference import ClaimVerificationEngine, PredictionResult
+
+RESULTS_DIR = config.BASE_DIR / "results"
+LABELS = [0, 1, 2]
+_WORD_RE = re.compile(r"\w+", re.UNICODE)
+
+
+def load_records(path: Path) -> List[Dict[str, Any]]:
+    """Load a JSONL benchmark and normalise legacy and official HF schemas."""
+    records = []
+    with open(path, "r", encoding="utf-8") as f:
+        for i, line in enumerate(f):
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            claim_lang = r.get("claim_language", "de")
+            ref_lang = r.get("reference_language") or r.get("booklet_language") or claim_lang
+            booklet_file = r.get("booklet_file")
+            if not booklet_file:
+                date = r.get("booklet_date") or str(r.get("booklet_publish_date", "2026-06-14"))[:10]
+                booklet_file = f"{date}_{ref_lang}.pdf"
+            records.append({
+                "id": r.get("id", f"case-{i:04d}"),
+                "claim": r["claim"],
+                "claim_language": claim_lang,
+                "reference_language": ref_lang,
+                "reference_string": (r.get("reference_string") or "").strip(),
+                "label": int(r["entailment_label"]),
+                "vote": r.get("vote"),
+                "booklet_pdf": config.BOOKLETS_DIR / booklet_file,
+            })
+    return records
+
+
+def stratified_sample(records: List[Dict[str, Any]], n: int, seed: int) -> List[Dict[str, Any]]:
+    """Label-balanced, deterministic sample of n records."""
+    if n >= len(records):
+        return records
+    rng = random.Random(seed)
+    by_label: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
+    for r in records:
+        by_label[r["label"]].append(r)
+    for group in by_label.values():
+        rng.shuffle(group)
+    sample, keys = [], sorted(by_label)
+    while len(sample) < n:
+        for k in keys:
+            if by_label[k] and len(sample) < n:
+                sample.append(by_label[k].pop())
+    return sample
+
+
+def evidence_grounded(evidence: List[str], reference: str, threshold: float = 0.6) -> bool:
+    """True if any evidence passage is (mostly) contained in the gold reference section."""
+    ref_words = set(_WORD_RE.findall(reference.lower()))
+    if not ref_words:
+        return False
+    for ev in evidence:
+        ev_words = _WORD_RE.findall(ev.lower())
+        if len(ev_words) >= 3 and sum(w in ref_words for w in ev_words) / len(ev_words) >= threshold:
+            return True
+    return False
+
+
+def _git_commit() -> str:
+    try:
+        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=config.BASE_DIR)
+        dirty = subprocess.run(["git", "status", "--porcelain", "src"], capture_output=True, text=True, cwd=config.BASE_DIR)
+        return out.stdout.strip() + ("-dirty" if dirty.stdout.strip() else "")
+    except Exception:
+        return "unknown"
+
+
+def _macro_f1(y_true: List[int], y_pred: List[int]) -> float:
+    return round(float(f1_score(y_true, y_pred, average="macro", labels=LABELS, zero_division=0)), 4)
+
+
+def _percentile(values: List[float], q: float) -> float:
+    if not values:
+        return 0.0
+    s = sorted(values)
+    idx = min(len(s) - 1, max(0, int(round(q * (len(s) - 1)))))
+    return s[idx]
 
 
 class BenchmarkEvaluator:
     def __init__(self, engine: Optional[ClaimVerificationEngine] = None):
         self.engine = engine or ClaimVerificationEngine()
 
+    def _predict(self, rec: Dict[str, Any], task: str, strategy: str, top_k: int) -> PredictionResult:
+        if task == "beginner":
+            return self.engine.verify_premise(
+                claim=rec["claim"],
+                reference=rec["reference_string"],
+                claim_language=rec["claim_language"],
+                case_id=rec["id"],
+            )
+        return self.engine.verify_claim(
+            claim=rec["claim"],
+            booklet_pdf=rec["booklet_pdf"],
+            claim_language=rec["claim_language"],
+            strategy=strategy,
+            top_k=top_k,
+            vote=rec["vote"],
+            case_id=rec["id"],
+        )
+
     def evaluate(
         self,
         dataset_path: Optional[Path] = None,
-        strategy: str = "retrieval",
+        strategy: str = config.DEFAULT_STRATEGY,
         limit: Optional[int] = None,
+        task: str = "advanced",
+        top_k: int = config.DEFAULT_TOP_K,
+        workers: int = 1,
+        seed: int = 42,
+        save: bool = True,
+        tag: str = "",
     ) -> Dict[str, Any]:
         path = Path(dataset_path) if dataset_path else config.BENCHMARK_PATH
         if not path.exists():
             raise FileNotFoundError(f"Benchmark dataset not found at: {path}")
 
-        records = []
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    records.append(json.loads(line))
-
+        records = load_records(path)
         if limit:
-            records = records[:limit]
+            records = stratified_sample(records, limit, seed)
 
-        print(f"\nRunning benchmark evaluation on {len(records)} samples using strategy '{strategy}'...")
+        if task == "advanced":
+            missing = sorted({str(r["booklet_pdf"].name) for r in records if not r["booklet_pdf"].exists()})
+            if missing:
+                raise FileNotFoundError(f"Missing booklets (run `python -m src.hf_dataset`): {missing}")
+            # Parse every booklet once up front so PDF parsing is not counted as model latency
+            for pdf in tqdm(sorted({r["booklet_pdf"] for r in records}), desc="Parsing booklets"):
+                self.engine._get_booklet_data(pdf)
 
-        y_true = []
-        y_pred = []
-        languages = []
-        latencies = []
-        prompt_tokens = []
-        total_tokens = []
-        results = []
-        evidence_hits = []
+        print(f"\nEvaluating {len(records)} samples | task={task} | strategy={strategy} | model={self.engine.client.model_name}")
 
-        import re
+        started = time.time()
+        with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+            preds = list(tqdm(
+                pool.map(lambda r: self._predict(r, task, strategy, top_k), records),
+                total=len(records),
+                desc="Evaluating",
+            ))
+        wall_s = time.time() - started
 
-        for record in tqdm(records, desc="Evaluating"):
-            claim = record["claim"]
-            true_label = int(record["entailment_label"])
-            claim_lang = record.get("claim_language", "de")
-            booklet_lang = record.get("booklet_language", claim_lang)
-            gold_reference = record.get("reference_string", "").strip()
+        report = self._build_report(records, preds, task, strategy, top_k, workers, seed, path, wall_s, tag)
+        self.print_report(report)
+        if save:
+            report["saved_to"] = str(self.save_report(report))
+            print(f"Saved -> {report['saved_to']}\n")
+        return report
 
-            # Map to local booklet PDF
-            booklet_date = record.get("booklet_date", "2026-06-14")
-            pdf_path = config.BOOKLETS_DIR / f"{booklet_date}_{booklet_lang}.pdf"
-            if not pdf_path.exists():
-                # Fallback to German booklet of same date if specific language is missing
-                pdf_path = config.BOOKLETS_DIR / f"{booklet_date}_de.pdf"
+    def _build_report(self, records, preds, task, strategy, top_k, workers, seed, path, wall_s, tag) -> Dict[str, Any]:
+        y_true = [r["label"] for r in records]
+        y_pred = [p.label for p in preds]
+        pairs = [f"{r['claim_language']}->{r['reference_language']}" for r in records]
 
-            pred: PredictionResult = self.engine.verify_claim(
-                claim=claim,
-                booklet_pdf=pdf_path,
-                claim_language=claim_lang,
-                strategy=strategy,
-            )
-
-            # Evaluate evidence match against gold reference string
-            evidence_matched = False
-            if gold_reference and pred.evidence:
-                gold_words = set(re.findall(r"\w+", gold_reference.lower()))
-                for ev in pred.evidence:
-                    ev_words = set(re.findall(r"\w+", ev.lower()))
-                    if not ev_words or not gold_words:
-                        continue
-                    overlap = len(gold_words & ev_words) / min(len(ev_words), len(gold_words))
-                    if overlap >= 0.30 or ev.lower() in gold_reference.lower() or gold_reference.lower() in ev.lower():
-                        evidence_matched = True
-                        break
-            if gold_reference:
-                evidence_hits.append(1 if evidence_matched else 0)
-
-            y_true.append(true_label)
-            y_pred.append(pred.label)
-            languages.append(claim_lang)
-            latencies.append(pred.latency_ms)
-            prompt_tokens.append(pred.tokens_prompt)
-            total_tokens.append(pred.tokens_total)
-
-            results.append({
-                "claim": claim,
-                "claim_lang": claim_lang,
-                "true_label": true_label,
-                "pred_label": pred.label,
-                "reasoning": pred.reasoning,
-                "evidence": pred.evidence,
-                "gold_reference": gold_reference[:120] + "..." if len(gold_reference) > 120 else gold_reference,
-                "evidence_matched": evidence_matched,
-                "latency_ms": pred.latency_ms,
-                "tokens": pred.tokens_total,
-            })
-
-        macro_f1 = f1_score(y_true, y_pred, average="macro", labels=[0, 1, 2], zero_division=0)
-        avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
-        avg_prompt_tokens = sum(prompt_tokens) / len(prompt_tokens) if prompt_tokens else 0
-        avg_total_tokens = sum(total_tokens) / len(total_tokens) if total_tokens else 0
-        evidence_alignment = sum(evidence_hits) / len(evidence_hits) if evidence_hits else 1.0
-
-        # Language breakdown
-        lang_metrics = {}
-        for l in sorted(set(languages)):
-            sub_true = [yt for yt, lang in zip(y_true, languages) if lang == l]
-            sub_pred = [yp for yp, lang in zip(y_pred, languages) if lang == l]
-            lang_f1 = f1_score(sub_true, sub_pred, average="macro", labels=[0, 1, 2], zero_division=0)
-            lang_metrics[l] = {
-                "count": len(sub_true),
-                "macro_f1": round(lang_f1, 4),
+        by_pair: Dict[str, Any] = {}
+        for pair in sorted(set(pairs)):
+            idx = [i for i, p in enumerate(pairs) if p == pair]
+            yt, yp = [y_true[i] for i in idx], [y_pred[i] for i in idx]
+            by_pair[pair] = {
+                "count": len(idx),
+                "macro_f1": _macro_f1(yt, yp),
+                "accuracy": round(sum(a == b for a, b in zip(yt, yp)) / len(idx), 4),
             }
 
-        report = {
-            "strategy": strategy,
+        mono = [i for i, p in enumerate(pairs) if p.split("->")[0] == p.split("->")[1]]
+        cross = [i for i in range(len(pairs)) if i not in set(mono)]
+
+        def subset_f1(idx: List[int]) -> Optional[float]:
+            return _macro_f1([y_true[i] for i in idx], [y_pred[i] for i in idx]) if idx else None
+
+        # Evidence: only labels 0/2 require evidence
+        ev_required = [i for i, p in enumerate(preds) if p.label != 1]
+        ev_given = [i for i in ev_required if preds[i].evidence]
+        ev_grounded = [i for i in ev_given if evidence_grounded(preds[i].evidence, records[i]["reference_string"])]
+
+        latencies = [p.latency_ms for p in preds]
+        errors = [p for p in preds if p.error]
+
+        rows = []
+        for r, p in zip(records, preds):
+            rows.append({
+                "id": r["id"],
+                "pair": f"{r['claim_language']}->{r['reference_language']}",
+                "vote": r["vote"],
+                "claim": r["claim"],
+                "true_label": r["label"],
+                "pred_label": p.label,
+                "correct": r["label"] == p.label,
+                "decision_rule": p.decision_rule,
+                "probs": [p.p_entail, p.p_neutral, p.p_contra],
+                "numerical_conflict": p.numerical_conflict,
+                "reasoning": p.reasoning,
+                "evidence": p.evidence,
+                "evidence_pages": [s.page_number for s in p.evidence_sources],
+                "evidence_grounded": evidence_grounded(p.evidence, r["reference_string"]) if p.evidence else None,
+                "tokens_prompt": p.tokens_prompt,
+                "tokens_completion": p.tokens_completion,
+                "latency_ms": p.latency_ms,
+                "error": p.error,
+            })
+
+        return {
+            "meta": {
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                "git_commit": _git_commit(),
+                "model": self.engine.client.model_name,
+                "mock": self.engine.client.mock,
+                "task": task,
+                "strategy": strategy if task == "advanced" else "direct_reference",
+                "top_k": top_k,
+                "prompt_mode": self.engine.prompt_mode,
+                "passage_chars": config.PASSAGE_CHARS if task == "advanced" else None,
+                "ids_reason": config.IDS_REASON,
+                "dataset": str(path.name),
+                "seed": seed,
+                "workers": workers,
+                "tag": tag,
+                "wall_time_s": round(wall_s, 1),
+            },
             "sample_count": len(records),
-            "macro_f1": round(macro_f1, 4),
-            "evidence_alignment_rate": round(evidence_alignment, 4),
-            "reference_string_count": len(evidence_hits),
-            "avg_latency_ms": round(avg_latency, 2),
-            "avg_prompt_tokens": round(avg_prompt_tokens, 1),
-            "avg_total_tokens": round(avg_total_tokens, 1),
-            "by_language": lang_metrics,
-            "results": results,
+            "macro_f1": _macro_f1(y_true, y_pred),
+            "accuracy": round(sum(a == b for a, b in zip(y_true, y_pred)) / max(1, len(records)), 4),
+            "macro_f1_monolingual": subset_f1(mono),
+            "macro_f1_crosslingual": subset_f1(cross),
+            "by_language_pair": by_pair,
+            "evidence": {
+                "predictions_needing_evidence": len(ev_required),
+                "evidence_given_rate": round(len(ev_given) / len(ev_required), 4) if ev_required else None,
+                "evidence_grounded_rate": round(len(ev_grounded) / len(ev_given), 4) if ev_given else None,
+            },
+            "efficiency": {
+                "avg_prompt_tokens": round(sum(p.tokens_prompt for p in preds) / max(1, len(preds)), 1),
+                "avg_completion_tokens": round(sum(p.tokens_completion for p in preds) / max(1, len(preds)), 1),
+                "latency_mean_ms": round(sum(latencies) / max(1, len(latencies)), 1),
+                "latency_p95_ms": round(_percentile(latencies, 0.95), 1),
+            },
+            "errors": {"count": len(errors), "examples": [e.error for e in errors[:5]]},
+            "confusion_matrix": confusion_matrix(y_true, y_pred, labels=LABELS).tolist(),
             "detailed_classification": classification_report(
-                y_true,
-                y_pred,
-                labels=[0, 1, 2],
+                y_true, y_pred, labels=LABELS,
                 target_names=["0: Entailment", "1: Neutral", "2: Contradiction"],
-                output_dict=True,
-                zero_division=0,
+                output_dict=True, zero_division=0,
             ),
+            "results": rows,
         }
 
-        self.print_report(report)
-        return report
+    @staticmethod
+    def save_report(report: Dict[str, Any]) -> Path:
+        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+        m = report["meta"]
+        model_short = m["model"].split("/")[-1]
+        stamp = m["timestamp"].replace(":", "").replace("-", "")
+        name = f"{stamp}_{m['task']}_{m['strategy']}_{m.get('prompt_mode', 'json')}_{model_short}{('_' + m['tag']) if m['tag'] else ''}.json"
+        out = RESULTS_DIR / name
+        out.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        return out
 
     @staticmethod
     def print_report(report: Dict[str, Any]):
-        print("\n" + "=" * 60)
-        print("           TRACK 2A (OST) BENCHMARK REPORT")
-        print("=" * 60)
-        print(f"Strategy:            {report['strategy']}")
-        print(f"Total Samples:       {report['sample_count']}")
-        print(f"PRIMARY METRIC:      Macro-F1 = {report['macro_f1']:.4f}")
-        if report.get("reference_string_count", 0) > 0:
-            print(f"Evidence Alignment:  {report['evidence_alignment_rate'] * 100:.1f}% ({report['reference_string_count']} gold reference passages)")
-        print(f"Avg Input Tokens:    {report['avg_prompt_tokens']}")
-        print(f"Avg Total Tokens:    {report['avg_total_tokens']}")
-        print(f"Avg Latency:         {report['avg_latency_ms']} ms")
-        print("-" * 60)
+        m = report["meta"]
+        print("\n" + "=" * 64)
+        print("              TRACK 2A (OST) BENCHMARK REPORT")
+        print("=" * 64)
+        print(f"Task / Strategy:     {m['task']} / {m['strategy']} / prompt={m.get('prompt_mode')}   (model: {m['model']}{', MOCK' if m['mock'] else ''})")
+        print(f"Samples:             {report['sample_count']}   dataset: {m['dataset']}   commit: {m['git_commit']}")
+        print(f"PRIMARY  Macro-F1:   {report['macro_f1']:.4f}   (accuracy {report['accuracy']:.4f})")
+        print(f"  monolingual F1:    {report['macro_f1_monolingual']}")
+        print(f"  cross-lingual F1:  {report['macro_f1_crosslingual']}")
+        ev = report["evidence"]
+        print(f"Evidence given:      {ev['evidence_given_rate']}   grounded in gold section: {ev['evidence_grounded_rate']}")
+        eff = report["efficiency"]
+        print(f"Tokens in / out:     {eff['avg_prompt_tokens']} / {eff['avg_completion_tokens']}")
+        print(f"Latency mean / p95:  {eff['latency_mean_ms']} ms / {eff['latency_p95_ms']} ms")
+        if report["errors"]["count"]:
+            print(f"ERRORS:              {report['errors']['count']}  e.g. {report['errors']['examples'][:2]}")
+        print("-" * 64)
 
-        # Classification Table
-        cls_data = []
         det = report["detailed_classification"]
+        rows = []
         for lbl in ["0: Entailment", "1: Neutral", "2: Contradiction"]:
             d = det.get(lbl, {})
-            cls_data.append([
-                lbl,
-                f"{d.get('precision', 0):.2f}",
-                f"{d.get('recall', 0):.2f}",
-                f"{d.get('f1-score', 0):.2f}",
-                d.get("support", 0),
-            ])
-        print("\nClassification Performance:")
-        print(tabulate(cls_data, headers=["Class", "Precision", "Recall", "F1-Score", "Support"], tablefmt="github"))
+            rows.append([lbl, f"{d.get('precision', 0):.2f}", f"{d.get('recall', 0):.2f}", f"{d.get('f1-score', 0):.2f}", d.get("support", 0)])
+        print(tabulate(rows, headers=["Class", "Precision", "Recall", "F1", "Support"], tablefmt="github"))
 
-        # Language Breakdown Table
-        print("\nLanguage Breakdown:")
-        lang_data = []
-        for lang, vals in report["by_language"].items():
-            lang_data.append([lang.upper(), vals["count"], f"{vals['macro_f1']:.4f}"])
-        print(tabulate(lang_data, headers=["Language", "Samples", "Macro-F1"], tablefmt="github"))
-        print("=" * 60 + "\n")
+        print("\nConfusion matrix (rows = true, cols = predicted 0/1/2):")
+        for lbl, row in zip(LABELS, report["confusion_matrix"]):
+            print(f"  {lbl}: {row}")
+
+        print("\nBy language pair (claim -> reference):")
+        pair_rows = [[k, v["count"], f"{v['macro_f1']:.3f}", f"{v['accuracy']:.3f}"] for k, v in report["by_language_pair"].items()]
+        print(tabulate(pair_rows, headers=["Pair", "N", "Macro-F1", "Acc"], tablefmt="github"))
+        print("=" * 64)

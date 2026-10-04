@@ -138,7 +138,7 @@ class TestEvidenceAttribution(unittest.TestCase):
             latency_ms=10.0,
         )
 
-        engine = ClaimVerificationEngine(apertus_client=hallucinating_client)
+        engine = ClaimVerificationEngine(apertus_client=hallucinating_client, prompt_mode="json")
         booklet = config.BOOKLETS_DIR / "2026-06-14_de.pdf"
         if not booklet.exists():
             self.skipTest(f"Booklet not found at {booklet}")

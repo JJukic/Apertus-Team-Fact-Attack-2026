@@ -7,10 +7,12 @@ IMAGE_NAME ?= hackapertus-track2a
 run:
 	docker build -t $(IMAGE_NAME) .
 	docker run --rm \
-		-e LLM_NAME="$${LLM_NAME:-swiss-ai/Apertus-v1.5-8B}" \
+		-e LLM_NAME="$${LLM_NAME:-swiss-ai/Apertus-v1.5-70B-thinking}" \
 		-e LLM_BASE_URL="$${LLM_BASE_URL:-https://api.inference.cscs.ch/v1}" \
 		-e LLM_API_KEY="$${LLM_API_KEY}" \
-		-e NLI_STRATEGY="$${NLI_STRATEGY:-retrieval}" \
+		-e NLI_STRATEGY="$${NLI_STRATEGY:-hybrid}" \
+		-e NLI_TOP_K="$${NLI_TOP_K:-10}" \
+		-e PROMPT_MODE="$${PROMPT_MODE:-ids}" \
 		$(IMAGE_NAME) benchmark
 
 test:

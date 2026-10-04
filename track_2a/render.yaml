@@ -13,4 +13,4 @@ services:
       - key: LLM_BASE_URL
         value: "https://api.inference.cscs.ch/v1"
       - key: LLM_NAME
-        value: "swiss-ai/Apertus-v1.5-8B"
+        value: "swiss-ai/Apertus-v1.5-70B-thinking"

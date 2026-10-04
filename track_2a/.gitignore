@@ -29,3 +29,7 @@ build/
 # Downloaded historical booklets (downloaded dynamically via download_data.py)
 data/booklets/2024-*.pdf
 data/booklets/2025-*.pdf
+data/booklets/20[0-2][0-9]-*.pdf
+!data/booklets/2026-06-14_*.pdf
+data/hf/
+results/*.raw.jsonl

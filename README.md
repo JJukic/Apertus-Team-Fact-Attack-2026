@@ -3,126 +3,146 @@
 
 [![CI](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.11-blue.svg)](https://www.python.org/)
-[![Model](https://img.shields.io/badge/Model-Apertus%20v1.5--8B-orange.svg)](https://huggingface.co/swiss-ai)
-[![Tests](https://img.shields.io/badge/Tests-28%20Passing-brightgreen.svg)](track_2a/tests/)
+[![Model](https://img.shields.io/badge/Model-Apertus%20v1.5--70B-orange.svg)](https://huggingface.co/swiss-ai)
 [![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
 [![License](https://img.shields.io/badge/License-MIT%20%2F%20CC--BY--4.0-green.svg)](LICENSE)
 
-An **Apertus-powered, document-grounded fact-checking engine** that verifies political claims against official Swiss federal voting booklets (*Abstimmungsbüchlein*) across **German, French, and Italian**.
+An **Apertus-powered, document-grounded claim-verification system** that decides whether an official Swiss
+voting booklet (*Abstimmungsbüchlein*) **entails (0)**, is **neutral to (1)** or **contradicts (2)** a political
+claim, and cites the booklet pages that justify the decision. Claims and booklets can be in German, French or
+Italian, in any combination.
 
 - **Challenge:** [Hack Apertus Track 2A (OST)](https://hackapertus.ch/)
-- **Challenge Providers / Jury:** Prof. Dr. Mitra Purandare & Abinas Kuganathan (OST – Ostschweizer Fachhochschule)
 - **Team:** Josip Jukic, Felipe Wüthrich
-- **Technical Report:** [track_2a/technical_report.md](track_2a/technical_report.md)
+- **Technical Report:** [track_2a/technical_report.md](track_2a/technical_report.md) · **Experiment log:** [track_2a/docs/experiments.md](track_2a/docs/experiments.md)
+
+> Predictions describe the relationship between a claim and the official booklet. They are not political advice.
 
 ---
 
-## ⚡ Key Architectural Differentiators
+## 📊 Results
 
-```
-[ Swiss Voting Booklet (DE / FR / IT) ]
-                 │
-                 ▼
-       [ PyPDF Parser ] ─── Extracts pages & clean paragraph structure
-                 │
-       ┌─────────┴────────────────────────────────────────────────┐
-       ▼                                                          ▼
-[ Proposal-Aware Scoping & Dynamic Anchors ]            [ Full-Document Baseline ]
-- Dynamic ordinal parsing ('Erste..Sechste Vorlage')    - 14,820 prompt tokens
-- Prevents cross-proposal false positives               - High latency (~4.8s)
-- 76% token reduction (~3,580 tokens, ~1.5s on Alps)
-                 │
-                 ▼
- [ Deterministic Numerical & Percentage Guardrail ]
- - Checks quantities (500'000 vs 1.7M), years (2030 vs 2050), percentages (10% vs 15%)
- - Neuro-symbolic safety override for subtle political misrepresentations
-                 │
-                 ▼
-     [ Apertus v1.5-8B on CSCS Alps ] ─── Multilingual zero-shot NLI reasoning
-                 │
-                 ▼
-   [ Calibrated Arbiter & Vacuity Guardrail ]
- - Mathematical decision boundaries (Rules 1, 2, 3)
- - Model-checking principle: ungrounded entailments without cited evidence -> Neutral (1)
-                 │
-                 ▼
-     [ Page-Level Provenance Engine ]
- - Maps verbatim evidence quotes to exact PDF page numbers (e.g. Page 4, Vorlage 1)
-```
+Evaluated on the official OST dataset (1,495 human-annotated pairs, 60 booklets, ~66 % cross-lingual). The
+**test split holds 5 voting dates that were never used during development** (402 pairs), as a stand-in for the
+held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
-1. **Deterministic Numerical & Percentage Guardrail:** Normalizes Swiss formats (`500'000`), word numbers, scale multipliers (`1,7 Millionen`, `Mrd.`), and percentages (`10%`, `15%`). Eliminates LLM numerical hallucinations.
-2. **Dynamic Ordinal Scoping:** Seamlessly handles booklets with 1 to 6 proposals across DE, FR, and IT without hardcoded page offsets.
-3. **Model-Checking Vacuity Guardrail:** Prevents ungrounded "vacuous entailments" when no valid supporting text exists in the document.
-4. **Verifiable Page Citations:** Every supporting passage displays exact `page_number` and `proposal_id` for citizen trust.
-5. **Efficiency & Green AI:** **-76% token reduction** and **~1.5s latency** compared to naive full-document prompting.
+| Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Advanced** — booklet PDF + claim + vote | **0.920** | 0.906 | 5,737 | 59 | 2.1 s / 4.0 s |
+| **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
+
+### Full booklet vs. selected context (advanced task, same 150 test pairs)
+
+| Context supplied to Apertus | Macro-F1 | Ø input tokens | Latency p95 |
+| :--- | :---: | :---: | :---: |
+| Full booklet (baseline) | 0.730 | 59,517 | 43.7 s* |
+| Our first pipeline (proposal filter + BM25, verbose JSON) | 0.795 | 3,408 | 36.2 s* |
+| **Hybrid retrieval + `ids` prompt (current)** | **0.926** | 6,023 | 3.8 s |
+
+\* measured while several runs shared the endpoint. **Selecting ~10 pages beats sending the whole booklet by
+0.19 F1 with ~10× fewer tokens**: with up to 70k tokens of context the relevant passage gets lost.
+Every number comes from a saved run in [`track_2a/results/`](track_2a/results/).
 
 ---
 
-## 🚀 Quick Execution for Judges (`make run`)
+## ⚙️ How it works
 
-Judges can execute the evaluation on a clean checkout via:
-
-```bash
-make run
+```
+ Booklet PDF (DE/FR/IT)                       Claim (DE/FR/IT)  +  vote title
+        │                                              │
+        ▼                                              │
+ pypdf → pages, each labelled with its section         │
+ ("Arguments of the committee", "Arguments of the      │
+  Federal Council", "Voting text", …)                  │
+        │                                              │
+        └──────────────► Hybrid retrieval ◄────────────┘
+                 BM25(claim) + 2 × BM25(vote title) over all pages
+                 → top 10 pages, numbered [P1] … [P10]
+                                  │
+                                  ▼
+                 Apertus v1.5 (CSCS) — NLI prompt
+                 → {"p_entail", "p_neutral", "p_contra", "label", "evidence_ids": [3, 7]}
+                                  │
+                                  ▼
+          label 0/1/2 + verbatim evidence pages + tokens + inference time
 ```
 
-The container automatically connects to CSCS Alps using the standard environment variables (or falls back to deterministic local verification if `LLM_API_KEY` is omitted):
+1. **Hybrid retrieval that works across languages.** The vote title is written in the booklet's language, so it
+   anchors the right proposal even when the claim is in another language. Unlike a hard proposal filter it keeps
+   the overview pages at the front of the booklet. Gold-section recall rose from 0.74 to 0.93.
+2. **Evidence as passage ids.** Apertus cites the numbers of the pages it relies on instead of writing quotes,
+   so evidence is always verbatim booklet text with a correct page number, and answers need ~55 output tokens
+   instead of ~150.
+3. **Booklet-aware prompt.** Booklets deliberately contain opposing viewpoints: a claim such as "the committee
+   argues X" is checked against the committee's text only, and section labels tell the model who is speaking.
+4. **Measured, not assumed.** Every design choice was tested on a dev split; ideas that did not help (a hard
+   numerical override, label-only answers, small passages, full-booklet prompting) were dropped. See the
+   [experiment log](track_2a/docs/experiments.md).
+
+---
+
+## 🚀 Quick start
 
 ```bash
-export LLM_NAME="swiss-ai/Apertus-v1.5-8B"
-export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
 export LLM_API_KEY="your_api_key_here"
-make run
+make run          # builds the Docker image and runs the benchmark
+make test         # 41 unit tests (no API calls)
+make web          # Streamlit app at http://localhost:8501
 ```
 
-### Run Unit Tests (28 Tests)
+Defaults (override via environment variables or `.env`):
+
 ```bash
-make test
+LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
+LLM_BASE_URL=https://api.inference.cscs.ch/v1
+NLI_STRATEGY=hybrid      # 'hybrid' | 'retrieval' | 'full'
+NLI_TOP_K=10
+PROMPT_MODE=ids          # 'ids' | 'json' | 'compact'
 ```
 
-### Launch Interactive Streamlit App
+### CLI
+
 ```bash
-make web
+cd track_2a
+
+# Advanced task: booklet + claim (+ vote title)
+python -m src predict --booklet data/booklets/2026-06-14_fr.pdf \
+  --claim "Der Bundesrat empfiehlt, die Initiative abzulehnen." \
+  --vote "Initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) »" --json
+
+# Beginner task: reference text + claim
+python -m src predict --reference "…" --claim "…" --json
+
+# Batch file (JSON/JSONL) -> official output format
+python -m src run --input cases.jsonl --output predictions.jsonl
+
+# Reproduce the evaluation
+python -m src.hf_dataset                                   # dataset, 60 booklets, dev/test split
+python -m src benchmark -d data/hf/test.jsonl -t advanced  # saves a report to results/
+python -m src benchmark -d data/hf/test.jsonl -t beginner
+python -m src.results_summary                              # results/summary.json for the app
 ```
-*(Runs at `http://localhost:8501` featuring interactive claim checks, page-attributed quotes, and live jury evaluations).*
 
 ---
 
-## 📊 Benchmark Results
-
-| Strategy / Setup | Macro-F1 | Avg Input Tokens | Avg Latency | Context Purity |
-| :--- | :---: | :---: | :---: | :--- |
-| **Standard BM25 Retrieval (Baseline)** | `0.7846` | 3,540 | ~990 ms | Mixed (cross-proposal confusion) |
-| **Full Document Context Dump** | `0.8214` | 14,820 | ~4,850 ms | Needle-in-a-haystack |
-| **Proposal-Aware + Guardrails (Ours)** | **`1.0000`** | **3,583** | **~1,730 ms** | **Proposal-isolated + Verifiable** |
-
-### Out-of-Distribution Generalization (Unseen 4-Proposal Ballot, Nov 2024)
-- **Official Benchmark (June 2026, 28 Samples):** **`1.0000 Macro-F1`** (100% Accuracy)
-- **Unseen Historical Benchmark (Nov 2024, 32 Samples):** **`0.9220 Macro-F1`** (90.6% Accuracy)
-
----
-
-## 📁 Repository Structure
+## 📁 Repository structure
 
 ```
-.
-├── Dockerfile                  # Multi-arch root container
-├── Makefile                    # Root targets: run, test, web, download, benchmark
-├── README.md                   # This file
-├── track_2a/                   # Core Challenge Submission
-│   ├── Dockerfile              # Track container definition
-│   ├── Makefile                # Track makefile
-│   ├── requirements.txt        # Dependencies
-│   ├── app.py                  # Streamlit web application
-│   ├── technical_report.md     # Detailed architecture & evaluation report
-│   ├── data/                   # Booklets & benchmark datasets
-│   ├── tests/                  # 28 automated unit tests
-│   └── src/
-│       ├── pdf_parser.py       # Dynamic ordinal proposal extractor
-│       ├── retriever.py        # Proposal-aware BM25 retriever
-│       ├── numerical_checker.py# Deterministic numerical & percentage guardrail
-│       ├── apertus_client.py   # Resilient CSCS Alps API client with backoff
-│       ├── inference.py        # ClaimVerificationEngine with page mapping
-│       ├── evaluator.py        # Macro-F1 and alignment evaluator
-│       └── cli.py              # Typer CLI interface
+track_2a/
+├── app.py                    # Streamlit app (claim check, benchmark dashboard from results/)
+├── technical_report.md       # Architecture, evaluation, limitations
+├── docs/experiments.md       # Every experiment with its numbers
+├── results/                  # Saved benchmark runs (+ summary.json)
+├── data/                     # Demo dataset, 2026-06-14 booklets; hf/ and other booklets are downloaded
+├── tests/                    # Unit tests
+└── src/
+    ├── hf_dataset.py         # OST dataset + booklet download, dev/test split by voting date
+    ├── pdf_parser.py         # Pages, section labels, proposal boundaries
+    ├── retriever.py          # Hybrid (booklet-wide) and proposal-filtered BM25 retrieval
+    ├── apertus_client.py     # CSCS client, prompts (ids / json / compact), retries
+    ├── inference.py          # ClaimVerificationEngine: retrieval → Apertus → evidence pages
+    ├── numerical_checker.py  # Swiss number normalisation; reports numerical conflicts
+    ├── evaluator.py          # Macro-F1, language pairs, evidence grounding, p95 latency
+    ├── results_summary.py    # Collects saved runs for the app and README
+    └── cli.py                # predict / run / benchmark / download / web
 ```

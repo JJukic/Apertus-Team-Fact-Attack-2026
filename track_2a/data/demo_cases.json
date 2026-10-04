@@ -1,0 +1,429 @@
+{
+ "note": "Demo cases from the OST dataset (2026-06-14 booklet), each verified twice live on CSCS; cached_result is shown if the API is unavailable.",
+ "cases": [
+  {
+   "id": "hf-0461",
+   "title": "🌍 Sprachübergreifend",
+   "story": "Italienische Behauptung, französisches Büchlein: Apertus vergleicht Bedeutung, nicht Wörter.",
+   "primary": true,
+   "claim": "Se il voto viene approvato, la popolazione residente permanente della Svizzera non potrà superare i 10 milioni di persone prima del 2050.",
+   "claim_language": "it",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "fr",
+   "vote": "Initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) »",
+   "gold_label": 0,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "Se il voto viene approvato, la popolazione residente permanente della Svizzera non potrà superare i 10 milioni di persone prima del 2050.",
+    "label": 0,
+    "label_name": "Entailment",
+    "reasoning": "Parsed via regex fallback",
+    "evidence": [
+     "20 Texte soumis au vote Arrêté fédéral relatif à l’initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » du 19 décembre 2025 Premier objet : initiative pour la durabilité Texte soumis au vote Texte soumis au vote Texte soumis au vote 2 Texte soumis au vote Arrêté fédéral relatif à l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» du 19 décembre 2025 L’Assemblée fédérale de la Confédération suisse, vu l’art. 139, al. 5, de la Constitution1, vu l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» déposée le 3 avril 20242, vu le message du Conseil fédéral du 21 mars 20253, arrête: Art. 1 1 L’initiative populaire du 3 avril 2024 «Pas de Sui sse à 10 millions! (initiative pour la durabilité)» est valable et sera soumise au vote du peuple et des cantons. 2 Elle a la teneur suivante: La Constitution est modifiée comme suit: Art. 73a Développement durable de la population 1 La population résidante permanente de la Suisse ne doit pas dépasser dix millions de personnes avant l’année 2050. À partir de 2050, le Conseil fédéral peut, par voie d’ordonnance, adapter chaque année cette valeur limite en fonction de l’accroissement naturel. La Confédération s’assure que la valeur limite est respectée. 2 Dans les limites de leurs compétences respectives, la Confédération et les cantons prennent des mesures pour assurer un développement durable de la population, en particulier en vue de protéger l’environnement et dans l’intérêt de la conservation du- rable des ressources naturelles, de la performance des infrastructures, des soins et des assurances sociales suisses. 3 La population résidante permanente comprend l’ensemble des personnes de natio- nalité suisse ayant leur domicile principal en Suis se ainsi que l’ensemble des per- sonnes de nationalité étrangère disposant d’un titre de séjour d’une durée minimale de douze mois ou séjournant en Suisse depuis au moins douze mois. 1 RS 101 2 FF 2024 1036 3 FF 2025 1262 2 Texte soumis au vote Arrêté fédéral relatif à l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» du 19 décembre 2025 L’Assemblée fédérale de la Confédération suisse, vu l’art. 139, al. 5, de la Constitution1, vu l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» déposée le 3 avril 20242, vu le message du Conseil fédéral du 21 mars 20253, arrête: Art. 1 1 L’initiative populaire du 3 avril 2024 «Pas de Sui sse à 10 millions! (initiative pour la durabilité)» est valable et sera soumise au vote du peuple et des cantons. 2 Elle a la teneur suivante: La Constitution est modifiée comme suit: Art. 73a Développement durable de la population 1 La population résidante permanente de la Suisse ne doit pas dépasser dix millions de personnes avant l’année 2050. À partir de 2050, le Conseil fédéral peut, par voie d’ordonnance, adapter chaque année cette valeur limite en fonction de l’accroissement naturel. La Confédération s’assure que la valeur limite est respectée. 2 Dans les limites de leurs compétences respectives, la Confédération et les cantons prennent des mesures pour assurer un développement durable de la population, en particulier en vue de protéger l’environnement et dans l’intérêt de la conservation du- rable des ressources naturelles, de la performance des infrastructures, des soins et des assurances sociales suisses. 3 La population résidante permanente comprend l’ensemble des personnes de natio- nalité suisse ayant leur domicile principal en Suis se ainsi que l’ensemble des per- sonnes de nationalité étrangère disposant d’un titre de séjour d’une durée minimale de douze mois ou séjournant en Suisse depuis au moins douze mois. 1 RS 101 2 FF 2024 1036 3 FF 2025 1262",
+     "11 L’initiative « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » veut limiter la population résidante permanente : le seuil de 10 millions d’habitants ne doit pas être franchi avant 2050. Avec cette limite, les auteurs de l’initiative souhaitent protéger l’environnement et garantir la conservation durable des ressources naturelles et le bon fonctionnement des in - frastructures, du système de santé et des assurances sociales. Si l’initiative est acceptée, la Confédération et les cantons devront prendre des mesures, notamment en cas de dépasse - ment de certains seuils. Si, avant 2050, la population résidante permanente dé - passe la limite de 9,5 millions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent des mesures, notamment en matière d’asile et de regroupement fami- lial. Leur nature exacte n’est pas précisée dans l’initiative. – Les personnes admises à titre provisoire ne peuvent plus obtenir d’autorisation de séjour ou d’établissement ni aucun autre droit de rester. Elles ne peuvent en outre plus se faire naturaliser. – Le Conseil fédéral doit invoquer ou négocier des clauses d’exception ou de sauvegarde dans les accords internatio- naux qui favorisent la croissance démographique, ou renégocier ces accords. Cette mesure pourrait toucher par exemple l’accord avec l’UE sur la libre circulation des personnes, la Convention européenne des droits de l’homme, la Convention de Genève sur les réfugiés ou la Convention de l’ONU relative aux droits de l’enfant. Ce que veut l’initiative 10 millions d’habi- tants au maximum d’ici 2050 Mesures à 9,5 millions d’habitants",
+     "12 Premier objet : initiative pour la durabilité D’après les projections de la Confédération, le seuil de 9,5 millions devrait être atteint en 20316. Si la population résidante permanente dépasse 10 mil - lions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent toutes les mesures disponibles pour repasser sous la barre des 10 millions. – Les accords internationaux qui favorisent la croissance démographique doivent être dénoncés dès que possible. À partir de 2050, le Conseil fédéral pourra rehausser la limite de 10 millions en fonction de l’accroissement naturel (naissances). Si, deux ans après avoir été dépassée pour la première fois, la limite de 10 millions n’est toujours pas respectée, l’ac- cord sur la libre circulation des personnes conclu avec l’UE doit être dénoncé. La Suisse pourrait éviter cette mesure si, dans l’intervalle, elle parvient à invoquer ou négocier des clauses d’exception ou de sauvegarde permettant de ramener la popu- lation à 10 millions. 6 L’Office fédéral de la statistique calcule trois scénarios d’évolution démographique. Le scénario de référence, qui prolonge les tendances observées au cours des dernières années, prévoit que le seuil de 9,5 millions d’habitants sera franchi en 2031. Le scénario « haut » combine un choix d’hypothèses plus favorables à la croissance démographique, alors que le scénario « bas » combine un choix d’hypothèses moins favorables. « Scénarios de l’évolution démographique de la Suisse 2025–2055 », Office fédéral de la statistique, avril 2025 ( bfs.admin.ch > Statistiques > Population > Évolution future > Scénarios pour la Suisse ) Mesures à 10 millions d’habitants Dénonciation de la libre circulation des personnes"
+    ],
+    "evidence_sources": [
+     {
+      "quote": "20 Texte soumis au vote Arrêté fédéral relatif à l’initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » du 19 décembre 2025 Premier objet : initiative pour la durabilité Texte soumis au vote Texte soumis au vote Texte soumis au vote 2 Texte soumis au vote Arrêté fédéral relatif à l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» du 19 décembre 2025 L’Assemblée fédérale de la Confédération suisse, vu l’art. 139, al. 5, de la Constitution1, vu l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» déposée le 3 avril 20242, vu le message du Conseil fédéral du 21 mars 20253, arrête: Art. 1 1 L’initiative populaire du 3 avril 2024 «Pas de Sui sse à 10 millions! (initiative pour la durabilité)» est valable et sera soumise au vote du peuple et des cantons. 2 Elle a la teneur suivante: La Constitution est modifiée comme suit: Art. 73a Développement durable de la population 1 La population résidante permanente de la Suisse ne doit pas dépasser dix millions de personnes avant l’année 2050. À partir de 2050, le Conseil fédéral peut, par voie d’ordonnance, adapter chaque année cette valeur limite en fonction de l’accroissement naturel. La Confédération s’assure que la valeur limite est respectée. 2 Dans les limites de leurs compétences respectives, la Confédération et les cantons prennent des mesures pour assurer un développement durable de la population, en particulier en vue de protéger l’environnement et dans l’intérêt de la conservation du- rable des ressources naturelles, de la performance des infrastructures, des soins et des assurances sociales suisses. 3 La population résidante permanente comprend l’ensemble des personnes de natio- nalité suisse ayant leur domicile principal en Suis se ainsi que l’ensemble des per- sonnes de nationalité étrangère disposant d’un titre de séjour d’une durée minimale de douze mois ou séjournant en Suisse depuis au moins douze mois. 1 RS 101 2 FF 2024 1036 3 FF 2025 1262 2 Texte soumis au vote Arrêté fédéral relatif à l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» du 19 décembre 2025 L’Assemblée fédérale de la Confédération suisse, vu l’art. 139, al. 5, de la Constitution1, vu l’initiative populaire «Pas de Suisse à 10 millions! (initiative pour la durabilité)» déposée le 3 avril 20242, vu le message du Conseil fédéral du 21 mars 20253, arrête: Art. 1 1 L’initiative populaire du 3 avril 2024 «Pas de Sui sse à 10 millions! (initiative pour la durabilité)» est valable et sera soumise au vote du peuple et des cantons. 2 Elle a la teneur suivante: La Constitution est modifiée comme suit: Art. 73a Développement durable de la population 1 La population résidante permanente de la Suisse ne doit pas dépasser dix millions de personnes avant l’année 2050. À partir de 2050, le Conseil fédéral peut, par voie d’ordonnance, adapter chaque année cette valeur limite en fonction de l’accroissement naturel. La Confédération s’assure que la valeur limite est respectée. 2 Dans les limites de leurs compétences respectives, la Confédération et les cantons prennent des mesures pour assurer un développement durable de la population, en particulier en vue de protéger l’environnement et dans l’intérêt de la conservation du- rable des ressources naturelles, de la performance des infrastructures, des soins et des assurances sociales suisses. 3 La population résidante permanente comprend l’ensemble des personnes de natio- nalité suisse ayant leur domicile principal en Suis se ainsi que l’ensemble des per- sonnes de nationalité étrangère disposant d’un titre de séjour d’une durée minimale de douze mois ou séjournant en Suisse depuis au moins douze mois. 1 RS 101 2 FF 2024 1036 3 FF 2025 1262",
+      "page_number": 20,
+      "proposal_id": 1
+     },
+     {
+      "quote": "11 L’initiative « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » veut limiter la population résidante permanente : le seuil de 10 millions d’habitants ne doit pas être franchi avant 2050. Avec cette limite, les auteurs de l’initiative souhaitent protéger l’environnement et garantir la conservation durable des ressources naturelles et le bon fonctionnement des in - frastructures, du système de santé et des assurances sociales. Si l’initiative est acceptée, la Confédération et les cantons devront prendre des mesures, notamment en cas de dépasse - ment de certains seuils. Si, avant 2050, la population résidante permanente dé - passe la limite de 9,5 millions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent des mesures, notamment en matière d’asile et de regroupement fami- lial. Leur nature exacte n’est pas précisée dans l’initiative. – Les personnes admises à titre provisoire ne peuvent plus obtenir d’autorisation de séjour ou d’établissement ni aucun autre droit de rester. Elles ne peuvent en outre plus se faire naturaliser. – Le Conseil fédéral doit invoquer ou négocier des clauses d’exception ou de sauvegarde dans les accords internatio- naux qui favorisent la croissance démographique, ou renégocier ces accords. Cette mesure pourrait toucher par exemple l’accord avec l’UE sur la libre circulation des personnes, la Convention européenne des droits de l’homme, la Convention de Genève sur les réfugiés ou la Convention de l’ONU relative aux droits de l’enfant. Ce que veut l’initiative 10 millions d’habi- tants au maximum d’ici 2050 Mesures à 9,5 millions d’habitants",
+      "page_number": 11,
+      "proposal_id": 1
+     },
+     {
+      "quote": "12 Premier objet : initiative pour la durabilité D’après les projections de la Confédération, le seuil de 9,5 millions devrait être atteint en 20316. Si la population résidante permanente dépasse 10 mil - lions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent toutes les mesures disponibles pour repasser sous la barre des 10 millions. – Les accords internationaux qui favorisent la croissance démographique doivent être dénoncés dès que possible. À partir de 2050, le Conseil fédéral pourra rehausser la limite de 10 millions en fonction de l’accroissement naturel (naissances). Si, deux ans après avoir été dépassée pour la première fois, la limite de 10 millions n’est toujours pas respectée, l’ac- cord sur la libre circulation des personnes conclu avec l’UE doit être dénoncé. La Suisse pourrait éviter cette mesure si, dans l’intervalle, elle parvient à invoquer ou négocier des clauses d’exception ou de sauvegarde permettant de ramener la popu- lation à 10 millions. 6 L’Office fédéral de la statistique calcule trois scénarios d’évolution démographique. Le scénario de référence, qui prolonge les tendances observées au cours des dernières années, prévoit que le seuil de 9,5 millions d’habitants sera franchi en 2031. Le scénario « haut » combine un choix d’hypothèses plus favorables à la croissance démographique, alors que le scénario « bas » combine un choix d’hypothèses moins favorables. « Scénarios de l’évolution démographique de la Suisse 2025–2055 », Office fédéral de la statistique, avril 2025 ( bfs.admin.ch > Statistiques > Population > Évolution future > Scénarios pour la Suisse ) Mesures à 10 millions d’habitants Dénonciation de la libre circulation des personnes",
+      "page_number": 12,
+      "proposal_id": 1
+     }
+    ],
+    "numerical_conflict": null,
+    "p_entail": 1.0,
+    "p_neutral": 0.0,
+    "p_contra": 0.0,
+    "fuzzy_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+    "decision_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_fr.pdf",
+    "tokens_prompt": 3914,
+    "tokens_completion": 60,
+    "tokens_total": 3974,
+    "latency_ms": 932.4,
+    "error": null,
+    "context_pages": [
+     20,
+     4,
+     17,
+     11,
+     5,
+     40,
+     19,
+     12,
+     1,
+     8
+    ]
+   }
+  },
+  {
+   "id": "hf-1101",
+   "title": "🔢 Verdrehte Fakten",
+   "story": "Die Zahl stimmt, die Richtung nicht: Die Bevölkerung ist gewachsen, nicht zurückgegangen.",
+   "primary": true,
+   "claim": "Laut der Zusammenfassung ist die Bevölkerung seit der Einführung der Personenfreizügigkeit im Jahr 2002 um etwa 1,7 Millionen Personen zurückgegangen.",
+   "claim_language": "de",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "de",
+   "vote": "Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)»",
+   "gold_label": 2,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "Laut der Zusammenfassung ist die Bevölkerung seit der Einführung der Personenfreizügigkeit im Jahr 2002 um etwa 1,7 Millionen Personen zurückgegangen.",
+    "label": 2,
+    "label_name": "Contradiction",
+    "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": [9, 1]\n}",
+    "evidence": [
+     "9 Ende 2025 lebten etwas mehr als 9,1 Millionen Personen dauerhaft in der Schweiz. Seit Einführung der Personenfreizü - gigkeit im Jahr 2002 ist die Bevölkerung um rund 1,7 Millionen Personen gewachsen. 80 Prozent davon sind auf die Zuwande - rung zurückzuführen, insbesondere aus den EU/EFTA-Staaten. 1 Von der Zuwanderung profitieren Wirtschaft, Gesellschaft und die Sozialwerke. Rasches Bevölkerungswachstum ist aber auch mit Herausforderungen verbunden. Wie viele Menschen in die Schweiz zuwandern, hängt vor allem vom Arbeitsmarkt ab. Bei guter Wirtschaftslage finden die Unternehmen nicht genügend Arbeitskräfte in der Schweiz. Sie rekrutieren diese dann auch im Ausland. Dank der Personenfreizügigkeit können Unternehmen des privaten und des öffentlichen Sektors wie Spitäler und Pflegeheime im EU/ EFTA-Raum rasch und unbürokratisch ausländische Arbeitskräf - te rekrutieren. Diese Möglichkeit ist auch volkswirtschaftlich bedeutsam. Die Wirtschaftsleistung der Schweiz nahm seit 2002 pro Kopf um 24 Prozent zu. Die Personenfreizügigkeit hat dazu beigetragen.2 1 Statistiken Zuwanderung, Staatssekretariat für Migration (SEM) ( sem.admin.ch > Publikationen & Service > Statistiken > Auslän - derstatistik > Statistik Zuwanderung ) 2 Wachstum des Bruttoinlandprodukts pro Kopf (BIP/Kopf) von 2002 bis 2024 (kaufkraftbereinigt); «Bruttoinlandprodukt pro Kopf», Bundesamt für Statistik (BFS) ( bfs.admin.ch > Statistiken > Volkswirtschaft > Volkswirtschaftliche Gesamtrechnung > Bruttoinlandprodukt > Weiterführende Informationen > Tabellen ); 21. Bericht des Observatoriums zum Freizügigkeitsabkommen Schweiz – EU 2025 ( seco.admin.ch/observatoriumsberichte ) Wirtschaft und Gesellschaft Ausgangslage Bevölkerungs­ entwicklung",
+     "4 Erste Vorlage: Nachhaltigkeitsinitiative Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» Ende 2025 lebten rund 9,1 Millionen Personen in der Schweiz. Seit Einführung der Personenfreizügigkeit im Jahr 2002 ist die Bevölkerung um rund 1,7 Millionen Personen gewachsen. Das ist hauptsächlich auf die Zuwanderung zurückzuführen. Wie viele Menschen zuwandern, hängt vor allem vom Arbeitsmarkt ab. Floriert die Wirtschaft, so finden Unternehmen nicht genü- gend Arbeitskräfte in der Schweiz. Unternehmen, aber auch öffentliche Einrichtungen wie Spitäler und Pflegeheime rekru - tieren dann fehlende Fachkräfte häufig im EU-Raum. Die Initiative «Keine 10-Millionen-Schweiz! (Nachhaltig - keitsinitiative)» verlangt, die ständige Wohnbevölkerung zu begrenzen: Vor 2050 müsste die Bevölkerung der Schweiz unter 10 Millionen Menschen bleiben. Würde die ständige Wohnbevölkerung 9,5 Millionen Personen vor 2050 überschrei - ten, so müssten Bundesrat und Parlament insbesondere im Asylbereich und beim Familiennachzug Massnahmen ergreifen. Der Bundesrat müsste zudem bei internationalen Abkommen, die zum Bevölkerungswachstum beitragen, Ausnahmebestim - mungen und Schutzklauseln anrufen oder aushandeln. Würde die 10-Millionen-Grenze überschritten, so müsste die Schweiz diese Abkommen kündigen, nach zwei Jahren auch das Ab - kommen mit der EU über die Personenfreizügigkeit. Dadurch würden auch die anderen Verträge der Bilateralen I wegfallen. Auch die Beteiligung der Schweiz an den Schengen- und Dublin-Abkommen der EU wäre infrage gestellt und damit die enge Zusammenarbeit im Sicherheits- und Asylbereich. Die Initiative Ausgangslage In KürzeIn Kürze In Kürze Vorlage im Detail 8 Argumente 16 Abstimmungstext 20"
+    ],
+    "evidence_sources": [
+     {
+      "quote": "9 Ende 2025 lebten etwas mehr als 9,1 Millionen Personen dauerhaft in der Schweiz. Seit Einführung der Personenfreizü - gigkeit im Jahr 2002 ist die Bevölkerung um rund 1,7 Millionen Personen gewachsen. 80 Prozent davon sind auf die Zuwande - rung zurückzuführen, insbesondere aus den EU/EFTA-Staaten. 1 Von der Zuwanderung profitieren Wirtschaft, Gesellschaft und die Sozialwerke. Rasches Bevölkerungswachstum ist aber auch mit Herausforderungen verbunden. Wie viele Menschen in die Schweiz zuwandern, hängt vor allem vom Arbeitsmarkt ab. Bei guter Wirtschaftslage finden die Unternehmen nicht genügend Arbeitskräfte in der Schweiz. Sie rekrutieren diese dann auch im Ausland. Dank der Personenfreizügigkeit können Unternehmen des privaten und des öffentlichen Sektors wie Spitäler und Pflegeheime im EU/ EFTA-Raum rasch und unbürokratisch ausländische Arbeitskräf - te rekrutieren. Diese Möglichkeit ist auch volkswirtschaftlich bedeutsam. Die Wirtschaftsleistung der Schweiz nahm seit 2002 pro Kopf um 24 Prozent zu. Die Personenfreizügigkeit hat dazu beigetragen.2 1 Statistiken Zuwanderung, Staatssekretariat für Migration (SEM) ( sem.admin.ch > Publikationen & Service > Statistiken > Auslän - derstatistik > Statistik Zuwanderung ) 2 Wachstum des Bruttoinlandprodukts pro Kopf (BIP/Kopf) von 2002 bis 2024 (kaufkraftbereinigt); «Bruttoinlandprodukt pro Kopf», Bundesamt für Statistik (BFS) ( bfs.admin.ch > Statistiken > Volkswirtschaft > Volkswirtschaftliche Gesamtrechnung > Bruttoinlandprodukt > Weiterführende Informationen > Tabellen ); 21. Bericht des Observatoriums zum Freizügigkeitsabkommen Schweiz – EU 2025 ( seco.admin.ch/observatoriumsberichte ) Wirtschaft und Gesellschaft Ausgangslage Bevölkerungs­ entwicklung",
+      "page_number": 9,
+      "proposal_id": 1
+     },
+     {
+      "quote": "4 Erste Vorlage: Nachhaltigkeitsinitiative Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» Ende 2025 lebten rund 9,1 Millionen Personen in der Schweiz. Seit Einführung der Personenfreizügigkeit im Jahr 2002 ist die Bevölkerung um rund 1,7 Millionen Personen gewachsen. Das ist hauptsächlich auf die Zuwanderung zurückzuführen. Wie viele Menschen zuwandern, hängt vor allem vom Arbeitsmarkt ab. Floriert die Wirtschaft, so finden Unternehmen nicht genü- gend Arbeitskräfte in der Schweiz. Unternehmen, aber auch öffentliche Einrichtungen wie Spitäler und Pflegeheime rekru - tieren dann fehlende Fachkräfte häufig im EU-Raum. Die Initiative «Keine 10-Millionen-Schweiz! (Nachhaltig - keitsinitiative)» verlangt, die ständige Wohnbevölkerung zu begrenzen: Vor 2050 müsste die Bevölkerung der Schweiz unter 10 Millionen Menschen bleiben. Würde die ständige Wohnbevölkerung 9,5 Millionen Personen vor 2050 überschrei - ten, so müssten Bundesrat und Parlament insbesondere im Asylbereich und beim Familiennachzug Massnahmen ergreifen. Der Bundesrat müsste zudem bei internationalen Abkommen, die zum Bevölkerungswachstum beitragen, Ausnahmebestim - mungen und Schutzklauseln anrufen oder aushandeln. Würde die 10-Millionen-Grenze überschritten, so müsste die Schweiz diese Abkommen kündigen, nach zwei Jahren auch das Ab - kommen mit der EU über die Personenfreizügigkeit. Dadurch würden auch die anderen Verträge der Bilateralen I wegfallen. Auch die Beteiligung der Schweiz an den Schengen- und Dublin-Abkommen der EU wäre infrage gestellt und damit die enge Zusammenarbeit im Sicherheits- und Asylbereich. Die Initiative Ausgangslage In KürzeIn Kürze In Kürze Vorlage im Detail 8 Argumente 16 Abstimmungstext 20",
+      "page_number": 4,
+      "proposal_id": 1
+     }
+    ],
+    "numerical_conflict": null,
+    "p_entail": 0.0,
+    "p_neutral": 0.0,
+    "p_contra": 1.0,
+    "fuzzy_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+    "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_de.pdf",
+    "tokens_prompt": 4097,
+    "tokens_completion": 56,
+    "tokens_total": 4153,
+    "latency_ms": 866.77,
+    "error": null,
+    "context_pages": [
+     4,
+     20,
+     17,
+     8,
+     1,
+     3,
+     40,
+     5,
+     9,
+     12
+    ]
+   }
+  },
+  {
+   "id": "hf-0208",
+   "title": "🗣️ Wer sagt was",
+   "story": "Das Büchlein enthält beide Seiten. Die Aussage des Komitees ist belegt, auch wenn der Bundesrat widerspricht.",
+   "primary": true,
+   "claim": "Le comité affirme que l’immigration de masse constitue la cause principale de la pénurie de logements en Suisse.",
+   "claim_language": "fr",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "it",
+   "vote": "Iniziativa popolare «No a una Svizzera da 10 milioni! (Iniziativa per la sostenibilità)»",
+   "gold_label": 0,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "Le comité affirme que l’immigration de masse constitue la cause principale de la pénurie de logements en Suisse.",
+    "label": 0,
+    "label_name": "Entailment",
+    "reasoning": "Apertus answer: {\n  \"p_entail\": 1.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 0.0,\n  \"label\": 0,\n  \"evidence_ids\": [4, 10]\n}",
+    "evidence": [
+     "5 Sì Per il comitato d’iniziativa l’immigrazione attuale è mas- siccia. Le conseguenze sono penuria di alloggi, aumenti delle pigioni, cementificazione del paesaggio, ingorghi e treni so - vraffollati, aumento della criminalità, un settore sanitario in difficoltà e la diminuzione della qualità dell’istruzione. L’inizia- tiva limiterebbe l’immigrazione a un livello ragionevole. iniziativasostenibilita.ch Volete accettare l’iniziativa popolare «No a una Svizzera da 10 milioni! (Iniziativa per la sostenibilità)»? La domanda che figura sulla scheda No Per il Consiglio federale e il Parlamento l’iniziativa crea insicurezza e mette in pericolo la stabilità della Svizzera. È dannosa per l’economia, minaccia il benessere e la sicurezza interna e causa notevoli costi alla Confederazione e ai Cantoni. Inoltre, mette in discussione la via bilaterale con l’Unione europea come pure la tradizione umanitaria del nostro Paese. admin.ch/iniziativa-sostenibilita Raccomandazione del Consiglio federale e del Parlamento Raccomandazione del comitato d’iniziativa Il voto del Consiglio nazionale Il voto del Consiglio degli Stati 123 no 67 sì 6 astensioni 30 no 9 sì 5 astensioni",
+     "16 Argomenti Comitato d’iniziativa Alla fine del 2025 la Svizzera contava circa 9,1 milioni di abitanti. In 12 anni la popolazione residente permanente è aumentata di 1 milione di persone. La causa principale è l’im- migrazione di massa. Arrivano in Svizzera più di 100 000 perso - ne supplementari ogni anno, dall’UE, da Paesi terzi o tramite il sistema dell’asilo. Molti provengono da culture straniere islami- che e in gran parte dipendono dall’aiuto sociale dal primo momento in cui arrivano. Ogni giorno leggiamo notizie di furti, reati violenti e accoltellamenti. Le pigioni sono in costante aumento. La maggior parte degli Svizzeri non può più permettersi di acquistare un’abita- zione, e questo nonostante oggi si costruisca molto di più rispetto al passato. L’immigrazione di massa è la principale causa della mancanza di alloggi. Anche il nostro paesaggio cambia volto. La nostra bella Svizzera viene cementificata giorno dopo giorno. Le superfici verdi e i prati scompaiono. Si costruisce sempre più fitto e sempre più in altezza. Natura ed ecologia sono sotto pressione. La qualità della vita ne risente. La Svizzera è sempre stata orgogliosa del suo sistema educativo. Oggi però le scuole sono sotto pressione. Gli studi lo dimostrano: più bambini di lingua straniera ci sono in una classe, più il livello medio si abbassa. Un quarto dei giovani svizzeri, alla fine della scuola dell’obbligo, non è in grado di leggere correttamente. L’immigrazione crea ancora più immigrazione. Per ogni 100 000 nuovi immigrati servono circa 45 000 appartamenti supplementari e circa 2200 medici e infermieri in più. E questo ogni anno. Questa spirale senza fine è insostenibile. Immigrazione eccessiva Carenza di alloggi Natura e agricoltu- ra sotto pressione Scuole in difficoltà L’immigrazione aggrava la carenza di specialisti Primo oggetto: Iniziativa per la sostenibilità Gli argomenti Gli argomenti Gli argomenti del comitato d’iniziativa Le conseguenze dell’immigrazione di massa sono sotto gli occhi di tutti: carenza di alloggi e pigioni sempre più elevate. Cementificazione del paesaggio. Traffico congestionato e treni sovraffollati. Criminalità in aumento. Il sistema sanitario è al limite. Nelle scuole il livello dell’istruzione diminuisce. Molti si sentono sempre più stranieri nel proprio Paese."
+    ],
+    "evidence_sources": [
+     {
+      "quote": "5 Sì Per il comitato d’iniziativa l’immigrazione attuale è mas- siccia. Le conseguenze sono penuria di alloggi, aumenti delle pigioni, cementificazione del paesaggio, ingorghi e treni so - vraffollati, aumento della criminalità, un settore sanitario in difficoltà e la diminuzione della qualità dell’istruzione. L’inizia- tiva limiterebbe l’immigrazione a un livello ragionevole. iniziativasostenibilita.ch Volete accettare l’iniziativa popolare «No a una Svizzera da 10 milioni! (Iniziativa per la sostenibilità)»? La domanda che figura sulla scheda No Per il Consiglio federale e il Parlamento l’iniziativa crea insicurezza e mette in pericolo la stabilità della Svizzera. È dannosa per l’economia, minaccia il benessere e la sicurezza interna e causa notevoli costi alla Confederazione e ai Cantoni. Inoltre, mette in discussione la via bilaterale con l’Unione europea come pure la tradizione umanitaria del nostro Paese. admin.ch/iniziativa-sostenibilita Raccomandazione del Consiglio federale e del Parlamento Raccomandazione del comitato d’iniziativa Il voto del Consiglio nazionale Il voto del Consiglio degli Stati 123 no 67 sì 6 astensioni 30 no 9 sì 5 astensioni",
+      "page_number": 5,
+      "proposal_id": 1
+     },
+     {
+      "quote": "16 Argomenti Comitato d’iniziativa Alla fine del 2025 la Svizzera contava circa 9,1 milioni di abitanti. In 12 anni la popolazione residente permanente è aumentata di 1 milione di persone. La causa principale è l’im- migrazione di massa. Arrivano in Svizzera più di 100 000 perso - ne supplementari ogni anno, dall’UE, da Paesi terzi o tramite il sistema dell’asilo. Molti provengono da culture straniere islami- che e in gran parte dipendono dall’aiuto sociale dal primo momento in cui arrivano. Ogni giorno leggiamo notizie di furti, reati violenti e accoltellamenti. Le pigioni sono in costante aumento. La maggior parte degli Svizzeri non può più permettersi di acquistare un’abita- zione, e questo nonostante oggi si costruisca molto di più rispetto al passato. L’immigrazione di massa è la principale causa della mancanza di alloggi. Anche il nostro paesaggio cambia volto. La nostra bella Svizzera viene cementificata giorno dopo giorno. Le superfici verdi e i prati scompaiono. Si costruisce sempre più fitto e sempre più in altezza. Natura ed ecologia sono sotto pressione. La qualità della vita ne risente. La Svizzera è sempre stata orgogliosa del suo sistema educativo. Oggi però le scuole sono sotto pressione. Gli studi lo dimostrano: più bambini di lingua straniera ci sono in una classe, più il livello medio si abbassa. Un quarto dei giovani svizzeri, alla fine della scuola dell’obbligo, non è in grado di leggere correttamente. L’immigrazione crea ancora più immigrazione. Per ogni 100 000 nuovi immigrati servono circa 45 000 appartamenti supplementari e circa 2200 medici e infermieri in più. E questo ogni anno. Questa spirale senza fine è insostenibile. Immigrazione eccessiva Carenza di alloggi Natura e agricoltu- ra sotto pressione Scuole in difficoltà L’immigrazione aggrava la carenza di specialisti Primo oggetto: Iniziativa per la sostenibilità Gli argomenti Gli argomenti Gli argomenti del comitato d’iniziativa Le conseguenze dell’immigrazione di massa sono sotto gli occhi di tutti: carenza di alloggi e pigioni sempre più elevate. Cementificazione del paesaggio. Traffico congestionato e treni sovraffollati. Criminalità in aumento. Il sistema sanitario è al limite. Nelle scuole il livello dell’istruzione diminuisce. Molti si sentono sempre più stranieri nel proprio Paese.",
+      "page_number": 16,
+      "proposal_id": 1
+     }
+    ],
+    "numerical_conflict": null,
+    "p_entail": 1.0,
+    "p_neutral": 0.0,
+    "p_contra": 0.0,
+    "fuzzy_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+    "decision_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_it.pdf",
+    "tokens_prompt": 4689,
+    "tokens_completion": 57,
+    "tokens_total": 4746,
+    "latency_ms": 885.19,
+    "error": null,
+    "context_pages": [
+     20,
+     17,
+     19,
+     5,
+     4,
+     11,
+     8,
+     40,
+     1,
+     16
+    ]
+   }
+  },
+  {
+   "id": "hf-0652",
+   "title": "❓ Nicht im Büchlein",
+   "story": "Eine konkrete Zahl, die im Büchlein nirgends vorkommt: neutral statt «Widerspruch».",
+   "primary": true,
+   "claim": "Wird die Abstimmung angenommen, steigt die CO₂-Abgabe in der Schweiz ab 2026 um 20 Prozent.",
+   "claim_language": "de",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "it",
+   "vote": "Modifica della legge sul servizio civile",
+   "gold_label": 1,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "Wird die Abstimmung angenommen, steigt die CO₂-Abgabe in der Schweiz ab 2026 um 20 Prozent.",
+    "label": 1,
+    "label_name": "Neutral",
+    "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}",
+    "evidence": [],
+    "evidence_sources": [],
+    "numerical_conflict": null,
+    "p_entail": 0.0,
+    "p_neutral": 1.0,
+    "p_contra": 0.0,
+    "fuzzy_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+    "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_it.pdf",
+    "tokens_prompt": 4812,
+    "tokens_completion": 51,
+    "tokens_total": 4863,
+    "latency_ms": 804.58,
+    "error": null,
+    "context_pages": [
+     1,
+     3,
+     24,
+     40,
+     36,
+     34,
+     33,
+     6,
+     26,
+     7
+    ]
+   }
+  },
+  {
+   "id": "hf-0407",
+   "title": "🗣️ Komitee (IT → DE)",
+   "story": "Reserve: Aussage des Initiativkomitees, italienische Behauptung gegen deutsches Büchlein.",
+   "primary": false,
+   "claim": "Il comitato afferma che l’immigrazione attuale è eccessivamente elevata e che l’iniziativa la ridurrebbe a un livello ragionevole, evitando che la popolazione residente permanente superi i 10 milioni entro il 2050.",
+   "claim_language": "it",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "de",
+   "vote": "Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)»",
+   "gold_label": 0,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "Il comitato afferma che l’immigrazione attuale è eccessivamente elevata e che l’iniziativa la ridurrebbe a un livello ragionevole, evitando che la popolazione residente permanente superi i 10 milioni entro il 2050.",
+    "label": 0,
+    "label_name": "Entailment",
+    "reasoning": "Parsed via regex fallback",
+    "evidence": [
+     "17 Der Text auf dieser Doppelseite stammt vom Initiativkomitee. Es ist für den Inhalt und die Wortwahl verantwortlich. Die Nachhaltigkeits-Initiative sorgt für eine vernünftige Zuwanderung: Die ständige Wohnbevölkerung darf bis 2050 die 10-Millionen-Grenze nicht überschreiten. Das heisst: Es könnten immer noch rund 40 000 Personen und Fachkräfte pro Jahr einwandern. Die Initiative verpflichtet die Politik zu einer massvollen Zuwanderung in die Schweiz: Ja zu einer nachhaltigen Bevölkerungsentwicklung statt zu einer ungebremsten Zuwanderung. Ja zum Schutz der Umwelt und der Landschaft. Ja zur Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» Darum empfiehlt das Initiativkomitee: Ja nachhaltigkeitsinitiative.ch Keine 10-Millionen- Schweiz Ja zu einer nachhaltigen Entwicklung Empfehlung des Initiativkomitees",
+     "5 Ja Das Komitee hält die Zuwanderung heute für massiv zu hoch. Sie führe zu Wohnungsnot, höheren Mieten, Zubetonie - rung der Landschaft, Stau und überfüllten Zügen, steigender Kriminalität, einem Gesundheitswesen am Anschlag und sinkender Bildungsqualität. Die Initiative beschränke die Zuwanderung auf ein vernünftiges Mass. nachhaltigkeitsinitiative.ch Wollen Sie die Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» annehmen? Abstimmungsfrage Nein Aus Sicht von Bundesrat und Parlament bringt die Initia - tive Unsicherheit und gefährdet die Stabilität der Schweiz. Sie schadet der Wirtschaft, bedroht den Wohlstand und die innere Sicherheit und führt zu erheblichen Kosten für Bund und Kantone. Zudem stellt sie den bilateralen Weg mit der EU und die humanitäre Tradition in Frage. admin.ch/nachhaltigkeitsinitiative Empfehlung von Bundesrat und Parlament Empfehlung des Initiativkomitees Abstimmung im Nationalrat Abstimmung im Ständerat 123 Nein 67 Ja 6 Enthaltungen 30 Nein 9 Ja 5 Enthaltungen"
+    ],
+    "evidence_sources": [
+     {
+      "quote": "17 Der Text auf dieser Doppelseite stammt vom Initiativkomitee. Es ist für den Inhalt und die Wortwahl verantwortlich. Die Nachhaltigkeits-Initiative sorgt für eine vernünftige Zuwanderung: Die ständige Wohnbevölkerung darf bis 2050 die 10-Millionen-Grenze nicht überschreiten. Das heisst: Es könnten immer noch rund 40 000 Personen und Fachkräfte pro Jahr einwandern. Die Initiative verpflichtet die Politik zu einer massvollen Zuwanderung in die Schweiz: Ja zu einer nachhaltigen Bevölkerungsentwicklung statt zu einer ungebremsten Zuwanderung. Ja zum Schutz der Umwelt und der Landschaft. Ja zur Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» Darum empfiehlt das Initiativkomitee: Ja nachhaltigkeitsinitiative.ch Keine 10-Millionen- Schweiz Ja zu einer nachhaltigen Entwicklung Empfehlung des Initiativkomitees",
+      "page_number": 17,
+      "proposal_id": 1
+     },
+     {
+      "quote": "5 Ja Das Komitee hält die Zuwanderung heute für massiv zu hoch. Sie führe zu Wohnungsnot, höheren Mieten, Zubetonie - rung der Landschaft, Stau und überfüllten Zügen, steigender Kriminalität, einem Gesundheitswesen am Anschlag und sinkender Bildungsqualität. Die Initiative beschränke die Zuwanderung auf ein vernünftiges Mass. nachhaltigkeitsinitiative.ch Wollen Sie die Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» annehmen? Abstimmungsfrage Nein Aus Sicht von Bundesrat und Parlament bringt die Initia - tive Unsicherheit und gefährdet die Stabilität der Schweiz. Sie schadet der Wirtschaft, bedroht den Wohlstand und die innere Sicherheit und führt zu erheblichen Kosten für Bund und Kantone. Zudem stellt sie den bilateralen Weg mit der EU und die humanitäre Tradition in Frage. admin.ch/nachhaltigkeitsinitiative Empfehlung von Bundesrat und Parlament Empfehlung des Initiativkomitees Abstimmung im Nationalrat Abstimmung im Ständerat 123 Nein 67 Ja 6 Enthaltungen 30 Nein 9 Ja 5 Enthaltungen",
+      "page_number": 5,
+      "proposal_id": 1
+     }
+    ],
+    "numerical_conflict": null,
+    "p_entail": 1.0,
+    "p_neutral": 0.0,
+    "p_contra": 0.0,
+    "fuzzy_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+    "decision_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_de.pdf",
+    "tokens_prompt": 4064,
+    "tokens_completion": 57,
+    "tokens_total": 4121,
+    "latency_ms": 877.88,
+    "error": null,
+    "context_pages": [
+     20,
+     4,
+     17,
+     1,
+     8,
+     3,
+     40,
+     11,
+     5,
+     12
+    ]
+   }
+  },
+  {
+   "id": "hf-1238",
+   "title": "🔄 Komitee verdreht",
+   "story": "Reserve: Dem Komitee wird das Gegenteil seiner Position unterstellt.",
+   "primary": false,
+   "claim": "Le comité estime que l’immigration à grande échelle profite à la Suisse et qu’il n’existe aucun motif de la restreindre.",
+   "claim_language": "fr",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "fr",
+   "vote": "Initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) »",
+   "gold_label": 2,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "Le comité estime que l’immigration à grande échelle profite à la Suisse et qu’il n’existe aucun motif de la restreindre.",
+    "label": 2,
+    "label_name": "Contradiction",
+    "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": [2, 4, 5, 9, 10]\n}",
+    "evidence": [
+     "5 Oui Le comité estime que la Suisse fait face à une immigration de masse entraînant une pénurie de logements, une hausse des loyers, un bétonnage du paysage, des bouchons, des trains bondés, une augmentation de la criminalité, un système de santé à bout et une baisse de la qualité de l’enseignement. L’initiative entend limiter l’immigration à un niveau raisonnable. initiativedurabilite.ch Acceptez-vous l’initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » ? La question qui vous est posée Non Pour le Conseil fédéral et le Parlement, l’initiative est source d’incertitude et menace la stabilité de la Suisse. Elle nuit à l’économie, menace la prospérité et la sûreté intérieure et entraînera des charges importantes pour la Confédération et les cantons. Elle remet en outre en question la voie bilatérale avec l’UE et notre tradition humanitaire. admin.ch/initiative-durabilité Recommandation du Conseil fédéral et du Parlement Recommandation du comité d’initiative Vote du Conseil national Vote du Conseil des États 123 non 67 oui 6 abstentions 30 non 9 oui 5 abstentions",
+     "19 L’initiative menace notre tradition humanitaire. Si elle devait ne plus être en mesure de respecter certains accords de protection des droits de l’homme, la Suisse s’isolerait sur la scène internationale et perdrait sa crédibilité. L’initiative crée des problèmes et n’apporte pas de solu- tions. Le Conseil fédéral, en revanche, s’attaque aux défis liés à la croissance démographique. Il souhaite mieux exploiter le potentiel de la main-d’œuvre présente dans le pays, encoura - ger la construction de logements d’utilité publique et réduire considérablement le nombre de demandes d’asile. Dans le cadre du paquet Suisse-UE (Bilatérales III), il a négocié une clause de sauvegarde permettant de limiter temporairement l’immigration en cas de problèmes graves. Pour toutes ces raisons, le Conseil fédéral et le Parlement recommandent de rejeter l’initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) ». Non admin.ch/initiative-durabilité Tradition humani- taire menacée Des problèmes plutôt que des solutions Recommandation du Conseil fédéral et du Parlement",
+     "4 Premier objet : initiative pour la durabilité Initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » Fin 2025, la Suisse comptait environ 9,1 millions d’habi- tants. Depuis l’instauration de la libre circulation des personnes en 2002, la population a augmenté d’environ 1,7 million de personnes, principalement en raison de l’immigration. Le nombre d’immigrants dépend surtout du marché du travail. Lorsque l’économie se porte bien, la main-d’œuvre disponible en Suisse n’est pas suffisante. C’est pourquoi non seulement les entreprises, mais aussi des établissements publics comme les hôpitaux et les EMS, se tournent souvent vers l’UE pour trouver du personnel qualifié. L’initiative « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » veut limiter la population résidante perma - nente : la limite de 10 millions d’habitants ne doit pas être franchie avant 2050. Si le seuil de 9,5 millions est dépassé d’ici là, le Conseil fédéral et le Parlement devront prendre des mesures, notamment en matière d’asile et de regroupement familial. Le Conseil fédéral devra en outre invoquer ou négo - cier des clauses d’exception ou de sauvegarde dans les accords internationaux qui favorisent la croissance démographique. Si la limite de 10 millions est dépassée, la Suisse devra dénoncer ces accords, y compris, après deux ans, l’accord avec l’UE sur la libre circulation des personnes. Les autres accords bilatéraux I seraient alors aussi caducs. La participation de la Suisse aux accords Schengen et Dublin de l’UE et, par consé- quent, la coopération étroite en matière d’asile et de sécurité seraient également remises en question. L’initiative Contexte En brefEn bref En bref En détail 8 Arguments 16 Texte soumis au vote 20",
+     "11 L’initiative « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » veut limiter la population résidante permanente : le seuil de 10 millions d’habitants ne doit pas être franchi avant 2050. Avec cette limite, les auteurs de l’initiative souhaitent protéger l’environnement et garantir la conservation durable des ressources naturelles et le bon fonctionnement des in - frastructures, du système de santé et des assurances sociales. Si l’initiative est acceptée, la Confédération et les cantons devront prendre des mesures, notamment en cas de dépasse - ment de certains seuils. Si, avant 2050, la population résidante permanente dé - passe la limite de 9,5 millions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent des mesures, notamment en matière d’asile et de regroupement fami- lial. Leur nature exacte n’est pas précisée dans l’initiative. – Les personnes admises à titre provisoire ne peuvent plus obtenir d’autorisation de séjour ou d’établissement ni aucun autre droit de rester. Elles ne peuvent en outre plus se faire naturaliser. – Le Conseil fédéral doit invoquer ou négocier des clauses d’exception ou de sauvegarde dans les accords internatio- naux qui favorisent la croissance démographique, ou renégocier ces accords. Cette mesure pourrait toucher par exemple l’accord avec l’UE sur la libre circulation des personnes, la Convention européenne des droits de l’homme, la Convention de Genève sur les réfugiés ou la Convention de l’ONU relative aux droits de l’enfant. Ce que veut l’initiative 10 millions d’habi- tants au maximum d’ici 2050 Mesures à 9,5 millions d’habitants",
+     "12 Premier objet : initiative pour la durabilité D’après les projections de la Confédération, le seuil de 9,5 millions devrait être atteint en 20316. Si la population résidante permanente dépasse 10 mil - lions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent toutes les mesures disponibles pour repasser sous la barre des 10 millions. – Les accords internationaux qui favorisent la croissance démographique doivent être dénoncés dès que possible. À partir de 2050, le Conseil fédéral pourra rehausser la limite de 10 millions en fonction de l’accroissement naturel (naissances). Si, deux ans après avoir été dépassée pour la première fois, la limite de 10 millions n’est toujours pas respectée, l’ac- cord sur la libre circulation des personnes conclu avec l’UE doit être dénoncé. La Suisse pourrait éviter cette mesure si, dans l’intervalle, elle parvient à invoquer ou négocier des clauses d’exception ou de sauvegarde permettant de ramener la popu- lation à 10 millions. 6 L’Office fédéral de la statistique calcule trois scénarios d’évolution démographique. Le scénario de référence, qui prolonge les tendances observées au cours des dernières années, prévoit que le seuil de 9,5 millions d’habitants sera franchi en 2031. Le scénario « haut » combine un choix d’hypothèses plus favorables à la croissance démographique, alors que le scénario « bas » combine un choix d’hypothèses moins favorables. « Scénarios de l’évolution démographique de la Suisse 2025–2055 », Office fédéral de la statistique, avril 2025 ( bfs.admin.ch > Statistiques > Population > Évolution future > Scénarios pour la Suisse ) Mesures à 10 millions d’habitants Dénonciation de la libre circulation des personnes"
+    ],
+    "evidence_sources": [
+     {
+      "quote": "5 Oui Le comité estime que la Suisse fait face à une immigration de masse entraînant une pénurie de logements, une hausse des loyers, un bétonnage du paysage, des bouchons, des trains bondés, une augmentation de la criminalité, un système de santé à bout et une baisse de la qualité de l’enseignement. L’initiative entend limiter l’immigration à un niveau raisonnable. initiativedurabilite.ch Acceptez-vous l’initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » ? La question qui vous est posée Non Pour le Conseil fédéral et le Parlement, l’initiative est source d’incertitude et menace la stabilité de la Suisse. Elle nuit à l’économie, menace la prospérité et la sûreté intérieure et entraînera des charges importantes pour la Confédération et les cantons. Elle remet en outre en question la voie bilatérale avec l’UE et notre tradition humanitaire. admin.ch/initiative-durabilité Recommandation du Conseil fédéral et du Parlement Recommandation du comité d’initiative Vote du Conseil national Vote du Conseil des États 123 non 67 oui 6 abstentions 30 non 9 oui 5 abstentions",
+      "page_number": 5,
+      "proposal_id": 1
+     },
+     {
+      "quote": "19 L’initiative menace notre tradition humanitaire. Si elle devait ne plus être en mesure de respecter certains accords de protection des droits de l’homme, la Suisse s’isolerait sur la scène internationale et perdrait sa crédibilité. L’initiative crée des problèmes et n’apporte pas de solu- tions. Le Conseil fédéral, en revanche, s’attaque aux défis liés à la croissance démographique. Il souhaite mieux exploiter le potentiel de la main-d’œuvre présente dans le pays, encoura - ger la construction de logements d’utilité publique et réduire considérablement le nombre de demandes d’asile. Dans le cadre du paquet Suisse-UE (Bilatérales III), il a négocié une clause de sauvegarde permettant de limiter temporairement l’immigration en cas de problèmes graves. Pour toutes ces raisons, le Conseil fédéral et le Parlement recommandent de rejeter l’initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) ». Non admin.ch/initiative-durabilité Tradition humani- taire menacée Des problèmes plutôt que des solutions Recommandation du Conseil fédéral et du Parlement",
+      "page_number": 19,
+      "proposal_id": 1
+     },
+     {
+      "quote": "4 Premier objet : initiative pour la durabilité Initiative populaire « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » Fin 2025, la Suisse comptait environ 9,1 millions d’habi- tants. Depuis l’instauration de la libre circulation des personnes en 2002, la population a augmenté d’environ 1,7 million de personnes, principalement en raison de l’immigration. Le nombre d’immigrants dépend surtout du marché du travail. Lorsque l’économie se porte bien, la main-d’œuvre disponible en Suisse n’est pas suffisante. C’est pourquoi non seulement les entreprises, mais aussi des établissements publics comme les hôpitaux et les EMS, se tournent souvent vers l’UE pour trouver du personnel qualifié. L’initiative « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » veut limiter la population résidante perma - nente : la limite de 10 millions d’habitants ne doit pas être franchie avant 2050. Si le seuil de 9,5 millions est dépassé d’ici là, le Conseil fédéral et le Parlement devront prendre des mesures, notamment en matière d’asile et de regroupement familial. Le Conseil fédéral devra en outre invoquer ou négo - cier des clauses d’exception ou de sauvegarde dans les accords internationaux qui favorisent la croissance démographique. Si la limite de 10 millions est dépassée, la Suisse devra dénoncer ces accords, y compris, après deux ans, l’accord avec l’UE sur la libre circulation des personnes. Les autres accords bilatéraux I seraient alors aussi caducs. La participation de la Suisse aux accords Schengen et Dublin de l’UE et, par consé- quent, la coopération étroite en matière d’asile et de sécurité seraient également remises en question. L’initiative Contexte En brefEn bref En bref En détail 8 Arguments 16 Texte soumis au vote 20",
+      "page_number": 4,
+      "proposal_id": 1
+     },
+     {
+      "quote": "11 L’initiative « Pas de Suisse à 10 millions ! (initiative pour la durabilité) » veut limiter la population résidante permanente : le seuil de 10 millions d’habitants ne doit pas être franchi avant 2050. Avec cette limite, les auteurs de l’initiative souhaitent protéger l’environnement et garantir la conservation durable des ressources naturelles et le bon fonctionnement des in - frastructures, du système de santé et des assurances sociales. Si l’initiative est acceptée, la Confédération et les cantons devront prendre des mesures, notamment en cas de dépasse - ment de certains seuils. Si, avant 2050, la population résidante permanente dé - passe la limite de 9,5 millions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent des mesures, notamment en matière d’asile et de regroupement fami- lial. Leur nature exacte n’est pas précisée dans l’initiative. – Les personnes admises à titre provisoire ne peuvent plus obtenir d’autorisation de séjour ou d’établissement ni aucun autre droit de rester. Elles ne peuvent en outre plus se faire naturaliser. – Le Conseil fédéral doit invoquer ou négocier des clauses d’exception ou de sauvegarde dans les accords internatio- naux qui favorisent la croissance démographique, ou renégocier ces accords. Cette mesure pourrait toucher par exemple l’accord avec l’UE sur la libre circulation des personnes, la Convention européenne des droits de l’homme, la Convention de Genève sur les réfugiés ou la Convention de l’ONU relative aux droits de l’enfant. Ce que veut l’initiative 10 millions d’habi- tants au maximum d’ici 2050 Mesures à 9,5 millions d’habitants",
+      "page_number": 11,
+      "proposal_id": 1
+     },
+     {
+      "quote": "12 Premier objet : initiative pour la durabilité D’après les projections de la Confédération, le seuil de 9,5 millions devrait être atteint en 20316. Si la population résidante permanente dépasse 10 mil - lions de personnes, l’initiative prévoit les mesures suivantes. – Le Conseil fédéral et le Parlement prennent toutes les mesures disponibles pour repasser sous la barre des 10 millions. – Les accords internationaux qui favorisent la croissance démographique doivent être dénoncés dès que possible. À partir de 2050, le Conseil fédéral pourra rehausser la limite de 10 millions en fonction de l’accroissement naturel (naissances). Si, deux ans après avoir été dépassée pour la première fois, la limite de 10 millions n’est toujours pas respectée, l’ac- cord sur la libre circulation des personnes conclu avec l’UE doit être dénoncé. La Suisse pourrait éviter cette mesure si, dans l’intervalle, elle parvient à invoquer ou négocier des clauses d’exception ou de sauvegarde permettant de ramener la popu- lation à 10 millions. 6 L’Office fédéral de la statistique calcule trois scénarios d’évolution démographique. Le scénario de référence, qui prolonge les tendances observées au cours des dernières années, prévoit que le seuil de 9,5 millions d’habitants sera franchi en 2031. Le scénario « haut » combine un choix d’hypothèses plus favorables à la croissance démographique, alors que le scénario « bas » combine un choix d’hypothèses moins favorables. « Scénarios de l’évolution démographique de la Suisse 2025–2055 », Office fédéral de la statistique, avril 2025 ( bfs.admin.ch > Statistiques > Population > Évolution future > Scénarios pour la Suisse ) Mesures à 10 millions d’habitants Dénonciation de la libre circulation des personnes",
+      "page_number": 12,
+      "proposal_id": 1
+     }
+    ],
+    "numerical_conflict": null,
+    "p_entail": 0.0,
+    "p_neutral": 0.0,
+    "p_contra": 1.0,
+    "fuzzy_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+    "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_fr.pdf",
+    "tokens_prompt": 3904,
+    "tokens_completion": 66,
+    "tokens_total": 3970,
+    "latency_ms": 1016.51,
+    "error": null,
+    "context_pages": [
+     17,
+     5,
+     20,
+     19,
+     4,
+     40,
+     8,
+     1,
+     11,
+     12
+    ]
+   }
+  },
+  {
+   "id": "hf-1214",
+   "title": "🔄 Empfehlung verdreht",
+   "story": "Reserve: Parlament empfiehlt angeblich ein Ja, im Büchlein steht ein Nein.",
+   "primary": false,
+   "claim": "D’après le texte soumis au vote, l’Assemblée fédérale recommande au peuple et aux cantons d’accepter l’initiative.",
+   "claim_language": "fr",
+   "booklet_date": "2026-06-14",
+   "booklet_language": "de",
+   "vote": "Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)»",
+   "gold_label": 2,
+   "cached_result": {
+    "id": "case-0001",
+    "claim": "D’après le texte soumis au vote, l’Assemblée fédérale recommande au peuple et aux cantons d’accepter l’initiative.",
+    "label": 2,
+    "label_name": "Contradiction",
+    "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": [8]\n}",
+    "evidence": [
+     "5 Ja Das Komitee hält die Zuwanderung heute für massiv zu hoch. Sie führe zu Wohnungsnot, höheren Mieten, Zubetonie - rung der Landschaft, Stau und überfüllten Zügen, steigender Kriminalität, einem Gesundheitswesen am Anschlag und sinkender Bildungsqualität. Die Initiative beschränke die Zuwanderung auf ein vernünftiges Mass. nachhaltigkeitsinitiative.ch Wollen Sie die Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» annehmen? Abstimmungsfrage Nein Aus Sicht von Bundesrat und Parlament bringt die Initia - tive Unsicherheit und gefährdet die Stabilität der Schweiz. Sie schadet der Wirtschaft, bedroht den Wohlstand und die innere Sicherheit und führt zu erheblichen Kosten für Bund und Kantone. Zudem stellt sie den bilateralen Weg mit der EU und die humanitäre Tradition in Frage. admin.ch/nachhaltigkeitsinitiative Empfehlung von Bundesrat und Parlament Empfehlung des Initiativkomitees Abstimmung im Nationalrat Abstimmung im Ständerat 123 Nein 67 Ja 6 Enthaltungen 30 Nein 9 Ja 5 Enthaltungen"
+    ],
+    "evidence_sources": [
+     {
+      "quote": "5 Ja Das Komitee hält die Zuwanderung heute für massiv zu hoch. Sie führe zu Wohnungsnot, höheren Mieten, Zubetonie - rung der Landschaft, Stau und überfüllten Zügen, steigender Kriminalität, einem Gesundheitswesen am Anschlag und sinkender Bildungsqualität. Die Initiative beschränke die Zuwanderung auf ein vernünftiges Mass. nachhaltigkeitsinitiative.ch Wollen Sie die Volksinitiative «Keine 10-Millionen-Schweiz! (Nachhaltigkeitsinitiative)» annehmen? Abstimmungsfrage Nein Aus Sicht von Bundesrat und Parlament bringt die Initia - tive Unsicherheit und gefährdet die Stabilität der Schweiz. Sie schadet der Wirtschaft, bedroht den Wohlstand und die innere Sicherheit und führt zu erheblichen Kosten für Bund und Kantone. Zudem stellt sie den bilateralen Weg mit der EU und die humanitäre Tradition in Frage. admin.ch/nachhaltigkeitsinitiative Empfehlung von Bundesrat und Parlament Empfehlung des Initiativkomitees Abstimmung im Nationalrat Abstimmung im Ständerat 123 Nein 67 Ja 6 Enthaltungen 30 Nein 9 Ja 5 Enthaltungen",
+      "page_number": 5,
+      "proposal_id": 1
+     }
+    ],
+    "numerical_conflict": null,
+    "p_entail": 0.0,
+    "p_neutral": 0.0,
+    "p_contra": 1.0,
+    "fuzzy_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+    "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+    "strategy": "hybrid",
+    "booklet_path": "C:\\GitHub\\Apertus-Team-Fact-Attack-2026\\track_2a\\data\\booklets\\2026-06-14_de.pdf",
+    "tokens_prompt": 4335,
+    "tokens_completion": 53,
+    "tokens_total": 4388,
+    "latency_ms": 824.82,
+    "error": null,
+    "context_pages": [
+     20,
+     17,
+     1,
+     8,
+     40,
+     4,
+     3,
+     5,
+     36,
+     11
+    ]
+   }
+  }
+ ]
+}

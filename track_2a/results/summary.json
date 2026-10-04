@@ -1,0 +1,2044 @@
+{
+  "defaults": {
+    "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+    "strategy": "hybrid",
+    "top_k": 10,
+    "passage_chars": 0,
+    "prompt_mode": "ids",
+    "ids_reason": false
+  },
+  "headline": {
+    "advanced": {
+      "file": "20261004T133727_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_full_v2.json",
+      "timestamp": "2026-10-04T13:37:27",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_full_v2",
+      "n": 402,
+      "macro_f1": 0.9199,
+      "macro_f1_crosslingual": 0.9062,
+      "macro_f1_monolingual": 0.951,
+      "evidence_grounded_rate": 0.749,
+      "avg_prompt_tokens": 5736.9,
+      "avg_completion_tokens": 58.9,
+      "latency_mean_ms": 2143.6,
+      "latency_p95_ms": 3978.9,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9505,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9333,
+          "accuracy": 0.9375
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9221,
+          "accuracy": 0.913
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.9141,
+          "accuracy": 0.9167
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.7881,
+          "accuracy": 0.814
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 0.874,
+          "accuracy": 0.875
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 0.9345,
+          "accuracy": 0.9394
+        }
+      }
+    },
+    "beginner": {
+      "file": "20261004T131345_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_final_full.json",
+      "timestamp": "2026-10-04T13:13:45",
+      "split": "test",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_full",
+      "n": 402,
+      "macro_f1": 0.9749,
+      "macro_f1_crosslingual": 0.9706,
+      "macro_f1_monolingual": 0.9836,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2523.0,
+      "avg_completion_tokens": 55.3,
+      "latency_mean_ms": 1137.7,
+      "latency_p95_ms": 1745.6,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9484,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9767,
+          "accuracy": 0.9792
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9814,
+          "accuracy": 0.9783
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.9063,
+          "accuracy": 0.9167
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.9195,
+          "accuracy": 0.9302
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    }
+  },
+  "runs": [
+    {
+      "file": "20261004T113512_beginner_direct_reference_Apertus-v1.5-70B-thinking_baseline.json",
+      "timestamp": "2026-10-04T11:35:12",
+      "split": "test",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "json",
+      "top_k": 5,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "baseline",
+      "n": 150,
+      "macro_f1": 0.9533,
+      "macro_f1_crosslingual": 0.9799,
+      "macro_f1_monolingual": 0.8986,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2247.9,
+      "avg_completion_tokens": 149.1,
+      "latency_mean_ms": 3862.0,
+      "latency_p95_ms": 12019.3,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 17,
+          "macro_f1": 0.8667,
+          "accuracy": 0.8824
+        },
+        "de->fr": {
+          "count": 17,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "de->it": {
+          "count": 18,
+          "macro_f1": 0.9077,
+          "accuracy": 0.9444
+        },
+        "fr->de": {
+          "count": 16,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9375
+        },
+        "fr->fr": {
+          "count": 22,
+          "macro_f1": 0.9296,
+          "accuracy": 0.9091
+        },
+        "fr->it": {
+          "count": 10,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->fr": {
+          "count": 29,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 9,
+          "macro_f1": 0.8222,
+          "accuracy": 0.8889
+        }
+      }
+    },
+    {
+      "file": "20261004T114213_beginner_direct_reference_compact_Apertus-v1.5-70B-thinking_v2.json",
+      "timestamp": "2026-10-04T11:42:13",
+      "split": "dev",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "compact",
+      "top_k": 5,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2",
+      "n": 150,
+      "macro_f1": 0.7245,
+      "macro_f1_crosslingual": 0.7342,
+      "macro_f1_monolingual": 0.7056,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2150.6,
+      "avg_completion_tokens": 8.0,
+      "latency_mean_ms": 1801.0,
+      "latency_p95_ms": 9204.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.4744,
+          "accuracy": 0.5238
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.4667,
+          "accuracy": 0.6
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.8333,
+          "accuracy": 0.8667
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.7616,
+          "accuracy": 0.7895
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 0.8611,
+          "accuracy": 0.8333
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.5202,
+          "accuracy": 0.6429
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.6,
+          "accuracy": 0.7647
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.7608,
+          "accuracy": 0.7368
+        }
+      }
+    },
+    {
+      "file": "20261004T114435_advanced_retrieval_Apertus-v1.5-70B-thinking_baseline.json",
+      "timestamp": "2026-10-04T11:44:35",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "retrieval",
+      "prompt_mode": "json",
+      "top_k": 5,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "baseline",
+      "n": 150,
+      "macro_f1": 0.7947,
+      "macro_f1_crosslingual": 0.8057,
+      "macro_f1_monolingual": 0.765,
+      "evidence_grounded_rate": 0.8052,
+      "avg_prompt_tokens": 3407.6,
+      "avg_completion_tokens": 157.0,
+      "latency_mean_ms": 16216.4,
+      "latency_p95_ms": 36233.3,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 17,
+          "macro_f1": 0.5809,
+          "accuracy": 0.5882
+        },
+        "de->fr": {
+          "count": 17,
+          "macro_f1": 0.8141,
+          "accuracy": 0.8235
+        },
+        "de->it": {
+          "count": 18,
+          "macro_f1": 0.741,
+          "accuracy": 0.7778
+        },
+        "fr->de": {
+          "count": 16,
+          "macro_f1": 0.6748,
+          "accuracy": 0.6875
+        },
+        "fr->fr": {
+          "count": 22,
+          "macro_f1": 0.8831,
+          "accuracy": 0.8636
+        },
+        "fr->it": {
+          "count": 10,
+          "macro_f1": 0.9221,
+          "accuracy": 0.9
+        },
+        "it->de": {
+          "count": 12,
+          "macro_f1": 0.9221,
+          "accuracy": 0.9167
+        },
+        "it->fr": {
+          "count": 29,
+          "macro_f1": 0.7847,
+          "accuracy": 0.7931
+        },
+        "it->it": {
+          "count": 9,
+          "macro_f1": 0.8222,
+          "accuracy": 0.8889
+        }
+      }
+    },
+    {
+      "file": "20261004T114757_advanced_full_Apertus-v1.5-70B-thinking_baseline.json",
+      "timestamp": "2026-10-04T11:47:57",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "full",
+      "prompt_mode": "json",
+      "top_k": 5,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "baseline",
+      "n": 150,
+      "macro_f1": 0.7295,
+      "macro_f1_crosslingual": 0.7556,
+      "macro_f1_monolingual": 0.6654,
+      "evidence_grounded_rate": 0.625,
+      "avg_prompt_tokens": 59516.9,
+      "avg_completion_tokens": 201.5,
+      "latency_mean_ms": 21866.2,
+      "latency_p95_ms": 43729.8,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 17,
+          "macro_f1": 0.557,
+          "accuracy": 0.5882
+        },
+        "de->fr": {
+          "count": 17,
+          "macro_f1": 0.812,
+          "accuracy": 0.8235
+        },
+        "de->it": {
+          "count": 18,
+          "macro_f1": 0.6889,
+          "accuracy": 0.7222
+        },
+        "fr->de": {
+          "count": 16,
+          "macro_f1": 0.6111,
+          "accuracy": 0.625
+        },
+        "fr->fr": {
+          "count": 22,
+          "macro_f1": 0.7163,
+          "accuracy": 0.6818
+        },
+        "fr->it": {
+          "count": 10,
+          "macro_f1": 0.85,
+          "accuracy": 0.8
+        },
+        "it->de": {
+          "count": 12,
+          "macro_f1": 0.8857,
+          "accuracy": 0.9167
+        },
+        "it->fr": {
+          "count": 29,
+          "macro_f1": 0.7307,
+          "accuracy": 0.7241
+        },
+        "it->it": {
+          "count": 9,
+          "macro_f1": 0.8222,
+          "accuracy": 0.7778
+        }
+      }
+    },
+    {
+      "file": "20261004T114810_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_v2.json",
+      "timestamp": "2026-10-04T11:48:10",
+      "split": "dev",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "ids",
+      "top_k": 5,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2",
+      "n": 150,
+      "macro_f1": 0.9801,
+      "macro_f1_crosslingual": 0.9781,
+      "macro_f1_monolingual": 0.9824,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2383.7,
+      "avg_completion_tokens": 54.8,
+      "latency_mean_ms": 3603.4,
+      "latency_p95_ms": 11977.0,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.9568,
+          "accuracy": 0.9524
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.6667,
+          "accuracy": 1.0
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.7667,
+          "accuracy": 0.8571
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T114920_beginner_direct_reference_json_Apertus-v1.5-70B-thinking_v2.json",
+      "timestamp": "2026-10-04T11:49:20",
+      "split": "dev",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "json",
+      "top_k": 5,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2",
+      "n": 150,
+      "macro_f1": 0.9733,
+      "macro_f1_crosslingual": 0.9671,
+      "macro_f1_monolingual": 0.9829,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2295.1,
+      "avg_completion_tokens": 152.4,
+      "latency_mean_ms": 6973.0,
+      "latency_p95_ms": 24570.1,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.6667,
+          "accuracy": 1.0
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.9548,
+          "accuracy": 0.9474
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.7667,
+          "accuracy": 0.8571
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.9548,
+          "accuracy": 0.9474
+        }
+      }
+    },
+    {
+      "file": "20261004T115303_advanced_retrieval_ids_Apertus-v1.5-70B-thinking_v2.json",
+      "timestamp": "2026-10-04T11:53:03",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "retrieval",
+      "prompt_mode": "ids",
+      "top_k": 5,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2",
+      "n": 150,
+      "macro_f1": 0.7967,
+      "macro_f1_crosslingual": 0.7438,
+      "macro_f1_monolingual": 0.8774,
+      "evidence_grounded_rate": 0.7564,
+      "avg_prompt_tokens": 3024.7,
+      "avg_completion_tokens": 54.1,
+      "latency_mean_ms": 1366.2,
+      "latency_p95_ms": 1846.8,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.8615,
+          "accuracy": 0.8571
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.4667,
+          "accuracy": 0.7333
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.8054,
+          "accuracy": 0.8
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.7242,
+          "accuracy": 0.7368
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8269,
+          "accuracy": 0.8333
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9167
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.6535,
+          "accuracy": 0.7143
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.6313,
+          "accuracy": 0.6471
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.9548,
+          "accuracy": 0.9474
+        }
+      }
+    },
+    {
+      "file": "20261004T115439_advanced_retrieval_json_Apertus-v1.5-70B-thinking_v2.json",
+      "timestamp": "2026-10-04T11:54:39",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "retrieval",
+      "prompt_mode": "json",
+      "top_k": 5,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2",
+      "n": 150,
+      "macro_f1": 0.7864,
+      "macro_f1_crosslingual": 0.7357,
+      "macro_f1_monolingual": 0.8639,
+      "evidence_grounded_rate": 0.8889,
+      "avg_prompt_tokens": 2960.7,
+      "avg_completion_tokens": 164.4,
+      "latency_mean_ms": 3313.8,
+      "latency_p95_ms": 5515.7,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.7533,
+          "accuracy": 0.7619
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.4667,
+          "accuracy": 0.7333
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.8778,
+          "accuracy": 0.8667
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.6825,
+          "accuracy": 0.6842
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8694,
+          "accuracy": 0.8889
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 0.7919,
+          "accuracy": 0.8333
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.6667,
+          "accuracy": 0.7143
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.6282,
+          "accuracy": 0.6471
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.9548,
+          "accuracy": 0.9474
+        }
+      }
+    },
+    {
+      "file": "20261004T120940_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_v2k10.json",
+      "timestamp": "2026-10-04T12:09:40",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2k10",
+      "n": 150,
+      "macro_f1": 0.8623,
+      "macro_f1_crosslingual": 0.8298,
+      "macro_f1_monolingual": 0.9124,
+      "evidence_grounded_rate": 0.8352,
+      "avg_prompt_tokens": 4779.6,
+      "avg_completion_tokens": 55.6,
+      "latency_mean_ms": 2114.7,
+      "latency_p95_ms": 2914.2,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.9441,
+          "accuracy": 0.9524
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5387,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.9394,
+          "accuracy": 0.9333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.8106,
+          "accuracy": 0.8421
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.7531,
+          "accuracy": 0.7778
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.6329,
+          "accuracy": 0.6429
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8208,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T120941_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_v2k12.json",
+      "timestamp": "2026-10-04T12:09:41",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v2k12",
+      "n": 150,
+      "macro_f1": 0.8612,
+      "macro_f1_crosslingual": 0.8171,
+      "macro_f1_monolingual": 0.929,
+      "evidence_grounded_rate": 0.8261,
+      "avg_prompt_tokens": 5733.5,
+      "avg_completion_tokens": 55.9,
+      "latency_mean_ms": 2124.8,
+      "latency_p95_ms": 2886.0,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.9441,
+          "accuracy": 0.9524
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5387,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.812,
+          "accuracy": 0.8
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.8106,
+          "accuracy": 0.8421
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8194,
+          "accuracy": 0.8333
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.596,
+          "accuracy": 0.6429
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.86,
+          "accuracy": 0.8824
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T121133_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_v3viewpoints.json",
+      "timestamp": "2026-10-04T12:11:33",
+      "split": "dev",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "ids",
+      "top_k": 5,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v3viewpoints",
+      "n": 150,
+      "macro_f1": 0.9933,
+      "macro_f1_crosslingual": 0.9891,
+      "macro_f1_monolingual": 1.0,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2520.7,
+      "avg_completion_tokens": 55.1,
+      "latency_mean_ms": 1243.6,
+      "latency_p95_ms": 1572.5,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.6667,
+          "accuracy": 1.0
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.8963,
+          "accuracy": 0.9286
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T121410_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_v3viewpoints.json",
+      "timestamp": "2026-10-04T12:14:10",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "v3viewpoints",
+      "n": 150,
+      "macro_f1": 0.8703,
+      "macro_f1_crosslingual": 0.8304,
+      "macro_f1_monolingual": 0.9311,
+      "evidence_grounded_rate": 0.7872,
+      "avg_prompt_tokens": 4916.6,
+      "avg_completion_tokens": 56.0,
+      "latency_mean_ms": 2170.2,
+      "latency_p95_ms": 3240.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.9441,
+          "accuracy": 0.9524
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5561,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.9394,
+          "accuracy": 0.9333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.8556,
+          "accuracy": 0.8947
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8269,
+          "accuracy": 0.8333
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.5377,
+          "accuracy": 0.5714
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8208,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T121542_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_final_v1.json",
+      "timestamp": "2026-10-04T12:15:42",
+      "split": "test",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_v1",
+      "n": 150,
+      "macro_f1": 0.9735,
+      "macro_f1_crosslingual": 0.9707,
+      "macro_f1_monolingual": 0.9791,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2472.2,
+      "avg_completion_tokens": 54.1,
+      "latency_mean_ms": 1158.5,
+      "latency_p95_ms": 1552.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 17,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9412
+        },
+        "de->fr": {
+          "count": 17,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "de->it": {
+          "count": 18,
+          "macro_f1": 0.9568,
+          "accuracy": 0.9444
+        },
+        "fr->de": {
+          "count": 16,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9375
+        },
+        "fr->fr": {
+          "count": 22,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 10,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 12,
+          "macro_f1": 0.8857,
+          "accuracy": 0.9167
+        },
+        "it->fr": {
+          "count": 29,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 9,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T121727_advanced_retrieval_ids_Apertus-v1.5-70B-thinking_final_v1.json",
+      "timestamp": "2026-10-04T12:17:27",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "retrieval",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_v1",
+      "n": 150,
+      "macro_f1": 0.8796,
+      "macro_f1_crosslingual": 0.8529,
+      "macro_f1_monolingual": 0.9348,
+      "evidence_grounded_rate": 0.6882,
+      "avg_prompt_tokens": 6501.9,
+      "avg_completion_tokens": 54.4,
+      "latency_mean_ms": 2594.9,
+      "latency_p95_ms": 4066.5,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 17,
+          "macro_f1": 0.8077,
+          "accuracy": 0.8235
+        },
+        "de->fr": {
+          "count": 17,
+          "macro_f1": 0.8141,
+          "accuracy": 0.8235
+        },
+        "de->it": {
+          "count": 18,
+          "macro_f1": 0.8615,
+          "accuracy": 0.8333
+        },
+        "fr->de": {
+          "count": 16,
+          "macro_f1": 0.8667,
+          "accuracy": 0.875
+        },
+        "fr->fr": {
+          "count": 22,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 10,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 12,
+          "macro_f1": 0.8857,
+          "accuracy": 0.9167
+        },
+        "it->fr": {
+          "count": 29,
+          "macro_f1": 0.7847,
+          "accuracy": 0.7931
+        },
+        "it->it": {
+          "count": 9,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T122027_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_v1.json",
+      "timestamp": "2026-10-04T12:20:27",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_v1",
+      "n": 150,
+      "macro_f1": 0.9259,
+      "macro_f1_crosslingual": 0.9104,
+      "macro_f1_monolingual": 0.9569,
+      "evidence_grounded_rate": 0.7684,
+      "avg_prompt_tokens": 6023.2,
+      "avg_completion_tokens": 55.2,
+      "latency_mean_ms": 2323.1,
+      "latency_p95_ms": 3760.0,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 17,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "de->fr": {
+          "count": 17,
+          "macro_f1": 0.869,
+          "accuracy": 0.8824
+        },
+        "de->it": {
+          "count": 18,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->de": {
+          "count": 16,
+          "macro_f1": 0.8121,
+          "accuracy": 0.8125
+        },
+        "fr->fr": {
+          "count": 22,
+          "macro_f1": 0.9365,
+          "accuracy": 0.9545
+        },
+        "fr->it": {
+          "count": 10,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 12,
+          "macro_f1": 0.9221,
+          "accuracy": 0.9167
+        },
+        "it->fr": {
+          "count": 29,
+          "macro_f1": 0.8655,
+          "accuracy": 0.8966
+        },
+        "it->it": {
+          "count": 9,
+          "macro_f1": 0.8519,
+          "accuracy": 0.8889
+        }
+      }
+    },
+    {
+      "file": "20261004T123620_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_c600k15.json",
+      "timestamp": "2026-10-04T12:36:20",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 15,
+      "passage_chars": 600,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "c600k15",
+      "n": 150,
+      "macro_f1": 0.7992,
+      "macro_f1_crosslingual": 0.7517,
+      "macro_f1_monolingual": 0.871,
+      "evidence_grounded_rate": 0.8851,
+      "avg_prompt_tokens": 2688.6,
+      "avg_completion_tokens": 56.4,
+      "latency_mean_ms": 1761.0,
+      "latency_p95_ms": 2606.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.8966,
+          "accuracy": 0.9048
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5561,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.7313,
+          "accuracy": 0.7333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.7242,
+          "accuracy": 0.7368
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.7152,
+          "accuracy": 0.7222
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.5444,
+          "accuracy": 0.5714
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.7667,
+          "accuracy": 0.7647
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T123621_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_c600k20.json",
+      "timestamp": "2026-10-04T12:36:21",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 20,
+      "passage_chars": 600,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "c600k20",
+      "n": 150,
+      "macro_f1": 0.8432,
+      "macro_f1_crosslingual": 0.8106,
+      "macro_f1_monolingual": 0.894,
+      "evidence_grounded_rate": 0.9231,
+      "avg_prompt_tokens": 3378.8,
+      "avg_completion_tokens": 58.4,
+      "latency_mean_ms": 1798.7,
+      "latency_p95_ms": 2633.5,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.8889,
+          "accuracy": 0.9048
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5561,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.7333,
+          "accuracy": 0.7333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.8667,
+          "accuracy": 0.8421
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8222,
+          "accuracy": 0.7778
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.6714,
+          "accuracy": 0.7143
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8208,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T124625_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_c600k30.json",
+      "timestamp": "2026-10-04T12:46:25",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 30,
+      "passage_chars": 600,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "c600k30",
+      "n": 150,
+      "macro_f1": 0.8326,
+      "macro_f1_crosslingual": 0.8114,
+      "macro_f1_monolingual": 0.8654,
+      "evidence_grounded_rate": 0.9072,
+      "avg_prompt_tokens": 4745.2,
+      "avg_completion_tokens": 58.7,
+      "latency_mean_ms": 2973.7,
+      "latency_p95_ms": 4036.8,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.8075,
+          "accuracy": 0.8095
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5561,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.7407,
+          "accuracy": 0.7333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.9107,
+          "accuracy": 0.8947
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8704,
+          "accuracy": 0.8333
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9167
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.6714,
+          "accuracy": 0.7143
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8164,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.9556,
+          "accuracy": 0.9474
+        }
+      }
+    },
+    {
+      "file": "20261004T124625_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_c900k15.json",
+      "timestamp": "2026-10-04T12:46:25",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 15,
+      "passage_chars": 900,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "c900k15",
+      "n": 150,
+      "macro_f1": 0.8374,
+      "macro_f1_crosslingual": 0.8106,
+      "macro_f1_monolingual": 0.8795,
+      "evidence_grounded_rate": 0.8977,
+      "avg_prompt_tokens": 3398.3,
+      "avg_completion_tokens": 58.5,
+      "latency_mean_ms": 2979.3,
+      "latency_p95_ms": 4480.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.7804,
+          "accuracy": 0.8095
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.6111,
+          "accuracy": 0.8667
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.7313,
+          "accuracy": 0.7333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.9107,
+          "accuracy": 0.8947
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8694,
+          "accuracy": 0.8889
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9167
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.6051,
+          "accuracy": 0.6429
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8208,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.9548,
+          "accuracy": 0.9474
+        }
+      }
+    },
+    {
+      "file": "20261004T125524_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_c600k20_sec.json",
+      "timestamp": "2026-10-04T12:55:24",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 20,
+      "passage_chars": 600,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "c600k20_sec",
+      "n": 150,
+      "macro_f1": 0.8575,
+      "macro_f1_crosslingual": 0.8332,
+      "macro_f1_monolingual": 0.8941,
+      "evidence_grounded_rate": 0.8901,
+      "avg_prompt_tokens": 3468.5,
+      "avg_completion_tokens": 61.0,
+      "latency_mean_ms": 3000.1,
+      "latency_p95_ms": 4728.9,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.8889,
+          "accuracy": 0.9048
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5561,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.6572,
+          "accuracy": 0.6667
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.9548,
+          "accuracy": 0.9474
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.7531,
+          "accuracy": 0.7778
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 0.9327,
+          "accuracy": 0.9167
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.8487,
+          "accuracy": 0.8571
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8208,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T125525_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_page_k10_sec.json",
+      "timestamp": "2026-10-04T12:55:25",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "page_k10_sec",
+      "n": 150,
+      "macro_f1": 0.8624,
+      "macro_f1_crosslingual": 0.8194,
+      "macro_f1_monolingual": 0.9305,
+      "evidence_grounded_rate": 0.7935,
+      "avg_prompt_tokens": 4957.0,
+      "avg_completion_tokens": 61.0,
+      "latency_mean_ms": 3028.1,
+      "latency_p95_ms": 6166.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.9441,
+          "accuracy": 0.9524
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5387,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.9394,
+          "accuracy": 0.9333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.8042,
+          "accuracy": 0.8421
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8704,
+          "accuracy": 0.8333
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.5377,
+          "accuracy": 0.5714
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8208,
+          "accuracy": 0.8235
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T125605_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_c600k20_sec_reason.json",
+      "timestamp": "2026-10-04T12:56:05",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 20,
+      "passage_chars": 600,
+      "ids_reason": true,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "c600k20_sec_reason",
+      "n": 150,
+      "macro_f1": 0.8587,
+      "macro_f1_crosslingual": 0.8566,
+      "macro_f1_monolingual": 0.8617,
+      "evidence_grounded_rate": 0.913,
+      "avg_prompt_tokens": 3490.5,
+      "avg_completion_tokens": 100.8,
+      "latency_mean_ms": 3812.3,
+      "latency_p95_ms": 6276.8,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 21,
+          "macro_f1": 0.9501,
+          "accuracy": 0.9524
+        },
+        "de->fr": {
+          "count": 15,
+          "macro_f1": 0.5561,
+          "accuracy": 0.8
+        },
+        "de->it": {
+          "count": 15,
+          "macro_f1": 0.7107,
+          "accuracy": 0.7333
+        },
+        "fr->de": {
+          "count": 19,
+          "macro_f1": 0.8274,
+          "accuracy": 0.8421
+        },
+        "fr->fr": {
+          "count": 18,
+          "macro_f1": 0.8333,
+          "accuracy": 0.7778
+        },
+        "fr->it": {
+          "count": 12,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 14,
+          "macro_f1": 0.9373,
+          "accuracy": 0.9286
+        },
+        "it->fr": {
+          "count": 17,
+          "macro_f1": 0.8843,
+          "accuracy": 0.8824
+        },
+        "it->it": {
+          "count": 19,
+          "macro_f1": 0.8078,
+          "accuracy": 0.8421
+        }
+      }
+    },
+    {
+      "file": "20261004T130516_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_big_page_k10_sec.json",
+      "timestamp": "2026-10-04T13:05:16",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "big_page_k10_sec",
+      "n": 450,
+      "macro_f1": 0.9081,
+      "macro_f1_crosslingual": 0.8979,
+      "macro_f1_monolingual": 0.9238,
+      "evidence_grounded_rate": 0.8556,
+      "avg_prompt_tokens": 4842.0,
+      "avg_completion_tokens": 59.3,
+      "latency_mean_ms": 2992.1,
+      "latency_p95_ms": 4488.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 54,
+          "macro_f1": 0.8763,
+          "accuracy": 0.8889
+        },
+        "de->fr": {
+          "count": 53,
+          "macro_f1": 0.8602,
+          "accuracy": 0.8679
+        },
+        "de->it": {
+          "count": 51,
+          "macro_f1": 0.9602,
+          "accuracy": 0.9608
+        },
+        "fr->de": {
+          "count": 44,
+          "macro_f1": 0.8886,
+          "accuracy": 0.8864
+        },
+        "fr->fr": {
+          "count": 57,
+          "macro_f1": 0.9166,
+          "accuracy": 0.9123
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 0.866,
+          "accuracy": 0.8684
+        },
+        "it->de": {
+          "count": 44,
+          "macro_f1": 0.837,
+          "accuracy": 0.8409
+        },
+        "it->fr": {
+          "count": 53,
+          "macro_f1": 0.945,
+          "accuracy": 0.9434
+        },
+        "it->it": {
+          "count": 56,
+          "macro_f1": 0.9795,
+          "accuracy": 0.9821
+        }
+      }
+    },
+    {
+      "file": "20261004T130520_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_big_c600k20_sec.json",
+      "timestamp": "2026-10-04T13:05:20",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 20,
+      "passage_chars": 600,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "big_c600k20_sec",
+      "n": 450,
+      "macro_f1": 0.8308,
+      "macro_f1_crosslingual": 0.8113,
+      "macro_f1_monolingual": 0.8634,
+      "evidence_grounded_rate": 0.9101,
+      "avg_prompt_tokens": 3442.5,
+      "avg_completion_tokens": 60.6,
+      "latency_mean_ms": 3006.0,
+      "latency_p95_ms": 4103.2,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 54,
+          "macro_f1": 0.8357,
+          "accuracy": 0.8519
+        },
+        "de->fr": {
+          "count": 53,
+          "macro_f1": 0.8426,
+          "accuracy": 0.8491
+        },
+        "de->it": {
+          "count": 51,
+          "macro_f1": 0.7775,
+          "accuracy": 0.7843
+        },
+        "fr->de": {
+          "count": 44,
+          "macro_f1": 0.7975,
+          "accuracy": 0.7955
+        },
+        "fr->fr": {
+          "count": 57,
+          "macro_f1": 0.8492,
+          "accuracy": 0.8421
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 0.8423,
+          "accuracy": 0.8421
+        },
+        "it->de": {
+          "count": 44,
+          "macro_f1": 0.7922,
+          "accuracy": 0.7955
+        },
+        "it->fr": {
+          "count": 53,
+          "macro_f1": 0.8023,
+          "accuracy": 0.8113
+        },
+        "it->it": {
+          "count": 56,
+          "macro_f1": 0.9058,
+          "accuracy": 0.9107
+        }
+      }
+    },
+    {
+      "file": "20261004T131034_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_full.json",
+      "timestamp": "2026-10-04T13:10:34",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_full",
+      "n": 402,
+      "macro_f1": 0.9199,
+      "macro_f1_crosslingual": 0.9027,
+      "macro_f1_monolingual": 0.9586,
+      "evidence_grounded_rate": 0.7538,
+      "avg_prompt_tokens": 5740.8,
+      "avg_completion_tokens": 57.8,
+      "latency_mean_ms": 2126.8,
+      "latency_p95_ms": 3765.9,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9752,
+          "accuracy": 0.9737
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9127,
+          "accuracy": 0.9167
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9221,
+          "accuracy": 0.913
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.9141,
+          "accuracy": 0.9167
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.7881,
+          "accuracy": 0.814
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 0.874,
+          "accuracy": 0.875
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 0.9345,
+          "accuracy": 0.9394
+        }
+      }
+    },
+    {
+      "file": "20261004T131345_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_final_full.json",
+      "timestamp": "2026-10-04T13:13:45",
+      "split": "test",
+      "task": "beginner",
+      "strategy": "direct_reference",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": null,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_full",
+      "n": 402,
+      "macro_f1": 0.9749,
+      "macro_f1_crosslingual": 0.9706,
+      "macro_f1_monolingual": 0.9836,
+      "evidence_grounded_rate": 1.0,
+      "avg_prompt_tokens": 2523.0,
+      "avg_completion_tokens": 55.3,
+      "latency_mean_ms": 1137.7,
+      "latency_p95_ms": 1745.6,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9484,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9767,
+          "accuracy": 0.9792
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9814,
+          "accuracy": 0.9783
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.9063,
+          "accuracy": 0.9167
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.9195,
+          "accuracy": 0.9302
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        }
+      }
+    },
+    {
+      "file": "20261004T133727_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_full_v2.json",
+      "timestamp": "2026-10-04T13:37:27",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 10,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_full_v2",
+      "n": 402,
+      "macro_f1": 0.9199,
+      "macro_f1_crosslingual": 0.9062,
+      "macro_f1_monolingual": 0.951,
+      "evidence_grounded_rate": 0.749,
+      "avg_prompt_tokens": 5736.9,
+      "avg_completion_tokens": 58.9,
+      "latency_mean_ms": 2143.6,
+      "latency_p95_ms": 3978.9,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9505,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9333,
+          "accuracy": 0.9375
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9221,
+          "accuracy": 0.913
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.9141,
+          "accuracy": 0.9167
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.7881,
+          "accuracy": 0.814
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 0.874,
+          "accuracy": 0.875
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 0.9345,
+          "accuracy": 0.9394
+        }
+      }
+    }
+  ]
+}
