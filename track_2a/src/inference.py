@@ -6,6 +6,8 @@ page-attributed evidence extraction, and Apertus LLM inference.
 
 import re
 import time
+import threading
+from pypdf.errors import PyPdfError
 from pathlib import Path
 from typing import Optional, Union, Dict, Any, List
 from pydantic import BaseModel, Field
@@ -14,6 +16,8 @@ from src.pdf_parser import PDFParser
 from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
+from src.embeddings import HybridSettings, pdf_hash
+from src.hybrid_retriever import HybridPageRetriever, page_context
 from src import config
 
 
@@ -21,6 +25,8 @@ class EvidenceSource(BaseModel):
     quote: str
     page_number: Optional[int] = None
     proposal_id: Optional[int] = None
+    section_type: Optional[str] = None
+    speaker: Optional[str] = None
 
 
 class PredictionResult(BaseModel):
@@ -43,6 +49,10 @@ class PredictionResult(BaseModel):
     tokens_completion: int
     tokens_total: int
     latency_ms: float
+    # API latency above keeps its original meaning; these fields are additive.
+    total_latency_ms: float = 0.0
+    retrieval_metrics: Dict[str, Any] = Field(default_factory=dict)
+    requested_strategy: Optional[str] = None
 
     def to_official_dict(self, case_id: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -91,25 +101,89 @@ class ClaimVerificationEngine:
         self,
         strategy: str = config.DEFAULT_STRATEGY,
         apertus_client: Optional[ApertusClient] = None,
+        hybrid_settings: Optional[HybridSettings] = None,
+        embedding_backend: Optional[Any] = None,
     ):
         self.strategy = strategy
         self.client = apertus_client or ApertusClient()
         self.pdf_parser = PDFParser()
+        self.hybrid_settings = hybrid_settings or HybridSettings()
+        self.embedding_backend = embedding_backend
+        self._hybrid_retrievers: Dict[str, HybridPageRetriever] = {}
+        self._hybrid_lock = threading.Lock()
 
     def _get_booklet_data(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:
         path_str = str(Path(pdf_path).resolve())
-        if path_str not in _GLOBAL_BOOKLET_CACHE:
-            pages = self.pdf_parser.extract_pages(path_str)
-            paragraphs = self.pdf_parser.extract_paragraphs(path_str)
-            full_text = self.pdf_parser.extract_full_text(path_str)
+        source_hash = pdf_hash(Path(path_str))
+        key = f"{path_str}:{source_hash}:{self.pdf_parser.VERSION}"
+        if key not in _GLOBAL_BOOKLET_CACHE:
+            try:
+                pages = self.pdf_parser.extract_pages(path_str)
+                paragraphs = self.pdf_parser.extract_paragraphs(path_str)
+                full_text = self.pdf_parser.extract_full_text(path_str)
+            except PyPdfError as exc:
+                raise ValueError("PDF cannot be read. Download it again or provide a valid, text-readable PDF.") from exc
             retriever = PassageRetriever(paragraphs)
-            _GLOBAL_BOOKLET_CACHE[path_str] = {
+            # Evict older versions of the same path (e.g. a replaced uploaded PDF).
+            for old_key in list(_GLOBAL_BOOKLET_CACHE):
+                if old_key.startswith(path_str + ":"):
+                    del _GLOBAL_BOOKLET_CACHE[old_key]
+            _GLOBAL_BOOKLET_CACHE[key] = {
                 "pages": pages,
                 "paragraphs": paragraphs,
                 "full_text": full_text,
                 "retriever": retriever,
+                "source_hash": source_hash,
             }
-        return _GLOBAL_BOOKLET_CACHE[path_str]
+        return _GLOBAL_BOOKLET_CACHE[key]
+
+    def _hybrid_retriever(self, data: Dict[str, Any]) -> HybridPageRetriever:
+        key = data["source_hash"]
+        with self._hybrid_lock:
+            if key not in self._hybrid_retrievers:
+                self._hybrid_retrievers[key] = HybridPageRetriever(
+                    data["pages"], data["paragraphs"], key, self.hybrid_settings, self.embedding_backend,
+                )
+            return self._hybrid_retrievers[key]
+
+    def warm_up(self, booklet_pdf: Union[str, Path]) -> Dict[str, Any]:
+        """Parse, load model, and build/load index without an Apertus request."""
+        start = time.perf_counter()
+        data = self._get_booklet_data(booklet_pdf)
+        stats = self._hybrid_retriever(data).warm_up()
+        stats["total_latency_ms"] = (time.perf_counter() - start) * 1000
+        return stats
+
+    def retrieve_context(self, claim: str, booklet_pdf: Union[str, Path],
+                         strategy: Optional[str] = None, top_k: int = 5,
+                         vote: Optional[str] = None) -> Dict[str, Any]:
+        """Prepare only document context; no references/labels or generative calls."""
+        strat = strategy or self.strategy
+        if strat not in config.STRATEGIES:
+            raise ValueError(f"Unknown strategy {strat!r}; choose {', '.join(config.STRATEGIES)}")
+        if top_k < 1:
+            raise ValueError("top_k must be positive")
+        start = time.perf_counter()
+        data = self._get_booklet_data(booklet_pdf)
+        preparation_ms = (time.perf_counter() - start) * 1000
+        retrieval_start = time.perf_counter()
+        metrics = {"requested_strategy": strat, "actual_strategy": strat,
+                   "cache_status": "not_used", "embedding_ms": 0.0, "model_load_ms": 0.0,
+                   "query_embedding_ms": 0.0, "document_embedding_ms": 0.0,
+                   "index_build_ms": 0.0, "index_load_ms": 0.0}
+        if strat == "full":
+            context, sources = data["full_text"], data["paragraphs"]
+        elif strat == "retrieval":
+            sources = data["retriever"].retrieve(claim, top_k=top_k, target_vote=vote)
+            context = "\n\n".join(f"[Page {p['page_number']}] {p['text']}" for p in sources)
+        else:
+            sources, stats = self._hybrid_retriever(data).retrieve(claim, vote, dense=strat == "hybrid_dense")
+            context = page_context(sources)
+            metrics.update(stats)
+        metrics["retrieval_ms"] = (time.perf_counter() - retrieval_start) * 1000
+        metrics["document_preparation_ms"] = preparation_ms
+        metrics["selected_pages"] = list(dict.fromkeys(p["page_number"] for p in sources))
+        return {"context": context, "sources": sources, "metrics": metrics, "booklet_data": data}
 
     def verify_claim(
         self,
@@ -125,22 +199,13 @@ class ClaimVerificationEngine:
         Verify whether the voting booklet entails, contradicts, or is neutral to the claim.
         Supports ADVANCED TASK from Hack Apertus: accepts optional 'vote' title to scope proposal.
         """
-        strat = strategy or self.strategy
-        booklet_data = self._get_booklet_data(booklet_pdf)
-
-        candidate_paras = []
-        if strat == "full":
-            # Strategy 1: Provide full booklet text to Apertus
-            context = booklet_data["full_text"]
-            candidate_paras = booklet_data["paragraphs"]
-        else:
-            # Strategy 2: Retrieve top-k relevant paragraphs (with proposal isolation & vote targeting)
-            retriever: PassageRetriever = booklet_data["retriever"]
-            candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
-            context_blocks = []
-            for p in candidate_paras:
-                context_blocks.append(f"[Page {p['page_number']}] {p['text']}")
-            context = "\n\n".join(context_blocks)
+        total_start = time.perf_counter()
+        prepared = self.retrieve_context(claim, booklet_pdf, strategy, top_k, vote)
+        metrics = prepared["metrics"]
+        strat = metrics["actual_strategy"]
+        context = prepared["context"]
+        candidate_paras = prepared["sources"]
+        booklet_data = prepared["booklet_data"]
 
         # 1. Deterministic Numerical Conflict Check
         num_conflict: Optional[NumericalConflictResult] = detect_numerical_conflict(claim, context)
@@ -185,6 +250,28 @@ class ClaimVerificationEngine:
         if final_label != 1:
             all_paras = booklet_data["paragraphs"]
             for ev in nli_output.evidence:
+                if metrics["requested_strategy"] in ("hybrid", "hybrid_dense"):
+                    # Original page numbers are the prompt IDs; never renumber by rank.
+                    clean = re.sub(r"\[(?:page|seite)\s+\d+\]", "", ev, flags=re.IGNORECASE)
+                    clean = re.sub(r"^\s*(?:\[(?:Section|Proposal|Speaker)\s+[^\]]*\]\s*)+", "", clean)
+                    clean = " ".join(clean.strip(' \"«»').split())
+                    quote_pattern = re.compile(re.escape(clean), re.IGNORECASE) if clean else None
+                    matches = [p for p in candidate_paras if clean and
+                               quote_pattern.search(" ".join(p["text"].split()))]
+                    tag = re.search(r"\[(?:page|seite)\s+(\d+)\]", ev, re.IGNORECASE)
+                    if tag:
+                        tagged = [p for p in matches if p["page_number"] == int(tag.group(1))]
+                        matches = tagged or matches
+                    if matches:
+                        page = matches[0]
+                        original = " ".join(page["text"].split())
+                        original_quote = quote_pattern.search(original).group(0)
+                        evidence_sources.append(EvidenceSource(
+                            quote=original_quote, page_number=page["page_number"],
+                            proposal_id=page.get("proposal_id"), section_type=page.get("section_type"),
+                            speaker=page.get("speaker"),
+                        ))
+                    continue
                 ev_raw = ev.strip()
                 page_tag_match = re.search(r"\[(?:page|seite)\s+(\d+)\]", ev_raw, re.IGNORECASE)
                 matched_page = int(page_tag_match.group(1)) if page_tag_match else None
@@ -227,6 +314,13 @@ class ClaimVerificationEngine:
                 )
             final_evidence_list = nli_output.evidence
 
+        if metrics["requested_strategy"] in ("hybrid", "hybrid_dense"):
+            final_evidence_list = [source.quote for source in evidence_sources]
+            if final_label == 0 and not evidence_sources:
+                final_label, label_name = 1, config.LABEL_MAPPING[1]
+                p_neutral, p_entail = max(0.85, p_neutral), 0.10
+                decision_rule = "Vacuity Guardrail: No quote matches a selected original page -> Neutral (1)"
+
         return PredictionResult(
             id=case_id or "case-0001",
             claim=claim,
@@ -247,6 +341,9 @@ class ClaimVerificationEngine:
             tokens_completion=nli_output.tokens_completion,
             tokens_total=nli_output.tokens_total,
             latency_ms=nli_output.latency_ms,
+            total_latency_ms=(time.perf_counter() - total_start) * 1000,
+            retrieval_metrics=metrics,
+            requested_strategy=metrics["requested_strategy"],
         )
 
     def verify_premise(

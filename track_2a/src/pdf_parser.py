@@ -57,6 +57,9 @@ _TOC_PATTERNS = [
 
 
 class PDFParser:
+    # Increment when paragraph extraction or source metadata changes.
+    VERSION = "paragraphs-v1-min40"
+
     def __init__(self, cache_dir: Union[Path, None] = None):
         self.cache_dir = cache_dir
 

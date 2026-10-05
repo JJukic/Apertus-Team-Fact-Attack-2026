@@ -1,4 +1,4 @@
-.PHONY: run build test benchmark compare download install web
+.PHONY: run build test benchmark compare download install install-hybrid index web
 
 IMAGE_NAME ?= hackapertus-track2a
 
@@ -19,6 +19,12 @@ test:
 # Local helper targets (without Docker)
 install:
 	pip install -r requirements.txt
+
+install-hybrid:
+	pip install -r requirements-hybrid.txt
+
+index:
+	python -m src index $(INDEX_ARGS)
 
 download:
 	python src/download_data.py

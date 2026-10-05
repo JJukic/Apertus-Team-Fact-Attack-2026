@@ -4,11 +4,15 @@
 [![CI](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.11-blue.svg)](https://www.python.org/)
 [![Model](https://img.shields.io/badge/Model-Apertus%20v1.5--8B-orange.svg)](https://huggingface.co/swiss-ai)
-[![Tests](https://img.shields.io/badge/Tests-28%20Passing-brightgreen.svg)](track_2a/tests/)
+[![Tests](https://img.shields.io/badge/Tests-65%20Passing-brightgreen.svg)](track_2a/tests/)
 [![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
 [![License](https://img.shields.io/badge/License-MIT%20%2F%20CC--BY--4.0-green.svg)](LICENSE)
 
 An **Apertus-powered, document-grounded fact-checking engine** that verifies political claims against official Swiss federal voting booklets (*Abstimmungsbüchlein*) across **German, French, and Italian**.
+
+Optional **BGE-M3 hybrid vector retrieval** is available as `hybrid_dense`, with cosine
+similarity, page-level reciprocal rank fusion, persistent indices and CPU timing.
+The existing BM25 default is retained. See [installation, methods and measured limitations](track_2a/docs/hybrid_dense_retrieval.md).
 
 - **Challenge:** [Hack Apertus Track 2A (OST)](https://hackapertus.ch/)
 - **Challenge Providers / Jury:** Prof. Dr. Mitra Purandare & Abinas Kuganathan (OST – Ostschweizer Fachhochschule)
@@ -75,7 +79,7 @@ export LLM_API_KEY="your_api_key_here"
 make run
 ```
 
-### Run Unit Tests (28 Tests)
+### Run Unit Tests (65 Tests)
 ```bash
 make test
 ```
@@ -116,7 +120,7 @@ make web
 │   ├── app.py                  # Streamlit web application
 │   ├── technical_report.md     # Detailed architecture & evaluation report
 │   ├── data/                   # Booklets & benchmark datasets
-│   ├── tests/                  # 28 automated unit tests
+│   ├── tests/                  # Automated unit and UI tests
 │   └── src/
 │       ├── pdf_parser.py       # Dynamic ordinal proposal extractor
 │       ├── retriever.py        # Proposal-aware BM25 retriever

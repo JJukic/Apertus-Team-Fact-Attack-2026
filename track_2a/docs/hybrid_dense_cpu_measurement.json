@@ -1,0 +1,248 @@
+{
+  "purpose": "Single-machine CPU mechanics/timing smoke test, no NLI and no retrieval-quality score",
+  "apertus_calls": 0,
+  "platform": "Darwin",
+  "machine": "arm64",
+  "python": "3.12.6",
+  "packages": {
+    "sentence-transformers": "5.7.0",
+    "torch": "2.14.1",
+    "transformers": "5.18.0"
+  },
+  "cpu_threads_env": 4,
+  "batch_size": 4,
+  "max_length": 2048,
+  "model": "BAAI/bge-m3",
+  "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+  "peak_process_rss_bytes": 1044889600,
+  "observations": [
+    {
+      "claim_language": "de",
+      "booklet_language": "de",
+      "run": 1,
+      "metrics": {
+        "requested_strategy": "hybrid_dense",
+        "actual_strategy": "hybrid_dense",
+        "cache_status": "disk_hit",
+        "embedding_ms": 3348.040916956961,
+        "model_load_ms": 10472.289208089933,
+        "query_embedding_ms": 3348.040916956961,
+        "document_embedding_ms": 0.0,
+        "index_build_ms": 0.0,
+        "index_load_ms": 3.2198328990489244,
+        "selected_pages": [
+          11,
+          4,
+          17,
+          20,
+          18,
+          12,
+          19,
+          21,
+          5,
+          31
+        ],
+        "retrieval_ms": 13831.03545801714,
+        "document_preparation_ms": 1920.036792056635,
+        "total_latency_ms": 15751.207791035995
+      }
+    },
+    {
+      "claim_language": "de",
+      "booklet_language": "de",
+      "run": 2,
+      "metrics": {
+        "requested_strategy": "hybrid_dense",
+        "actual_strategy": "hybrid_dense",
+        "cache_status": "memory_hit",
+        "embedding_ms": 3265.1732091326267,
+        "model_load_ms": 0.0,
+        "query_embedding_ms": 3265.1732091326267,
+        "document_embedding_ms": 0.0,
+        "index_build_ms": 0.0,
+        "index_load_ms": 0.0,
+        "selected_pages": [
+          11,
+          4,
+          17,
+          20,
+          18,
+          12,
+          19,
+          21,
+          5,
+          31
+        ],
+        "retrieval_ms": 3268.821750069037,
+        "document_preparation_ms": 1.9062499050050974,
+        "total_latency_ms": 3271.030167117715
+      }
+    },
+    {
+      "claim_language": "fr",
+      "booklet_language": "de",
+      "run": 1,
+      "metrics": {
+        "requested_strategy": "hybrid_dense",
+        "actual_strategy": "hybrid_dense",
+        "cache_status": "memory_hit",
+        "embedding_ms": 3893.164874985814,
+        "model_load_ms": 0.0,
+        "query_embedding_ms": 3893.164874985814,
+        "document_embedding_ms": 0.0,
+        "index_build_ms": 0.0,
+        "index_load_ms": 0.0,
+        "selected_pages": [
+          11,
+          17,
+          4,
+          5,
+          18,
+          19,
+          40,
+          12,
+          3,
+          20
+        ],
+        "retrieval_ms": 3896.399667020887,
+        "document_preparation_ms": 5.324499914422631,
+        "total_latency_ms": 3901.853834046051
+      }
+    },
+    {
+      "claim_language": "fr",
+      "booklet_language": "de",
+      "run": 2,
+      "metrics": {
+        "requested_strategy": "hybrid_dense",
+        "actual_strategy": "hybrid_dense",
+        "cache_status": "memory_hit",
+        "embedding_ms": 3944.228749955073,
+        "model_load_ms": 0.0,
+        "query_embedding_ms": 3944.228749955073,
+        "document_embedding_ms": 0.0,
+        "index_build_ms": 0.0,
+        "index_load_ms": 0.0,
+        "selected_pages": [
+          11,
+          17,
+          4,
+          5,
+          18,
+          19,
+          40,
+          12,
+          3,
+          20
+        ],
+        "retrieval_ms": 3947.3307500593364,
+        "document_preparation_ms": 3.4511249978095293,
+        "total_latency_ms": 3950.888792052865
+      }
+    },
+    {
+      "claim_language": "it",
+      "booklet_language": "de",
+      "run": 1,
+      "metrics": {
+        "requested_strategy": "hybrid_dense",
+        "actual_strategy": "hybrid_dense",
+        "cache_status": "memory_hit",
+        "embedding_ms": 3939.8216251283884,
+        "model_load_ms": 0.0,
+        "query_embedding_ms": 3939.8216251283884,
+        "document_embedding_ms": 0.0,
+        "index_build_ms": 0.0,
+        "index_load_ms": 0.0,
+        "selected_pages": [
+          11,
+          17,
+          4,
+          5,
+          20,
+          21,
+          12,
+          16,
+          19,
+          31
+        ],
+        "retrieval_ms": 3945.210666861385,
+        "document_preparation_ms": 6.191666005179286,
+        "total_latency_ms": 3951.6648340504616
+      }
+    },
+    {
+      "claim_language": "it",
+      "booklet_language": "de",
+      "run": 2,
+      "metrics": {
+        "requested_strategy": "hybrid_dense",
+        "actual_strategy": "hybrid_dense",
+        "cache_status": "memory_hit",
+        "embedding_ms": 3737.566291121766,
+        "model_load_ms": 0.0,
+        "query_embedding_ms": 3737.566291121766,
+        "document_embedding_ms": 0.0,
+        "index_build_ms": 0.0,
+        "index_load_ms": 0.0,
+        "selected_pages": [
+          11,
+          17,
+          4,
+          5,
+          20,
+          21,
+          12,
+          16,
+          19,
+          31
+        ],
+        "retrieval_ms": 3740.902208024636,
+        "document_preparation_ms": 5.703165894374251,
+        "total_latency_ms": 3746.857624966651
+      }
+    }
+  ],
+  "initial_warmup_with_model_download": {
+    "cache_status": "miss",
+    "index_build_ms": 226087.49691699632,
+    "index_load_ms": 0.07512490265071392,
+    "document_embedding_ms": 58035.17979197204,
+    "model_load_ms": 167995.66437490284,
+    "total_latency_ms": 227605.76900001615,
+    "paragraph_count": 35,
+    "page_count": 38,
+    "cache_key": "f807de3540e541cff11590d105b6a57eba77839aa9029675c08292d3953fa7cf"
+  },
+  "measurement_date": "2026-10-05",
+  "docker_offline_search": {
+    "environment": "Linux arm64 CPU container, existing model weights and index mounted read-only",
+    "apertus_calls": 0,
+    "metrics": {
+      "requested_strategy": "hybrid_dense",
+      "actual_strategy": "hybrid_dense",
+      "cache_status": "disk_hit",
+      "embedding_ms": 11962.808838812634,
+      "model_load_ms": 16814.07680013217,
+      "query_embedding_ms": 11962.808838812634,
+      "document_embedding_ms": 0.0,
+      "index_build_ms": 0.0,
+      "index_load_ms": 16.217583091929555,
+      "selected_pages": [
+        11,
+        4,
+        17,
+        20,
+        18,
+        12,
+        19,
+        21,
+        5,
+        31
+      ],
+      "retrieval_ms": 28823.99472221732,
+      "document_preparation_ms": 1877.3672089446336,
+      "total_latency_ms": 30703.48830614239
+    }
+  }
+}

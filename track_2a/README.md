@@ -9,6 +9,12 @@
 
 An Apertus-powered multilingual claim-verification system that checks political claims against official Swiss voting booklets (*Abstimmungsbüchlein*).
 
+Optional vector retrieval: `hybrid_dense` combines multilingual BGE-M3 cosine search
+with weighted BM25 and page-level RRF. `hybrid` provides the weighted BM25 comparison
+baseline. Existing `retrieval` and `full` remain available; the default is unchanged.
+See [Hybrid Retrieval documentation](docs/hybrid_dense_retrieval.md) for setup, cache,
+warm-up, Docker, dev comparison and actual CPU measurements.
+
 ---
 
 ## 🎯 The Challenge & Task
@@ -75,7 +81,8 @@ Options:
 - `--claim`, `-c`: The claim text to verify.
 - `--booklet`, `-b`: Path to booklet PDF (default: `data/booklets/2026-06-14_de.pdf`).
 - `--lang`, `-l`: Claim language (`de`, `fr`, `it`).
-- `--strategy`, `-s`: `retrieval` (default, top-k passages) or `full` (entire booklet).
+- `--strategy`, `-s`: `retrieval` (default, top-k passages), `full` (entire booklet),
+  `hybrid` (weighted BM25 pages), or `hybrid_dense` (BM25 + BGE-M3 cosine/RRF pages).
 - `--top-k`, `-k`: Number of passages to retrieve (default: 5).
 
 ### 2. Run Benchmark Evaluation (`benchmark`)

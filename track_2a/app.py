@@ -25,6 +25,7 @@ from src.apertus_client import ApertusClient
 from src.inference import ClaimVerificationEngine, PredictionResult, EvidenceSource
 from src.evaluator import BenchmarkEvaluator
 from src import config
+from src.embeddings import EmbeddingError
 
 # Page Configuration
 st.set_page_config(
@@ -630,7 +631,7 @@ with tab_factcheck:
         
         current_samples = sample_claims.get(selected_date, sample_claims["2026-06-14"]).get(lang_code, [])
         for label_tag, sample_text in current_samples:
-            if st.button(f"{label_tag}: {sample_text[:44]}...", use_container_width=True):
+            if st.button(f"{label_tag}: {sample_text[:44]}...", width="stretch"):
                 st.session_state["claim_input"] = sample_text
 
         # Custom PDF Upload Option
@@ -645,13 +646,31 @@ with tab_factcheck:
                 st.success(f"Geladen: {uploaded_file.name}")
 
         # Retrieval Strategy Selector
-        with st.expander("⚙️ Erweiterte Retrieval-Einstellungen"):
-            strategy_option = st.radio(
-                "Strategie:",
-                ["Proposal-Aware BM25 (Empfohlen — -76% Tokens)", "Full Document (~15k Tokens)"],
-                index=0,
+        with st.expander("⚙️ Erweiterte Kontext-Einstellungen"):
+            strategy_labels = {
+                "retrieval": "Proposal-Aware BM25 (bisheriger Standard)",
+                "full": "Full Document (gesamtes Büchlein)",
+                "hybrid": "BM25 mit Behauptung und Vorlagentitel (Vergleichsbasis)",
+                "hybrid_dense": "Hybrid: BM25 + semantische Vektorsuche (BGE-M3)",
+            }
+            strat = st.radio(
+                "Kontextstrategie:", list(strategy_labels),
+                format_func=strategy_labels.get, index=0, key="context_strategy",
             )
-            strat = "retrieval" if "BM25" in strategy_option else "full"
+            vote_title = None
+            if strat in ("hybrid", "hybrid_dense"):
+                vote_title = st.text_input("Vorlagentitel (optional)", key="retrieval_vote_title") or None
+                st.caption(f"Bis zu {config.HYBRID_FINAL_PAGES} Originalseiten werden als Kontext verwendet.")
+            if strat == "hybrid_dense":
+                st.caption("Semantische Suche findet auch anders formulierte oder anderssprachige Belege. "
+                           "Die erste Prüfung kann wegen des lokalen Modellstarts länger dauern. "
+                           "Ein Qualitätsvorteil ist noch nicht nachgewiesen.")
+
+        # Never display a previous method/booklet's verdict as the current result.
+        context_key = (str(pdf_path), lang_code, strat, vote_title)
+        if st.session_state.get("verification_context") != context_key:
+            st.session_state.pop("last_result", None)
+            st.session_state["verification_context"] = context_key
 
     # -------------------------------------------------------------------------
     # RIGHT COLUMN: THE VERIFICATION STAGE ("Decision-First")
@@ -668,7 +687,7 @@ with tab_factcheck:
         
         col_btn, col_hint = st.columns([1.2, 2.5])
         with col_btn:
-            verify_clicked = st.button("🚀 Behauptung offiziell prüfen", type="primary", use_container_width=True)
+            verify_clicked = st.button("🚀 Behauptung offiziell prüfen", type="primary", width="stretch", key="verify_claim")
         with col_hint:
             st.caption("Gleicht die Behauptung mit den offiziellen Bundesrats-Erläuterungen via Apertus ab.")
 
@@ -682,15 +701,22 @@ with tab_factcheck:
                 else:
                     with st.spinner("Prüfe Behauptung mit Apertus & Proposal-Aware Retriever..."):
                         t0 = time.time()
-                        result = engine.verify_claim(
-                            claim=claim,
-                            booklet_pdf=pdf_path,
-                            claim_language=lang_code,
-                            strategy=strat,
-                        )
-                        st.session_state["last_result"] = result
-                        st.session_state["last_claim"] = claim
-                        st.session_state["last_pdf"] = str(pdf_path)
+                        try:
+                            result = engine.verify_claim(
+                                claim=claim,
+                                booklet_pdf=pdf_path,
+                                claim_language=lang_code,
+                                strategy=strat,
+                                vote=vote_title,
+                            )
+                        except (EmbeddingError, ValueError) as exc:
+                            st.error(str(exc))
+                            st.session_state.pop("last_result", None)
+                            result = None
+                        if result is not None:
+                            st.session_state["last_result"] = result
+                            st.session_state["last_claim"] = claim
+                            st.session_state["last_pdf"] = str(pdf_path)
             else:
                 result = st.session_state.get("last_result")
 
@@ -869,7 +895,7 @@ with tab_factcheck:
                             data=card_svg,
                             file_name=f"faktencheck_ausweis_{result.label_name.lower()}.svg",
                             mime="image/svg+xml",
-                            use_container_width=True,
+                            width="stretch",
                         )
                     with c_dl2:
                         share_text = f"🇨🇭 Faktencheck zu: \"{claim[:60]}...\"\nErgebnis: {result.label_name.upper()}\nOffizieller Beleg: {card_quote[:100]}...\nQuelle: Bundesrats-Abstimmungsbüchlein {selected_date}\nGeprüft mit Fact Attack 2026."
@@ -892,6 +918,15 @@ with tab_factcheck:
                     with c_t2:
                         st.markdown("##### ⏱️ Effizienz & Green AI (CSCS Alps)")
                         st.write(f"- **Inferenz-Latenz:** `{result.latency_ms:.1f} ms`")
+                        st.write(f"- **Gesamtlaufzeit:** `{result.total_latency_ms:.1f} ms`")
+                        st.write(f"- **Verwendete Strategie:** `{result.strategy}`")
+                        if result.retrieval_metrics:
+                            rm = result.retrieval_metrics
+                            st.write(f"- **Retrieval:** `{rm.get('retrieval_ms', 0):.1f} ms`, "
+                                     f"**Embeddings:** `{rm.get('embedding_ms', 0):.1f} ms`, "
+                                     f"**Cache:** `{rm.get('cache_status', 'not_used')}`")
+                            if rm.get("fallback_reason"):
+                                st.warning(f"BM25-Fallback verwendet: {rm['fallback_reason']}")
                         st.write(f"- **Eingabe-Tokens:** `{result.tokens_prompt}` Tokens")
                         st.write(f"- **Gesamt-Tokens:** `{result.tokens_total}` Tokens")
                         saved_tokens = max(0, 14820 - result.tokens_prompt)
@@ -955,7 +990,7 @@ with tab_benchmark:
                 ["Offizieller Benchmark (Juni 2026)", "Historischer OOD-Benchmark (November 2024)"],
             )
         with c_strat:
-            eval_strat = st.selectbox("Strategie", ["retrieval", "full"])
+            eval_strat = st.selectbox("Strategie", list(config.STRATEGIES))
         with c_lim:
             eval_lim = st.selectbox("Sample-Limit", [3, 5, 10, "Alle"], index=0)
 
@@ -987,7 +1022,7 @@ with tab_benchmark:
                     }
                     for r in live_report["results"]
                 ],
-                use_container_width=True,
+                width="stretch",
             )
 
     st.markdown("---")

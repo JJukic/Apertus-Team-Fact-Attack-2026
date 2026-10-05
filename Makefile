@@ -1,4 +1,4 @@
-.PHONY: run build test benchmark compare download install web
+.PHONY: run build test benchmark compare download install install-hybrid index web
 
 # Forward all targets to track_2a/Makefile
 run:
@@ -9,6 +9,12 @@ test:
 
 install:
 	$(MAKE) -C track_2a install
+
+install-hybrid:
+	$(MAKE) -C track_2a install-hybrid
+
+index:
+	$(MAKE) -C track_2a index
 
 download:
 	$(MAKE) -C track_2a download

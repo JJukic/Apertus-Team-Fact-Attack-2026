@@ -11,6 +11,12 @@
 > 
 > Vollwertige Neo4j/RDF-Wissensgraphen und kontinuierliche Fuzzy-Inferenzsysteme (Mamdani/Sugeno) sind als zukünftige Ausbaustufe (siehe Roadmap) konzipiert.
 
+**Optionale Retrieval-Erweiterung:** `hybrid_dense` ist zusätzlich implementiert:
+mehrsprachige BGE-M3-Absatzvektoren, Cosinus-Suche und RRF mit gewichtetem BM25,
+mit Rückgabe der Originalseiten. Dies ist keine Graphdatenbank oder neue Fuzzy-Inferenz.
+`retrieval` bleibt Standard; ein Qualitätsvorteil wurde noch nicht gemessen.
+Details: [Hybrid Retrieval](hybrid_dense_retrieval.md).
+
 **Team:** Fact Attack 2026 (Josip Jukic, Felipe Wüthrich)  
 **Challenge:** OST — Multilingual Natural Language Inference over Swiss Official Voting Booklets  
 **Modell:** Apertus v1.5 (8B / 70B auf CSCS Alps)  

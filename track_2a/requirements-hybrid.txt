@@ -1,0 +1,2 @@
+# Optional; BM25/full document users do not need PyTorch or a model download.
+sentence-transformers>=3.0.0,<6.0.0

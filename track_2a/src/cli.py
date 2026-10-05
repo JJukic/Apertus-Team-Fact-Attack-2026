@@ -31,6 +31,8 @@ from src.evaluator import BenchmarkEvaluator
 from src.download_data import main as download_assets
 from src.apertus_client import ApertusClient
 from src import config
+from src.embeddings import EmbeddingError, HybridSettings
+from dataclasses import asdict
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
 console = Console(legacy_windows=False)
@@ -52,7 +54,7 @@ def predict(
         config.DEFAULT_STRATEGY,
         "--strategy",
         "-s",
-        help="Strategy: 'retrieval' (selected passages) or 'full' (full document)",
+        help="Strategy: retrieval, full, hybrid (BM25 claim + title), hybrid_dense (BM25 + vectors)",
     ),
     top_k: int = typer.Option(5, "--top-k", "-k", help="Number of passages to retrieve when using retrieval strategy"),
     json_output: bool = typer.Option(False, "--json", help="Output strictly conforming to official OST JSON format"),
@@ -143,7 +145,7 @@ def predict(
 def run_batch(
     input_path: Path = typer.Option(..., "--input", "-i", help="Path to input JSON or JSONL file conforming to OST task schema"),
     output_path: Optional[Path] = typer.Option(None, "--output", "-o", help="Optional path to output JSON/JSONL file"),
-    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'retrieval' or 'full'"),
+    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: retrieval, full, hybrid, hybrid_dense"),
     top_k: int = typer.Option(5, "--top-k", "-k", help="Passages to retrieve"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
 ):
@@ -228,14 +230,107 @@ def run_batch(
 @app.command()
 def benchmark(
     dataset: Optional[Path] = typer.Option(None, "--dataset", "-d", help="Path to JSONL benchmark dataset"),
-    strategy: str = typer.Option("retrieval", "--strategy", "-s", help="Strategy: 'retrieval' or 'full'"),
+    strategy: str = typer.Option("retrieval", "--strategy", "-s", help="Strategy: retrieval, full, hybrid, hybrid_dense"),
     limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Limit number of evaluation samples"),
+    mock: bool = typer.Option(False, "--mock", help="Use offline NLI mock; dense embeddings remain real"),
+    report: Optional[Path] = typer.Option(None, "--report", help="Save extended evaluation metrics as JSON"),
 ):
     """
     Run evaluation over the official or custom benchmark dataset and output Macro-F1 report.
     """
-    evaluator = BenchmarkEvaluator()
-    evaluator.evaluate(dataset_path=dataset, strategy=strategy, limit=limit)
+    engine = ClaimVerificationEngine(apertus_client=ApertusClient(mock=True) if mock else None)
+    evaluator = BenchmarkEvaluator(engine)
+    metrics = evaluator.evaluate(dataset_path=dataset, strategy=strategy, limit=limit)
+    if report:
+        report.parent.mkdir(parents=True, exist_ok=True)
+        report.write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+@app.command(name="index")
+def index_booklets(
+    booklet: Optional[Path] = typer.Option(None, "--booklet", "-b", help="PDF to index/warm up"),
+    all_booklets: bool = typer.Option(False, "--all", help="Index all downloaded booklets"),
+):
+    """Load local embedding model and persist paragraph indices. Never calls Apertus."""
+    paths = sorted(config.BOOKLETS_DIR.glob("*.pdf")) if all_booklets else [
+        booklet or config.BOOKLETS_DIR / "2026-06-14_de.pdf"
+    ]
+    if not paths:
+        raise typer.BadParameter("No PDFs found; run 'python -m src download' first")
+    engine = ClaimVerificationEngine(apertus_client=ApertusClient(mock=True))
+    try:
+        for path in paths:
+            console.print_json(data=dict(booklet=str(path), **engine.warm_up(path)))
+    except EmbeddingError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command(name="search")
+def search_booklet(
+    claim: str = typer.Option(..., "--claim", "-c"),
+    booklet: Path = typer.Option(config.BOOKLETS_DIR / "2026-06-14_de.pdf", "--booklet", "-b"),
+    strategy: str = typer.Option("hybrid_dense", "--strategy", "-s"),
+    vote: Optional[str] = typer.Option(None, "--vote", "-v", help="Optional original proposal title"),
+    show_context: bool = typer.Option(False, "--show-context", help="Include original page text"),
+):
+    """Inspect ranked pages/cosine-RRF timing without any generative API call."""
+    import time
+    engine = ClaimVerificationEngine(apertus_client=ApertusClient(mock=True))
+    start = time.perf_counter()
+    try:
+        prepared = engine.retrieve_context(claim, booklet, strategy=strategy, vote=vote)
+    except EmbeddingError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1)
+    output = dict(prepared["metrics"], total_latency_ms=(time.perf_counter() - start) * 1000)
+    if show_context:
+        output["context"] = prepared["context"]
+    print(json.dumps(output, indent=2, ensure_ascii=False))
+
+
+@app.command(name="compare-hybrid")
+def compare_hybrid(
+    dataset: Path = typer.Option(..., "--dataset", "-d", help="Explicit dev JSONL dataset, same cases for both methods"),
+    split: str = typer.Option(..., "--split", help="Declare development split: dev or validation"),
+    limit: Optional[int] = typer.Option(None, "--limit", "-n"),
+    mock: bool = typer.Option(False, "--mock", help="No API calls; cannot measure real NLI quality"),
+    live: bool = typer.Option(False, "--live", help="Authorize this live run: four NLI evaluations per selected case"),
+    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Save first-pass and warm-repeat reports"),
+):
+    """Compare weighted BM25 vs BM25+dense on dev cases, then repeat with warm caches."""
+    if split not in ("dev", "validation"):
+        raise typer.BadParameter("Use a dev/validation split; do not select configuration on test data")
+    if mock == live:
+        raise typer.BadParameter("Choose --mock or --live explicitly; live mode makes four calls per case")
+    records = [json.loads(line) for line in dataset.read_text(encoding="utf-8").splitlines() if line.strip()]
+    if not records or (limit is not None and limit < 1):
+        raise typer.BadParameter("Dataset must contain cases and limit must be positive")
+    if any(r.get("split", split) not in ("dev", "validation") for r in records):
+        raise typer.BadParameter("Dataset includes non-development records")
+    client = ApertusClient(mock=True) if mock else ApertusClient()
+    if live and client.mock:
+        raise typer.BadParameter("Live evaluation requires a valid LLM_API_KEY and MOCK_APERTUS=false")
+    # One engine per strategy: keep indices warm, but avoid sharing a first-pass PDF parse.
+    from src.inference import _GLOBAL_BOOKLET_CACHE
+    reports = {}
+    for strategy_name in ("hybrid", "hybrid_dense"):
+        _GLOBAL_BOOKLET_CACHE.clear()
+        evaluator = BenchmarkEvaluator(ClaimVerificationEngine(strategy=strategy_name, apertus_client=client))
+        reports[strategy_name] = {
+            "first_pass": evaluator.evaluate(dataset, strategy_name, limit),
+            "warm_repeat": evaluator.evaluate(dataset, strategy_name, limit),
+        }
+    payload = {
+        "dataset": str(dataset.resolve()), "declared_split": split, "mock_mode": mock,
+        "settings": {k: str(v) if isinstance(v, Path) else v for k, v in asdict(HybridSettings()).items()},
+        "phase_note": "First pass is cold only if model/index timing and cache status confirm it; disk caches are not deleted.",
+        "reports": reports,
+    }
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        console.print(f"Comparison saved to {output}")
 
 
 @app.command()

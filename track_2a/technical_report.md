@@ -176,8 +176,8 @@ export LLM_BASE_URL="https://api.inference.cscs.ch/v1"
 export LLM_API_KEY="your_api_key_here"
 ```
 
-### Automated Test Suite (28 Unit Tests)
-The repository includes a comprehensive, deterministic unit test suite with 28 passing tests covering all system components:
+### Automated Test Suite (65 Tests)
+The repository includes a deterministic suite with 65 passing unit and Streamlit UI tests covering all system components:
 ```bash
 make test
 ```
@@ -198,6 +198,24 @@ make web
 ---
 
 ## 8. Next Steps
+
+### Optional Dense Retrieval Experiment (implemented, quality not yet benchmarked)
+
+`hybrid_dense` adds local BGE-M3 paragraph embeddings and exact cosine search,
+fused with weighted claim/title BM25 using RRF after max-per-page aggregation.
+Both new methods return original pages; `hybrid` is the lexical comparison baseline.
+The original `retrieval` default, `full`, direct-premise task, Apertus prompt and official
+output schema remain available. There is no additional generative verification call.
+
+Persistent caches use PDF, parser/chunking, model and pinned-revision identities.
+Extended reports distinguish API latency from end-to-end, model-start, indexing and
+warm-search times, and report actual language pairs and explicit fallback strategies.
+The bundled data contains no cross-language pairs or reliable gold page labels.
+No quality improvement over the previous reported benchmarks is asserted.
+
+See [methodology and CPU smoke measurements](docs/hybrid_dense_retrieval.md) and
+[raw CPU timing observations](docs/hybrid_dense_cpu_measurement.json). A paid dev
+comparison has not been run without a separately authorized API budget.
 
 1. Integrate advanced layout parsing (e.g., Docling) to handle complex voting booklet financial charts and side-by-side comparison tables.
 2. Cross-lingual semantic embedding retrieval (e.g., BGE-M3 or Apertus embeddings) alongside lexical BM25.
