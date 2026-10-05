@@ -6,14 +6,21 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Search for .env in track_2a directory or repo root
+# Search for local configuration in track_2a first, then the repo root.
 BASE_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = BASE_DIR.parent
 
-if (BASE_DIR / ".env").exists():
-    load_dotenv(BASE_DIR / ".env")
-elif (REPO_ROOT / ".env").exists():
-    load_dotenv(REPO_ROOT / ".env")
+# Local files take precedence over .env; existing environment variables are kept.
+env_paths = [
+    BASE_DIR / ".env.local",
+    BASE_DIR / ".env",
+    REPO_ROOT / ".env.local",
+    REPO_ROOT / ".env",
+]
+for env_path in env_paths:
+    if env_path.exists():
+        load_dotenv(env_path)
+        break
 else:
     load_dotenv()
 
