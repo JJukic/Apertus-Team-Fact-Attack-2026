@@ -13,6 +13,8 @@ An **Apertus-powered, document-grounded fact-checking engine** that verifies pol
 Optional **BGE-M3 hybrid vector retrieval** is available as `hybrid_dense`, with cosine
 similarity, page-level reciprocal rank fusion, persistent indices and CPU timing.
 The existing BM25 default is retained. See [installation, methods and measured limitations](track_2a/docs/hybrid_dense_retrieval.md).
+The [live quality comparison](track_2a/docs/evaluation/hybrid_quality_2026-10-05.md)
+includes the measured F1 scores, language pairs and dataset limitations.
 
 - **Challenge:** [Hack Apertus Track 2A (OST)](https://hackapertus.ch/)
 - **Challenge Providers / Jury:** Prof. Dr. Mitra Purandare & Abinas Kuganathan (OST – Ostschweizer Fachhochschule)

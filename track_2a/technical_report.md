@@ -199,7 +199,7 @@ make web
 
 ## 8. Next Steps
 
-### Optional Dense Retrieval Experiment (implemented, quality not yet benchmarked)
+### Optional Dense Retrieval Experiment (implemented, exploratory quality comparison completed)
 
 `hybrid_dense` adds local BGE-M3 paragraph embeddings and exact cosine search,
 fused with weighted claim/title BM25 using RRF after max-per-page aggregation.
@@ -210,12 +210,27 @@ output schema remain available. There is no additional generative verification c
 Persistent caches use PDF, parser/chunking, model and pinned-revision identities.
 Extended reports distinguish API latency from end-to-end, model-start, indexing and
 warm-search times, and report actual language pairs and explicit fallback strategies.
-The bundled data contains no cross-language pairs or reliable gold page labels.
-No quality improvement over the previous reported benchmarks is asserted.
+The original bundled datasets contain no cross-language pairs or reliable gold page labels.
+An exploratory validation dataset adds 18 language-pair variants to the 32 historical
+cases, with checked reference pages for 12 cases. It contains 32 distinct claims and
+is not an independent 50-claim test. No configuration was selected on these scores.
 
 See [methodology and CPU smoke measurements](docs/hybrid_dense_retrieval.md) and
-[raw CPU timing observations](docs/hybrid_dense_cpu_measurement.json). A paid dev
-comparison has not been run without a separately authorized API budget.
+[raw CPU timing observations](docs/hybrid_dense_cpu_measurement.json). After explicit
+authorization, exactly 200 successful live Apertus requests completed the two-method,
+two-pass comparison on October 5, 2026:
+
+| Method | Pipeline Macro-F1, first / warm | Cross-language F1, first / warm |
+|---|---:|---:|
+| `hybrid` | 0.6016 / 0.5593 | 0.5333 / 0.4524 |
+| `hybrid_dense` | 0.5865 / 0.6106 | 0.6639 / 0.6639 |
+
+Cross-language performance improves in this small probe; overall improvement is
+not consistent between passes. Three suspect inherited historical labels and
+downstream confidence/citation handling limit interpretation. The default remains
+unchanged. The earlier documented benchmark scores were not rerun or validated by
+this experiment. See the [complete quality report](docs/evaluation/hybrid_quality_2026-10-05.md)
+for label audit, reference-page coverage, raw-label diagnostics, tokens and CPU times.
 
 1. Integrate advanced layout parsing (e.g., Docling) to handle complex voting booklet financial charts and side-by-side comparison tables.
 2. Cross-lingual semantic embedding retrieval (e.g., BGE-M3 or Apertus embeddings) alongside lexical BM25.

@@ -1,0 +1,352 @@
+{
+  "status": "complete",
+  "api_requests": 200,
+  "api_errors": 0,
+  "pipeline_sources_unchanged": true,
+  "sample_count_per_pass": 50,
+  "unique_claim_count": 32,
+  "cross_language_count_per_pass": 18,
+  "reported_input_tokens": 1404724,
+  "reported_output_tokens": 40807,
+  "wall_time_seconds": 1161.4627280000132,
+  "phases": {
+    "hybrid": {
+      "first_pass": {
+        "macro_f1": 0.6016,
+        "cross_language_macro_f1": 0.5333,
+        "avg_prompt_tokens": 7266.1,
+        "avg_output_tokens": 200.66,
+        "avg_latency_ms": 1673.0,
+        "avg_total_latency_ms": 2032.96,
+        "by_language_pair": {
+          "de->de": {
+            "count": 12,
+            "macro_f1": 0.5
+          },
+          "de->fr": {
+            "count": 3,
+            "macro_f1": 0.1667
+          },
+          "de->it": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->de": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->fr": {
+            "count": 10,
+            "macro_f1": 0.9153
+          },
+          "fr->it": {
+            "count": 3,
+            "macro_f1": 0.1667
+          },
+          "it->de": {
+            "count": 3,
+            "macro_f1": 0.1667
+          },
+          "it->fr": {
+            "count": 3,
+            "macro_f1": 1.0
+          },
+          "it->it": {
+            "count": 10,
+            "macro_f1": 0.4722
+          }
+        },
+        "cache_status_counts": {
+          "not_used": 50
+        },
+        "retrieval_timing_ms": {
+          "document_preparation_ms": 350.26,
+          "retrieval_ms": 4.06,
+          "embedding_ms": 0.0,
+          "model_load_ms": 0.0,
+          "index_build_ms": 0.0,
+          "index_load_ms": 0.0,
+          "document_embedding_ms": 0.0,
+          "query_embedding_ms": 0.0
+        },
+        "evidence_alignment_rate": 0.25,
+        "evidence_page_recall": 0.08,
+        "raw_label_f1": 0.8122,
+        "after_calibration_f1": 0.7888,
+        "accuracy": 0.6,
+        "raw_to_final_label_changes": 13,
+        "attributed_evidence_case_count": 17,
+        "same_language_count": 32,
+        "same_language_macro_f1": 0.62,
+        "excluding_three_suspect_labels_count": 47,
+        "excluding_three_suspect_labels_macro_f1": 0.6454,
+        "three_audited_labels_corrected_macro_f1": 0.6622,
+        "reference_page_retrieval_coverage": 0.4167,
+        "reference_page_citation_coverage": 0.0833,
+        "reference_page_count": 12
+      },
+      "warm_repeat": {
+        "macro_f1": 0.5593,
+        "cross_language_macro_f1": 0.4524,
+        "avg_prompt_tokens": 7266.1,
+        "avg_output_tokens": 195.64,
+        "avg_latency_ms": 1411.25,
+        "avg_total_latency_ms": 1421.09,
+        "by_language_pair": {
+          "de->de": {
+            "count": 12,
+            "macro_f1": 0.5
+          },
+          "de->fr": {
+            "count": 3,
+            "macro_f1": 0.1667
+          },
+          "de->it": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->de": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->fr": {
+            "count": 10,
+            "macro_f1": 0.8024
+          },
+          "fr->it": {
+            "count": 3,
+            "macro_f1": 0.1667
+          },
+          "it->de": {
+            "count": 3,
+            "macro_f1": 0.1667
+          },
+          "it->fr": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->it": {
+            "count": 10,
+            "macro_f1": 0.4722
+          }
+        },
+        "cache_status_counts": {
+          "not_used": 50
+        },
+        "retrieval_timing_ms": {
+          "document_preparation_ms": 2.09,
+          "retrieval_ms": 1.7,
+          "embedding_ms": 0.0,
+          "model_load_ms": 0.0,
+          "index_build_ms": 0.0,
+          "index_load_ms": 0.0,
+          "document_embedding_ms": 0.0,
+          "query_embedding_ms": 0.0
+        },
+        "evidence_alignment_rate": 0.0833,
+        "evidence_page_recall": 0.0,
+        "raw_label_f1": 0.8122,
+        "after_calibration_f1": 0.7888,
+        "accuracy": 0.56,
+        "raw_to_final_label_changes": 15,
+        "attributed_evidence_case_count": 14,
+        "same_language_count": 32,
+        "same_language_macro_f1": 0.5891,
+        "excluding_three_suspect_labels_count": 47,
+        "excluding_three_suspect_labels_macro_f1": 0.6009,
+        "three_audited_labels_corrected_macro_f1": 0.6177,
+        "reference_page_retrieval_coverage": 0.4167,
+        "reference_page_citation_coverage": 0.0,
+        "reference_page_count": 12
+      }
+    },
+    "hybrid_dense": {
+      "first_pass": {
+        "macro_f1": 0.5865,
+        "cross_language_macro_f1": 0.6639,
+        "avg_prompt_tokens": 6781.2,
+        "avg_output_tokens": 209.52,
+        "avg_latency_ms": 1776.24,
+        "avg_total_latency_ms": 13999.53,
+        "by_language_pair": {
+          "de->de": {
+            "count": 12,
+            "macro_f1": 0.5582
+          },
+          "de->fr": {
+            "count": 3,
+            "macro_f1": 1.0
+          },
+          "de->it": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->de": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->fr": {
+            "count": 10,
+            "macro_f1": 0.6984
+          },
+          "fr->it": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->de": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->fr": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->it": {
+            "count": 10,
+            "macro_f1": 0.3016
+          }
+        },
+        "cache_status_counts": {
+          "miss": 3,
+          "memory_hit": 47
+        },
+        "retrieval_timing_ms": {
+          "document_preparation_ms": 357.27,
+          "retrieval_ms": 11856.14,
+          "embedding_ms": 11681.28,
+          "model_load_ms": 160.39,
+          "index_build_ms": 7465.6,
+          "index_load_ms": 0.03,
+          "document_embedding_ms": 7302.49,
+          "query_embedding_ms": 4378.78
+        },
+        "evidence_alignment_rate": 0.1667,
+        "evidence_page_recall": 0.17,
+        "raw_label_f1": 0.9044,
+        "after_calibration_f1": 0.9044,
+        "accuracy": 0.6,
+        "raw_to_final_label_changes": 15,
+        "attributed_evidence_case_count": 13,
+        "same_language_count": 32,
+        "same_language_macro_f1": 0.5281,
+        "excluding_three_suspect_labels_count": 47,
+        "excluding_three_suspect_labels_macro_f1": 0.6274,
+        "three_audited_labels_corrected_macro_f1": 0.6326,
+        "reference_page_retrieval_coverage": 0.75,
+        "reference_page_citation_coverage": 0.1667,
+        "reference_page_count": 12
+      },
+      "warm_repeat": {
+        "macro_f1": 0.6106,
+        "cross_language_macro_f1": 0.6639,
+        "avg_prompt_tokens": 6781.2,
+        "avg_output_tokens": 210.32,
+        "avg_latency_ms": 1609.15,
+        "avg_total_latency_ms": 5744.38,
+        "by_language_pair": {
+          "de->de": {
+            "count": 12,
+            "macro_f1": 0.5582
+          },
+          "de->fr": {
+            "count": 3,
+            "macro_f1": 1.0
+          },
+          "de->it": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->de": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "fr->fr": {
+            "count": 10,
+            "macro_f1": 0.8024
+          },
+          "fr->it": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->de": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->fr": {
+            "count": 3,
+            "macro_f1": 0.5556
+          },
+          "it->it": {
+            "count": 10,
+            "macro_f1": 0.3016
+          }
+        },
+        "cache_status_counts": {
+          "memory_hit": 50
+        },
+        "retrieval_timing_ms": {
+          "document_preparation_ms": 4.29,
+          "retrieval_ms": 4124.52,
+          "embedding_ms": 4116.99,
+          "model_load_ms": 0.0,
+          "index_build_ms": 0.0,
+          "index_load_ms": 0.0,
+          "document_embedding_ms": 0.0,
+          "query_embedding_ms": 4116.99
+        },
+        "evidence_alignment_rate": 0.1667,
+        "evidence_page_recall": 0.17,
+        "raw_label_f1": 0.8832,
+        "after_calibration_f1": 0.8832,
+        "accuracy": 0.62,
+        "raw_to_final_label_changes": 13,
+        "attributed_evidence_case_count": 13,
+        "same_language_count": 32,
+        "same_language_macro_f1": 0.5606,
+        "excluding_three_suspect_labels_count": 47,
+        "excluding_three_suspect_labels_macro_f1": 0.6531,
+        "three_audited_labels_corrected_macro_f1": 0.6584,
+        "reference_page_retrieval_coverage": 0.75,
+        "reference_page_citation_coverage": 0.1667,
+        "reference_page_count": 12
+      }
+    }
+  },
+  "warm_label_changes": {
+    "hybrid": 2,
+    "hybrid_dense": 1
+  },
+  "deltas": {
+    "first_pass": {
+      "macro_f1": -0.0151,
+      "cross_language_macro_f1": 0.1306
+    },
+    "warm_repeat": {
+      "macro_f1": 0.0513,
+      "cross_language_macro_f1": 0.2115
+    }
+  },
+  "dense_initial_indices": [
+    {
+      "cache_status": "miss",
+      "index_build_ms": 132155.87908308953,
+      "model_load_ms": 8019.6617499459535,
+      "document_embedding_ms": 124082.7038330026,
+      "booklet_language": "de"
+    },
+    {
+      "cache_status": "miss",
+      "index_build_ms": 114314.88733296283,
+      "model_load_ms": 0.009292038157582283,
+      "document_embedding_ms": 114296.94091598503,
+      "booklet_language": "fr"
+    },
+    {
+      "cache_status": "miss",
+      "index_build_ms": 126809.00649982505,
+      "model_load_ms": 0.017666025087237358,
+      "document_embedding_ms": 126744.92370896041,
+      "booklet_language": "it"
+    }
+  ]
+}

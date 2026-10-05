@@ -14,6 +14,8 @@ with weighted BM25 and page-level RRF. `hybrid` provides the weighted BM25 compa
 baseline. Existing `retrieval` and `full` remain available; the default is unchanged.
 See [Hybrid Retrieval documentation](docs/hybrid_dense_retrieval.md) for setup, cache,
 warm-up, Docker, dev comparison and actual CPU measurements.
+The [completed live quality comparison](docs/evaluation/hybrid_quality_2026-10-05.md)
+reports both runs, language pairs, runtime and dataset limitations; the default remains unchanged.
 
 ---
 

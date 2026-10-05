@@ -1,0 +1,21 @@
+{
+  "python": "3.12.6",
+  "packages": {
+    "sentence-transformers": "5.7.0",
+    "torch": "2.14.1",
+    "transformers": "5.18.0",
+    "numpy": "2.5.3",
+    "pypdf": "6.19.0",
+    "openai": "3.24.0",
+    "scikit-learn": "1.9.1"
+  },
+  "cpu_thread_environment": {
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4"
+  },
+  "offline_embeddings": true,
+  "apertus_sdk_max_retries": 0,
+  "pipeline_max_attempts_per_prediction": 3,
+  "apertus_temperature": 0.0,
+  "apertus_max_tokens": 512
+}

@@ -257,8 +257,30 @@ und 35 Absätzen des deutschen Juni-2026-Büchleins:
 
 Die drei Beispielclaims lieferten jeweils Seite 11 zuerst; Wiederholungen je Claim
 hatten identische Rangfolgen. Das ist ein Funktionsbeispiel, **kein annotierter
-Retrieval-Qualitätsbenchmark**. Es gab keinen Apertus-Aufruf, keine gemessene NLI-F1-
-Verbesserung und keine kostenpflichtige Dev-Evaluation. Die Zeiten gelten für diese Maschine.
+Retrieval-Qualitätsbenchmark**. Dieser CPU-Smoke-Test enthielt keine Apertus-Aufrufe
+und keine NLI-F1-Messung. Die Zeiten gelten für diese Maschine.
+
+### Abgeschlossener Live-Qualitätsvergleich vom 5. Oktober 2026
+
+Nach Freigabe wurden genau 200 erfolgreiche Apertus-Anfragen ausgeführt: dieselben
+50 historischen Validierungsfälle je Methode, jeweils erster Lauf und warme
+Wiederholung. 18 Fälle sind sprachübergreifend; insgesamt liegen 32 verschiedene
+Claims vor. Der offizielle Testsplit und die Retrieval-Konfiguration blieben unverändert.
+
+| Methode | Macro-F1 erster Lauf / warm | Sprachübergreifendes F1 erster Lauf / warm |
+|---|---:|---:|
+| `hybrid` (BM25) | 0.6016 / 0.5593 | 0.5333 / 0.4524 |
+| `hybrid_dense` (BM25 + Vektoren) | 0.5865 / 0.6106 | 0.6639 / 0.6639 |
+
+Vektorsuche verbessert die sprachübergreifende Teilmenge dieser Probe; beim
+gesamten Pipeline-F1 ist der Vorteil noch nicht stabil. Drei fragliche übernommene
+Labels, abgeleitete Sprachpaar-Fälle und nachgelagerte Beleg-/Konfidenzregeln
+begrenzen die Aussagekraft. Warm benötigt die Vektormethode auf CPU im Mittel
+5.744 s, BM25 1.421 s pro Fall. Der bisherige Standard bleibt erhalten.
+
+Der [vollständige Qualitätsbericht](evaluation/hybrid_quality_2026-10-05.md)
+enthält Sprachpaare, Belege, Labelprüfung, Rohlabels, Tokens, Index-/Cachezeiten,
+Originalantworten und die nachvollziehbaren Ergebnisse beider Wiederholungen.
 
 Tests nutzen kontrollierte Fake-Vektoren ohne API/Modelldownload. Sie prüfen Fusion,
 Cosinus-Normalisierung, Titelgewichtung, Seitenaggregation und Quellen, Cache-/PDF-
@@ -282,8 +304,9 @@ Modellauswahl und Fehleranzeige. Fake-Vektoren belegen keine echte Mehrsprachigk
   Installationshinweis; kein stiller BM25-Fallback und kein Modelldownload.
 
 Die lokalen Abhängigkeiten und BGE-M3-Gewichte sind für die Entwicklung installiert;
-das deutsche Juni-2026-Büchlein ist indexiert. GPU-/MPS-Laufzeiten und echte
-sprachübergreifende NLI-Qualität wurden nicht gemessen. Docker-/Modellcaches sind
+das deutsche Juni-2026-Büchlein sowie die November-2024-Büchlein in DE/FR/IT sind
+indexiert. GPU-/MPS-Laufzeiten wurden nicht gemessen. Die sprachübergreifende
+NLI-Probe ist oben beschrieben. Docker-/Modellcaches sind
 lokale Entwicklungsartefakte und werden nicht eingecheckt.
 
 ## Quellen

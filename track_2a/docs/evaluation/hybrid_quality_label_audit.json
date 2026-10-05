@@ -1,0 +1,35 @@
+{
+  "scope": "Three suspect inherited labels found during this run; this is not an exhaustive independent annotation review.",
+  "audit": [
+    {
+      "case_id": "historical-01",
+      "source_index": 1,
+      "claim": "Bundesrat und Parlament wollen für den Ausbauschritt 2023 der Nationalstrassen rund 5,3 Milliarden Franken investieren.",
+      "inherited_label": 0,
+      "suggested_document_grounded_label": 2,
+      "physical_page": 4,
+      "reference_excerpt": " A4 bei Schaffhausen (2. Röhre Fäsenstaubtunnel) – A1 bei St. Gallen (3. Röhre Rosenbergtunnel) Für diese Projekte sind 4,9 Milliarden Franken vorgesehen. Die Projekte werden durch den motorisierten Verkehr aus dem zweckgebundenen Nationalstrassen- und Agglomerations- verkehrsfonds finanziert. Am Bewilligungsverfahren ändert sich nichts: ",
+      "reason": "Booklet states 4.9 billion, not the 5.3 billion claimed. Source labels were not edited for the live comparison."
+    },
+    {
+      "case_id": "historical-13",
+      "source_index": 13,
+      "claim": "Le Conseil fédéral et le Parlement prévoient un crédit d'environ 5,3 milliards de francs pour l'aménagement des routes nationales.",
+      "inherited_label": 0,
+      "suggested_document_grounded_label": 2,
+      "physical_page": 4,
+      "reference_excerpt": " A4 à Schaffhouse (2e tube du tunnel de Fäsenstaub) ; – A1 à Saint-Gall (3e tube du tunnel du Rosenberg). Un montant de 4,9 milliards de francs est prévu pour ces pro - jets, qui seront financés par le trafic motorisé via le fonds pour les routes nationales et le trafic d’agglomération. Les procédures d’autorisation ne changent pas : les ",
+      "reason": "Booklet states 4.9 billion, not the 5.3 billion claimed. Source labels were not edited for the live comparison."
+    },
+    {
+      "case_id": "historical-23",
+      "source_index": 23,
+      "claim": "Il Consiglio federale e il Parlamento prevedono circa 5,3 miliardi di franchi per il potenziamento delle strade nazionali.",
+      "inherited_label": 0,
+      "suggested_document_grounded_label": 2,
+      "physical_page": 4,
+      "reference_excerpt": "ati dal trasporto motorizzato attraverso il Fondo per le strade nazionali e il traffico d’agglo - merato, sono previsti 4,9 miliardi di franchi. Le procedure di approvazione resteranno invariate: i cittadini, i Comuni e le associazioni direttamente interessati potranno infatti pronunciarsi in merito ai singoli progetti e se del caso prese",
+      "reason": "Booklet states 4.9 billion, not the 5.3 billion claimed. Source labels were not edited for the live comparison."
+    }
+  ]
+}

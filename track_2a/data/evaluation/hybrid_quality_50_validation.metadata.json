@@ -1,0 +1,45 @@
+{
+  "sample_count": 50,
+  "same_language_count": 32,
+  "cross_language_count": 18,
+  "source_dataset": "track_2a/data/benchmark_2024-11-24.jsonl",
+  "source_sha256": "05ffd62e4287e700a652d7d2509d8df90b2efb04f259cb775a7893db2eb598cf",
+  "dataset_sha256": "ef507a22b1f126eb823c3e4edf152a59e3c94b3fde1ce39186e03e4a64989812",
+  "cross_selection_indices": {
+    "de": {
+      "0": 0,
+      "1": 3,
+      "2": 5
+    },
+    "fr": {
+      "0": 12,
+      "1": 15,
+      "2": 17
+    },
+    "it": {
+      "0": 22,
+      "1": 25,
+      "2": 27
+    }
+  },
+  "cross_label_check": "Entailment: six motorway sections on physical page 4 in DE/FR/IT. Contradiction: subletting requires written consent on physical page 6 in DE/FR/IT. Neutral: energy/ticket-tax/hydrogen programmes are unaddressed topics in these booklets.",
+  "gold_pages_note": "Only cross-language entailment/contradiction cases annotated; page lists name one verified sufficient page, not all possible evidence pages. Gold data used only by evaluator.",
+  "independence_note": "32 existing curated historical cases plus 18 language-pair variants of 9 existing claims. Exploratory validation/regression dataset, not 50 independent claims, not official test data. No hyperparameter selection.",
+  "vote_note": "No reliable vote title supplied in the source records; both methods get vote=None. This run does not exercise the 2x title term.",
+  "pair_counts": {
+    "de->de": 12,
+    "fr->fr": 10,
+    "it->it": 10,
+    "de->fr": 3,
+    "de->it": 3,
+    "fr->de": 3,
+    "fr->it": 3,
+    "it->de": 3,
+    "it->fr": 3
+  },
+  "label_counts": {
+    "0": 22,
+    "2": 16,
+    "1": 12
+  }
+}
