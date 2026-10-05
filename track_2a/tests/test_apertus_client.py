@@ -26,6 +26,21 @@ class TestApertusClient(unittest.TestCase):
         self.assertEqual(label, 2)
         self.assertIn("Conflict dominant", rule)
 
+    def test_calibrated_decision_keeps_label_when_confidences_disagree(self):
+        # Rule 0: Apertus writes "label": 0 with "p_contra": 1.0 -> trust the label
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.0, p_neutral=0.0, p_contra=1.0, raw_label=0, label_given=True
+        )
+        self.assertEqual(label, 0)
+        self.assertIn("Decision-Rule 0", rule)
+
+    def test_calibrated_decision_consistent_label_still_uses_rules(self):
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.48, p_neutral=0.06, p_contra=0.46, raw_label=0, label_given=True
+        )
+        self.assertEqual(label, 1)
+        self.assertIn("Epistemic ambiguity zone", rule)
+
     def test_calibrated_decision_arbiter_support(self):
         # Rule 2: Direct support dominant
         label, rule = ApertusClient._apply_calibrated_decision(

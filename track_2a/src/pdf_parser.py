@@ -70,7 +70,7 @@ _SECTION_HEADINGS = [
         r"|arguments\s+(?:du\s+)?conseil\s+f[eé]d[eé]ral"
         r"|argomenti\s+(?:del\s+)?consiglio\s+federale", re.IGNORECASE)),
     ("Voting text (legal text)", re.compile(
-        r"abstimmungstext|texte\s+soumis\s+au\s+vote|testo\s+in\s+votazione", re.IGNORECASE)),
+        r"abstimmungstext|textes?\s+soumis\s+au\s+vote|test[oi]\s+in\s+votazione", re.IGNORECASE)),
     ("Official explanation in detail", re.compile(
         r"(?:vorlage\s+)?im\s+detail|en\s+d[eé]tail|in\s+dettaglio", re.IGNORECASE)),
     ("Overview / summary", re.compile(r"in\s+k[uü]rze|l.essentiel\s+en\s+bref|in\s+breve", re.IGNORECASE)),
@@ -82,7 +82,47 @@ _COMMITTEE_DISCLAIMER = re.compile(
     r"|comitato\s+(?:d.iniziativa|referendario)\s+[eè]\s+l.autore", re.IGNORECASE)
 
 
+# Older booklets (2020-2022) head each side's arguments with a bare speaker line ("Bundesrat und Parlament",
+# "Referendumskomitee", "Comité « Non à … »"). Matched as a whole line only, so running text does not trigger it.
+_SPEAKER_LINES = [
+    (_SECTION_HEADINGS[0][0], re.compile(
+        r"(?:initiativ|referendums)komitees?|komitees?\s*«.*"
+        r"|comit[eé]s?\s+(?:d.initiative|r[eé]f[eé]rendaires?)|comit[eé]s?\s*«.*"
+        r"|comitat[oi]\s+(?:d.iniziativa|referendari[o]?)|comitat[oi]\s*«.*", re.IGNORECASE)),
+    (_SECTION_HEADINGS[1][0], re.compile(
+        r"bundesrat\s+und\s+parlament|conseil\s+f[eé]d[eé]ral\s+et\s+parlement"
+        r"|consiglio\s+federale\s+e\s+parlamento", re.IGNORECASE)),
+]
+
+# Each side's arguments fill a double page whose second page ends with that side's recommendation box
+# ("Empfehlung von Bundesrat und Parlament", "Recommandation des comités référendaires"). Older booklets set
+# the heading as a graphic, so this closing line is often the only text that says who is speaking.
+_CLOSING_SPEAKER = [
+    (_SECTION_HEADINGS[0][0], re.compile(
+        r"(?:empfehlung\s+(?:des|der)\s+\S*komitees?"
+        r"|recommandation\s+(?:du|des)\s+comit[eé]s?(?:\s+d.initiative|\s+r[eé]f[eé]rendaires?)?"
+        r"|raccomandazione\s+(?:del|dei)\s+comitat[oi](?:\s+d.iniziativa|\s+referendari[o]?)?)\s*$", re.IGNORECASE)),
+    (_SECTION_HEADINGS[1][0], re.compile(
+        r"(?:empfehlung\s+von\s+bundesrat\s+und\s+parlament"
+        r"|recommandation\s+du\s+conseil\s+f[eé]d[eé]ral\s+et\s+du\s+parlement"
+        r"|raccomandazione\s+del\s+consiglio\s+federale\s+e\s+del\s+parlamento)\s*$", re.IGNORECASE)),
+]
+
+_SPEAKER_SECTIONS = {_SECTION_HEADINGS[0][0], _SECTION_HEADINGS[1][0]}
+
 TOC_SECTION = "__toc__"
+
+
+def detect_closing_speaker(page_text: str) -> Optional[str]:
+    """Return the speaker whose recommendation box (or committee disclaimer) closes this argument page."""
+    flat = " ".join(page_text.split())
+    if _COMMITTEE_DISCLAIMER.search(flat):
+        return _SECTION_HEADINGS[0][0]
+    tail = " ".join(" ".join(page_text.splitlines()[-4:]).split())
+    for label, pattern in _CLOSING_SPEAKER:
+        if pattern.search(tail):
+            return label
+    return None
 
 
 def detect_section_heading(page_text: str) -> Optional[str]:
@@ -90,6 +130,11 @@ def detect_section_heading(page_text: str) -> Optional[str]:
     Return the canonical section label if the page starts with a section heading,
     TOC_SECTION for a table-of-contents page, or None if the page has no heading.
     """
+    for line in page_text.splitlines()[:5]:
+        line = " ".join(line.split())
+        for label, pattern in _SPEAKER_LINES:
+            if pattern.fullmatch(line):
+                return label
     zone = " ".join(" ".join(page_text.splitlines()[:5]).split())
     found = []
     for label, pattern in _SECTION_HEADINGS:
@@ -293,24 +338,42 @@ class PDFParser:
         pages = pages if pages is not None else self.extract_pages(pdf_path)
         page_to_proposal, proposal_starts = self._detect_proposal_boundaries(pages)
 
-        paragraphs = []
-        para_id = 0
+        # A heading applies to its page and the following pages until the next heading or proposal
+        headings = [detect_section_heading(p["text"]) for p in pages]
+        sections: List[Optional[str]] = []
         current_section: Optional[str] = None
         current_section_proposal = None
-
-        for page in pages:
-            pg = page["page_number"]
-            page_text = page["text"]
-            proposal_id = page_to_proposal.get(pg, 0)
-
-            # A heading applies to its page and the following pages until the next heading or proposal
-            heading = detect_section_heading(page_text)
+        for page, heading in zip(pages, headings):
+            proposal_id = page_to_proposal.get(page["page_number"], 0)
             if heading == TOC_SECTION:
                 current_section, current_section_proposal = None, proposal_id
             elif heading:
                 current_section, current_section_proposal = heading, proposal_id
             elif proposal_id != current_section_proposal:
                 current_section = None
+            sections.append(current_section)
+
+        # A closing recommendation box names the speaker of its double page (this page and the one before),
+        # overriding a label that was only inherited from an earlier heading
+        for i, page in enumerate(pages):
+            speaker = detect_closing_speaker(page["text"])
+            if not speaker:
+                continue
+            for j in (i, i - 1):
+                if j >= 0 and not headings[j] and pages[i]["page_number"] - pages[j]["page_number"] <= 1:
+                    sections[j] = speaker
+            # the double page is over: the next pages no longer inherit a speaker
+            k = i + 1
+            while k < len(pages) and not headings[k] and sections[k] in _SPEAKER_SECTIONS:
+                sections[k] = None
+                k += 1
+
+        paragraphs = []
+        para_id = 0
+        for page, current_section in zip(pages, sections):
+            pg = page["page_number"]
+            page_text = page["text"]
+            proposal_id = page_to_proposal.get(pg, 0)
 
             # Determine section type
             if self._is_toc_page(page_text, pg):

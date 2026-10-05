@@ -327,16 +327,18 @@ class ApertusClient:
             tokens_completion = usage.completion_tokens if (usage and getattr(usage, "completion_tokens", None)) else self._estimate_tokens(content)
             tokens_total = usage.total_tokens if (usage and getattr(usage, "total_tokens", None)) else (tokens_prompt + tokens_completion)
 
+            label_given = "label" in parsed_json
             raw_label = int(parsed_json.get("label", 1))
             if raw_label not in (0, 1, 2):
-                raw_label = 1
+                raw_label, label_given = 1, False
 
             p_entail = float(parsed_json.get("p_entail", 0.0))
             p_neutral = float(parsed_json.get("p_neutral", 0.0))
             p_contra = float(parsed_json.get("p_contra", 0.0))
 
             # Apply Calibrated Decision Arbiter
-            final_label, decision_rule = self._apply_calibrated_decision(p_entail, p_neutral, p_contra, raw_label)
+            final_label, decision_rule = self._apply_calibrated_decision(
+                p_entail, p_neutral, p_contra, raw_label, label_given=label_given)
 
             evidence = parsed_json.get("evidence", [])
             if isinstance(evidence, str):
@@ -386,7 +388,9 @@ class ApertusClient:
         return cls._apply_calibrated_decision(p_entail, p_neutral, p_contra, raw_label)
 
     @staticmethod
-    def _apply_calibrated_decision(p_entail: float, p_neutral: float, p_contra: float, raw_label: int) -> Tuple[int, Optional[str]]:
+    def _apply_calibrated_decision(
+        p_entail: float, p_neutral: float, p_contra: float, raw_label: int, label_given: bool = False,
+    ) -> Tuple[int, Optional[str]]:
         """
         Calibrated decision arbiter:
         Applies empirical threshold rules over the model's confidence distribution
@@ -395,6 +399,12 @@ class ApertusClient:
         total_p = p_entail + p_neutral + p_contra
         if total_p == 0.0:
             return raw_label, None
+
+        # Rule 0: a self-inconsistent answer ("label": 0 with "p_contra": 1.0) keeps the model's label.
+        # Over all saved ids-mode runs the label was right in 44 of these cases and the probabilities in 13.
+        probs = (p_entail, p_neutral, p_contra)
+        if label_given and probs[raw_label] < max(probs):
+            return raw_label, "Decision-Rule 0: label and confidences disagree -> model label kept"
 
         # Rule 1: Strong contradiction or numerical conflict signal
         if p_contra >= 0.40 and p_contra > p_entail:
