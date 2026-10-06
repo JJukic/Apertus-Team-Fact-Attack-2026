@@ -7,7 +7,8 @@ import unittest
 from types import SimpleNamespace
 
 from src.apertus_client import ApertusClient
-from src.evaluator import evidence_grounded, stratified_sample
+from src import config
+from src.evaluator import evidence_grounded, load_records, stratified_sample
 from src.hf_dataset import DEV_PINNED_DATES, booklet_filename, split_dates
 from src.inference import ClaimVerificationEngine, chunk_reference
 from src.text_utils import best_snippet, split_passages
@@ -108,6 +109,13 @@ class TestEvaluatorHelpers(unittest.TestCase):
         ref = "Der Bundesrat empfiehlt, die Initiative abzulehnen. Die Kosten betragen 5 Milliarden Franken."
         self.assertTrue(evidence_grounded(["Die Kosten betragen 5 Milliarden Franken."], ref))
         self.assertFalse(evidence_grounded(["Le Conseil fédéral recommande de rejeter l'initiative."], ref))
+
+
+    def test_demo_dataset_booklets_resolve(self):
+        # `make run` benchmarks the demo set; its publish date (2026-05-28) differs from the booklet file date
+        records = load_records(config.BENCHMARK_PATH)
+        self.assertEqual(len(records), 28)
+        self.assertTrue(all(r["booklet_pdf"].exists() for r in records), {r["booklet_pdf"].name for r in records})
 
 
 class TestHFSplit(unittest.TestCase):
