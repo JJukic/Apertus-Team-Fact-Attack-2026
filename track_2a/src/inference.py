@@ -17,6 +17,7 @@ from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
 from src import config
+from src.text_utils import guess_language
 
 
 class EvidenceSource(BaseModel):
@@ -454,10 +455,22 @@ class ClaimVerificationEngine:
             return f"({'; '.join(parts)}) {p['text']}" if parts else p["text"]
 
         texts = [label(p) for p in passages]
+        model_claim, extra_in, extra_out, extra_ms = claim, 0, 0, 0.0
+        if config.TRANSLATE_CLAIM and passages:
+            booklet_lang = guess_language(" ".join(p["text"] for p in passages[:3]))
+            if (claim_language or guess_language(claim)) != booklet_lang:
+                translation, extra_in, extra_out, extra_ms = self.client.translate(claim, booklet_lang)
+                if translation:
+                    name = self.client.LANGUAGE_NAMES.get(booklet_lang, booklet_lang)
+                    model_claim = f"{claim}\n(Translation into {name}: {translation})"
         if self.prompt_mode == "ids":
-            out = self.client.infer(context="", claim=claim, claim_language=claim_language, passages=texts)
+            out = self.client.infer(context="", claim=model_claim, claim_language=claim_language, passages=texts)
         else:
-            out = self.client.infer_compact(texts, claim, claim_language=claim_language, vote=vote)
+            out = self.client.infer_compact(texts, model_claim, claim_language=claim_language, vote=vote)
+        out.tokens_prompt += extra_in
+        out.tokens_completion += extra_out
+        out.tokens_total += extra_in + extra_out
+        out.latency_ms += extra_ms
 
         ids = list(out.evidence_ids)
         decision_rule = out.decision_rule_applied

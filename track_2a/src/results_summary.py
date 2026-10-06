@@ -31,6 +31,8 @@ def _row(report: Dict[str, Any], path: Path) -> Dict[str, Any]:
         "top_k": m.get("top_k"),
         "passage_chars": m.get("passage_chars"),
         "ids_reason": bool(m.get("ids_reason", "reason" in m.get("tag", ""))),
+        "thinking": bool(m.get("thinking", False)),
+        "translate_claim": bool(m.get("translate_claim", False)),
         "model": m["model"],
         "tag": m.get("tag", ""),
         "n": report["sample_count"],
@@ -64,7 +66,9 @@ def load_runs(results_dir: Path = RESULTS_DIR) -> List[Dict[str, Any]]:
 def _matches_defaults(run: Dict[str, Any]) -> bool:
     if run["prompt_mode"] != config.PROMPT_MODE or run["model"] != config.LLM_NAME:
         return False
-    if run["prompt_mode"] == "ids" and run["ids_reason"] != config.IDS_REASON:
+    if run["prompt_mode"] == "ids" and (run["ids_reason"] != config.IDS_REASON or run["thinking"] != config.THINKING):
+        return False
+    if run["translate_claim"] != config.TRANSLATE_CLAIM:
         return False
     if run["task"] == "beginner":
         return True
@@ -90,6 +94,8 @@ def build_summary(results_dir: Path = RESULTS_DIR) -> Dict[str, Any]:
             "passage_chars": config.PASSAGE_CHARS,
             "prompt_mode": config.PROMPT_MODE,
             "ids_reason": config.IDS_REASON,
+            "thinking": config.THINKING,
+            "translate_claim": config.TRANSLATE_CLAIM,
         },
         "headline": {task: headline(runs, task) for task in ("advanced", "beginner")},
         "runs": runs,

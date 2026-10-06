@@ -158,6 +158,8 @@ efficiency measure but also improves NLI quality.
 | Keep the model's label when it disagrees with its own confidences (Decision-Rule 0) | 44 fixed / 13 broken over all saved runs; test 0.920 → 0.928 | adopted |
 | Section labels from bare speaker lines and closing recommendation boxes (older booklets) | Federal Council pages labelled as committee 27 → 0; F1-neutral (test 0.928 → 0.925, dev 0.908 → 0.908), dev E→C 23 → 16, evidence grounding 0.86 → 0.88 | adopted (correctness) |
 | Flip committee Contradictions that cite only Federal Council pages | dev 7 fixed / 8 broken, test 0 / 7 (simulated) | rejected |
+| Thinking before answering (prefilled reasoning marker) | ~+3 F1 (0.889 → 0.931 on 363 paired dev pairs, 20 fixed / 5 broken); ~1,200 output tokens and ~22 s per claim instead of 59 and ~2 s | rejected (efficiency), `THINKING=false` |
+| Translate cross-lingual claims into the booklet language first | dev 0.908 → 0.919, test 0.925 → 0.923 (14 fixed / 11 broken overall); +0.6 s | rejected (noise) |
 | Apertus 8B instead of 70B (450 dev pairs) | 0.851 vs. 0.908 F1, p95 1.2 s vs. 4.5 s | 70B kept (quality first) |
 
 Full tables: [docs/experiments.md](docs/experiments.md). Runs on 150 pairs carry about ±3 F1 points of sampling
@@ -175,6 +177,9 @@ noise; close decisions were re-run on 450 pairs.
   error rate (2–8 % for all others), even when instructed not to judge them against the other side, when asked to
   verify, with worked examples, when the opposing argument pages are removed, and after fixing section labels that had
   marked Federal Council pages as committee pages in older booklets.
+- **Thinking helps, at a high price.** Letting the thinking model reason before its answer fixes half of the remaining
+  dev errors (~+3 F1), but needs ~20× the output tokens and ~10× the latency. A prompt instruction alone does not make it
+  think first; the reasoning marker has to be prefilled. Selective thinking saves little (it is needed on ~3/4 of claims).
 - **Self-contradictory answers.** In ~2 % of answers the label and the stated confidences disagree; the label is right
   3× as often, so the decision rules now keep it.
 - **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.82); French claims
@@ -226,6 +231,8 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 3. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
 4. Layout-aware parsing (e.g. Docling) for tables and graphical headings.
 5. Fine-tuning or a stronger model for speaker attribution, the error class that resisted prompting and retrieval changes.
+6. A cheaper form of reasoning (a short, length-limited thinking budget enforced by `max_tokens` with a forced answer) to
+   keep part of the thinking gain at a fraction of its latency.
 
 ---
 

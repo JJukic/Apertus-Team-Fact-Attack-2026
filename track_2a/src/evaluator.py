@@ -251,6 +251,8 @@ class BenchmarkEvaluator:
                 "prompt_mode": self.engine.prompt_mode,
                 "passage_chars": config.PASSAGE_CHARS if task == "advanced" else None,
                 "ids_reason": config.IDS_REASON,
+                "thinking": config.THINKING,
+                "translate_claim": config.TRANSLATE_CLAIM,
                 "speaker_aware": config.SPEAKER_AWARE,
                 "few_shot": config.FEW_SHOT,
                 "dataset": str(path.name),

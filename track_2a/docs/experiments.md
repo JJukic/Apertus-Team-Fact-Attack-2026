@@ -216,6 +216,59 @@ answers) but removes wrong speaker labels, lowers Entailment → Contradiction o
 grounding on dev; we keep it as a correctness fix. Committee-attributed claims still fail most often
 (dev 16 of 90, test 10 of 64).
 
+### Thinking mode: +~3 F1 points for ~10× latency (rejected)
+
+We use `Apertus-v1.5-70B-thinking` but by default ask for the JSON answer only (~60 output tokens).
+With `THINKING=true` the model reasons before it answers. A prompt instruction alone is not enough: asked to
+"think first", Apertus still writes the JSON first and explains afterwards (post-hoc, no effect on the label).
+Only prefilling the reasoning marker (`<|inner_prefix|>` as the start of the assistant turn,
+`continue_final_message`) makes it reason before deciding; the answer follows `<|inner_suffix|>`. It ignores
+a requested length limit ("at most 120 words") and walks through the passages one by one.
+
+Dev 450 (seed 7), paired with the fast configuration. 85 of the 450 thinking requests failed on the shared
+endpoint (84 × "invalid API key" interleaved with successful calls, 1 × 504) and are excluded here;
+the table covers the 363 pairs with a complete answer from both runs (this subset contains 40 of the 41 errors
+of the fast run, so its F1 is lower than the full-sample 0.908).
+
+| Policy (363 pairs) | Macro-F1 | Fixed / broke | Thinking on | Output tokens (median) | Latency (median) |
+|---|---:|---:|---:|---:|---:|
+| Fast `ids` answer (current) | 0.889 | – | 0 % | 59 | ~2 s |
+| **Always think** | **0.931** | 20 / 5 | 100 % | ~1,200 | ~22 s |
+| Think if the fast answer is Neutral or Contradiction | 0.931 | 18 / 3 | 72 % | | |
+| Think if the claim names a speaker | 0.912 | 9 / 1 | 50 % | | |
+| Think if the fast answer is Contradiction | 0.909 | 7 / 0 | 32 % | | |
+
+Extrapolated to all 450 pairs, always thinking would raise macro-F1 from 0.908 to roughly 0.94 (preliminary:
+the 85 failed requests still have to be re-run). Answers are long (p95 ~2,500 output tokens); 2 answers
+hit the 4,000-token limit without a decision, and long requests are the first to fail when the endpoint is
+under load. Selective thinking keeps the gain only when it runs on ~3/4 of the claims plus the fast call, so
+it saves little. Because tokens and latency are judged right after macro-F1, thinking stays off
+(`THINKING=false`); it is the clearest quality/efficiency trade-off we found for Apertus.
+
+### Translating the claim into the booklet language (rejected)
+
+`TRANSLATE_CLAIM=true` translates cross-lingual claims with one short extra Apertus call and passes the
+original and the translation to the NLI prompt (tokens and latency of both calls are counted).
+
+| Split | Fixed / broke (cross-lingual pairs) | Macro-F1 | Latency mean |
+|---|---:|---:|---:|
+| dev 450 | 7 / 2 | 0.908 → 0.919 | 2.1 → 2.7 s* |
+| test 402 | 7 / 9 | 0.925 → 0.923 | 2.1 → 2.7 s* |
+
+\* measured while another run shared the endpoint. Over both splits 14 fixes against 11 breakages on
+cross-lingual pairs: within run-to-run noise, for +0.6 s and ~20 extra output tokens per claim. Kept off.
+
+### The 30 remaining test errors
+
+- They come from only ~19 distinct claims: the same claim is paired with the DE, FR and IT booklet
+  (one hydropower claim alone accounts for 4 errors, one factory-farming claim for 3).
+- In 29 of 30 errors the gold passage was among the 10 pages sent to the model; the errors are reasoning
+  errors, not retrieval misses (which is what thinking addresses).
+- Remaining Entailment → Contradiction errors are mostly committee claims judged against the other side's text,
+  and "if accepted, X must …" claims where the model reads a missing detail as a contradiction.
+- 3–4 gold labels look debatable (e.g. claims about what "the summary" or "the voting text" says, `hf-0760`,
+  `hf-1234`, `hf-1458`), so label noise leaves little headroom.
+
 ### No "lost in the middle" effect
 
 With the full booklet (150 test pairs), accuracy did not drop with the position of the gold passage: 69 % when

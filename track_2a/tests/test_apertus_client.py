@@ -83,6 +83,15 @@ class TestApertusClient(unittest.TestCase):
         self.assertEqual(parsed["label"], 2)
         self.assertEqual(parsed["p_contra"], 0.8)
 
+    def test_strip_thinking_keeps_only_the_final_answer(self):
+        raw = '<|inner_prefix|>The committee says {"label": 2} is wrong.<|inner_suffix|>{"label": 0, "evidence_ids": [3]}'
+        self.assertEqual(ApertusClient._parse_json(ApertusClient._strip_thinking(raw))["label"], 0)
+
+    def test_strip_thinking_truncated_reasoning_uses_last_json(self):
+        raw = '<|inner_prefix|>First guess {"label": 2}. On reflection {"label": 1, "p_neutral": 1.0}'
+        self.assertEqual(ApertusClient._parse_json(ApertusClient._strip_thinking(raw))["label"], 1)
+        self.assertEqual(ApertusClient._strip_thinking('{"label": 0}'), '{"label": 0}')
+
     def test_parse_json_embedded_fallback(self):
         raw = 'Here is the analysis result: {"label": 1, "reasoning": "Neutral topic"} Hope this helps!'
         parsed = ApertusClient._parse_json(raw)

@@ -181,6 +181,26 @@ class ApertusClient:
         "(No passage says what the Federal Council expects for rents.)\n"
     )
 
+    LANGUAGE_NAMES = {"de": "German", "fr": "French", "it": "Italian"}
+
+    def translate(self, text: str, target_lang: str) -> Tuple[Optional[str], int, int, float]:
+        """Translate a claim into the booklet language. Returns (translation or None, prompt tokens, completion tokens, ms)."""
+        start = time.time()
+        if self.mock:
+            return None, 0, 0, 0.0
+        target = self.LANGUAGE_NAMES.get(target_lang, target_lang)
+        response, _ = self._chat([
+            {"role": "system", "content": f"Translate the user's sentence into {target}. Keep names, numbers and "
+                                          "who says what exactly. Output only the translation."},
+            {"role": "user", "content": text},
+        ], max_tokens=200)
+        ms = (time.time() - start) * 1000
+        if response is None:
+            return None, 0, 0, ms
+        out = (response.choices[0].message.content or "").strip()
+        usage = getattr(response, "usage", None)
+        return (out or None, getattr(usage, "prompt_tokens", 0) or 0, getattr(usage, "completion_tokens", 0) or 0, ms)
+
     def _chat(self, messages: List[Dict[str, str]], max_tokens: int, logprobs: bool = False, max_retries: int = 3):
         last_exception = None
         for attempt in range(max_retries):
@@ -271,28 +291,46 @@ class ApertusClient:
                 "language (German, French, Italian) than the claim: compare meaning, not wording.\n",
             )
 
+        thinking = passages is not None and config.THINKING
+        if thinking:
+            system_prompt = system_prompt.replace(
+                "Respond ONLY with a valid JSON object matching this schema:\n",
+                "First think briefly (at most 120 words): who (if anyone) the claim attributes the statement to, "
+                "which passages belong to that speaker, and what exactly they say about the claim. Then give your "
+                "final answer as a valid JSON object matching this schema:\n",
+            )
+
         user_prompt = (
             f"=== DOCUMENT CONTEXT ===\n{context}\n\n"
             f"=== CLAIM ===\n{claim}\n\n"
             "Determine whether the document context entails (0), is neutral (1), or contradicts (2) the claim. "
-            "Output JSON only:"
+            + ("Think it through, then output the JSON:" if thinking else "Output JSON only:")
         )
 
         max_retries = 3
         response = None
         last_exception = None
 
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        extra: Dict[str, Any] = {}
+        if thinking:
+            # Asked to think, Apertus still answers with the JSON first and explains afterwards; prefilling the
+            # reasoning marker makes it reason before deciding
+            messages.append({"role": "assistant", "content": "<|inner_prefix|>"})
+            extra["extra_body"] = {"continue_final_message": True, "add_generation_prompt": False}
+
         for attempt in range(max_retries):
             try:
                 response = self.client.chat.completions.create(
                     model=self.model_name,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
+                    messages=messages,
                     temperature=0.0,
-                    max_tokens=512 if passages is None else 160,
-                    timeout=45.0,
+                    max_tokens=config.THINKING_MAX_TOKENS if thinking else (512 if passages is None else 160),
+                    timeout=180.0 if thinking else 45.0,
+                    **extra,
                 )
                 break
             except Exception as e:
@@ -320,7 +358,7 @@ class ApertusClient:
         try:
             latency_ms = (time.time() - start_time) * 1000
             content = response.choices[0].message.content.strip()
-            parsed_json = self._parse_json(content)
+            parsed_json = self._parse_json(self._strip_thinking(content, thinking=thinking))
 
             usage = getattr(response, "usage", None)
             tokens_prompt = usage.prompt_tokens if (usage and getattr(usage, "prompt_tokens", None)) else self._estimate_tokens(user_prompt)
@@ -421,6 +459,19 @@ class ApertusClient:
             return 1, "Decision-Rule 3: Epistemic ambiguity zone (|p_entail - p_contra| < 0.15)"
 
         return raw_label, None
+
+    @staticmethod
+    def _strip_thinking(text: str, thinking: bool = False) -> str:
+        """
+        The thinking model writes '<|inner_prefix|>reasoning<|inner_suffix|>answer'. Return only the answer;
+        if the reasoning was cut off before the suffix, fall back to the last JSON object that has a label.
+        """
+        if "<|inner_suffix|>" in text:
+            return text.rsplit("<|inner_suffix|>", 1)[1].strip()
+        if thinking or "<|inner_prefix|>" in text:
+            objects = re.findall(r"\{[^{}]*\"label\"[^{}]*\}", text)
+            return objects[-1] if objects else text
+        return text
 
     @staticmethod
     def _parse_json(text: str) -> Dict[str, Any]:
