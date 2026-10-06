@@ -21,21 +21,22 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| **Advanced** (booklet PDF + claim + vote) | **0.925** | 0.941 | 0.917 | 5,725 | 59 | 2.1 s / 3.8 s |
+| **Advanced** (booklet PDF + claim + vote) | **0.928** | 0.960 | 0.913 | 4,696 | 59 | 1.9 s / 3.3 s |
 | **Beginner** (reference string + claim) | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 Configuration: hybrid retrieval (BM25 claim + 2 × BM25 vote title, booklet-wide), top 10 pages,
 section labels (incl. closing recommendation boxes), `ids` prompt mode, model label kept when it disagrees
-with the model's own confidences (Decision-Rule 0). Before these last two changes the advanced task scored 0.920
-(see [error analysis](#error-analysis-on-saved-runs-2026-10-05)).
+with the model's own confidences (Decision-Rule 0), pages longer than 3,000 characters clipped to their best-matching
+window (`PAGE_MAX_CHARS`). Before these changes the advanced task scored 0.920 with 5,737 input tokens
+(see [error analysis](#error-analysis-on-saved-runs-2026-10-05) and [page clipping](#clipping-over-long-pages-2026-10-06)).
 
 Advanced macro-F1 by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 1.000 | 0.933 | 0.922 |
-| **fr** | 0.914 | 0.940 | 1.000 |
-| **it** | 0.816 | 0.907 | 0.875 |
+| **de** | 1.000 | 0.936 | 0.884 |
+| **fr** | 0.914 | 0.944 | 1.000 |
+| **it** | 0.798 | 0.922 | 0.940 |
 
 ## Before / after on the test split (same 150-pair sample)
 
@@ -216,6 +217,22 @@ answers) but removes wrong speaker labels, lowers Entailment → Contradiction o
 grounding on dev; we keep it as a correctness fix. Committee-attributed claims still fail most often
 (dev 16 of 90, test 10 of 64).
 
+### Clipping over-long pages (2026-10-06)
+
+The median retrieved page has ~1,400 characters, but a few dense legal-text pages (e.g. AHV 21, 2022-09-25) reach
+8–10k and pushed single claims to 18–24k input tokens. `PAGE_MAX_CHARS=3000` keeps the window of consecutive
+sentences that best matches claim + vote title (the title is in the booklet language, so it anchors cross-lingual
+claims) plus the page heading. Offline, no gold passage was lost at any cap between 6,000 and 2,500 characters.
+
+| Split | Macro-F1 | Fixed / broke | Input tokens mean | Input tokens p95 / max | Latency mean / p95 |
+|---|---:|---:|---:|---:|---:|
+| test 402, no clipping | 0.925 | – | 5,725 | 12,664 / 24,270 | 2.1 s / 3.8 s |
+| **test 402, clip 3,000** | **0.928** | 3 / 2 | **4,696** | **7,377 / 10,088** | **1.9 s / 3.3 s** |
+| dev 450, no clipping | 0.908 | – | 4,836 | 7,466 / 10,127 | 2.1 s / 4.3 s |
+| **dev 450, clip 3,000** | **0.913** | 4 / 2 | **4,435** | **5,762 / 6,921** | 2.0 s / 3.9 s |
+
+Adopted as default: −18 % input tokens on test (−42 % at p95) at unchanged or slightly better macro-F1.
+
 ### Thinking mode: +~3 F1 points for ~10× latency (rejected)
 
 We use `Apertus-v1.5-70B-thinking` but by default ask for the JSON answer only (~60 output tokens).
@@ -309,8 +326,8 @@ Judges may call the CLI once per claim, so start-up and PDF parsing can count to
 
 ## Known gaps / next steps
 
-- Italian claims against German booklets are the weakest pair (0.82 F1 on the test split), mostly with the gold page retrieved.
-- Most remaining advanced errors are Entailment → Contradiction (13 of 30 on the test split).
+- Italian claims against German booklets are the weakest pair (0.80 F1 on the test split), mostly with the gold page retrieved.
+- Remaining advanced errors on the test split (29): Entailment → Neutral 10, Contradiction → Neutral 8, Entailment → Contradiction 6.
 - Evidence precision with whole pages: ~75 % of cited pages lie in the gold section.
 - Section labels: committee pages whose only heading is a slogan ("Nein zu diesem Zensurgesetz") stay unlabelled.
 - Proposal boundary detection misses proposals in 2021-06-13, 2022-09-25 and 2024-03-03 (IT); hybrid

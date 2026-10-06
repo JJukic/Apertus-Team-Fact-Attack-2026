@@ -28,7 +28,7 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
 | Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Advanced** — booklet PDF + claim + vote | **0.925** | 0.917 | 5,725 | 59 | 2.1 s / 3.8 s |
+| **Advanced** — booklet PDF + claim + vote | **0.928** | 0.913 | 4,696 | 59 | 1.9 s / 3.3 s |
 | **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 ### Full booklet vs. selected context (advanced task, same 150 test pairs)

@@ -208,13 +208,13 @@ class ApertusClient:
         """
         How many retries an API error deserves. Timeouts, dropped connections, 429 and 5xx are transient.
         Under load the CSCS gateway also answers 'invalid API key' to valid keys (seen interleaved with successful
-        calls), so a 401 gets two quick retries, but not the full budget, so a really wrong key fails fast.
+        calls; 403 likewise), so 401/403 get two quick retries, but not the full budget, so a really wrong key fails fast.
         Other client errors (400 bad request, 404 unknown model) are not retried.
         """
         status = getattr(error, "status_code", None)
         if status is None or status in (408, 409, 425, 429) or status >= 500:
             return config.LLM_MAX_RETRIES
-        if status == 401:
+        if status in (401, 403):
             return min(2, config.LLM_MAX_RETRIES)
         return 0
 

@@ -34,8 +34,9 @@ DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "10"))
 PASSAGE_CHARS = int(os.getenv("PASSAGE_CHARS", "0"))
 
 # Max characters per retrieved page sent to the model (0 = no limit). Longer pages keep the window of
-# sentences that best matches claim + vote title; only a few dense legal-text pages are affected
-PAGE_MAX_CHARS = int(os.getenv("PAGE_MAX_CHARS", "0"))
+# sentences that best matches claim + vote title; only a few dense legal-text pages are affected.
+# 3000: test input tokens 5,725 -> 4,696 (p95 12.7k -> 7.4k), macro-F1 0.925 -> 0.928 (dev 0.908 -> 0.913)
+PAGE_MAX_CHARS = int(os.getenv("PAGE_MAX_CHARS", "3000"))
 
 # Prompt mode:
 #   'ids'     - JSON with confidences + cited passage ids (default: best F1, ~55 output tokens)

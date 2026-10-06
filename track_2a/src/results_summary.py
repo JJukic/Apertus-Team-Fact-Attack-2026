@@ -69,7 +69,7 @@ def _matches_defaults(run: Dict[str, Any]) -> bool:
         return False
     if run["prompt_mode"] == "ids" and (run["ids_reason"] != config.IDS_REASON or run["thinking"] != config.THINKING):
         return False
-    if run["translate_claim"] != config.TRANSLATE_CLAIM or run["page_max_chars"] != config.PAGE_MAX_CHARS:
+    if run["translate_claim"] != config.TRANSLATE_CLAIM:
         return False
     if run["task"] == "beginner":
         return True
@@ -77,6 +77,7 @@ def _matches_defaults(run: Dict[str, Any]) -> bool:
         run["strategy"] == config.DEFAULT_STRATEGY
         and run["top_k"] == config.DEFAULT_TOP_K
         and (run["passage_chars"] or 0) == config.PASSAGE_CHARS
+        and run["page_max_chars"] == config.PAGE_MAX_CHARS
     )
 
 
