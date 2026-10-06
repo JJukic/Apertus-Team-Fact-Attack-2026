@@ -1,0 +1,2 @@
+# Optional local E5 benchmark, not needed for normal API/Streamlit operation.
+sentence-transformers>=3.0.0,<6.0.0
