@@ -100,7 +100,7 @@ Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
 
 ```bash
 export LLM_API_KEY="your_api_key_here"
-make run          # builds the Docker image and runs the benchmark
+make run          # builds the Docker image and runs the benchmark (report + JSON in track_2a/results/)
 make test         # unit tests (no API calls)
 make web          # Streamlit app at http://localhost:8501
 ```

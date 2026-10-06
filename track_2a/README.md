@@ -90,6 +90,9 @@ make run      # builds the image (downloads + pre-parses the booklets) and runs 
 make test     # unit tests, no API calls
 ```
 
+The report is printed to the console; the run's JSON (metrics, run settings incl. the image's git commit, and
+per-sample predictions) is written to `track_2a/results/` on the host.
+
 Other commands run inside the container the same way, e.g. `docker run --rm -e LLM_API_KEY -v $PWD/cases:/cases
 hackapertus-track2a run -i /cases/cases.jsonl -o /cases/predictions.jsonl`.
 

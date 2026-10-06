@@ -15,6 +15,7 @@ Every run is saved to results/ with model, strategy, git commit and per-sample r
 """
 
 import json
+import os
 import random
 import re
 import subprocess
@@ -99,12 +100,16 @@ def evidence_grounded(evidence: List[str], reference: str, threshold: float = 0.
 
 
 def _git_commit() -> str:
+    # Inside the Docker image there is no .git: the commit is baked in at build time (GIT_COMMIT build arg)
+    fallback = os.getenv("GIT_COMMIT") or "unknown"
     try:
         out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, cwd=config.BASE_DIR)
+        if out.returncode != 0 or not out.stdout.strip():
+            return fallback
         dirty = subprocess.run(["git", "status", "--porcelain", "src"], capture_output=True, text=True, cwd=config.BASE_DIR)
         return out.stdout.strip() + ("-dirty" if dirty.stdout.strip() else "")
     except Exception:
-        return "unknown"
+        return fallback
 
 
 def _macro_f1(y_true: List[int], y_pred: List[int]) -> float:

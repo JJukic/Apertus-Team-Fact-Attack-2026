@@ -3,12 +3,14 @@ Unit tests for compact prompt mode, reference chunking, evaluator helpers and th
 No network access: the OpenAI client is replaced by a stub.
 """
 
+import os
 import unittest
+from unittest import mock
 from types import SimpleNamespace
 
 from src.apertus_client import ApertusClient
 from src import config
-from src.evaluator import evidence_grounded, load_records, stratified_sample
+from src.evaluator import _git_commit, evidence_grounded, load_records, stratified_sample
 from src.hf_dataset import DEV_PINNED_DATES, booklet_filename, split_dates
 from src.inference import ClaimVerificationEngine, chunk_reference
 from src.text_utils import best_snippet, clip_to_query, split_passages
@@ -125,6 +127,16 @@ class TestEvaluatorHelpers(unittest.TestCase):
         records = load_records(config.BENCHMARK_PATH)
         self.assertEqual(len(records), 28)
         self.assertTrue(all(r["booklet_pdf"].exists() for r in records), {r["booklet_pdf"].name for r in records})
+
+    def test_git_commit_falls_back_to_build_arg_without_git(self):
+        # The Docker image has no .git; the commit comes from the GIT_COMMIT build arg
+        failed = SimpleNamespace(returncode=128, stdout="")
+        with mock.patch.dict(os.environ, {"GIT_COMMIT": "744e717"}), \
+                mock.patch("src.evaluator.subprocess.run", return_value=failed):
+            self.assertEqual(_git_commit(), "744e717")
+        with mock.patch.dict(os.environ, {"GIT_COMMIT": ""}), \
+                mock.patch("src.evaluator.subprocess.run", side_effect=FileNotFoundError):
+            self.assertEqual(_git_commit(), "unknown")
 
 
 class TestHFSplit(unittest.TestCase):

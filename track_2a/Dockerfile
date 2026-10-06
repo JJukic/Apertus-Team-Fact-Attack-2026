@@ -28,6 +28,9 @@ RUN python -m src warm-cache || true
 EXPOSE 8501
 
 ENV PORT=8501
+# Commit of the build, shown in the benchmark report (the image has no .git)
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT=${GIT_COMMIT}
 ENV PYTHONUNBUFFERED=1
 
 ENTRYPOINT ["/app/entrypoint.sh"]
