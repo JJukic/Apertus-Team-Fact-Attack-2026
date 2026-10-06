@@ -1,0 +1,641 @@
+{
+  "purpose": "diagnostic_only_exposed_test_errors",
+  "source": "20261006T140501_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_docker.json",
+  "source_commit": "e9f6cd7",
+  "cases": [
+    {
+      "id": "hf-0017",
+      "pair": "de->it",
+      "vote": "Iniziativa popolare «Per una Svizzera senza pesticidi sintetici»",
+      "claim": "Wird die Abstimmung angenommen, ist der Import von Lebensmitteln verboten, die synthetische Pestizide enthalten oder bei deren Herstellung synthetische Pestizide eingesetzt wurden.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": [\"P12\"]\n}",
+      "evidence": [
+        "35 Un divieto di importazione contraddirebbe inoltre i prin cipi del diritto commerciale internazionale e violerebbe accordi commerciali internazionali. Nei confronti dei partner esteri risulterebbe molto difficile attuare tale divieto, giustificarne la proporzionalità e dimostrarne la fondatezza scientifica. - Il Consiglio federale e il Parlamento riconoscono la necessità di agire e si sono già dichiarati a favore di soluzioni vincolanti alternative all’iniziativa. Nuove disposizioni, comple mentari alle misure esistenti, permetteranno di ridurre i rischi legati all’impiego di pesticidi. Le condizioni per l’omologazione e l’applicazione di pesticidi saranno inasprite, ma in maniera progressiva e moderata. - Per tutte queste ragioni, Consiglio federale e Parlamento raccomandano di respingere l’iniziativa popolare «Per una Svizzera senza pesticidi sintetici». N o admin.ch/divieto-di-pesticidi Violazione di accordi commerciali La politica si è già attivata Raccomandazione del Consiglio federale e del Parlamento"
+      ],
+      "evidence_pages": [
+        35
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 4116,
+      "tokens_completion": 55,
+      "latency_ms": 3040.9,
+      "error": null
+    },
+    {
+      "id": "hf-0031",
+      "pair": "de->fr",
+      "vote": "Initiative populaire « Pour une Suisse libre de pesticides de synthèse »",
+      "claim": "Wird die Abstimmung angenommen, ist der Import von Lebensmitteln untersagt, die synthetische Pestizide enthalten oder mithilfe solcher Pestizide hergestellt wurden.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": [10]\n}",
+      "evidence": [
+        "35 L’interdiction frappant les importations serait contraire aux principes du droit commercial international et des accords commerciaux internationaux. Il serait extrêmement difficile de justifier le caractère proportionnel d’une telle mesure et d’en démontrer scientifiquement la nécessité vis-à-vis des parte naires étrangers, ainsi que de la mettre en œuvre. - Le Conseil fédéral et le Parlement reconnaissent la néces sité d’agir et se sont prononcés pour des alternatives con traignantes à l’initiative : de nouvelles dispositions viennent compléter les mesures existantes afin de réduire les risques découlant de l’utilisation des pesticides. Les conditions régis sant l’autorisation et l’utilisation des pesticides seront durcies, mais de manière progressive et mesurée. - - - Pour toutes ces raisons, le Conseil fédéral et le Parlement vous recommandent de rejeter l’initiative populaire « Pour une Suisse libre de pesticides de synthèse ». N on admin.ch/interdiction-pesticides Violation des accords c ommerciaux Démarches déjà entreprises sur le plan politique Recommandation du Conseil fédéral et du Parlement"
+      ],
+      "evidence_pages": [
+        35
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 3844,
+      "tokens_completion": 54,
+      "latency_ms": 2154.39,
+      "error": null
+    },
+    {
+      "id": "hf-0063",
+      "pair": "de->it",
+      "vote": "Legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili",
+      "claim": "Wird die Abstimmung angenommen, müssen die Betreiber grosser Wasserkraftwerke gegen Entschädigung genügend Wasser in ihren Anlagen zurückhalten, um in den kalten Monaten Strom zu produzieren.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 0b: Neutral label but confidences name a relation -> confidences | evidence fallback: top passage",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe claim states that if the law is accepted, operators of large hydropower plants must retain sufficient water in their facilities against compensation to produce electricity during cold months.\n\nReviewing the document context:\n- P1, P3, P4 discuss the general need for electricity security, the role of renewables, and the law's purpose (increase domestic production, reduce import dependency).\n- P2 contains the legal text of the law. It sets targets for renewable electricity production (solar, wind, biomass, excluding hydrop",
+      "evidence": [
+        "10 Quarto oggetto: Approvvigionamento elettrico sicuro Legge federale su un approvvi- gionamento elettrico sicuro con le energie rinnovabili È diventato più difficile assicurare l’approvvigionamento energetico costante della Svizzera su tutto l’arco dell’anno. A causa della trasformazione dei sistemi di approvvigionamen - to elettrico in Europa e dei conflitti internazionali, nei mesi invernali possono verificarsi situazioni di penuria se non è possibile importare sufficiente elettricità. Inoltre, in Svizzera il fabbisogno di elettricità cresce, ad esempio per soddisfare le esigenze dell’economia, ma anche per le auto elettriche e le pompe di calore. Per garantire la sicurezza dell’approvvi - gionamento, il Parlamento ha adottato la legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili. Contro questa legge è stato chiesto il referendum. Il progetto crea le basi per aumentare in tempi brevi la pro- duzione in Svizzera di elettricità a partire da fonti rinnovabili come acqua, sole, vento o biomassa. In questo modo si intende rafforza- re l’indipendenza dell’approvvigionamento elettrico del nostro Paese. Il progetto comprende strumenti di promozione e nuove prescrizioni in materia di produzione, trasporto, stoccag- gio e consumo di elettricità. L’incremento della produzione di elettricità da energia solare dovrà avvenire innanzitutto mediante impianti installati sugli edifici. Nei territori considerati adeguati, gli impianti eolici e i grandi impianti solari particolarmente importanti per l’approvvigionamento elettrico invernale potranno usufruire di condizioni di pianificazione agevolate. Anche le 16 centrali idroelettriche menzionate nella legge beneficeranno di agevolazio- ni in materia di pianificazione, in modo tale da ridurre le possibilità che un eventuale ricorso ostacoli la realizzazione di un progetto. Si continuerà inoltre a poter votare sui nuovi progetti energetici. In breveIn breve In dettaglio 42 Gli argomenti 46 Il testo in votazione 50 Contesto Il progetto"
+      ],
+      "evidence_pages": [
+        10
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 8653,
+      "tokens_completion": 160,
+      "latency_ms": 4851.33,
+      "error": null
+    },
+    {
+      "id": "hf-0141",
+      "pair": "de->it",
+      "vote": "Legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili",
+      "claim": "Wird die Abstimmung angenommen, müssen die Betreiber grosser Wasserkraftwerke gegen Entschädigung genügend Wasser in ihren Anlagen zurückhalten, um in den kalten Monaten Strom zu produzieren.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 0b: Neutral label but confidences name a relation -> confidences | evidence fallback: top passage",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe claim states that if the law is accepted, operators of large hydropower plants must retain sufficient water in their facilities against compensation to produce electricity during the cold months.\n\nReviewing the document context:\n- P1, P3, P4, P9 discuss the general purpose of the law (increasing renewable production, security of supply, overcoming winter shortages).\n- P2 contains the legal text of the law.\n- P5, P6, P7, P8, P10, P11 contain detailed",
+      "evidence": [
+        "10 Quarto oggetto: Approvvigionamento elettrico sicuro Legge federale su un approvvi- gionamento elettrico sicuro con le energie rinnovabili È diventato più difficile assicurare l’approvvigionamento energetico costante della Svizzera su tutto l’arco dell’anno. A causa della trasformazione dei sistemi di approvvigionamen - to elettrico in Europa e dei conflitti internazionali, nei mesi invernali possono verificarsi situazioni di penuria se non è possibile importare sufficiente elettricità. Inoltre, in Svizzera il fabbisogno di elettricità cresce, ad esempio per soddisfare le esigenze dell’economia, ma anche per le auto elettriche e le pompe di calore. Per garantire la sicurezza dell’approvvi - gionamento, il Parlamento ha adottato la legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili. Contro questa legge è stato chiesto il referendum. Il progetto crea le basi per aumentare in tempi brevi la pro- duzione in Svizzera di elettricità a partire da fonti rinnovabili come acqua, sole, vento o biomassa. In questo modo si intende rafforza- re l’indipendenza dell’approvvigionamento elettrico del nostro Paese. Il progetto comprende strumenti di promozione e nuove prescrizioni in materia di produzione, trasporto, stoccag- gio e consumo di elettricità. L’incremento della produzione di elettricità da energia solare dovrà avvenire innanzitutto mediante impianti installati sugli edifici. Nei territori considerati adeguati, gli impianti eolici e i grandi impianti solari particolarmente importanti per l’approvvigionamento elettrico invernale potranno usufruire di condizioni di pianificazione agevolate. Anche le 16 centrali idroelettriche menzionate nella legge beneficeranno di agevolazio- ni in materia di pianificazione, in modo tale da ridurre le possibilità che un eventuale ricorso ostacoli la realizzazione di un progetto. Si continuerà inoltre a poter votare sui nuovi progetti energetici. In breveIn breve In dettaglio 42 Gli argomenti 46 Il testo in votazione 50 Contesto Il progetto"
+      ],
+      "evidence_pages": [
+        10
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 8653,
+      "tokens_completion": 160,
+      "latency_ms": 4146.07,
+      "error": null
+    },
+    {
+      "id": "hf-0186",
+      "pair": "fr->fr",
+      "vote": "Loi COVID-19",
+      "claim": "Le comité estime que le Conseil fédéral peut recourir à la procédure législative ordinaire pour venir en aide aux personnes lésées par les mesures de lutte contre la pandémie, sans avoir besoin de cette loi.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40)",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": [10]\n}",
+      "evidence": [
+        "43 Le Conseil fédéral a déjà mis en œuvre la plupart des dis positions et la loi arrive bientôt à échéance. Même s’il y a des éléments positifs dans la loi, il y a aussi des éléments domma geables. Par exemple, la procédure raccourcie d’autorisation de mise sur le marché des vaccins ou encore les subventions aux médias. Or, la crise que ces derniers traversent n’a rien à voir avec le coronavirus. Alors, allons-nous faire comme si de rien n’était ? Non ! La loi introduit un régime de droit d’urgence du genre de celui que nous avons connu des années 1930 à 1952. Il a fallu deux initiatives populaires pour rétablir le régime ordi naire de la démocratie directe. Par ailleurs, il arrive fréquem ment que des lois urgentes soient prolongées à plusieurs re prises, toujours en restreignant les droits populaires. C’est aussi possible avec la loi COVID-19. Et bien qu’elle n’ait effet que jusqu’à la fin 2021, certaines de ses parties resteront applica bles jusqu’en 2031. - - - - - - Pour aider ceux qui sont lésés par les mesures de lutte contre la pandémie, le Conseil fédéral peut très bien utiliser la voie législative ordinaire. Il n’a pas besoin de cette loi. Il doit être au service du peuple souverain, et non lui donner des o rdres. Cela vaudra tout particulièrement pour les crises à venir : chômage, faillites, surendettement, voire pire. On peut donc mettre en toute tranquillité un non dans l’urne pour montrer qui commande au sein de la Confédéra tion : le peuple souverain ! - Le comité référendaire vous recommande donc de voter : No n loicovid-non.ch Droit d’urgence un jour, droit d’urgence toujours Qui est le souve rain dans ce pays ? - Recommandation du comité r éférendaire Le comité référendaire est seul responsable du contenu et de la formulation des arguments figurant ci-dessus. Bouclage du texte du comité référendaire : 8 février 2021."
+      ],
+      "evidence_pages": [
+        43
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 5744,
+      "tokens_completion": 54,
+      "latency_ms": 2261.45,
+      "error": null
+    },
+    {
+      "id": "hf-0189",
+      "pair": "fr->de",
+      "vote": "Covid-19-Gesetz",
+      "claim": "Selon le texte soumis au vote, le Conseil fédéral peut prévoir que les demandes de référendum soient déposées auprès de la Chancellerie fédérale pendant le délai référendaire, avec le nombre de signatures requis, mais sans certificat de droit de vote.",
+      "true_label": 0,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 5574,
+      "tokens_completion": 51,
+      "latency_ms": 2220.43,
+      "error": null
+    },
+    {
+      "id": "hf-0322",
+      "pair": "fr->de",
+      "vote": "Änderung des Bundesgesetzes über die Alters- und Hinterlassenenversicherung (AHV 21)",
+      "claim": "Le résumé précise que, pour générer des recettes supplémentaires en faveur de l’AVS, le taux réduit de TVA passera de 2,5 à 2,6 %, et le taux normal de 7,7 à 8,1 %.",
+      "true_label": 0,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": null,
+      "probs": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe document context provided is exclusively about the legal text of the AHV 21 reform (Alters- und Hinterlassenenversicherung) and the voting booklet structure. It contains details on the replacement of \"Rentenalter\" with \"Referenzalter\", contribution rules, pension calculations, and financing sources (Bundesbeitrag, Vermögenserträge, Mehrwertsteuererträge). However, **it does not contain any specific information regarding the current or proposed VAT rates (TVA)**. The claim mentions",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 9701,
+      "tokens_completion": 160,
+      "latency_ms": 6034.54,
+      "error": null
+    },
+    {
+      "id": "hf-0333",
+      "pair": "it->de",
+      "vote": "Änderung des Bundesgesetzes über die Alters- und Hinterlassenenversicherung (AHV 21)",
+      "claim": "Il Consiglio federale ritiene giustificato equiparare l’età pensionabile delle donne a quella degli uomini, poiché oggi le donne sono più istruite rispetto al passato, lavorano per lo più e vivono più a lungo degli uomini.",
+      "true_label": 0,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 10216,
+      "tokens_completion": 51,
+      "latency_ms": 1781.79,
+      "error": null
+    },
+    {
+      "id": "hf-0359",
+      "pair": "it->it",
+      "vote": "Legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili",
+      "claim": "Se il voto viene approvato, i gestori delle grandi centrali idroelettriche saranno tenuti, in cambio di un indennizzo, a conservare nei propri impianti acqua sufficiente per produrre elettricità nei mesi freddi.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40) | evidence fallback: top passage",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": []\n}",
+      "evidence": [
+        "10 Quarto oggetto: Approvvigionamento elettrico sicuro Legge federale su un approvvi- gionamento elettrico sicuro con le energie rinnovabili È diventato più difficile assicurare l’approvvigionamento energetico costante della Svizzera su tutto l’arco dell’anno. A causa della trasformazione dei sistemi di approvvigionamen - to elettrico in Europa e dei conflitti internazionali, nei mesi invernali possono verificarsi situazioni di penuria se non è possibile importare sufficiente elettricità. Inoltre, in Svizzera il fabbisogno di elettricità cresce, ad esempio per soddisfare le esigenze dell’economia, ma anche per le auto elettriche e le pompe di calore. Per garantire la sicurezza dell’approvvi - gionamento, il Parlamento ha adottato la legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili. Contro questa legge è stato chiesto il referendum. Il progetto crea le basi per aumentare in tempi brevi la pro- duzione in Svizzera di elettricità a partire da fonti rinnovabili come acqua, sole, vento o biomassa. In questo modo si intende rafforza- re l’indipendenza dell’approvvigionamento elettrico del nostro Paese. Il progetto comprende strumenti di promozione e nuove prescrizioni in materia di produzione, trasporto, stoccag- gio e consumo di elettricità. L’incremento della produzione di elettricità da energia solare dovrà avvenire innanzitutto mediante impianti installati sugli edifici. Nei territori considerati adeguati, gli impianti eolici e i grandi impianti solari particolarmente importanti per l’approvvigionamento elettrico invernale potranno usufruire di condizioni di pianificazione agevolate. Anche le 16 centrali idroelettriche menzionate nella legge beneficeranno di agevolazio- ni in materia di pianificazione, in modo tale da ridurre le possibilità che un eventuale ricorso ostacoli la realizzazione di un progetto. Si continuerà inoltre a poter votare sui nuovi progetti energetici. In breveIn breve In dettaglio 42 Gli argomenti 46 Il testo in votazione 50 Contesto Il progetto"
+      ],
+      "evidence_pages": [
+        10
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 7577,
+      "tokens_completion": 51,
+      "latency_ms": 2494.48,
+      "error": null
+    },
+    {
+      "id": "hf-0386",
+      "pair": "it->fr",
+      "vote": "Modification de la loi fédérale sur l’assurance-vieillesse et survivants (AVS 21)",
+      "claim": "Se la votazione verrà approvata, l’aliquota ordinaria dell’IVA salirà dal 7,7% all’8,1%.",
+      "true_label": 0,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 10543,
+      "tokens_completion": 51,
+      "latency_ms": 2445.91,
+      "error": null
+    },
+    {
+      "id": "hf-0428",
+      "pair": "it->it",
+      "vote": "Legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili",
+      "claim": "Se il voto viene approvato, i gestori delle grandi centrali idroelettriche saranno tenuti, in cambio di un indennizzo, a conservare nei propri impianti acqua sufficiente per produrre elettricità nei mesi freddi.",
+      "true_label": 0,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40) | evidence fallback: top passage",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": []\n}",
+      "evidence": [
+        "10 Quarto oggetto: Approvvigionamento elettrico sicuro Legge federale su un approvvi- gionamento elettrico sicuro con le energie rinnovabili È diventato più difficile assicurare l’approvvigionamento energetico costante della Svizzera su tutto l’arco dell’anno. A causa della trasformazione dei sistemi di approvvigionamen - to elettrico in Europa e dei conflitti internazionali, nei mesi invernali possono verificarsi situazioni di penuria se non è possibile importare sufficiente elettricità. Inoltre, in Svizzera il fabbisogno di elettricità cresce, ad esempio per soddisfare le esigenze dell’economia, ma anche per le auto elettriche e le pompe di calore. Per garantire la sicurezza dell’approvvi - gionamento, il Parlamento ha adottato la legge federale su un approvvigionamento elettrico sicuro con le energie rinnovabili. Contro questa legge è stato chiesto il referendum. Il progetto crea le basi per aumentare in tempi brevi la pro- duzione in Svizzera di elettricità a partire da fonti rinnovabili come acqua, sole, vento o biomassa. In questo modo si intende rafforza- re l’indipendenza dell’approvvigionamento elettrico del nostro Paese. Il progetto comprende strumenti di promozione e nuove prescrizioni in materia di produzione, trasporto, stoccag- gio e consumo di elettricità. L’incremento della produzione di elettricità da energia solare dovrà avvenire innanzitutto mediante impianti installati sugli edifici. Nei territori considerati adeguati, gli impianti eolici e i grandi impianti solari particolarmente importanti per l’approvvigionamento elettrico invernale potranno usufruire di condizioni di pianificazione agevolate. Anche le 16 centrali idroelettriche menzionate nella legge beneficeranno di agevolazio- ni in materia di pianificazione, in modo tale da ridurre le possibilità che un eventuale ricorso ostacoli la realizzazione di un progetto. Si continuerà inoltre a poter votare sui nuovi progetti energetici. In breveIn breve In dettaglio 42 Gli argomenti 46 Il testo in votazione 50 Contesto Il progetto"
+      ],
+      "evidence_pages": [
+        10
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 7577,
+      "tokens_completion": 51,
+      "latency_ms": 1195.37,
+      "error": null
+    },
+    {
+      "id": "hf-0454",
+      "pair": "it->fr",
+      "vote": "Modification de la loi fédérale sur l’assurance-vieillesse et survivants (AVS 21)",
+      "claim": "Se la votazione verrà approvata, l’aliquota ordinaria dell’IVA salirà dal 7,7% all’8,1%.",
+      "true_label": 0,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 10543,
+      "tokens_completion": 51,
+      "latency_ms": 1955.15,
+      "error": null
+    },
+    {
+      "id": "hf-0592",
+      "pair": "de->de",
+      "vote": "Covid-19-Gesetz",
+      "claim": "Dem Abstimmungstext zufolge soll das Gesetz eine Erhöhung der Mehrwertsteuer um zwei Prozentpunkte vorsehen, um die Kosten der Pandemiebekämpfung zu finanzieren.",
+      "true_label": 1,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40) | evidence fallback: top passage",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": []\n}",
+      "evidence": [
+        "45 Der Bundesrat musste im Frühling 2020 rasch reagieren, um die Gesundheit der Bevölkerung zu schützen und Men schen und Unternehmen finanziell zu unterstützen. Dazu stützte er sich kurzzeitig auch auf Notrecht, so wie es die Verfassung vorsieht. Das Covid-19-Gesetz führt die im Notrecht entschiedenen Unterstützungsmassnahmen fort und ermög licht es Bundesrat und Parlament, weiterhin rasch finanziell zu helfen, wenn die Entwicklung der Krise es nötig macht. Das Gesetz ist im ordentlichen demokratischen Zusammenspiel entstanden und garantiert den Einbezug der Kantone, der Sozialpartner und des Parlaments. Das Parlament entscheidet zudem weiterhin über alle Kreditanträge des Bundesrates. - - Mit dem Covid-19-Gesetz haben die von der Pandemie stark betroffenen Menschen und Unternehmen die Sicherheit, dass die Unterstützung durch das Gemeinwesen so lange wie nötig weitergeführt werden kann. Es ist Ausdruck von Solidari tät und bildet für Bund und Kantone eine der wichtigsten Grundlagen zur weiteren Bewältigung der Krise. - Aus all diesen Gründen empfehlen Bundesrat und Parlament, das Covid-19-Gesetz anzunehmen. J a admin.ch/covid-19-gesetz Gesetz stärkt in der Krise die Demokratie Instrument der Solidarität Empfehlung von Bundesrat und Parlament"
+      ],
+      "evidence_pages": [
+        45
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 6143,
+      "tokens_completion": 51,
+      "latency_ms": 2288.51,
+      "error": null
+    },
+    {
+      "id": "hf-0760",
+      "pair": "fr->fr",
+      "vote": "Modification de la loi fédérale sur l’impôt anticipé",
+      "claim": "Le résumé indique que la réforme des caisses de pension prévoit de porter l’âge de la retraite des femmes à 65 ans.",
+      "true_label": 1,
+      "pred_label": 0,
+      "correct": false,
+      "decision_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+      "probs": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Parsed via regex fallback",
+      "evidence": [
+        "9 Non Le comité estime que ces économies se feront exclusive - ment sur le dos des femmes, dont les rentes de vieillesse sont déjà inférieures d’un tiers à celles des hommes. Pour lui, ce n’est qu’un début : l a retraite à 67 ans pour tous est déjà à l’ordre du jour et AVS 21 n’est que la première d’une série de tentatives de démantèlement qui nous concernent tous. avs21-non.ch Acceptez-vous la modification du 17 décembre 2021 de la loi fédérale sur l’assurance-vieillesse et survivants (LAVS) (AVS 21) ? La question qui vous est posée Oui Pour stabiliser les finances de l’AVS, le Conseil fédéral et le Parlement pensent qu’il ne suffit pas d’augmenter les recettes, mais qu’il faut aussi faire des économies. L’âge de la retraite des femmes sera donc harmonisé avec celui des hommes. Son relèvement de 64 à 65 ans s’accompagnera de mesures de compensation financière. admin.ch/reforme-AVS21 Recommandation du Conseil fédéral et du Parlement Recommandation du comité référendaire Vote du Conseil national Vote du Conseil des États 125 oui 67 non 1 abstention 31 oui 12 non 0 abstention",
+        "Oui Modification de la loi fédérale sur l’impôt anticipé Oui Modification de la loi fédérale sur l’assu- rance-vieillesse et survivants (AVS 21) Oui Financement additionnel de l’AVS par le biais d’un relèvement de la TVA Non Initiative sur l’élevage intensif Le Conseil fédéral et le Parlement vous recommandent de voter, le 25 septembre 2022 : VoteInfo L’application sur les votations avec vidéos explicatives et résultats",
+        "35 La réforme permettra à de nombreuses personnes d’amé - liorer leur rente AVS en continuant de travailler au-delà de l’âge de référence. Elles pourront ainsi combler d’éventuelles lacunes de cotisation. Cette incitation à travailler plus long - temps sera bénéfique non seulement pour les assurés, mais aussi pour l’économie, qui a un urgent besoin de main-d’œuvre qualifiée. De nombreux travailleurs âgés souhaiteraient pouvoir réduire progressivement leur activité lucrative. AVS 21 répond à ce besoin en permettant un départ à la retraite plus flexible. Il est urgent de stabiliser les finances de l’AVS. Aucune réforme majeure de cette dernière n’a abouti au cours des 25 d ernières années. Plus nous attendrons, plus les générations futures devront payer cher pour rétablir l’équilibre des finances et garantir les rentes. Pour toutes ces raisons, le Conseil fédéral et le Parlement vous recommandent d’accepter l’arrêté fédéral sur le finance - ment additionnel de l’AVS par le biais d’un relèvement de la TVA et la modification de la loi fédérale sur l’assurance-vieil - lesse et survivants (AVS 21). Oui admin.ch/reforme-AVS21 Incitation à travailler au-delà de l’âge de référence Possibilité de partir à la retraite en plusieurs étapes Dans l’intérêt des générations futures Recommandation du Conseil fédéral et du Parlement"
+      ],
+      "evidence_pages": [
+        9,
+        80,
+        35
+      ],
+      "evidence_grounded": true,
+      "tokens_prompt": 6365,
+      "tokens_completion": 61,
+      "latency_ms": 3159.7,
+      "error": null
+    },
+    {
+      "id": "hf-0995",
+      "pair": "it->fr",
+      "vote": "Initiative populaire « Maximum 10 % du revenu pour les primes d’assurance-maladie (initiative d’allègement des primes) »",
+      "claim": "Il riassunto sostiene che il popolo svizzero ha approvato l’iniziativa popolare per un salario minimo di 20 franchi all’ora, con oltre il 50% dei voti favorevoli.",
+      "true_label": 1,
+      "pred_label": 2,
+      "correct": false,
+      "decision_rule": "Decision-Rule 1: Conflict dominant (p_contra >= 0.40) | evidence fallback: top passage",
+      "probs": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 1.0,\n  \"label\": 2,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\n1.  **Topic Check:** The document context is entirely about the \"initiative d'allègement des primes\" (initiative to cap health insurance premiums at 10% of disposable income) and the \"initiative pour un frein aux coûts\" (initiative for a cost brake). There is no mention of a \"salario minimo di 20 franchi all'ora\" (minimum wage of 20 CHF per hour).\n2.  **Numerical Check:** The claim cites specific numbers (",
+      "evidence": [
+        "3 Quatrième objet Troisième objet Deuxième objet Premier objet Initiative populaire « Maximum 10 % du revenu pour les primes d’assurance-maladie (initiative d’allègement des primes) » En bref 4 – 5 En détail 12 Arguments 16 Texte soumis au vote 20 Initiative populaire « Pour des primes plus basses. Frein aux coûts dans le système de santé (initiative pour un frein aux coûts) » En bref 6 – 7 En détail 22 Arguments 26 Texte soumis au vote 30 Initiative populaire « Pour la liberté et l’intégrité physique » En bref 8 – 9 En détail 32 Arguments 36 Texte soumis au vote 40 Loi fédérale relative à un approvisionnement en électricité sûr reposant sur des énergies renouvelables En bref 10 – 11 En détail 42 Arguments 46 Texte soumis au vote 50 Sommaire L’application sur les votations : VoteInfo Les vidéos sur les votations : admin.ch/videos-fr"
+      ],
+      "evidence_pages": [
+        3
+      ],
+      "evidence_grounded": false,
+      "tokens_prompt": 5912,
+      "tokens_completion": 160,
+      "latency_ms": 5407.41,
+      "error": null
+    },
+    {
+      "id": "hf-1072",
+      "pair": "de->it",
+      "vote": "Modifica della legge federale sull’assicurazione per la vecchiaia e per i superstiti (AVS 21)",
+      "claim": "In der Zusammenfassung heißt es, dass die Mehrwertsteuer reduziert wird, um die AVS zu stabilisieren.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 9823,
+      "tokens_completion": 51,
+      "latency_ms": 2311.38,
+      "error": null
+    },
+    {
+      "id": "hf-1090",
+      "pair": "de->fr",
+      "vote": "Loi fédérale sur les mesures policières de lutte contre le terrorisme (MPT)",
+      "claim": "Laut der Zusammenfassung darf die Polizei schon heute auch ohne das Vorliegen einer Straftat eingreifen.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe claim states: \"According to the summary, the police are already allowed to intervene even without a criminal offense having been committed.\"\n\nLooking at the document context:\n- **P5** states: \"Aujourd'hui, la police ne peut en principe intervenir que si une infraction a déjà été commise.\" (Today, the police can in principle only intervene if an offense has already been committed.)\n- **P6** and **P7** (the official explanation and voting question) consistently frame the new law as providing *",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 3716,
+      "tokens_completion": 160,
+      "latency_ms": 4886.0,
+      "error": null
+    },
+    {
+      "id": "hf-1155",
+      "pair": "de->de",
+      "vote": "Volksinitiative «Löhne entlasten, Kapital gerecht besteuern»",
+      "claim": "Die Zusammenfassung besagt, dass der überwiegende Anteil der Umverteilung durch die Einkommenssteuern erfolgt.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": null,
+      "probs": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe document context discusses the Swiss tax system and income redistribution but does **not** provide a quantitative breakdown or summary stating that the *overwhelming majority* (or any specific majority) of redistribution occurs through income taxes.\n\n- **P1** mentions that \"The largest part of the redistribution takes place via social benefits\" (Der grösste Teil der Umverteilung erfolgt über Sozialleistungen).\n- **P7** states: \"The redistribution of income in Switzerland takes place primarily via social benefits\" (Die Umver",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 4037,
+      "tokens_completion": 160,
+      "latency_ms": 5122.26,
+      "error": null
+    },
+    {
+      "id": "hf-1181",
+      "pair": "fr->de",
+      "vote": "Änderung des Bundesgesetzes über die Verrechnungssteuer",
+      "claim": "Le texte de vote affirme que la taxe anticipative sur les revenus du capital est fixée à 30 % de la prestation imposable.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe document context (P7, P8, P11) discusses the reform of the Swiss withholding tax (Verrechnungssteuer) and mentions that it is currently levied at **35%** on interest income (P7: \"Der Bund erhebt auf Einkommen aus Zinsen eine Verrechnungssteuer von 35 Prozent.\"). The claim states that the withholding tax is fixed at **30%** of the taxable amount. Since the document explicitly states the current rate is",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 5586,
+      "tokens_completion": 160,
+      "latency_ms": 4203.81,
+      "error": null
+    },
+    {
+      "id": "hf-1234",
+      "pair": "fr->de",
+      "vote": "Volksinitiative «Für tiefere Prämien – Kostenbremse im Gesundheitswesen (Kostenbremse-Initiative)»",
+      "claim": "Le résumé précise que l’initiative définit la manière dont les salaires et le développement économique doivent être mesurés.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe claim states: \"Le résumé précise que l’initiative définit la manière dont les salaires et le développement économique doivent être mesurés.\" (The summary specifies that the initiative defines how salaries and economic development must be measured.)\n\nLooking at the document context:\n- In the official explanation (P6, P7, P11), it is explicitly stated that the initiative **does not** define how salaries and economic development are measured. For example, P7 says: \"Wie die Löhne und die Wirtschaftsentwicklung",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 5509,
+      "tokens_completion": 160,
+      "latency_ms": 4534.58,
+      "error": null
+    },
+    {
+      "id": "hf-1296",
+      "pair": "fr->de",
+      "vote": "CO2-Gesetz",
+      "claim": "Le comité estime que le CO2-Gesetz est indispensable à la protection du climat et que la Suisse doit redoubler d’efforts pour diminuer ses émissions.",
+      "true_label": 2,
+      "pred_label": 0,
+      "correct": false,
+      "decision_rule": null,
+      "probs": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 0.0,\n  \"label\": 0,\n  \"evidence_ids\": [10]\n}",
+      "evidence": [
+        "65 Hausbesitzerinnen und -besitzer können vom Gesetz profitieren. Wer die Öl-Heizung ersetzt und sich für eine Wärmepumpe, Holz oder Sonnenenergie entscheidet, kann finanzielle Unterstützung beantragen und bezahlt zudem keine CO2-Abgabe mehr. Davon profitieren auch die Mieterin nen und Mieter, denn ihre Heizkosten sinken. - Mit dem Gesetz kommen effizientere Fahrzeuge auf den Markt, die weniger Benzin und Diesel verbrauchen. Dadurch sinken die Ausgaben für den Treibstoff, und Autofahrerinnen und Autofahrer werden entlastet. Zudem wird der Bau von Ladestationen für Elektroautos unterstützt. Das fördert die Elektromobilität. Die Schweiz hat in den letzten zehn Jahren rund 80 Milliar den Franken für den Import von Erdöl und Erdgas ausgegeben. Dieses Geld fliesst ins Ausland ab. Mit dem Gesetz reduzieren wir die Abhängigkeit von den ausländischen Erdölkonzernen und investieren stattdessen mehr Geld in der Schweiz. - Aus all diesen Gründen empfehlen Bundesrat und Parla ment, das CO 2-Gesetz anzunehmen. - J a admin.ch/co2-gesetz Einsparungen für Hausbesitzer und Mieter Vorteile für Autofahrer Abhängigkeit von Öl-Staaten wird reduziert Empfehlung von Bundesrat und Parlament"
+      ],
+      "evidence_pages": [
+        65
+      ],
+      "evidence_grounded": false,
+      "tokens_prompt": 5782,
+      "tokens_completion": 54,
+      "latency_ms": 2445.11,
+      "error": null
+    },
+    {
+      "id": "hf-1315",
+      "pair": "fr->de",
+      "vote": "Volksinitiative «Löhne entlasten, Kapital gerecht besteuern»",
+      "claim": "Le résumé précise que la majeure partie de la redistribution s’effectue par l’intermédiaire des impôts.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": null,
+      "probs": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 0.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe claim states: \"Le résumé précise que la majeure partie de la redistribution s’effectue par l’intermédiaire des impôts\" (The summary specifies that the majority of redistribution takes place through taxes).\n\n1.  **Analyze the document context:** The document contains arguments from both the Federal Council/Parliament and the initiative committee. It discusses income tax, wealth tax, and social transfers.\n2.  **Search for the specific statement:** I need to find a passage that explicitly says \"the majority of redistribution takes",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 4035,
+      "tokens_completion": 160,
+      "latency_ms": 5198.1,
+      "error": null
+    },
+    {
+      "id": "hf-1344",
+      "pair": "it->de",
+      "vote": "Covid-19-Gesetz",
+      "claim": "Il comitato ritiene che questa legge sia necessaria al Consiglio federale per assistere chi ha subito danni a causa delle misure pandemiche.",
+      "true_label": 2,
+      "pred_label": 0,
+      "correct": false,
+      "decision_rule": "Decision-Rule 2: Direct support dominant (p_entail >= 0.60)",
+      "probs": [
+        0.95,
+        0.05,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.95,\n  \"p_neutral\": 0.05,\n  \"p_contra\": 0.0,\n  \"label\": 0,\n  \"evidence_ids\": [2, 3, 7, 8]\n}",
+      "evidence": [
+        "45 Der Bundesrat musste im Frühling 2020 rasch reagieren, um die Gesundheit der Bevölkerung zu schützen und Men schen und Unternehmen finanziell zu unterstützen. Dazu stützte er sich kurzzeitig auch auf Notrecht, so wie es die Verfassung vorsieht. Das Covid-19-Gesetz führt die im Notrecht entschiedenen Unterstützungsmassnahmen fort und ermög licht es Bundesrat und Parlament, weiterhin rasch finanziell zu helfen, wenn die Entwicklung der Krise es nötig macht. Das Gesetz ist im ordentlichen demokratischen Zusammenspiel entstanden und garantiert den Einbezug der Kantone, der Sozialpartner und des Parlaments. Das Parlament entscheidet zudem weiterhin über alle Kreditanträge des Bundesrates. - - Mit dem Covid-19-Gesetz haben die von der Pandemie stark betroffenen Menschen und Unternehmen die Sicherheit, dass die Unterstützung durch das Gemeinwesen so lange wie nötig weitergeführt werden kann. Es ist Ausdruck von Solidari tät und bildet für Bund und Kantone eine der wichtigsten Grundlagen zur weiteren Bewältigung der Krise. - Aus all diesen Gründen empfehlen Bundesrat und Parlament, das Covid-19-Gesetz anzunehmen. J a admin.ch/covid-19-gesetz Gesetz stärkt in der Krise die Demokratie Instrument der Solidarität Empfehlung von Bundesrat und Parlament",
+        "99 Wollen Sie das Bundesgesetz vom 25. September 2020 über die gesetzlichen Grundlagen für Verordnungen des B undesrates zur Bewältigung der Covid-19-Epidemie (Covid-19-Gesetz) annehmen? J a Für Bundesrat und Parlament ist das Gesetz nötig, um die schwerste Krise seit dem Zweiten Weltkrieg zu bewältigen. Es erlaubt, Hunderttausende Menschen und Unternehmen finan ziell zu unterstützen, die in Not geraten sind. Damit können Leid gemildert und Arbeitsplätze und Löhne gesichert werden. - admin.ch/covid-19-gesetz Nein Das Referendumskomitee kritisiert, das neue Gesetz sei sehr rasch erarbeitet und am Volk vorbei in Kraft gesetzt wor den. Inhaltlich enthalte es neben positiven Elementen auch Schädliches wie Subventionen für die Medien. Der Bundesrat könne den Geschädigten der Pandemiemassnahmen anders helfen. - covidgesetz-nein.ch 153 Ja 36 Nein 6 Enthaltungen 44 Ja 0 Nein 0 Enthaltungen Abstimmungsfrage Empfehlung von Bundesrat und Parlament Empfehlung des Referendums komitees - Abstimmung im Nationalrat Abstimmung im Ständerat",
+        "Covid-19-Gesetz 8 Dritte Vorlage: Covid-19-Gesetz Vorlage im Detail 3 8 Argumente 4 2 Abstimmungstext 4 6 Im Februar 2020 erreichte die Coronapandemie die Schweiz. Die Zahl der schweren Erkrankungen stieg rasch an. Der Bun desrat ergriff Massnahmen zum Schutz der Bevölkerung sowie zur Unterstützung von Menschen und Unternehmen, die unter den wirtschaftlichen Folgen der Pandemie litten. Er musste schnell handeln. Weil das Epidemiengesetz nicht für alle Mass nahmen die gesetzliche Grundlage bot, stützte er sich auch auf Notrecht. Die Verfassung sieht für eine solche Krisensituation Notrecht vor. Allerdings ist dieses zeitlich befristet. Um die Massnahmen weiterführen zu können, erarbeiteten Bundesrat und Parlament das Covid-19-Gesetz. Das Parlament nahm es im September 2020 an und erklärte es für dringlich. Damit trat es sofort in Kraft. - - Das Gesetz erteilt dem Bundesrat zusätzliche Kompeten zen, um die Coronapandemie zu bekämpfen, und vor allem, um deren negative Auswirkungen auf Gesellschaft und Wirtschaft zu mildern. Darin sind die Massnahmen enthalten, die für Bundesrat und Parlament zur Bewältigung der Pandemie und der Wirtschaftskrise weiterhin nötig sind. Das Gesetz regelt insbesondere verschiedene Finanzhilfen für Menschen und Unternehmen. Die wichtigsten sind die Kurzarbeitsentschädi gung, die Ent s chädigung des Erwerbsausfalls, die Härtefall hilfen sowie die Unterstützung von Kultur und Sport. Das Gesetz ist befristet. Weil gegen das Gesetz das Referendum zustande gekommen ist, wird darüber abgestimmt. - - Ausgangslage Die Vorlage In Kürze",
+        "40 Dritte Vorlage: Covid-19-Gesetz Der Bund beteiligt sich an kantonalen Härtefallhilfen für Betriebe, die besonders stark unter den Massnahmen zur Pandemiebekämpfung leiden. Beispiele sind Restaurants, Hotels, Reiseunternehmen oder die Eventbranche. Bund und Kantone haben dafür mehrere Milliarden gesprochen. Kultur und Sport sind vom Veranstaltungsverbot sehr stark betroffen. Das Gesetz regelt die Unterstützung von Kul turunternehmen, Kulturschaffenden sowie Kulturvereinen im Laienbereich. Es regelt auch die Unterstützung der Klubs der professionellen und halbprofessionellen Ligen im Fussball, Eishockey, Basketball, Volleyball, Handball und Unihockey. Zeitungen und elektronische Medien erhalten ebenfalls eine Unterstützung des Bundes. Seit Beginn der Krise hat der Bund für diese Unterstützungen gut 800 Millionen Franken gespro chen. - - 5 Das Covid-19-Gesetz regelt, wie der Bundesrat während der Pandemie sicherstellen kann, dass die Bevölkerung mit wichtigen medizinischen Gütern und Leistungen hinreichend versorgt ist. Er kann zum Beispiel für wichtige Arzneimittel Ausnahmen von der Zulassungspflicht vorsehen. Der Bundesrat hat in der Beratung des Gesetzes im Parlament festgehalten, dass dies für Covid-19-Impfstoffe nicht gelten soll. Impfstoffe werden erst dann zugelassen, wenn der Nachweis erbracht ist, dass sie sicher, wirksam und von hoher Qualität sind. Das Gesetz ermöglicht es zudem, dass der Bund die Kosten von Coronatests übernimmt. Das Gesetz ermöglicht dem Bundesrat weitere Massnah men, etwa zum Schutz von besonders gefährdeten Arbeitneh menden. Zudem legt es fest, wie Aktiengesellschaften und Vereine ihre Versammlungen trotz Versammlungsverbot rechtmässig durchführen können. - - 5 350 Millionen für die Klubs der professionellen und halbprofessio nellen Ligen, 410 Millionen für die Kultur, 78 Millionen für die Medien. Stand bei Redaktionsschluss. Die gesprochenen Beträge werden gemäss dem tatsächlichen Bedarf ausgeschüttet. - Beteiligung an kantonalen Härtefallhilfen Unterstützung für Kultur, Sport und Medien Sicherung der Gesundheits versorgung - Arbeitnehmer schutz und weitere Massnahmen -"
+      ],
+      "evidence_pages": [
+        45,
+        9,
+        8,
+        40
+      ],
+      "evidence_grounded": false,
+      "tokens_prompt": 5884,
+      "tokens_completion": 64,
+      "latency_ms": 2856.38,
+      "error": null
+    },
+    {
+      "id": "hf-1458",
+      "pair": "it->de",
+      "vote": "Volksinitiative «Für Freiheit und körperliche Unversehrtheit»",
+      "claim": "Il riassunto afferma che il testo dell’iniziativa fa esplicito riferimento alle «vaccinazioni» contro il coronavirus.",
+      "true_label": 2,
+      "pred_label": 1,
+      "correct": false,
+      "decision_rule": "Decision-Rule 3: High neutrality (p_neutral >= 0.40)",
+      "probs": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "numerical_conflict": null,
+      "reasoning": "Apertus answer: {\n  \"p_entail\": 0.0,\n  \"p_neutral\": 1.0,\n  \"p_contra\": 0.0,\n  \"label\": 1,\n  \"evidence_ids\": []\n}\n\n**Reasoning:**\nThe claim states that the initiative text explicitly mentions \"vaccinations\" (vaccinazioni) against coronavirus. Looking at the document context, specifically in passage [P10] (p. 8), it says: \"Der Initiativtext spricht nicht von «Impfungen», sondern allgemein von «Eingriffen in die körperliche und geistige Unversehrtheit».\" (The initiative text does not speak of \"vaccinations\", but generally of \"interventions in physical and mental integrity\").\n\nThis",
+      "evidence": [],
+      "evidence_pages": [],
+      "evidence_grounded": null,
+      "tokens_prompt": 4063,
+      "tokens_completion": 160,
+      "latency_ms": 6433.98,
+      "error": null
+    }
+  ]
+}
