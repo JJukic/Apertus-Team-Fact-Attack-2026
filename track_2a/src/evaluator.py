@@ -49,8 +49,12 @@ def load_records(path: Path) -> List[Dict[str, Any]]:
             ref_lang = r.get("reference_language") or r.get("booklet_language") or claim_lang
             booklet_file = r.get("booklet_file")
             if not booklet_file:
-                date = r.get("booklet_date") or str(r.get("booklet_publish_date", "2026-06-14"))[:10]
-                booklet_file = f"{date}_{ref_lang}.pdf"
+                # Booklets are stored by publish date, but some rows carry a publish date that differs from the
+                # vote date the file is named after (demo set: published 2026-05-28, file 2026-06-14_*.pdf, as in the URL)
+                dates = [r.get("booklet_date") or str(r.get("booklet_publish_date", "2026-06-14"))[:10]]
+                dates += re.findall(r"\d{4}-\d{2}-\d{2}", r.get("booklet_url") or "")
+                names = [f"{d}_{ref_lang}.pdf" for d in dates]
+                booklet_file = next((n for n in names if (config.BOOKLETS_DIR / n).exists()), names[0])
             records.append({
                 "id": r.get("id", f"case-{i:04d}"),
                 "claim": r["claim"],

@@ -1,0 +1,19 @@
+# Build context = track_2a/ (track_2a/Dockerfile, `make run`)
+# Secrets and local config: the API key is passed at run time (-e LLM_API_KEY), never baked into the image
+.env
+.env.*
+!.env.example
+
+# Local environments, caches and downloads (the build re-downloads data and re-parses booklets)
+.venv
+venv
+**/__pycache__
+**/*.py[cod]
+.cache
+data/hf
+results/*.raw.jsonl
+
+# Editor files
+.vscode
+.idea
+**/.DS_Store

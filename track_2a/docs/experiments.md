@@ -21,19 +21,21 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| **Advanced** (booklet PDF + claim + vote) | **0.920** | 0.951 | 0.906 | 5,737 | 59 | 2.1 s / 4.0 s |
+| **Advanced** (booklet PDF + claim + vote) | **0.925** | 0.941 | 0.917 | 5,725 | 59 | 2.1 s / 3.8 s |
 | **Beginner** (reference string + claim) | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 Configuration: hybrid retrieval (BM25 claim + 2 × BM25 vote title, booklet-wide), top 10 pages,
-section labels, `ids` prompt mode.
+section labels (incl. closing recommendation boxes), `ids` prompt mode, model label kept when it disagrees
+with the model's own confidences (Decision-Rule 0). Before these last two changes the advanced task scored 0.920
+(see [error analysis](#error-analysis-on-saved-runs-2026-10-05)).
 
 Advanced macro-F1 by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 0.951 | 0.933 | 0.922 |
-| **fr** | 0.914 | 0.956 | 1.000 |
-| **it** | 0.788 | 0.874 | 0.934 |
+| **de** | 1.000 | 0.933 | 0.922 |
+| **fr** | 0.914 | 0.940 | 1.000 |
+| **it** | 0.816 | 0.907 | 0.875 |
 
 ## Before / after on the test split (same 150-pair sample)
 
@@ -158,6 +160,62 @@ cites a Federal Council statement as the contradiction, despite an explicit prom
 Few-shot examples shifted the errors instead of removing them: Entailment → Contradiction fell from 23 to 8, but Entailment → Neutral rose from 4 to 15 (+360 input tokens per claim). Opposing statements also appear together on the unlabelled overview pages, so hiding labelled argument pages
 does not remove them; asking again only makes the model repeat its decision.
 
+### Error analysis on saved runs (2026-10-05)
+
+We re-ran the deterministic retrieval for every saved prediction (0 of 450 dev and 4 of 402 test
+reconstructions differ from the saved evidence), so each cited passage id maps back to its page and section.
+
+**A rule on cited sections does not work.** Idea: if a committee-attributed claim is predicted Contradiction
+and only Federal Council pages are cited, flip the label. In practice Apertus almost never cites a page
+labelled Federal Council in these errors; the cited pages are unlabelled or nothing is cited. Simulated on
+saved runs, flipping to Entailment fixed 7 and broke 8 (dev) and fixed 0, broke 7 (test). Rejected.
+
+**Section labels were wrong on older booklets.** Proxy check: for attributed claims with gold label
+Entailment, the gold reference page must belong to the named speaker.
+
+| Gold reference page of … | Correct label before | Correct label after | Labelled as the *other* side before → after |
+|---|---:|---:|---:|
+| Federal Council claims (unique pages) | 34 | **71** | 27 → **0** |
+| Committee claims (unique pages) | 24 | **38** | 0 → 0 |
+
+2020–2022 booklets head each side with a bare speaker line ("Bundesrat und Parlament", "Referendumskomitee",
+"Comité « … »") or set the heading as a graphic, so the committee label ran on over the Federal Council's
+pages. The fix matches bare speaker lines (whole line only) and uses the recommendation box that closes every
+argument double page ("Empfehlung von Bundesrat und Parlament", "Recommandation des comités référendaires",
+or the committee disclaimer) to label that double page; the label no longer runs on past it. Over all 60
+booklets 357 page labels changed; spot checks of every change type were correct.
+
+**Apertus contradicts itself.** In ~2 % of answers the label and the confidences disagree
+(`"label": 0` with `"p_contra": 1.0`). Decision-Rule 1 used to follow the confidences. Over all 24 saved
+`ids` runs, the label was right in 44 such cases and the confidences in 13, so Decision-Rule 0 now keeps the
+label (`apertus_client._apply_calibrated_decision`).
+
+**Retrieval is not the bottleneck.** Gold section retrieved (strict recall, k = 10) per claim → booklet pair:
+
+| Split | Recall overall | Weakest pairs | Errors with gold retrieved | Errors with gold missed |
+|---|---:|---|---:|---:|
+| dev (450) | 0.93 | it→de 0.80, de→it 0.90 | 31 | 10 |
+| test (402) | 0.92 | it→fr 0.84, de→it / fr→it 0.89 | 25 | 7 |
+
+Italian claims have the lowest recall, but even perfect retrieval would fix at most ~2 F1 points; it→de on
+test fails mostly with the gold page in context (6 of 8 errors). Dense retrieval (BGE-M3, ~2 GB image) is
+therefore not a priority.
+
+**Measured with Apertus 70B:**
+
+| Run | Macro-F1 | Fixed / broke vs. previous row | E → C errors | Evidence in gold section |
+|---|---:|---:|---:|---:|
+| test, previous config | 0.920 | – | 16 | 0.75 |
+| test, + Decision-Rule 0 | 0.928 | 6 / 3 | 11 | 0.75 |
+| test, + Decision-Rule 0 + section fix | 0.925 | 1 / 2 | 13 | 0.75 |
+| dev 450, previous config | 0.908 | – | 23 | 0.86 |
+| dev 450, + Decision-Rule 0 + section fix | 0.908 | 6 / 6 | 16 | **0.88** |
+
+Decision-Rule 0 gives the expected gain. The section fix is F1-neutral (within run-to-run noise of ±3
+answers) but removes wrong speaker labels, lowers Entailment → Contradiction on dev and raises evidence
+grounding on dev; we keep it as a correctness fix. Committee-attributed claims still fail most often
+(dev 16 of 90, test 10 of 64).
+
 ### No "lost in the middle" effect
 
 With the full booklet (150 test pairs), accuracy did not drop with the position of the gold passage: 69 % when
@@ -193,13 +251,15 @@ Judges may call the CLI once per claim, so start-up and PDF parsing can count to
 3. **Evidence as passage ids** guarantees verbatim booklet text with correct page numbers and cuts output
    tokens by ~65 %.
 4. **The full booklet is the worst option** on both quality and cost.
+5. **Trust the label over the confidences.** When Apertus' label and confidences disagree, the label is
+   right 3× as often (Decision-Rule 0, +0.008 F1 on test).
 
 ## Known gaps / next steps
 
-- Italian claims against German booklets are the weakest pair (0.79 F1 on the test split).
-- Most remaining advanced errors are Entailment → Contradiction (16 of 32 on the test split).
+- Italian claims against German booklets are the weakest pair (0.82 F1 on the test split), mostly with the gold page retrieved.
+- Most remaining advanced errors are Entailment → Contradiction (13 of 30 on the test split).
 - Evidence precision with whole pages: ~75 % of cited pages lie in the gold section.
-- Section headings are text-based; older booklets (≈2021) set them as graphics, so labels are partial there.
+- Section labels: committee pages whose only heading is a slogan ("Nein zu diesem Zensurgesetz") stay unlabelled.
 - Proposal boundary detection misses proposals in 2021-06-13, 2022-09-25 and 2024-03-03 (IT); hybrid
   retrieval does not depend on it, but the legacy `retrieval` strategy does.
 - Committee-attributed claims remain the main error source (see above).

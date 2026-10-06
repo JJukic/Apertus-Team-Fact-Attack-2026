@@ -1,0 +1,21 @@
+# Build context = repo root (root Dockerfile copies track_2a/)
+# Secrets and local config: the API key is passed at run time (-e LLM_API_KEY), never baked into the image
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local environments, caches and downloads (the build re-downloads data and re-parses booklets)
+**/.venv
+**/venv
+**/__pycache__
+**/*.py[cod]
+**/.cache
+track_2a/data/hf
+track_2a/results/*.raw.jsonl
+
+# Repository and editor files
+.git
+.github
+**/.vscode
+**/.idea
+**/.DS_Store

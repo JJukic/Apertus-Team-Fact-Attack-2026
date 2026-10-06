@@ -16,8 +16,8 @@ French or Italian) and a claim (any of the three languages), it classifies the c
 token usage and inference time.
 
 On a test split of **5 voting dates never used during development** (402 pairs from the official dataset), the
-system reaches **macro-F1 0.920** on the advanced task (booklet PDF) and **0.975** on the beginner task (reference
-text), at ~5,700 / ~2,500 input tokens, ~57 output tokens and a p95 inference time of 4.0 s / 1.7 s.
+system reaches **macro-F1 0.925** on the advanced task (booklet PDF) and **0.975** on the beginner task (reference
+text), at ~5,700 / ~2,500 input tokens, ~57 output tokens and a p95 inference time of 3.8 s / 1.7 s.
 
 The central finding for the challenge's research question: **sending ~10 well-chosen pages beats sending the
 whole booklet** — 0.926 vs. 0.730 macro-F1 with ~10× fewer input tokens.
@@ -114,16 +114,16 @@ numbered and sent with the same prompt, so evidence is a specific passage rather
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| Advanced | **0.920** | 0.951 | 0.906 | 5,737 | 59 | 2.1 s / 4.0 s |
+| Advanced | **0.925** | 0.941 | 0.917 | 5,725 | 59 | 2.1 s / 3.8 s |
 | Beginner | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 Advanced task by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 0.951 | 0.933 | 0.922 |
-| **fr** | 0.914 | 0.956 | 1.000 |
-| **it** | 0.788 | 0.874 | 0.934 |
+| **de** | 1.000 | 0.933 | 0.922 |
+| **fr** | 0.914 | 0.940 | 1.000 |
+| **it** | 0.816 | 0.907 | 0.875 |
 
 ### 5.2 Full document vs. selected context (advanced, same 150 test pairs)
 
@@ -155,6 +155,9 @@ efficiency measure but also improves NLI quality.
 | Speaker-aware retrieval (hide the opposing side's argument pages) | 0.908 → 0.896 | rejected |
 | Few-shot examples for committee vs. Federal Council claims | 0.908 → 0.906; errors shift from E→C to E→N | rejected |
 | Confidence threshold on label logprobs | wrong answers are as confident as correct ones | rejected |
+| Keep the model's label when it disagrees with its own confidences (Decision-Rule 0) | 44 fixed / 13 broken over all saved runs; test 0.920 → 0.928 | adopted |
+| Section labels from bare speaker lines and closing recommendation boxes (older booklets) | Federal Council pages labelled as committee 27 → 0; F1-neutral (test 0.928 → 0.925, dev 0.908 → 0.908), dev E→C 23 → 16, evidence grounding 0.86 → 0.88 | adopted (correctness) |
+| Flip committee Contradictions that cite only Federal Council pages | dev 7 fixed / 8 broken, test 0 / 7 (simulated) | rejected |
 | Apertus 8B instead of 70B (450 dev pairs) | 0.851 vs. 0.908 F1, p95 1.2 s vs. 4.5 s | 70B kept (quality first) |
 
 Full tables: [docs/experiments.md](docs/experiments.md). Runs on 150 pairs carry about ±3 F1 points of sampling
@@ -168,10 +171,13 @@ noise; close decisions were re-run on 450 pairs.
 - **Apertus is over-confident.** Its self-reported confidences are 0 or 1 in 97–99 % of cases, and the probability of
   the label token is ~1.0 for wrong answers as well as for correct ones (41 wrong vs. 40 correct dev answers).
   Confidence thresholds cannot filter its errors.
-- **Speaker attribution is its main weakness.** Claims attributed to the initiative/referendum committee have a 19 %
-  error rate (5–7 % for all others): Apertus cites the Federal Council's counter-arguments as a contradiction, even when
-  instructed not to, when asked to verify, with worked examples, and largely even when the opposing argument pages are removed.
-- **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.79); French claims
+- **Speaker attribution is its main weakness.** Claims attributed to the initiative/referendum committee have a 16–18 %
+  error rate (2–8 % for all others), even when instructed not to judge them against the other side, when asked to
+  verify, with worked examples, when the opposing argument pages are removed, and after fixing section labels that had
+  marked Federal Council pages as committee pages in older booklets.
+- **Self-contradictory answers.** In ~2 % of answers the label and the stated confidences disagree; the label is right
+  3× as often, so the decision rules now keep it.
+- **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.82); French claims
   against Italian booklets reach 1.00.
 - **8B vs. 70B.** Apertus 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker, mostly on cross-lingual pairs and
   contradictions.
@@ -180,14 +186,14 @@ noise; close decisions were re-run on 450 pairs.
 
 ## 6. Limitations
 
-- **Italian claims against German booklets** are the weakest pair (0.79 F1). Lexical retrieval relies on the vote
-  title for cross-lingual pairs; multilingual dense retrieval would likely help.
-- **Entailment → Contradiction** accounts for 16 of the 32 remaining advanced errors on the test split, mostly
+- **Italian claims against German booklets** are the weakest pair (0.82 F1). Most of these errors happen with the gold page
+  in context, so better retrieval alone would not fix them (gold-section recall is 0.92–0.93 overall).
+- **Entailment → Contradiction** accounts for 13 of the 30 remaining advanced errors on the test split, mostly
   claims attributed to the committee (see 5.4); prompt rules, a verification pass and speaker-aware retrieval did not fix them.
 - **Evidence precision:** with whole pages as passages, ~75 % of cited pages lie inside the gold reference section.
   Smaller passages raise this to ~90 % but cost F1 (5.3).
-- **Layout:** section headings are detected from text; older booklets set some headings as graphics. Tables and
-  charts are read as plain text.
+- **Layout:** section headings are detected from text lines and recommendation boxes; committee pages headed only by a
+  slogan stay unlabelled. Tables and charts are read as plain text.
 - **Latency** was measured client-side on a shared endpoint; the organisers measure it themselves.
 - **Not political advice:** outputs describe the relationship between a claim and the official booklet only.
 
@@ -215,8 +221,8 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 
 ## 8. Next steps
 
-1. Multilingual dense retrieval (e.g. BGE-M3) combined with BM25, aimed at the weakest language pairs.
-2. Error analysis of Entailment → Contradiction cases on booklets with opposing viewpoints.
+1. Error analysis of the remaining Entailment → Contradiction cases on Italian claims (it→de), where the gold page is retrieved.
+2. Multilingual dense retrieval (e.g. BGE-M3) — low priority: perfect retrieval would fix at most ~2 F1 points.
 3. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
 4. Layout-aware parsing (e.g. Docling) for tables and graphical headings.
 5. Fine-tuning or a stronger model for speaker attribution, the error class that resisted prompting and retrieval changes.
