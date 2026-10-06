@@ -232,6 +232,38 @@ unchanged. The earlier documented benchmark scores were not rerun or validated b
 this experiment. See the [complete quality report](docs/evaluation/hybrid_quality_2026-10-05.md)
 for label audit, reference-page coverage, raw-label diagnostics, tokens and CPU times.
 
+### Evidence experiments on October 6, 2026
+
+The 50 historical cases now serve as development data. Replaying the 200 stored
+answers with normalized source-span matching and a numerical check on the cited
+span raises the dense method's technical Macro-F1 to 0.7194 / 0.7396. This is
+**not a validated quality gain**: manual review found an accepted, verbatim but
+irrelevant quote in `historical-20`. Labels were not silently corrected and no
+new API requests were made. See the [offline replay](docs/evaluation/evidence_replay_2026-10-06_v2.md)
+and its [manual evidence audit](docs/evaluation/evidence_replay_2026-10-06_v2_manual_audit.csv).
+
+An experimental requirement to match every model quote was rejected: compared
+with that replay, it lowers Macro-F1 for both methods and does not establish
+semantic relevance. It is not part of production inference. See the
+[rejected iteration](docs/evaluation/evidence_iteration_3_rejected.md).
+
+The separately authorized prompt comparison completed 200 additional API
+requests with `swiss-ai/Apertus-v1.5-70B-thinking` for both variants. It froze
+contexts on the same 50 development cases. These results are separate from the
+older 8B experiment:
+
+| Method | Original prompt F1 | Candidate prompt F1 | Corrected / regressed |
+|---|---:|---:|---:|
+| BM25 (`retrieval`) | 0.7473 | 0.7705 | 1 / 0 |
+| `hybrid_dense` | 0.7371 | 0.7576 | 4 / 3 |
+
+The candidate was **not promoted**. BM25's verbatim evidence count drops from
+21/36 to 15/38; its only corrected decision lacks a valid quote. Dense quotes
+match the extracted text, but review found an insufficient standalone numerical
+quote and a citation whose extracted page disagrees with the rendered page.
+See the [live comparison and quality decision](docs/evaluation/evidence_prompt_dev_live_2026-10-06.md).
+An unused test set is still required before claiming reliable improvement.
+
 1. Integrate advanced layout parsing (e.g., Docling) to handle complex voting booklet financial charts and side-by-side comparison tables.
 2. Cross-lingual semantic embedding retrieval (e.g., BGE-M3 or Apertus embeddings) alongside lexical BM25.
 3. Transition from heuristic proposal extraction to a full graph-native representation as detailed in our architectural concept roadmap.
@@ -241,3 +273,20 @@ for label audit, reference-page coverage, raw-label diagnostics, tokens and CPU 
 ## License
 
 Creative Commons Attribution 4.0 (CC-BY-4.0).
+
+### Response validity and output limits
+
+The subsequent [response validity audit](docs/evaluation/response_validity_iteration_6.json)
+identified three token-truncated responses for `historical-27` in the 200-request
+prompt comparison. Its table preserves the historical pipeline's scores; it is
+not a fully valid 50-case comparison under the corrected validator. The other 197
+responses preserve their parsed decisions. No replacement labels were generated.
+
+The current client raises explicit configuration, API, or response errors instead
+of returning a Neutral label for failures. Reported usage remains available on
+response errors; unknown usage is not recorded as measured zero. SDK retries are
+disabled so the existing three-attempt loop is countable. At the user's request,
+active inference and benchmark-generation requests no longer specify output-token
+caps. Provider defaults and context limits still apply. No new API calls were made
+for these changes, and no F1 improvement is claimed. Historical offline replay
+uses the hash-verified client snapshot from commit `c0bd757`.

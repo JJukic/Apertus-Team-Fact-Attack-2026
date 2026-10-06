@@ -18,6 +18,7 @@ from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
 from src.embeddings import HybridSettings, pdf_hash
 from src.hybrid_retriever import HybridPageRetriever, page_context
+from src.evidence_matcher import match_quote
 from src import config
 
 
@@ -252,20 +253,9 @@ class ClaimVerificationEngine:
             for ev in nli_output.evidence:
                 if metrics["requested_strategy"] in ("hybrid", "hybrid_dense"):
                     # Original page numbers are the prompt IDs; never renumber by rank.
-                    clean = re.sub(r"\[(?:page|seite)\s+\d+\]", "", ev, flags=re.IGNORECASE)
-                    clean = re.sub(r"^\s*(?:\[(?:Section|Proposal|Speaker)\s+[^\]]*\]\s*)+", "", clean)
-                    clean = " ".join(clean.strip(' \"«»').split())
-                    quote_pattern = re.compile(re.escape(clean), re.IGNORECASE) if clean else None
-                    matches = [p for p in candidate_paras if clean and
-                               quote_pattern.search(" ".join(p["text"].split()))]
-                    tag = re.search(r"\[(?:page|seite)\s+(\d+)\]", ev, re.IGNORECASE)
-                    if tag:
-                        tagged = [p for p in matches if p["page_number"] == int(tag.group(1))]
-                        matches = tagged or matches
-                    if matches:
-                        page = matches[0]
-                        original = " ".join(page["text"].split())
-                        original_quote = quote_pattern.search(original).group(0)
+                    match = match_quote(ev, candidate_paras)
+                    if match:
+                        page, original_quote = match
                         evidence_sources.append(EvidenceSource(
                             quote=original_quote, page_number=page["page_number"],
                             proposal_id=page.get("proposal_id"), section_type=page.get("section_type"),
@@ -316,6 +306,17 @@ class ClaimVerificationEngine:
 
         if metrics["requested_strategy"] in ("hybrid", "hybrid_dense"):
             final_evidence_list = [source.quote for source in evidence_sources]
+            # The broad retrieved context may contain the claim's number on an
+            # unrelated topic. Recheck numeric entailments against each matched
+            # source span itself before accepting Entailment.
+            if final_label == 0:
+                source_conflict = next((conflict for source in evidence_sources
+                    if (conflict := detect_numerical_conflict(claim, source.quote))), None)
+                if source_conflict:
+                    final_label, label_name = 2, config.LABEL_MAPPING[2]
+                    p_contra = max(0.95, p_contra)
+                    numerical_conflict_msg = source_conflict.explanation
+                    decision_rule = "Evidence Check: Numerical conflict in cited source -> Contradiction (2)"
             if final_label == 0 and not evidence_sources:
                 final_label, label_name = 1, config.LABEL_MAPPING[1]
                 p_neutral, p_entail = max(0.85, p_neutral), 0.10

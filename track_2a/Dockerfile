@@ -23,8 +23,7 @@ COPY . .
 # Ensure entrypoint is executable
 RUN chmod +x entrypoint.sh
 
-# Ensure data and official booklets are present (offline safe)
-RUN python -m src.download_data || true
+# Use the supplied data snapshot. Download missing PDFs explicitly with the CLI.
 
 EXPOSE 8501
 

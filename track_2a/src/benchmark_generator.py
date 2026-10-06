@@ -59,7 +59,6 @@ Antworte ausschliesslich mit einem gültigen JSON-Array von 3 Objekten im folgen
             model=client.model_name,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=600,
         )
         content = response.choices[0].message.content.strip()
         # Clean markdown code blocks if present

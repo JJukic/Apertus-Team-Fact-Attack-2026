@@ -251,6 +251,42 @@ class TestHybridPipeline(HybridFixture):
         self.assertEqual(result.label, 1)
         self.assertEqual(result.to_official_dict()["evidence"], [])
 
+    def test_formatting_match_prevents_false_neutral_in_both_hybrid_modes(self):
+        for strategy in ("hybrid", "hybrid_dense"):
+            with self.subTest(strategy=strategy):
+                engine = self.engine(["[Page 99] Target evidence original page text preserved."])
+                self.pages[0]["text"] = "Target evi-\ndence original\npage text preserved."
+                result = engine.verify_claim("target", "fake.pdf", strategy=strategy)
+                self.assertEqual(result.label, 0)
+                self.assertEqual(result.evidence_sources[0].page_number, 7)
+                self.assertIn(result.evidence_sources[0].quote, self.pages[0]["text"])
+
+    def test_missing_evidence_still_becomes_neutral(self):
+        engine = self.engine()
+        engine.client.infer.return_value.evidence = []
+        result = engine.verify_claim("target", "fake.pdf", strategy="hybrid_dense")
+        self.assertEqual(result.label, 1)
+        self.assertEqual(result.evidence_sources, [])
+
+    def test_cited_numerical_conflict_overrides_entailment(self):
+        from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
+
+        engine = self.engine(["[Page 7] Bei stationären Behandlungen trägt der Kanton mindestens 55 Prozent der Kosten; den Rest übernimmt die Krankenkasse."])
+        claim = "Der Kanton trägt sämtliche Kosten der stationären Behandlung zu 100 Prozent allein."
+        original = self.paras[0]["text"]
+        quote = "Bei stationären Behandlungen trägt der Kanton mindestens 55 Prozent der Kosten; den Rest übernimmt die Krankenkasse."
+        self.paras[0]["text"] = quote
+        self.pages[0]["text"] = quote
+        conflict = detect_numerical_conflict(claim, quote)
+        self.assertIsNotNone(conflict)
+        with patch("src.inference.detect_numerical_conflict", side_effect=[None, conflict]) as checker:
+            result = engine.verify_claim(claim, "fake.pdf", strategy="hybrid_dense")
+        self.assertEqual(checker.call_count, 2)
+        self.assertEqual(result.label, 2)
+        self.assertEqual(result.decision_rule,
+                         "Evidence Check: Numerical conflict in cited source -> Contradiction (2)")
+        self.paras[0]["text"] = original
+
     def test_existing_strategies_keep_context_and_never_load_embeddings(self):
         engine = self.engine()
         for strategy in ("retrieval", "full"):

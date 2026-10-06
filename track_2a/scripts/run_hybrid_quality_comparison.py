@@ -24,7 +24,7 @@ from src.inference import ClaimVerificationEngine, _GLOBAL_BOOKLET_CACHE
 
 
 class BudgetExhausted(RuntimeError):
-    pass
+    retryable = False
 
 
 class BudgetedCreate:

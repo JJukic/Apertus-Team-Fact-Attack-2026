@@ -1,0 +1,899 @@
+{
+  "kind": "paired_live_prompt_comparison",
+  "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+  "api_requests": 200,
+  "source_sha256": {
+    "evidence_prompt_dev_live_2026-10-06.json": "8a688363d42b3413fd7c3dd083da33361e3a61fee4ae848344a97dec2460fd60",
+    "evidence_prompt_dev_plan_2026-10-06.json": "c1af8bd6f8025d370ab817752a417c8799beedbd56a34418770a8420eb06c9e5",
+    "evidence_prompt_dev_live_2026-10-06.audit.csv": "f583ce9a38169a20cebf04ed9faf13502f0f9825acdfedfb93521e3dd241eac7",
+    "evidence_prompt_dev_live_2026-10-06.api.jsonl": "2aa2905345efc3ab869d6e42de0887b679bea97ce7ea299a026195920390c83e",
+    "summarize_prompt_comparison.py": "10bf615bf27c836972a46b22735ac94d1971b3258800a49cd60cad7d67e28ee3"
+  },
+  "reports": {
+    "retrieval": {
+      "baseline": {
+        "count": 50,
+        "macro_f1": 0.7473082473082474,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            17,
+            2,
+            3
+          ],
+          [
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            7,
+            9
+          ]
+        ],
+        "source_quotes": 36,
+        "exact_source_matches": 21,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "candidate": {
+        "count": 50,
+        "macro_f1": 0.770483348069555,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            17,
+            2,
+            3
+          ],
+          [
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            6,
+            10
+          ]
+        ],
+        "source_quotes": 38,
+        "exact_source_matches": 15,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "by_language": {
+        "de": {
+          "baseline": {
+            "count": 18,
+            "macro_f1": 0.7535353535353536,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                7,
+                0,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                3,
+                3
+              ]
+            ],
+            "source_quotes": 14,
+            "exact_source_matches": 8,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 18,
+            "macro_f1": 0.8202020202020203,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                7,
+                0,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                4
+              ]
+            ],
+            "source_quotes": 16,
+            "exact_source_matches": 6,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "fr": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 10,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 7,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "it": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 3,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 2,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        }
+      },
+      "corrected": 1,
+      "regressed": 0,
+      "changed_cases": [
+        "historical-11"
+      ]
+    },
+    "hybrid_dense": {
+      "baseline": {
+        "count": 50,
+        "macro_f1": 0.7371031746031745,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            11,
+            8,
+            3
+          ],
+          [
+            0,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            15
+          ]
+        ],
+        "source_quotes": 31,
+        "exact_source_matches": 31,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "candidate": {
+        "count": 50,
+        "macro_f1": 0.7575675431462908,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            12,
+            7,
+            3
+          ],
+          [
+            0,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            15
+          ]
+        ],
+        "source_quotes": 37,
+        "exact_source_matches": 37,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "by_language": {
+        "de": {
+          "baseline": {
+            "count": 18,
+            "macro_f1": 0.7222222222222222,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                3,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                1,
+                5
+              ]
+            ],
+            "source_quotes": 14,
+            "exact_source_matches": 14,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 18,
+            "macro_f1": 0.7117327117327118,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                3,
+                4,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                6
+              ]
+            ],
+            "source_quotes": 15,
+            "exact_source_matches": 15,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "fr": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.8121212121212121,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                2,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 12,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.8771043771043772,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 12,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "it": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.6777777777777777,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                3,
+                3,
+                1
+              ],
+              [
+                0,
+                3,
+                1
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 5,
+            "exact_source_matches": 5,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.6848484848484849,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                2,
+                1
+              ],
+              [
+                0,
+                3,
+                1
+              ],
+              [
+                0,
+                1,
+                4
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 10,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        }
+      },
+      "corrected": 4,
+      "regressed": 3,
+      "changed_cases": [
+        "historical-04",
+        "historical-06",
+        "historical-10",
+        "historical-11",
+        "historical-12",
+        "historical-24",
+        "cross-it-fr-0"
+      ]
+    }
+  },
+  "excluding_suspect_gold": {
+    "retrieval": {
+      "baseline": {
+        "count": 47,
+        "macro_f1": 0.7972390572390573,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            17,
+            2,
+            0
+          ],
+          [
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            7,
+            9
+          ]
+        ],
+        "source_quotes": 33,
+        "exact_source_matches": 19,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "candidate": {
+        "count": 47,
+        "macro_f1": 0.8212250712250713,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            17,
+            2,
+            0
+          ],
+          [
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            6,
+            10
+          ]
+        ],
+        "source_quotes": 35,
+        "exact_source_matches": 13,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "by_language": {
+        "de": {
+          "baseline": {
+            "count": 17,
+            "macro_f1": 0.797979797979798,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                3,
+                3
+              ]
+            ],
+            "source_quotes": 13,
+            "exact_source_matches": 7,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 17,
+            "macro_f1": 0.8666666666666667,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                7,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                4
+              ]
+            ],
+            "source_quotes": 15,
+            "exact_source_matches": 5,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "fr": {
+          "baseline": {
+            "count": 15,
+            "macro_f1": 0.7954545454545454,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 11,
+            "exact_source_matches": 9,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 15,
+            "macro_f1": 0.7954545454545454,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 11,
+            "exact_source_matches": 6,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "it": {
+          "baseline": {
+            "count": 15,
+            "macro_f1": 0.7954545454545454,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 9,
+            "exact_source_matches": 3,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 15,
+            "macro_f1": 0.7954545454545454,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 9,
+            "exact_source_matches": 2,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        }
+      },
+      "corrected": 1,
+      "regressed": 0,
+      "changed_cases": [
+        "historical-11"
+      ]
+    },
+    "hybrid_dense": {
+      "baseline": {
+        "count": 47,
+        "macro_f1": 0.7861111111111111,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            11,
+            8,
+            0
+          ],
+          [
+            0,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            15
+          ]
+        ],
+        "source_quotes": 26,
+        "exact_source_matches": 26,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "candidate": {
+        "count": 47,
+        "macro_f1": 0.8071236559139785,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            12,
+            7,
+            0
+          ],
+          [
+            0,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            15
+          ]
+        ],
+        "source_quotes": 33,
+        "exact_source_matches": 33,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "by_language": {
+        "de": {
+          "baseline": {
+            "count": 17,
+            "macro_f1": 0.7676767676767677,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                3,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                1,
+                5
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 12,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 17,
+            "macro_f1": 0.7555555555555555,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                3,
+                4,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                6
+              ]
+            ],
+            "source_quotes": 13,
+            "exact_source_matches": 13,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "fr": {
+          "baseline": {
+            "count": 15,
+            "macro_f1": 0.8666666666666667,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                2,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 10,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 15,
+            "macro_f1": 0.9326599326599326,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                0
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 11,
+            "exact_source_matches": 11,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "it": {
+          "baseline": {
+            "count": 15,
+            "macro_f1": 0.7252525252525253,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                3,
+                3,
+                0
+              ],
+              [
+                0,
+                3,
+                1
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 4,
+            "exact_source_matches": 4,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 15,
+            "macro_f1": 0.7333333333333334,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                2,
+                0
+              ],
+              [
+                0,
+                3,
+                1
+              ],
+              [
+                0,
+                1,
+                4
+              ]
+            ],
+            "source_quotes": 9,
+            "exact_source_matches": 9,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        }
+      },
+      "corrected": 4,
+      "regressed": 3,
+      "changed_cases": [
+        "historical-04",
+        "historical-06",
+        "historical-10",
+        "historical-11",
+        "historical-12",
+        "historical-24",
+        "cross-it-fr-0"
+      ]
+    }
+  },
+  "evidence_audit": {
+    "retrieval": {
+      "baseline": {
+        "quotes": 36,
+        "exact_on_attributed_page": 21,
+        "manual_verdicts": {
+          "pending": 36
+        }
+      },
+      "candidate": {
+        "quotes": 38,
+        "exact_on_attributed_page": 15,
+        "manual_verdicts": {
+          "pending": 37,
+          "invalid_verbatim_quote": 1
+        }
+      }
+    },
+    "hybrid_dense": {
+      "baseline": {
+        "quotes": 31,
+        "exact_on_attributed_page": 31,
+        "manual_verdicts": {
+          "pending": 27,
+          "supports": 1,
+          "supports_with_page_context": 3
+        }
+      },
+      "candidate": {
+        "quotes": 37,
+        "exact_on_attributed_page": 37,
+        "manual_verdicts": {
+          "pending": 30,
+          "supports": 3,
+          "insufficient_as_standalone_quote": 1,
+          "supports_with_page_context": 2,
+          "wrong_visual_page_and_insufficient_quote": 1
+        }
+      }
+    }
+  },
+  "quality_status": "failed_or_incomplete_not_promoted",
+  "note": "Development data only; unchanged gold labels. Source text matches do not prove semantic or visible-page validity."
+}

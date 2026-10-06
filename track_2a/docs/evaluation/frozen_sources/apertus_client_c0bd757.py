@@ -7,38 +7,12 @@ Measures token consumption and inference latency.
 import time
 import json
 import logging
-import math
 from typing import Dict, Any, Optional, List, Tuple
 from pydantic import BaseModel, Field
 
 from src import config
 
 logger = logging.getLogger(__name__)
-
-
-class ApertusError(RuntimeError):
-    """Operational failure without an NLI label; usage is None when unknown."""
-
-    def __init__(self, message, *, api_attempts=0, latency_ms=0.0,
-                 tokens_prompt=None, tokens_completion=None, tokens_total=None):
-        super().__init__(message)
-        self.api_attempts = api_attempts
-        self.latency_ms = latency_ms
-        self.tokens_prompt = tokens_prompt
-        self.tokens_completion = tokens_completion
-        self.tokens_total = tokens_total
-
-
-class ApertusConfigurationError(ApertusError):
-    pass
-
-
-class ApertusAPIError(ApertusError):
-    pass
-
-
-class ApertusResponseError(ApertusError):
-    pass
 
 
 class NLIOutput(BaseModel):
@@ -70,18 +44,15 @@ class ApertusClient:
         self.mock = mock if mock is not None else (config.MOCK_APERTUS or not bool(self.api_key))
 
         if not self.mock:
-            if not self.api_key:
-                raise ApertusConfigurationError("Live Apertus requires LLM_API_KEY")
             try:
                 from openai import OpenAI
                 self.client = OpenAI(
                     base_url=self.base_url,
                     api_key=self.api_key or "EMPTY",
-                    max_retries=0,
                 )
             except Exception as e:
-                logger.error("Could not initialize Apertus client (%s)", type(e).__name__)
-                raise ApertusConfigurationError("Could not initialize Apertus client") from None
+                logger.warning(f"Could not initialize OpenAI client: {e}. Falling back to mock mode.")
+                self.mock = True
         else:
             self.client = None
             if not self.api_key:
@@ -90,7 +61,7 @@ class ApertusClient:
     def infer(self, context: str, claim: str, claim_language: Optional[str] = None) -> NLIOutput:
         """
         Evaluate whether the booklet context entails, contradicts, or is neutral towards the claim.
-        Returns a validated NLIOutput; raises ApertusError on operational failure.
+        Returns NLIOutput with label (0, 1, 2), reasoning, evidence, tokens, and latency.
         """
         start_time = time.time()
 
@@ -134,6 +105,7 @@ class ApertusClient:
 
         max_retries = 3
         response = None
+        last_exception = None
 
         for attempt in range(max_retries):
             try:
@@ -144,75 +116,82 @@ class ApertusClient:
                         {"role": "user", "content": user_prompt},
                     ],
                     temperature=0.0,
+                    max_tokens=512,
                     timeout=45.0,
                 )
                 break
             except Exception as e:
-                if getattr(e, "retryable", True) is False:
-                    raise
+                last_exception = e
                 if attempt < max_retries - 1:
                     sleep_sec = (2 ** attempt) * 1.5
-                    logger.warning("Apertus API attempt %s/%s failed (%s); retrying in %.1fs",
-                                   attempt + 1, max_retries, type(e).__name__, sleep_sec)
+                    logger.warning(f"Apertus API attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {sleep_sec:.1f}s...")
                     time.sleep(sleep_sec)
                 else:
-                    logger.error("Apertus API failed after %s attempts (%s)",
-                                 max_retries, type(e).__name__)
+                    logger.error(f"Apertus API query failed after {max_retries} attempts: {e}")
 
         if response is None:
-            raise ApertusAPIError(
-                "Apertus API failed after 3 attempts", api_attempts=max_retries,
-                latency_ms=round((time.time() - start_time) * 1000, 2)) from None
+            latency_ms = (time.time() - start_time) * 1000
+            return NLIOutput(
+                label=1,
+                reasoning=f"API Error after {max_retries} attempts: {str(last_exception)}",
+                evidence=[],
+                tokens_prompt=0,
+                tokens_completion=0,
+                tokens_total=0,
+                latency_ms=round(latency_ms, 2),
+            )
 
-        usage = getattr(response, "usage", None)
-        measured_usage = {name: getattr(usage, field, None) for name, field in (
-            ("tokens_prompt", "prompt_tokens"), ("tokens_completion", "completion_tokens"),
-            ("tokens_total", "total_tokens"))}
         try:
-            choice = response.choices[0]
-            if getattr(choice, "finish_reason", None) in ("length", "content_filter"):
-                raise ValueError("Incomplete model response")
-            content = choice.message.content.strip()
+            latency_ms = (time.time() - start_time) * 1000
+            content = response.choices[0].message.content.strip()
             parsed_json = self._parse_json(content)
-            raw_label = parsed_json["label"]
-            if type(raw_label) is not int or raw_label not in (0, 1, 2):
-                raise ValueError("Invalid NLI label")
-            probabilities = [parsed_json[name] for name in ("p_entail", "p_neutral", "p_contra")]
-            if any(type(p) not in (int, float) or not math.isfinite(p) or not 0 <= p <= 1
-                   for p in probabilities):
-                raise ValueError("Invalid confidence value")
-            p_entail, p_neutral, p_contra = probabilities
-            final_label, decision_rule = self._apply_calibrated_decision(
-                p_entail, p_neutral, p_contra, raw_label)
-            evidence = parsed_json["evidence"]
+
+            usage = getattr(response, "usage", None)
+            tokens_prompt = usage.prompt_tokens if (usage and getattr(usage, "prompt_tokens", None)) else self._estimate_tokens(user_prompt)
+            tokens_completion = usage.completion_tokens if (usage and getattr(usage, "completion_tokens", None)) else self._estimate_tokens(content)
+            tokens_total = usage.total_tokens if (usage and getattr(usage, "total_tokens", None)) else (tokens_prompt + tokens_completion)
+
+            raw_label = int(parsed_json.get("label", 1))
+            if raw_label not in (0, 1, 2):
+                raw_label = 1
+
+            p_entail = float(parsed_json.get("p_entail", 0.0))
+            p_neutral = float(parsed_json.get("p_neutral", 0.0))
+            p_contra = float(parsed_json.get("p_contra", 0.0))
+
+            # Apply Calibrated Decision Arbiter
+            final_label, decision_rule = self._apply_calibrated_decision(p_entail, p_neutral, p_contra, raw_label)
+
+            evidence = parsed_json.get("evidence", [])
             if isinstance(evidence, str):
                 evidence = [evidence]
-            if not isinstance(evidence, list) or any(not isinstance(e, str) for e in evidence):
-                raise ValueError("Invalid evidence list")
-            if not isinstance(parsed_json["reasoning"], str):
-                raise ValueError("Invalid reasoning")
-            tokens_prompt = measured_usage["tokens_prompt"]
-            if tokens_prompt is None:
-                tokens_prompt = self._estimate_tokens(user_prompt)
-            tokens_completion = measured_usage["tokens_completion"]
-            if tokens_completion is None:
-                tokens_completion = self._estimate_tokens(content)
-            tokens_total = measured_usage["tokens_total"]
-            if tokens_total is None:
-                tokens_total = tokens_prompt + tokens_completion
+
             return NLIOutput(
-                label=final_label, reasoning=parsed_json["reasoning"], evidence=evidence,
-                p_entail=p_entail, p_neutral=p_neutral, p_contra=p_contra,
-                fuzzy_rule_applied=decision_rule, decision_rule_applied=decision_rule,
-                tokens_prompt=tokens_prompt, tokens_completion=tokens_completion,
+                label=final_label,
+                reasoning=parsed_json.get("reasoning", ""),
+                evidence=evidence,
+                p_entail=p_entail,
+                p_neutral=p_neutral,
+                p_contra=p_contra,
+                fuzzy_rule_applied=decision_rule,
+                decision_rule_applied=decision_rule,
+                tokens_prompt=tokens_prompt,
+                tokens_completion=tokens_completion,
                 tokens_total=tokens_total,
-                latency_ms=round((time.time() - start_time) * 1000, 2))
+                latency_ms=round(latency_ms, 2),
+            )
         except Exception as e:
-            logger.error("Invalid Apertus response (%s)", type(e).__name__)
-            raise ApertusResponseError(
-                "Invalid or incomplete Apertus response", api_attempts=attempt + 1,
-                latency_ms=round((time.time() - start_time) * 1000, 2),
-                **measured_usage) from None
+            logger.error(f"Error parsing Apertus response: {e}")
+            latency_ms = (time.time() - start_time) * 1000
+            return NLIOutput(
+                label=1,
+                reasoning=f"Response Parse Error: {str(e)}",
+                evidence=[],
+                tokens_prompt=0,
+                tokens_completion=0,
+                tokens_total=0,
+                latency_ms=round(latency_ms, 2),
+            )
 
     @classmethod
     def _apply_fuzzy_decision(cls, p_entail: float, p_neutral: float, p_contra: float, raw_label: int) -> Tuple[int, Optional[str]]:
@@ -257,25 +236,35 @@ class ApertusClient:
             if lines and lines[-1].startswith("```"):
                 lines = lines[:-1]
             text = "\n".join(lines).strip()
-        def parse(candidate):
-            def reject_constant(value):
-                raise ValueError("Non-finite JSON number")
-            parsed = json.loads(candidate, strict=False, parse_constant=reject_constant)
-            if not isinstance(parsed, dict):
-                raise ValueError("JSON response must be an object")
-            return parsed
-
         try:
-            return parse(text)
-        except ValueError:
-            # Accept complete JSON objects wrapped in explanatory text.
-            start, end = text.find("{"), text.rfind("}")
+            return json.loads(text, strict=False)
+        except Exception:
+            # Fallback search for JSON object inside braces
+            start = text.find("{")
+            end = text.rfind("}")
             if start != -1 and end != -1:
                 try:
-                    return parse(text[start:end + 1])
-                except ValueError:
+                    return json.loads(text[start : end + 1], strict=False)
+                except Exception:
                     pass
-            raise ValueError("Could not parse model response as a JSON object") from None
+            
+            # Regex fallback
+            import re
+            label_match = re.search(r'"label"\s*:\s*([012])', text)
+            p_entail_match = re.search(r'"p_entail"\s*:\s*([0-9.]+)', text)
+            p_neutral_match = re.search(r'"p_neutral"\s*:\s*([0-9.]+)', text)
+            p_contra_match = re.search(r'"p_contra"\s*:\s*([0-9.]+)', text)
+            
+            if label_match:
+                return {
+                    "label": int(label_match.group(1)),
+                    "p_entail": float(p_entail_match.group(1)) if p_entail_match else 0.0,
+                    "p_neutral": float(p_neutral_match.group(1)) if p_neutral_match else 0.0,
+                    "p_contra": float(p_contra_match.group(1)) if p_contra_match else 0.0,
+                    "reasoning": "Parsed via regex fallback",
+                    "evidence": []
+                }
+            return {"label": 1, "reasoning": "Could not parse model response as JSON", "evidence": []}
 
     @staticmethod
     def _estimate_tokens(text: str) -> int:

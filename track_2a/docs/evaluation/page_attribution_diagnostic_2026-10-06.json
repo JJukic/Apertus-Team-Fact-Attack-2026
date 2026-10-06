@@ -1,0 +1,1954 @@
+{
+  "kind": "offline_coordinate_attribution_diagnostic",
+  "api_requests": 0,
+  "labels_changed": 0,
+  "f1_note": "Labels frozen: F1 unchanged by construction, not a new pipeline score.",
+  "frozen_classification_metrics": {
+    "retrieval": {
+      "baseline": {
+        "count": 50,
+        "macro_f1": 0.7473082473082474,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            17,
+            2,
+            3
+          ],
+          [
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            7,
+            9
+          ]
+        ],
+        "source_quotes": 36,
+        "exact_source_matches": 21,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "candidate": {
+        "count": 50,
+        "macro_f1": 0.770483348069555,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            17,
+            2,
+            3
+          ],
+          [
+            0,
+            12,
+            0
+          ],
+          [
+            0,
+            6,
+            10
+          ]
+        ],
+        "source_quotes": 38,
+        "exact_source_matches": 15,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "by_language": {
+        "de": {
+          "baseline": {
+            "count": 18,
+            "macro_f1": 0.7535353535353536,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                7,
+                0,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                3,
+                3
+              ]
+            ],
+            "source_quotes": 14,
+            "exact_source_matches": 8,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 18,
+            "macro_f1": 0.8202020202020203,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                7,
+                0,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                4
+              ]
+            ],
+            "source_quotes": 16,
+            "exact_source_matches": 6,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "fr": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 10,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 7,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "it": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 3,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.7424242424242423,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                2,
+                3
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 2,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        }
+      },
+      "corrected": 1,
+      "regressed": 0,
+      "changed_cases": [
+        "historical-11"
+      ]
+    },
+    "hybrid_dense": {
+      "baseline": {
+        "count": 50,
+        "macro_f1": 0.7371031746031745,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            11,
+            8,
+            3
+          ],
+          [
+            0,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            15
+          ]
+        ],
+        "source_quotes": 31,
+        "exact_source_matches": 31,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "candidate": {
+        "count": 50,
+        "macro_f1": 0.7575675431462908,
+        "confusion_matrix_labels_0_1_2": [
+          [
+            12,
+            7,
+            3
+          ],
+          [
+            0,
+            11,
+            1
+          ],
+          [
+            0,
+            1,
+            15
+          ]
+        ],
+        "source_quotes": 37,
+        "exact_source_matches": 37,
+        "semantic_evidence_validity": "pending_manual_review"
+      },
+      "by_language": {
+        "de": {
+          "baseline": {
+            "count": 18,
+            "macro_f1": 0.7222222222222222,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                3,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                1,
+                5
+              ]
+            ],
+            "source_quotes": 14,
+            "exact_source_matches": 14,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 18,
+            "macro_f1": 0.7117327117327118,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                3,
+                4,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                6
+              ]
+            ],
+            "source_quotes": 15,
+            "exact_source_matches": 15,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "fr": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.8121212121212121,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                2,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 12,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.8771043771043772,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                5,
+                1,
+                1
+              ],
+              [
+                0,
+                4,
+                0
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 12,
+            "exact_source_matches": 12,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        },
+        "it": {
+          "baseline": {
+            "count": 16,
+            "macro_f1": 0.6777777777777777,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                3,
+                3,
+                1
+              ],
+              [
+                0,
+                3,
+                1
+              ],
+              [
+                0,
+                0,
+                5
+              ]
+            ],
+            "source_quotes": 5,
+            "exact_source_matches": 5,
+            "semantic_evidence_validity": "pending_manual_review"
+          },
+          "candidate": {
+            "count": 16,
+            "macro_f1": 0.6848484848484849,
+            "confusion_matrix_labels_0_1_2": [
+              [
+                4,
+                2,
+                1
+              ],
+              [
+                0,
+                3,
+                1
+              ],
+              [
+                0,
+                1,
+                4
+              ]
+            ],
+            "source_quotes": 10,
+            "exact_source_matches": 10,
+            "semantic_evidence_validity": "pending_manual_review"
+          }
+        }
+      },
+      "corrected": 4,
+      "regressed": 3,
+      "changed_cases": [
+        "historical-04",
+        "historical-06",
+        "historical-10",
+        "historical-11",
+        "historical-12",
+        "historical-24",
+        "cross-it-fr-0"
+      ]
+    }
+  },
+  "input_sha256": {
+    "evidence_prompt_dev_plan_2026-10-06.json": "c1af8bd6f8025d370ab817752a417c8799beedbd56a34418770a8420eb06c9e5",
+    "evidence_prompt_dev_live_2026-10-06.json": "8a688363d42b3413fd7c3dd083da33361e3a61fee4ae848344a97dec2460fd60",
+    "evidence_prompt_dev_live_2026-10-06.audit.csv": "f583ce9a38169a20cebf04ed9faf13502f0f9825acdfedfb93521e3dd241eac7",
+    "check_page_attribution.py": "d92a7f0c2bd00e3a56de559f611c3a97e3a5bbb48daaea87e4b5e655e72b983e"
+  },
+  "removed_fragment_counts": {
+    "2024-11-24_de.pdf": 652,
+    "2024-11-24_fr.pdf": 527,
+    "2024-11-24_it.pdf": 608
+  },
+  "affected_quotes": [
+    {
+      "method": "retrieval",
+      "case_id": "historical-17",
+      "variant": "baseline",
+      "quote": "Le locataire peut sous-louer tout ou partie de la chose avec le consentement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-17",
+      "variant": "candidate",
+      "quote": "Le locataire peut sous-louer tout ou partie de la chose avec le consen- tement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-05",
+      "variant": "baseline",
+      "quote": "Er muss den Vermieter über Änderungen der Angaben gemäss Ab-\nsatz 2 während der Untermietdauer informieren.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-05",
+      "variant": "candidate",
+      "quote": "Er muss den Vermieter über Änderungen der Angaben gemäss Ab-\nsatz 2 während der Untermietdauer informieren.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-26",
+      "variant": "candidate",
+      "quote": "Sempreché le parti non abbiano pattuito altrimenti per scritto, il con-\nduttore presenta al locatore una richiesta scritta di sublocazione; la ri-\nchiesta contiene: \na. i nomi dei subconduttori; \nb. le condizioni contrattuali, in particolare l’oggetto sublocato, lo \nscopo d’uso, la pigione dovuta e la durata della sublocazione.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-fr-de-2",
+      "variant": "baseline",
+      "quote": "Haben die Parteien nicht schriftlich etwas anderes vereinbart, so muss \nder Mieter ein Untermietbegehren schriftlich beim Vermieter stellen; \ndas Begehren muss enthalten: \na. die Namen der Untermieter; \nb. die Vertragsbedingungen, insbesondere das Untermietobjekt, \nden Gebrauchszweck, den Untermietzins und die Untermiet-\ndauer.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-fr-de-2",
+      "variant": "candidate",
+      "quote": "Haben die Parteien nicht schriftlich etwas anderes vereinbart, so muss \nder Mieter ein Untermietbegehren schriftlich beim Vermieter stellen; \ndas Begehren muss enthalten: \na. die Namen der Untermieter; \nb. die Vertragsbedingungen, insbesondere das Untermietobjekt, \nden Gebrauchszweck, den Untermietzins und die Untermiet-\ndauer.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-fr-2",
+      "variant": "baseline",
+      "quote": "Art. 262 \n1 Le locataire peut sous-louer tout ou partie de la chose avec le consen-\ntement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-fr-2",
+      "variant": "candidate",
+      "quote": "Art. 262 \n1 Le locataire peut sous-louer tout ou partie de la chose avec le consen-\ntement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    }
+  ],
+  "all_quote_diagnostics": [
+    {
+      "method": "retrieval",
+      "case_id": "historical-00",
+      "variant": "baseline",
+      "quote": "Auf Seite 14: \"Um Staus auf den Autobahnen zu reduzieren, sollen Engpässe auf sechs Abschnitten beseitigt werden.\"",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-00",
+      "variant": "baseline",
+      "quote": "Auf Seite 22, Art. 1 Abs. 2: \"Dieser umfasst die folgenden Kapazitätserweiterungen: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3. Röhre Rosenbergtunnel, inklusive Spange Güterbahnhof (SG); d. Rheintunnel Basel (BS/BL); e. 2. Röhre Fäsenstaubtunnel SH; f. Le Vengeron–Coppet–Nyon (GE/VD)\"",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-00",
+      "variant": "candidate",
+      "quote": "Art. 1 2 Dieser umfasst die folgenden Kapazitätserweiterungen: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3. Röhre Rosenbergtunnel, inklusive Spange Güterbahnhof (SG); d. Rheintunnel Basel (BS/BL); e. 2. Röhre Fäsenstaubtunnel SH; f. Le Vengeron–Coppet–Nyon (GE/VD), sofern der Bundesrat das generelle Projekt bis am 31. Dezember 2023 genehmigt hat.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-01",
+      "variant": "baseline",
+      "quote": "16 Erste Vorlage: Ausbau Nationalstrassen Für diese Projekte sind Kosten von 4,9 Milliarden Franken geplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-01",
+      "variant": "candidate",
+      "quote": "16 Erste Vorlage: Ausbau Nationalstrassen Für diese Projekte sind Kosten von 4,9 Milliarden Franken geplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-02",
+      "variant": "baseline",
+      "quote": "Für diese Projekte sind Kosten von 4,9 Milliarden Franken geplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-02",
+      "variant": "candidate",
+      "quote": "16 Für diese Projekte sind Kosten von 4,9 Milliarden Franken geplant.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-04",
+      "variant": "baseline",
+      "quote": "Künftig müssen Mieterinnen und Mieter ein schriftliches Gesuch stellen, wenn sie Räume untervermieten wollen. Zudem müssen sie für die Untervermietung über die schriftliche Zustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-04",
+      "variant": "candidate",
+      "quote": "Künftig müssen Mieterinnen und Mieter ein schriftliches Gesuch stellen, wenn sie Räume untervermieten wollen. Zudem müssen sie für die Untervermietung über die schriftliche Zustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-05",
+      "variant": "baseline",
+      "quote": "Mieterinnen und Mieter müssen ein schriftliches Gesuch stellen, wenn sie Räume untervermieten wollen. Zudem müssen sie für die Untervermietung über die schriftliche Zustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-05",
+      "variant": "baseline",
+      "quote": "Die Möglichkeit, die Untermiete auf zwei Jahre zu begrenzen, verhindert in vielen Fällen, dass die Mieterin oder der Mieter durch eine längere Untermiete einen missbräuchlichen Gewinn erzielt.",
+      "previous_page": "30",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 30
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-05",
+      "variant": "baseline",
+      "quote": "Mieterinnen und Mieter können die Vorteile der Untermiete weiterhin nutzen. Sie dürfen eine Wohnung, ein Geschäftslokal oder einzelne Räume auch künftig untervermieten. Die neuen Regeln erschweren aber Missbrauch...",
+      "previous_page": "30",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-05",
+      "variant": "candidate",
+      "quote": "Mieterinnen und Mieter müssen ein schriftliches Gesuch stellen, wenn sie Räume untervermieten wollen. Zudem müssen sie für die Untervermietung über die schriftliche Zustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-05",
+      "variant": "candidate",
+      "quote": "Sowohl das Gesuch als auch die Zustimmung müssen entweder handschriftlich unterzeichnet oder mit einer qualifizierten elektronischen Signatur versehen sein. Ein einfaches E-Mail genügt also nicht.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-06",
+      "variant": "baseline",
+      "quote": "Bundesrat und Parlament, empfehlen, die Änderung des Obligationenrechts (Mietrecht: Untermiete) anzunehmen.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-06",
+      "variant": "candidate",
+      "quote": "Aus all diesen Gründen empfehlen Bundesrat und Parlament, die Änderung des Obligationenrechts (Mietrecht: Unter - miete) anzunehmen. Ja admin.ch/untermiete Raum für individuelle Vereinbarungen Empfehlung von Bundesrat und Parlament",
+      "previous_page": "31",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-06",
+      "variant": "candidate",
+      "quote": "Vermieterinnen und Vermieter dürfen ihren Mieterinnen und Mietern im Mietvertrag oder im Einzelfall weiterhin zusätzliche Möglichkeiten der Untermiete einräumen. Auf diese Weise können sie die jeweiligen Interessen berücksichtigen. Beispielsweise können sie eine Untermietdauer von mehreren Jahren ermöglichen oder mit der Mieterin die Bedingungen für eine Untervermietung über Onlineplattformen vereinbaren. Aus all diesen Gründen empfehlen Bundesrat und Parlament, die Änderung des Obligationenrechts (Mietrecht: Unter - miete) anzunehmen. Ja admin.ch/untermiete Raum für individuelle Vereinbarungen Empfehlung von Bundesrat und Parlament",
+      "previous_page": "31",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-07",
+      "variant": "baseline",
+      "quote": "Art. 261 Abs. 2 Bst. a 2 Der neue Eigentümer kann jedoch: a. bei Wohn- und Geschäftsräumen das Mietverhältnis mit der gesetzlichen Frist auf den nächsten gesetzlichen Termin kündigen, wenn er einen bei objektiver Beurteilung bedeutenden und aktuellen Eigenbedarf für sich, nahe Verwandte oder Verschwägerte geltend macht;",
+      "previous_page": "42",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 42
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-07",
+      "variant": "candidate",
+      "quote": "Art. 261 Abs. 2 Bst. a 2 Der neue Eigentümer kann jedoch: a. bei Wohn- und Geschäftsräumen das Mietverhältnis mit der gesetzlichen Frist auf den nächsten gesetzlichen Termin kündigen, wenn er einen bei objektiver Beurteilung bedeutenden und aktuellen Eigenbedarf für sich, nahe Verwandte oder Verschwägerte geltend macht;",
+      "previous_page": "42",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 42
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-08",
+      "variant": "baseline",
+      "quote": "Aus all diesen Gründen empfehlen Bundesrat und Parlament, die Änderung des Obligationenrechts (Mietrecht: Kündigung wegen Eigenbedarfs) anzunehmen.",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-08",
+      "variant": "candidate",
+      "quote": "Aus all diesen Gründen empfehlen Bundesrat und Parlament, die Änderung des Obligationenrechts (Mietrecht: Kündigung wegen Eigenbedarfs) anzunehmen.",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-10",
+      "variant": "baseline",
+      "quote": "Mit einer einheitlichen Finanzierung sollen alle Leistungen nach demselben Verteilschlüssel finanziert werden – egal ob sie ambulant, stationär oder im Pflegeheim erbracht werden.",
+      "previous_page": "46",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 46
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-10",
+      "variant": "candidate",
+      "quote": "Die einheitliche Finanzierung soll alle Leistungen nach demselben Verteilschlüssel finanzieren – egal ob sie ambulant, stationär oder im Pflegeheim erbracht werden.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-10",
+      "variant": "candidate",
+      "quote": "In der Schweiz werden Gesundheitsleistungen heute je nach Behandlungsart unterschiedlich finanziert: ... Mit einer einheitlichen Finanzierung sollen alle Leistungen nach demselben Verteilschlüssel finanziert werden – egal ob sie ambulant, stationär oder im Pflegeheim erbracht werden.",
+      "previous_page": "45",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-11",
+      "variant": "candidate",
+      "quote": "Aufteilung der Nettokosten* Entwurf DE stationär: Heute ca. 54 %; Reform: Kantone min. 26,9 %",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-12",
+      "variant": "baseline",
+      "quote": "Les goulets d’étranglement seront éliminés sur six tronçons pour réduire les embouteillages sur les autoroutes.",
+      "previous_page": "14",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 14
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-12",
+      "variant": "baseline",
+      "quote": "Elle comprend les accroissements de capacité suivants: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3 e tube du tunnel du Rosenberg, y compris le raccordement de la gare de marchandises (SG); d. tunnel du Rhin à Bâle (BS/BL); e. 2 e tube du tunnel de Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD)",
+      "previous_page": "22",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 22
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-12",
+      "variant": "candidate",
+      "quote": "L’étape d’aménagement 2023 comprend les accroissements de capacité suivants: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3 e tube du tunnel du Rosenberg, y compris le raccordement de la gare de marchandises (SG); d. tunnel du Rhin à Bâle (BS/BL); e. 2 e tube du tunnel de Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), à condition que le Conseil fédéral ait approuvé le projet général au plus tard le 31 décembre 2023.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-13",
+      "variant": "baseline",
+      "quote": "Des coûts de 4,9 milliards de francs sont prévus pour ces projets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-13",
+      "variant": "candidate",
+      "quote": "16 Premier objet : aménagement des routes nationales Des coûts de 4,9 milliards de francs sont prévus pour ces projets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-14",
+      "variant": "baseline",
+      "quote": "Des coûts de 4,9 milliards de francs sont prévus pour ces projets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-14",
+      "variant": "candidate",
+      "quote": "16 Premier objet : aménagement des routes nationales Des coûts de 4,9 milliards de francs sont prévus pour ces projets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-16",
+      "variant": "baseline",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location devra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-16",
+      "variant": "candidate",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location devra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-17",
+      "variant": "baseline",
+      "quote": "Le locataire devra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "30",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 30
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-17",
+      "variant": "baseline",
+      "quote": "Le locataire peut sous-louer tout ou partie de la chose avec le consentement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-17",
+      "variant": "candidate",
+      "quote": "Le locataire qui désire recourir à la sous-location devra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-17",
+      "variant": "candidate",
+      "quote": "Le locataire peut sous-louer tout ou partie de la chose avec le consen- tement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-18",
+      "variant": "baseline",
+      "quote": "Le Conseil fédéral et le Parlement vous recommandent d’accepter la modification du code des obligations (droit du bail : résiliation pour besoin propre).",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-18",
+      "variant": "baseline",
+      "quote": "Le Conseil fédéral et le Parlement approuvent le projet, notamment pour les raisons suivantes.",
+      "previous_page": "40",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 40
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-18",
+      "variant": "candidate",
+      "quote": "Pour toutes ces raisons, le Conseil fédéral et le Parlement vous recommandent d’accepter la modification du code des obligations (droit du bail : résiliation pour besoin propre).",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-18",
+      "variant": "candidate",
+      "quote": "Le Conseil fédéral et le Parlement approuvent le projet, notamment pour les raisons suivantes.",
+      "previous_page": "40",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 40
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-19",
+      "variant": "baseline",
+      "quote": "Le Conseil fédéral et le Parlement vous recommandent d’accepter la modification de la loi fédérale sur l’assurance-maladie (LAMal) (financement uniforme des prestations).",
+      "previous_page": "55",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 55
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-19",
+      "variant": "candidate",
+      "quote": "Il reviendra aux établissements de soins et aux caisses-maladie de convenir des tarifs. Ceux-ci devront couvrir les coûts nécessaires à une fourniture efficiente des prestations et remplacer le modèle actuel... Pour toutes ces raisons, le Conseil fédéral et le Parlement vous recommandent d’accepter la modification de la loi fédérale sur l’assurance-maladie (LAMal) (financement uniforme des prestations). Oui admin.ch/financement-prestations-sante",
+      "previous_page": "55",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-20",
+      "variant": "baseline",
+      "quote": "Le financement uniforme vise à encourager la coordina - tion des soins. Une bonne coordination entre médecins, soi - gnants, thérapeutes et pharmaciens améliore la qualité des soins fournis aux patients sur toute la chaîne de traitement. Elle permet par ailleurs d'éviter les hospitalisations inutiles, de retarder les entrées en EMS et de réduire les coûts. [...] Le financement uniforme permettra de rendre la coordination des soins plus attrayante pour tous les acteurs du système. Les caisses-maladie assumeront une plus petite part des coûts ambulatoires et bénéficieront d'une plus grande part des économies réalisées dans le secteur hospitalier. Elles devraient donc être davantage incitées à développer des modèles de soins coordonnés et à les rendre attrayants pour les médecins, le personnel soignant et les hôpitaux notamment. [...] Le financement uniforme vise à encourager la coordina - tion des soins. [...] Le financement uniforme permettra de financer toutes les prestations, qu’elles soient ambula - toires, hospitalières ou dispensées en EMS, selon la même clé de répartition.",
+      "previous_page": "48",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-20",
+      "variant": "candidate",
+      "quote": "Le financement uniforme permet - tra de financer toutes les prestations, qu’elles soient ambula - toires, hospitalières ou dispensées en EMS, selon la même clé de répartition.",
+      "previous_page": "46",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-22",
+      "variant": "baseline",
+      "quote": "Per ridurre le colonne sulle autostrade, si prevede di decongestionare sei tratti autostradali nelle seguenti regioni: Sul tratto della A1 tra Le Vengeron e Nyon vi sono spesso colonne e rallentamenti...",
+      "previous_page": "14",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-22",
+      "variant": "baseline",
+      "quote": "Art. 1 2 Essa comprende i seguenti ampliamenti di capacità: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. terza canna della galleria del Rosenberg, incluso il raccordo con la stazione merci (SG); d. galleria sotto il Reno a Basilea (BS/BL); e. seconda canna della galleria di Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD)...",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-22",
+      "variant": "candidate",
+      "quote": "Per ridurre le colonne sulle autostrade, si prevede di decongestionare sei tratti autostradali nelle seguenti regioni: Sul tratto della A1 tra Le Vengeron e Nyon vi sono spesso colonne e rallentamenti. Ampliando l'autostrada sarà possibile decongestionare questo importante asse di collegamento delle strade nazionali.",
+      "previous_page": "14",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-22",
+      "variant": "candidate",
+      "quote": "Art. 1 2 Essa comprende i seguenti ampliamenti di capacità: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. terza canna della galleria del Rosenberg, incluso il raccordo con la stazione merci (SG); d. galleria sotto il Reno a Basilea (BS/BL); e. seconda canna della galleria di Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), se il Consiglio federale approva il progetto di massima entro il 31 dicembre 2023.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-23",
+      "variant": "baseline",
+      "quote": "Per questi progetti, finanziati attraverso il Fondo per le strade nazionali e il traffico d’agglomerato, sono previsti costi per 4,9 miliardi di franchi",
+      "previous_page": "16",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-23",
+      "variant": "candidate",
+      "quote": "16 Primo oggetto: Potenziamento delle strade nazionali Per questi progetti, finanziati attraverso il Fondo per le strade nazionali e il traffico d’agglomerato, sono previsti costi per 4,9 miliardi di franchi",
+      "previous_page": "16",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-24",
+      "variant": "baseline",
+      "quote": "Per questi progetti, finanziati attraverso il Fondo per le strade nazionali e il traffico d’agglomerato, sono previsti costi per 4,9 miliardi di franchi",
+      "previous_page": "16",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-24",
+      "variant": "candidate",
+      "quote": "Per questi progetti, finanziati attraverso il Fondo per le strade nazionali e il traffico d’agglomerato, sono previsti costi per 4,9 miliardi di franchi",
+      "previous_page": "16",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-26",
+      "variant": "baseline",
+      "quote": "In futuro, i locatari che desiderano sublocare dei locali dovranno presentare una richiesta scritta al locatore e ottenere il suo consenso scritto.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-26",
+      "variant": "candidate",
+      "quote": "In futuro, i locatari che desiderano sublocare dei locali dovranno presentare una richiesta scritta al locatore e ottenere il suo consenso scritto.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-28",
+      "variant": "baseline",
+      "quote": "Sì admin.ch/sublocazione Margine per accordi individuali Raccomandazione del Consiglio federale e del Parlamento",
+      "previous_page": "31",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 31
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-28",
+      "variant": "baseline",
+      "quote": "Gli argomenti Consiglio federale e Parlamento Secondo oggetto: Sublocazione ... Il Consiglio federale e il Parlamento sostengono il progetto, in particolare per i motivi esposti qui di seguito.",
+      "previous_page": "30",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-28",
+      "variant": "candidate",
+      "quote": "[Page 31] 31 ... Consiglio federale e Parlamento raccomandano di accettare la modifica del Codice delle obbligazioni (Diritto di locazione: sublocazione).",
+      "previous_page": "31",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-28",
+      "variant": "candidate",
+      "quote": "[Page 30] 30 Gli argomenti Consiglio federale e Parlamento Secondo oggetto: Sublocazione ... Il Consiglio federale e il Parlamento sostengono il progetto, in particolare per i motivi esposti qui di seguito.",
+      "previous_page": "30",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-29",
+      "variant": "baseline",
+      "quote": "Art. 261 cpv. 2 lett. a 2 Tuttavia, il nuovo proprietario può dare la disdetta per la prossima scadenza legale, rispettando il termine legale di preavviso: a. in caso di locazione di abitazioni o locali commerciali, se sulla base di una valutazione oggettiva fa valere un bisogno personale importante e attuale, suo proprio o dei suoi stretti parenti o affini;",
+      "previous_page": "42",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 42
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-29",
+      "variant": "candidate",
+      "quote": "Art. 261 cpv. 2 lett. a 2 Tuttavia, il nuovo proprietario può dare la disdetta per la prossima scadenza legale, rispettando il termine legale di preavviso: a. in caso di locazione di abitazioni o locali commerciali, se sulla base di una valutazione oggettiva fa valere un bisogno personale importante e attuale, suo proprio o dei suoi stretti parenti o affini;",
+      "previous_page": "42",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 42
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-30",
+      "variant": "baseline",
+      "quote": "Oggi, le prestazioni coperte dall'assicurazione malattie obbligatoria non sono finanziate in modo uniforme... Il Parlamento si prefigge di correggere questi falsi incentivi e ha quindi deciso di modificare la legge federale sull'assicurazione malattie: con un finanziamento uniforme, tutte le prestazioni – a prescindere che siano dispensate in regime ambulatoriale, stazionario o nelle case di cura – saranno finanziate secondo la stessa chiave di ripartizione.",
+      "previous_page": "54",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "historical-30",
+      "variant": "candidate",
+      "quote": "Oggi, le prestazioni coperte dall'assicurazione malattie obbligatoria non sono finanziate in modo uniforme. Ne conseguono falsi incentivi e cure inutilmente costose. Un finanziamento uniforme promuove il ricorso alle cure ambulatoriali, che sono spesso più indicate dal punto di vista medico e anche più economiche di quelle stazionarie... Un finanziamento uniforme promuove il passaggio dal settore stazionario a quello ambulatoriale... Tutto ciò va a vantaggio dei pazienti e rallenta l'incremento dei costi... La riforma della legge federale sull'assicurazione malattie relativa al finanziamento delle prestazioni (EFAS) è il risultato di un'offensiva... Occorre dire no al progetto EFAS, perché costringerà la popolazione a pagare premi ancora più elevati... Con l'EFAS i Cantoni dovranno limitarsi a pagare le fatture emesse dalle casse malati. Queste ultime, dal canto loro, potranno pilotare il sistema dal punto di vista finanziario e utilizzarlo a proprio beneficio. L'EFAS modifica la chiave di ripartizione dei costi tra le casse malati e i Cantoni. Questi ultimi potranno così ridurre la loro quota di finanziamento delle prestazioni sanitarie... Un finanziamento uniforme elimina evidenti falsi incentivi nel sistema sanitario.",
+      "previous_page": "54",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-de-fr-0",
+      "variant": "baseline",
+      "quote": "Seite 14: \"L’aménagement de l’autoroute permettra d’éliminer le goulet d’étranglement sur cette liaison routière importante.\" (im Kontext der sechs Abschnitte)\nSeite 22: \"Elle comprend les accroissements de capacité suivants: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3 e tube du tunnel du Rosenberg, y compris le raccordement de la gare de marchandises (SG); d. tunnel du Rhin à Bâle (BS/BL); e. 2 e tube du tunnel de Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD)\"",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-de-fr-0",
+      "variant": "candidate",
+      "quote": "14 Premier objet : aménagement des routes nationales Les goulets d’étranglement seront éliminés sur six tronçons...",
+      "previous_page": "14",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-de-fr-0",
+      "variant": "candidate",
+      "quote": "22 Art. 2 2 Elle comprend les accroissements de capacité suivants: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3 e tube du tunnel du Rosenberg...; d. tunnel du Rhin à Bâle...; e. 2 e tube du tunnel de Fäsenstaub...; f. Le Vengeron–Coppet–Nyon (GE/VD)...",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-de-it-0",
+      "variant": "baseline",
+      "quote": "2 Essa comprende i seguenti ampliamenti di capacità: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. terza canna della galleria del Rosenberg, incluso il raccordo con la stazione merci (SG); d. galleria sotto il Reno a Basilea (BS/BL); e. seconda canna della galleria di Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), se il Consiglio federale approva il progetto di massima entro il 31 dicembre 2023.",
+      "previous_page": "22",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 22
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-de-it-0",
+      "variant": "candidate",
+      "quote": "2 Essa comprende i seguenti ampliamenti di capacità: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. terza canna della galleria del Rosenberg, incluso il raccordo con la stazione merci (SG); d. galleria sotto il Reno a Basilea (BS/BL); e. seconda canna della galleria di Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), se il Consiglio federale approva il progetto di massima entro il 31 dicembre 2023.",
+      "previous_page": "22",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 22
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-fr-it-0",
+      "variant": "baseline",
+      "quote": "La Phase de potenziamento 2023 des routes nationales comprend les suivants ampliements de capacité: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. troisième canne de la galerie du Rosenberg, inclus le raccordement avec la station marchandises (SG); d. galerie sous le Rhin à Bâle (BS/BL); e. deuxième canne de la galerie de Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), si le Conseil fédéral approuve le projet de principe d'ici le 31 décembre 2023.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-fr-it-0",
+      "variant": "candidate",
+      "quote": "I sei progetti non andranno a gravare sul bilancio della Confederazione. Per compensare l’impatto sulla natura e sull’ambiente sono previste misure di sostituzione e interventi di rinaturazione...",
+      "previous_page": "16",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-fr-it-0",
+      "variant": "candidate",
+      "quote": "Art. 1 2 Essa comprende i seguenti ampliamenti di capacità: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. terza canna della galleria del Rosenberg, incluso il raccordo con la stazione merci (SG); d. galleria sotto il Reno a Basilea (BS/BL); e. seconda canna della galleria di Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), se il Consiglio federale approva il progetto di massima entro il 31 dicembre 2023.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-it-fr-0",
+      "variant": "baseline",
+      "quote": "Art. 1 2 Elle comprend les accroissements de capacité suivants: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3 e tube du tunnel du Rosenberg, y compris le raccordement de la gare de marchandises (SG); d. tunnel du Rhin à Bâle (BS/BL); e. 2 e tube du tunnel de Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), à condition que le Conseil fédéral ait approuvé le projet général au plus tard le 31 décembre 2023.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "retrieval",
+      "case_id": "cross-it-fr-0",
+      "variant": "candidate",
+      "quote": "Art. 1 2 Elle comprend les accroissements de capacité suivants: a. Wankdorf–Schönbühl (BE); b. Schönbühl–Kirchberg (BE); c. 3 e tube du tunnel du Rosenberg, y compris le raccordement de la gare de marchandises (SG); d. tunnel du Rhin à Bâle (BS/BL); e. 2 e tube du tunnel de Fäsenstaub (SH); f. Le Vengeron–Coppet–Nyon (GE/VD), à condition que le Conseil fédéral ait approuvé le projet général au plus tard le 31 décembre 2023.",
+      "previous_page": "",
+      "previous_text_layer_match": false,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": null
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-01",
+      "variant": "baseline",
+      "quote": "Für diese Projekte sind 4,9 Milliarden Franken vorgesehen.",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-01",
+      "variant": "baseline",
+      "quote": "Für diese Projekte sind Kosten von 4,9 Milliarden Franken \ngeplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-01",
+      "variant": "candidate",
+      "quote": "Für diese Projekte sind 4,9 Milliarden Franken vorgesehen.",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-01",
+      "variant": "candidate",
+      "quote": "Für diese Projekte sind Kosten von 4,9 Milliarden Franken \ngeplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-02",
+      "variant": "baseline",
+      "quote": "Für diese Projekte sind Kosten von 4,9 Milliarden Franken \ngeplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-02",
+      "variant": "candidate",
+      "quote": "Für diese Projekte sind Kosten von 4,9 Milliarden Franken \ngeplant.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-04",
+      "variant": "candidate",
+      "quote": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an  \ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-05",
+      "variant": "baseline",
+      "quote": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an  \ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-05",
+      "variant": "baseline",
+      "quote": "Er muss den Vermieter über Änderungen der Angaben gemäss Ab-\nsatz 2 während der Untermietdauer informieren.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-05",
+      "variant": "candidate",
+      "quote": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an  \ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-05",
+      "variant": "candidate",
+      "quote": "Er muss den Vermieter über Änderungen der Angaben gemäss Ab-\nsatz 2 während der Untermietdauer informieren.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-06",
+      "variant": "baseline",
+      "quote": "Aus all diesen Gründen empfehlen Bundesrat und Parla -\nment, die Änderung des Obligationenrechts (Mietrecht: Unter -\nmiete) anzunehmen.",
+      "previous_page": "31",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 31
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-08",
+      "variant": "baseline",
+      "quote": "Aus all diesen Gründen empfehlen Bundesrat und  \nParlament, die Änderung des Obligationenrechts (Mietrecht: \nKündigung wegen Eigenbedarfs) anzunehmen.",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-08",
+      "variant": "candidate",
+      "quote": "Aus all diesen Gründen empfehlen Bundesrat und  \nParlament, die Änderung des Obligationenrechts (Mietrecht: \nKündigung wegen Eigenbedarfs) anzunehmen.",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-10",
+      "variant": "baseline",
+      "quote": "Die Kantone übernehmen neu bei allen Leistungen \nmindestens 26,9 Prozent der Kosten, die Krankenkassen höchs -\ntens 73,1 Prozent.",
+      "previous_page": "10",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 10
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-11",
+      "variant": "candidate",
+      "quote": "Die Kantone übernehmen neu bei allen Leistungen \nmindestens 26,9 Prozent der Kosten, die Krankenkassen höchs -\ntens 73,1 Prozent.",
+      "previous_page": "10",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 10
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-12",
+      "variant": "candidate",
+      "quote": "Grâce à l’étape d’aménagement 2023, le Conseil fédéral \net le Parlement entendent éliminer les goulets d’étranglement \nsur les six tronçons suivants  :  \n– A1 entre Le Vengeron et Nyon ; \n– A1 entre Berne-Wankdorf et Schönbühl  ; \n– A1 entre Schönbühl et Kirchberg ; \n– A2 à Bâle (nouveau tunnel du Rhin) ; \n– A4 à Schaffhouse (2e tube du tunnel de Fäsenstaub)  ; \n– A1 à Saint-Gall (3e tube du tunnel du Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-13",
+      "variant": "baseline",
+      "quote": "Des coûts de 4,9 milliards de francs sont prévus pour ces \nprojets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-13",
+      "variant": "baseline",
+      "quote": "Un montant de 4,9 milliards de francs est prévu pour ces pro -\njets",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-13",
+      "variant": "candidate",
+      "quote": "Des coûts de 4,9 milliards de francs sont prévus pour ces \nprojets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-14",
+      "variant": "candidate",
+      "quote": "Des coûts de 4,9 milliards de francs sont prévus pour ces \nprojets3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-16",
+      "variant": "baseline",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location \ndevra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-16",
+      "variant": "candidate",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location \ndevra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-17",
+      "variant": "baseline",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location \ndevra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-17",
+      "variant": "candidate",
+      "quote": "Dorénavant, le locataire qui désire sous-louer un espace \ndevra obligatoirement demander et obtenir l’autorisation  \ndu bailleur par écrit.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-17",
+      "variant": "candidate",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location \ndevra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-18",
+      "variant": "baseline",
+      "quote": "Recommandation  \ndu Conseil fédéral  \net du Parlement",
+      "previous_page": "9",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 9
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-18",
+      "variant": "baseline",
+      "quote": "Pour toutes ces raisons, le Conseil fédéral et le Parlement \nvous recommandent d’accepter la modification du code des \nobligations (droit du bail : résiliation pour besoin propre).",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-18",
+      "variant": "baseline",
+      "quote": "Recommandation  \ndu Conseil fédéral  \net du Parlement",
+      "previous_page": "9",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 9
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-18",
+      "variant": "candidate",
+      "quote": "Pour toutes ces raisons, le Conseil fédéral et le Parlement \nvous recommandent d’accepter la modification du code des \nobligations (droit du bail : résiliation pour besoin propre).",
+      "previous_page": "41",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 41
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-19",
+      "variant": "baseline",
+      "quote": "La question qui \nvous est posée\nOui\nPour le Conseil fédéral et le Parlement, le financement \nuniforme des prestations réduit les mauvaises incitations qui \naccroissent les coûts de la santé. Il encourage les traitements \nambulatoires et contribue à éviter les hospitalisations inutiles. \nLa qualité des soins médicaux s’en trouvera améliorée et  \ndes économies seront réalisées.",
+      "previous_page": "11",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 11
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-19",
+      "variant": "candidate",
+      "quote": "La question qui \nvous est posée\nOui\nPour le Conseil fédéral et le Parlement, le financement \nuniforme des prestations réduit les mauvaises incitations qui \naccroissent les coûts de la santé. Il encourage les traitements \nambulatoires et contribue à éviter les hospitalisations inutiles. \nLa qualité des soins médicaux s’en trouvera améliorée et  \ndes économies seront réalisées.",
+      "previous_page": "11",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 11
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-20",
+      "variant": "baseline",
+      "quote": "En modifiant la LAMal, le Parlement a décidé que toutes \nles prestations de l’AOS seront financées conjointement par les \ncantons et les caisses-maladie selon la même clé de répartition.",
+      "previous_page": "10",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 10
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-20",
+      "variant": "baseline",
+      "quote": "Les cantons prendront en charge au minimum 26,9 % des coûts \npour toutes les prestations et les caisses-maladie au maximum \n73,1 %.",
+      "previous_page": "10",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 10
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-20",
+      "variant": "candidate",
+      "quote": "En modifiant la LAMal, le Parlement a décidé que toutes \nles prestations de l’AOS seront financées conjointement par les \ncantons et les caisses-maladie selon la même clé de répartition.",
+      "previous_page": "10",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 10
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-20",
+      "variant": "candidate",
+      "quote": "Les cantons prendront en charge au minimum 26,9 % des coûts \npour toutes les prestations et les caisses-maladie au maximum \n73,1 %.",
+      "previous_page": "10",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 10
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-22",
+      "variant": "baseline",
+      "quote": "Con la Fase di potenziamento 2023, il Consiglio federale  \ne il Parlamento si propongono di decongestionare i seguenti \nsei tratti stradali: \n– la A1 tra Le Vengeron e Nyon; \n– la A1 tra Berna-Wankdorf e Schönbühl; \n– la A1 tra Schönbühl e Kirchberg; \n– la A2 a Basilea (nuova galleria sotto il Reno); \n–  la A4 a Sciaffusa (seconda canna della galleria Fäsenstaub);\n–  la A1 a San Gallo (terza canna della galleria del Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-22",
+      "variant": "candidate",
+      "quote": "Con la Fase di potenziamento 2023, il Consiglio federale  \ne il Parlamento si propongono di decongestionare i seguenti \nsei tratti stradali: \n– la A1 tra Le Vengeron e Nyon; \n– la A1 tra Berna-Wankdorf e Schönbühl; \n– la A1 tra Schönbühl e Kirchberg; \n– la A2 a Basilea (nuova galleria sotto il Reno); \n–  la A4 a Sciaffusa (seconda canna della galleria Fäsenstaub);\n–  la A1 a San Gallo (terza canna della galleria del Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-23",
+      "variant": "baseline",
+      "quote": "Per questi progetti, finanziati attraverso il Fondo per le \nstrade nazionali e il traffico d’agglomerato, sono previsti costi \nper 4,9 miliardi di franchi3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-23",
+      "variant": "candidate",
+      "quote": "Per questi progetti, finanziati attraverso il Fondo per le \nstrade nazionali e il traffico d’agglomerato, sono previsti costi \nper 4,9 miliardi di franchi3.",
+      "previous_page": "16",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 16
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-26",
+      "variant": "baseline",
+      "quote": "In futuro, i locatari che desiderano sublocare dei locali dovran -\nno presentare una richiesta scritta al locatore e ottenere il suo \nconsenso scritto.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-26",
+      "variant": "candidate",
+      "quote": "In futuro, i locatari che desiderano sublocare dei locali dovran -\nno presentare una richiesta scritta al locatore e ottenere il suo \nconsenso scritto.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-26",
+      "variant": "candidate",
+      "quote": "Sempreché le parti non abbiano pattuito altrimenti per scritto, il con-\nduttore presenta al locatore una richiesta scritta di sublocazione; la ri-\nchiesta contiene: \na. i nomi dei subconduttori; \nb. le condizioni contrattuali, in particolare l’oggetto sublocato, lo \nscopo d’uso, la pigione dovuta e la durata della sublocazione.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-27",
+      "variant": "candidate",
+      "quote": "In futuro, i locatari che desiderano sublocare dei locali dovran -\nno presentare una richiesta scritta al locatore e ottenere il suo \nconsenso scritto.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-28",
+      "variant": "candidate",
+      "quote": "Raccomandazione \ndel Consiglio \nfederale e del \nParlamento\nRaccomandazione \ndel comitato \nreferendario\nIl voto del Consiglio \nnazionale\nIl voto del Consiglio \ndegli Stati\n 108 sì\n 85 no\n 2 astensioni\n 32 sì\n 11 no\n0 astensioni",
+      "previous_page": "7",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 7
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "historical-28",
+      "variant": "candidate",
+      "quote": "La domanda che \nfigura sulla scheda\nSì\nLa modifica legislativa intende impedire gli abusi  \nnell’ambito della sublocazione. È necessario intervenire a causa \ndell’evoluzione sul mercato delle locazioni e della diffusione \ndelle piattaforme online, che hanno portato a un aumento \ndegli abusi. Il diritto alla sublocazione resta tuttavia garantito.",
+      "previous_page": "7",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 7
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-0",
+      "variant": "baseline",
+      "quote": "Grâce à l’étape d’aménagement 2023, le Conseil fédéral \net le Parlement entendent éliminer les goulets d’étranglement \nsur les six tronçons suivants  :  \n– A1 entre Le Vengeron et Nyon ; \n– A1 entre Berne-Wankdorf et Schönbühl  ; \n– A1 entre Schönbühl et Kirchberg ; \n– A2 à Bâle (nouveau tunnel du Rhin) ; \n– A4 à Schaffhouse (2e tube du tunnel de Fäsenstaub)  ; \n– A1 à Saint-Gall (3e tube du tunnel du Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-0",
+      "variant": "baseline",
+      "quote": "Les goulets d’étranglement seront éliminés sur six tronçons \npour réduire les embouteillages sur les autoroutes.",
+      "previous_page": "14",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 14
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-0",
+      "variant": "candidate",
+      "quote": "Grâce à l’étape d’aménagement 2023, le Conseil fédéral \net le Parlement entendent éliminer les goulets d’étranglement \nsur les six tronçons suivants  :  \n– A1 entre Le Vengeron et Nyon ; \n– A1 entre Berne-Wankdorf et Schönbühl  ; \n– A1 entre Schönbühl et Kirchberg ; \n– A2 à Bâle (nouveau tunnel du Rhin) ; \n– A4 à Schaffhouse (2e tube du tunnel de Fäsenstaub)  ; \n– A1 à Saint-Gall (3e tube du tunnel du Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-0",
+      "variant": "candidate",
+      "quote": "Les goulets d’étranglement seront éliminés sur six tronçons \npour réduire les embouteillages sur les autoroutes.",
+      "previous_page": "14",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 14
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-2",
+      "variant": "baseline",
+      "quote": "Dorénavant, le locataire qui désire recourir à la sous-location \ndevra demander et obtenir l’autorisation du bailleur par écrit.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-2",
+      "variant": "baseline",
+      "quote": "Le locataire devra \nen outre informer le bailleur lors de changements, par exemple \nun changement de sous-locataire ou une hausse du loyer de  \nla sous-location.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-2",
+      "variant": "candidate",
+      "quote": "Dorénavant, le locataire qui désire sous-louer un espace \ndevra obligatoirement demander et obtenir l’autorisation  \ndu bailleur par écrit.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-fr-2",
+      "variant": "candidate",
+      "quote": "Le locataire devra \nen outre informer le bailleur lors de changements, par exemple \nun changement de sous-locataire ou une hausse du loyer de  \nla sous-location.",
+      "previous_page": "26",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 26
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-it-0",
+      "variant": "baseline",
+      "quote": "Con la Fase di potenziamento 2023, il Consiglio federale  \ne il Parlamento si propongono di decongestionare i seguenti \nsei tratti stradali: \n– la A1 tra Le Vengeron e Nyon; \n– la A1 tra Berna-Wankdorf e Schönbühl; \n– la A1 tra Schönbühl e Kirchberg; \n– la A2 a Basilea (nuova galleria sotto il Reno); \n–  la A4 a Sciaffusa (seconda canna della galleria Fäsenstaub);\n–  la A1 a San Gallo (terza canna della galleria del Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-it-0",
+      "variant": "candidate",
+      "quote": "Con la Fase di potenziamento 2023, il Consiglio federale  \ne il Parlamento si propongono di decongestionare i seguenti \nsei tratti stradali: \n– la A1 tra Le Vengeron e Nyon; \n– la A1 tra Berna-Wankdorf e Schönbühl; \n– la A1 tra Schönbühl e Kirchberg; \n– la A2 a Basilea (nuova galleria sotto il Reno); \n–  la A4 a Sciaffusa (seconda canna della galleria Fäsenstaub);\n–  la A1 a San Gallo (terza canna della galleria del Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-it-2",
+      "variant": "baseline",
+      "quote": "Il progetto prevede che il locatore possa rifiutare la sublocazio -\nne, in particolare se la durata prevista supera i due anni.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-it-2",
+      "variant": "candidate",
+      "quote": "In futuro, chi intende sublocare dei locali dovrà farne \nrichiesta scritta al locatore e ottenere il suo consenso scritto.",
+      "previous_page": "6",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 6
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-de-it-2",
+      "variant": "candidate",
+      "quote": "Se per farlo conclude un contratto di locazione, il proget -\nto prevede che si applicheranno per analogia le nuove disposi -\nzioni sulla sublocazione. Se invece ricorre a un contratto di \nsubaffitto, continuerà ad applicarsi la regola in vigore secondo \ncui il locatore può negare il proprio consenso senza dover \nfornire motivazioni.",
+      "previous_page": "27",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 27
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-fr-de-2",
+      "variant": "baseline",
+      "quote": "Haben die Parteien nicht schriftlich etwas anderes vereinbart, so muss \nder Mieter ein Untermietbegehren schriftlich beim Vermieter stellen; \ndas Begehren muss enthalten: \na. die Namen der Untermieter; \nb. die Vertragsbedingungen, insbesondere das Untermietobjekt, \nden Gebrauchszweck, den Untermietzins und die Untermiet-\ndauer.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-fr-de-2",
+      "variant": "candidate",
+      "quote": "Haben die Parteien nicht schriftlich etwas anderes vereinbart, so muss \nder Mieter ein Untermietbegehren schriftlich beim Vermieter stellen; \ndas Begehren muss enthalten: \na. die Namen der Untermieter; \nb. die Vertragsbedingungen, insbesondere das Untermietobjekt, \nden Gebrauchszweck, den Untermietzins und die Untermiet-\ndauer.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-fr-it-0",
+      "variant": "baseline",
+      "quote": "Con la Fase di potenziamento 2023, il Consiglio federale  \ne il Parlamento si propongono di decongestionare i seguenti \nsei tratti stradali: \n– la A1 tra Le Vengeron e Nyon; \n– la A1 tra Berna-Wankdorf e Schönbühl; \n– la A1 tra Schönbühl e Kirchberg; \n– la A2 a Basilea (nuova galleria sotto il Reno); \n–  la A4 a Sciaffusa (seconda canna della galleria Fäsenstaub);\n–  la A1 a San Gallo (terza canna della galleria del Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-fr-it-0",
+      "variant": "candidate",
+      "quote": "Con la Fase di potenziamento 2023, il Consiglio federale  \ne il Parlamento si propongono di decongestionare i seguenti \nsei tratti stradali: \n– la A1 tra Le Vengeron e Nyon; \n– la A1 tra Berna-Wankdorf e Schönbühl; \n– la A1 tra Schönbühl e Kirchberg; \n– la A2 a Basilea (nuova galleria sotto il Reno); \n–  la A4 a Sciaffusa (seconda canna della galleria Fäsenstaub);\n–  la A1 a San Gallo (terza canna della galleria del Rosenberg).",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-de-0",
+      "variant": "baseline",
+      "quote": "Mit dem Ausbauschritt 2023 wollen Bundesrat und  \nParlament die Engpässe auf den folgenden sechs Abschnitten \nbeseitigen: \n– A1 zwischen Le Vengeron und Nyon \n– A1 zwischen Bern-Wankdorf und Schönbühl \n– A1 zwischen Schönbühl und Kirchberg \n– A2 bei Basel (neuer Rheintunnel) \n– A4 bei Schaffhausen (2. Röhre Fäsenstaubtunnel)\n– A1 bei St. Gallen (3. Röhre Rosenbergtunnel)",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-de-0",
+      "variant": "candidate",
+      "quote": "Mit dem Ausbauschritt 2023 wollen Bundesrat und  \nParlament die Engpässe auf den folgenden sechs Abschnitten \nbeseitigen: \n– A1 zwischen Le Vengeron und Nyon \n– A1 zwischen Bern-Wankdorf und Schönbühl \n– A1 zwischen Schönbühl und Kirchberg \n– A2 bei Basel (neuer Rheintunnel) \n– A4 bei Schaffhausen (2. Röhre Fäsenstaubtunnel)\n– A1 bei St. Gallen (3. Röhre Rosenbergtunnel)",
+      "previous_page": "4",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 4
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-fr-0",
+      "variant": "candidate",
+      "quote": "Art. 1 \n1 L’étape 2023 de l’aménagement des routes nationales est approuvée. \n2 Elle comprend les accroissements de capacité suivants: \na. Wankdorf–Schönbühl (BE); \nb. Schönbühl–Kirchberg (BE); \nc. 3 e tube du tunnel du Rosenberg, y compris le raccordement de la gare de mar-\nchandises (SG); \nd. tunnel du Rhin à Bâle (BS/BL); \ne. 2 e tube du tunnel de Fäsenstaub (SH); \nf. Le Vengeron–Coppet–Nyon (GE/VD), à condition que le Conseil fédéral ait \napprouvé le projet général au plus tard le 31 décembre 2023.",
+      "previous_page": "22",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": true,
+      "bounded_selected_page": 22
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-fr-2",
+      "variant": "baseline",
+      "quote": "Art. 262 \n1 Le locataire peut sous-louer tout ou partie de la chose avec le consen-\ntement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    },
+    {
+      "method": "hybrid_dense",
+      "case_id": "cross-it-fr-2",
+      "variant": "candidate",
+      "quote": "Art. 262 \n1 Le locataire peut sous-louer tout ou partie de la chose avec le consen-\ntement écrit du bailleur.",
+      "previous_page": "33",
+      "previous_text_layer_match": true,
+      "bounded_attributed_page_match": false,
+      "bounded_selected_page": 32
+    }
+  ],
+  "limits": "Checks origins and nonpainting modes Tr=3/7 only. Does not account for arbitrary clipping, opacity, occlusion or incorrect visitor coordinates. Not integrated into production."
+}

@@ -1,0 +1,9 @@
+case_id,changed_occurrences,gold_label,claim_language,booklet_language,verified_page,claim_vs_cited_text,assessment
+historical-07,4,0,de,de,42,"Eigenbedarf-Kündigung bei bedeutendem aktuellem Eigenbedarf","Zitat aus Art. 261 Abs. 2 stützt die Aussage."
+historical-29,3,0,it,it,43,"Disdetta bei bisogno personale importante e attuale","Zitat aus Art. 261 Abs. 2 stützt die Aussage."
+historical-11,1,2,de,de,10,"Kanton trage alle Spitalkosten zu 100 Prozent allein","Seite 10 nennt mindestens 55 Prozent und den Rest durch die Krankenkasse; widerspricht der Aussage."
+historical-16,1,0,fr,fr,26,"Consentement écrit requis pour la sous-location","Zitat verlangt schriftliche Bewilligung des bailleur; stützt die Aussage."
+cross-it-fr-0,3,0,it,fr,22,"Sechs Abschnitte im Ausbau der Nationalstrassen","Art. 1 listet sechs Kapazitätsausbauten; stützt die Aussage."
+historical-20,2,0,fr,fr,"48 (Matcher), 10 (inhaltlich passend)","Financement uniforme selon la même clé","Das zugeordnete Zitat von Seite 48 handelt von Versorgungskoordination und belegt den Claim nicht. Seite 10 enthält passenden Büchlintext, den das Modell nur paraphrasiert. Zitatzuordnung ist falsch; Qualitätsgate nicht bestanden."
+historical-26,2,0,it,it,26,"Consenso scritto del locatore prima della sublocazione","Zitat verlangt schriftliche Anfrage und Zustimmung; stützt die Aussage."
+cross-de-it-0,2,0,de,it,4,"Sechs Autobahnabschnitte der Nationalstrassen","Italienischer Büchlintext listet sechs Abschnitte; stützt die Aussage."

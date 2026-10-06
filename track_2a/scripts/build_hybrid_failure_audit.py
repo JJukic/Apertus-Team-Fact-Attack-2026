@@ -15,7 +15,7 @@ from sklearn.metrics import f1_score
 
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
-from src.apertus_client import ApertusClient  # noqa: E402
+from historical_apertus_client import ApertusClient  # noqa: E402
 
 EVAL = BASE / "docs" / "evaluation"
 DATASET = BASE / "data" / "evaluation" / "hybrid_quality_50_validation.jsonl"

@@ -68,6 +68,11 @@ MOCK_APERTUS=false
 
 *(Note: If `LLM_API_KEY` is empty or `MOCK_APERTUS=true`, the system runs in offline mock mode so you can test the pipeline immediately.)*
 
+Live inference and benchmark generation do not specify an output-token cap.
+The endpoint still controls its own defaults and context/output limits. A response
+ending with `finish_reason=length` is an operational error, not a Neutral prediction.
+Removing the application cap does not authorize additional API requests.
+
 ---
 
 ## 💻 CLI Usage
