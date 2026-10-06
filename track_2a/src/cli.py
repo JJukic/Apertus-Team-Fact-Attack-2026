@@ -36,6 +36,17 @@ app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim
 console = Console(legacy_windows=False)
 
 
+def _require_model(engine: ClaimVerificationEngine, mock: bool) -> None:
+    """Without LLM_API_KEY the client silently falls back to heuristic mock answers; refuse that unless asked for."""
+    if engine.client.mock and not mock and not config.MOCK_APERTUS:
+        typer.echo(
+            "Error: LLM_API_KEY is not set, so no Apertus model can be called. Set it in the environment "
+            "(Docker: -e LLM_API_KEY) or in .env; use --mock or MOCK_APERTUS=true for an offline mock run.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+
 @app.command()
 def predict(
     claim: str = typer.Option(..., "--claim", "-c", help="Political claim to verify against the booklet"),
@@ -65,6 +76,7 @@ def predict(
     """
     client = ApertusClient(mock=True) if mock else None
     engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
+    _require_model(engine, mock)
 
     if reference:
         # Beginner Task: Direct premise verification
@@ -189,6 +201,7 @@ def run_batch(
 
     client = ApertusClient(mock=True) if mock else None
     engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
+    _require_model(engine, mock)
     official_results = []
 
     for idx, item in enumerate(cases, 1):
@@ -262,6 +275,7 @@ def benchmark(
         apertus_client=ApertusClient(mock=True) if mock else None,
         prompt_mode=prompt_mode,
     )
+    _require_model(engine, mock)
     from src.evaluator import BenchmarkEvaluator  # lazy: sklearn is slow to import
 
     evaluator = BenchmarkEvaluator(engine=engine)

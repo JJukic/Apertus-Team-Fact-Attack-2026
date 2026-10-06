@@ -22,6 +22,11 @@ LLM_NAME = os.getenv("LLM_NAME", "swiss-ai/Apertus-v1.5-70B-thinking")
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.inference.cscs.ch/v1")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 
+# Retries on transient API errors (timeouts, 429, 5xx): exponential backoff within a time budget per request.
+# A failed request would otherwise silently count as Neutral
+LLM_MAX_RETRIES = int(os.getenv("LLM_MAX_RETRIES", "6"))
+LLM_RETRY_BUDGET_S = float(os.getenv("LLM_RETRY_BUDGET_S", "120"))
+
 # Context strategy: 'hybrid' (booklet-wide BM25 claim + vote title), 'retrieval' (proposal filter + BM25) or 'full'
 DEFAULT_STRATEGY = os.getenv("NLI_STRATEGY", "hybrid")
 DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "10"))

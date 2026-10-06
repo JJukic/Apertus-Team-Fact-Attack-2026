@@ -8,6 +8,7 @@ import time
 import json
 import logging
 import math
+import random
 import re
 from typing import Dict, Any, Optional, List, Tuple
 from pydantic import BaseModel, Field
@@ -53,6 +54,7 @@ class ApertusClient:
                 self.client = OpenAI(
                     base_url=self.base_url,
                     api_key=self.api_key or "EMPTY",
+                    max_retries=0,  # retries are handled by _create_with_retry
                 )
             except Exception as e:
                 logger.warning(f"Could not initialize OpenAI client: {e}. Falling back to mock mode.")
@@ -201,22 +203,42 @@ class ApertusClient:
         usage = getattr(response, "usage", None)
         return (out or None, getattr(usage, "prompt_tokens", 0) or 0, getattr(usage, "completion_tokens", 0) or 0, ms)
 
-    def _chat(self, messages: List[Dict[str, str]], max_tokens: int, logprobs: bool = False, max_retries: int = 3):
-        last_exception = None
-        for attempt in range(max_retries):
+    @staticmethod
+    def _retry_limit(error: Exception) -> int:
+        """
+        How many retries an API error deserves. Timeouts, dropped connections, 429 and 5xx are transient.
+        Under load the CSCS gateway also answers 'invalid API key' to valid keys (seen interleaved with successful
+        calls), so a 401 gets two quick retries, but not the full budget, so a really wrong key fails fast.
+        Other client errors (400 bad request, 404 unknown model) are not retried.
+        """
+        status = getattr(error, "status_code", None)
+        if status is None or status in (408, 409, 425, 429) or status >= 500:
+            return config.LLM_MAX_RETRIES
+        if status == 401:
+            return min(2, config.LLM_MAX_RETRIES)
+        return 0
+
+    def _create_with_retry(self, **kwargs) -> Tuple[Any, Optional[Exception]]:
+        """chat.completions.create with exponential backoff (+ jitter) inside a per-request time budget."""
+        start = time.time()
+        attempt = 0
+        while True:
             try:
-                kwargs = dict(model=self.model_name, messages=messages, temperature=0.0, max_tokens=max_tokens, timeout=60.0)
-                if logprobs:
-                    kwargs.update(logprobs=True, top_logprobs=5)
                 return self.client.chat.completions.create(**kwargs), None
             except Exception as e:
-                last_exception = e
-                if attempt < max_retries - 1:
-                    sleep_sec = (2 ** attempt) * 1.5
-                    logger.warning(f"Apertus API attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {sleep_sec:.1f}s...")
-                    time.sleep(sleep_sec)
-        logger.error(f"Apertus API query failed after {max_retries} attempts: {last_exception}")
-        return None, last_exception
+                delay = min(30.0, 2.0 * 2 ** attempt) * random.uniform(0.5, 1.0)
+                if attempt >= self._retry_limit(e) or time.time() - start + delay > config.LLM_RETRY_BUDGET_S:
+                    logger.error(f"Apertus API query failed after {attempt + 1} attempt(s): {e}")
+                    return None, e
+                attempt += 1
+                logger.warning(f"Apertus API attempt {attempt} failed: {e}. Retrying in {delay:.1f}s...")
+                time.sleep(delay)
+
+    def _chat(self, messages: List[Dict[str, str]], max_tokens: int, logprobs: bool = False):
+        kwargs = dict(model=self.model_name, messages=messages, temperature=0.0, max_tokens=max_tokens, timeout=60.0)
+        if logprobs:
+            kwargs.update(logprobs=True, top_logprobs=5)
+        return self._create_with_retry(**kwargs)
 
     def infer(
         self,
@@ -307,10 +329,6 @@ class ApertusClient:
             + ("Think it through, then output the JSON:" if thinking else "Output JSON only:")
         )
 
-        max_retries = 3
-        response = None
-        last_exception = None
-
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -322,31 +340,20 @@ class ApertusClient:
             messages.append({"role": "assistant", "content": "<|inner_prefix|>"})
             extra["extra_body"] = {"continue_final_message": True, "add_generation_prompt": False}
 
-        for attempt in range(max_retries):
-            try:
-                response = self.client.chat.completions.create(
-                    model=self.model_name,
-                    messages=messages,
-                    temperature=0.0,
-                    max_tokens=config.THINKING_MAX_TOKENS if thinking else (512 if passages is None else 160),
-                    timeout=180.0 if thinking else 45.0,
-                    **extra,
-                )
-                break
-            except Exception as e:
-                last_exception = e
-                if attempt < max_retries - 1:
-                    sleep_sec = (2 ** attempt) * 1.5
-                    logger.warning(f"Apertus API attempt {attempt + 1}/{max_retries} failed: {e}. Retrying in {sleep_sec:.1f}s...")
-                    time.sleep(sleep_sec)
-                else:
-                    logger.error(f"Apertus API query failed after {max_retries} attempts: {e}")
+        response, last_exception = self._create_with_retry(
+            model=self.model_name,
+            messages=messages,
+            temperature=0.0,
+            max_tokens=config.THINKING_MAX_TOKENS if thinking else (512 if passages is None else 160),
+            timeout=180.0 if thinking else 45.0,
+            **extra,
+        )
 
         if response is None:
             latency_ms = (time.time() - start_time) * 1000
             return NLIOutput(
                 label=1,
-                reasoning=f"API Error after {max_retries} attempts: {str(last_exception)}",
+                reasoning=f"API Error: {str(last_exception)}",
                 evidence=[],
                 error=f"api: {last_exception}",
                 tokens_prompt=0,

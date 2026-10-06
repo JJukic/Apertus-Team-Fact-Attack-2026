@@ -9,7 +9,7 @@ An Apertus-powered system that decides whether an official Swiss voting booklet 
 or **contradicts (2)** a claim, and cites the booklet pages that justify the decision — for every combination of
 German, French and Italian.
 
-- **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.920** macro-F1, beginner task **0.975**
+- **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.925** macro-F1, beginner task **0.975**
 - **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ·
   **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
@@ -36,6 +36,18 @@ PROMPT_MODE=ids          # 'ids' (default) | 'json' | 'compact'
 ```
 
 Without `LLM_API_KEY` the system runs in an offline heuristic mock mode (for tests only).
+
+---
+
+## 📋 Requirements
+
+| | |
+|---|---|
+| **Runtime** | Docker (`make run` builds and runs everything in a `python:3.11-slim` container); locally Python 3.9+ with `requirements.txt` |
+| **Hardware** | Any CPU machine, no GPU: ~300 MB RAM (peak 253 MB measured), ~1.4 GB disk for the image. The model runs remotely |
+| **API keys** | `LLM_API_KEY` for the CSCS inference service (Apertus). `LLM_NAME` and `LLM_BASE_URL` default to `swiss-ai/Apertus-v1.5-70B-thinking` and `https://api.inference.cscs.ch/v1` |
+| **Model weights** | None to download: Apertus v1.5 70B is served by CSCS. No other model is used, neither in the pipeline nor for evaluation |
+| **Network** | At build time: Hugging Face (OST dataset) and admin.ch (booklet PDFs). At run time: the CSCS endpoint |
 
 ---
 
