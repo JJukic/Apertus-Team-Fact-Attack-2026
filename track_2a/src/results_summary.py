@@ -9,6 +9,7 @@ Usage:
 """
 
 import json
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -85,9 +86,15 @@ def _matches_defaults(run: Dict[str, Any]) -> bool:
     )
 
 
+def _moment(timestamp: str) -> datetime:
+    """Run time as an aware datetime; older runs carry no UTC offset and were made in local time."""
+    moment = datetime.fromisoformat(timestamp)
+    return moment if moment.tzinfo else moment.astimezone()
+
+
 def headline(runs: List[Dict[str, Any]], task: str, split: str = "test") -> Optional[Dict[str, Any]]:
     candidates = [r for r in runs if r["task"] == task and r["split"] == split and _matches_defaults(r)]
-    return max(candidates, key=lambda r: (r["n"], r["timestamp"])) if candidates else None
+    return max(candidates, key=lambda r: (r["n"], _moment(r["timestamp"]))) if candidates else None
 
 
 def build_summary(results_dir: Path = RESULTS_DIR) -> Dict[str, Any]:

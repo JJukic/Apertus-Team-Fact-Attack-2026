@@ -128,6 +128,14 @@ class TestEvaluatorHelpers(unittest.TestCase):
         self.assertEqual(len(records), 28)
         self.assertTrue(all(r["booklet_pdf"].exists() for r in records), {r["booklet_pdf"].name for r in records})
 
+    def test_headline_orders_utc_and_local_timestamps(self):
+        # A Docker run stamps UTC with offset, older local runs carry no offset
+        from src.results_summary import _moment
+
+        utc = _moment("2026-10-06T14:05:01+00:00")
+        self.assertIsNotNone(_moment("2026-10-06T14:21:47").tzinfo)
+        self.assertEqual(utc, _moment("2026-10-06T16:05:01+02:00"))
+
     def test_git_commit_falls_back_to_build_arg_without_git(self):
         # The Docker image has no .git; the commit comes from the GIT_COMMIT build arg
         failed = SimpleNamespace(returncode=128, stdout="")

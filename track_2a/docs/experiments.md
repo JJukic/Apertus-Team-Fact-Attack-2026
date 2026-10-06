@@ -21,11 +21,12 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| **Advanced** (booklet PDF + claim + vote) | **0.940** | 0.952 | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
+| **Advanced** (booklet PDF + claim + vote) | **0.940** | 0.951 | 0.934 | 5,576 | 58 | 2.1 s / 2.9 s |
 | **Beginner** (reference string + claim) | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 Over **all 1,495 pairs** of the dataset (dev and test together) the advanced task reaches **0.946** (cross-lingual 0.945,
-dev 1,093: 0.948), at 5,399 input tokens and 2.05 s / 2.83 s latency on average.
+dev 1,093: 0.948), at 5,399 input tokens and 2.05 s / 2.83 s latency on average. The test result was reproduced with
+`make run` from a fresh clone (Docker, commit e9f6cd7): identical macro-F1 0.940.
 
 Configuration: hybrid retrieval (BM25 claim + 2 × BM25 vote title, booklet-wide), top 12 pages,
 section labels (incl. closing recommendation boxes), `ids` prompt mode, model label kept when it disagrees
@@ -41,7 +42,7 @@ Advanced macro-F1 by language pair (claim → booklet):
 |---|---:|---:|---:|
 | **de** | 0.951 | 0.949 | 0.916 |
 | **fr** | 0.825 | 0.956 | 1.000 |
-| **it** | 0.926 | 0.952 | 0.940 |
+| **it** | 0.926 | 0.952 | 0.934 |
 
 Over all 1,495 pairs: de→de 0.955, de→fr 0.968, de→it 0.934, fr→de 0.880, fr→fr 0.918, fr→it 0.986, it→de 0.925,
 it→fr 0.963, it→it 0.975.

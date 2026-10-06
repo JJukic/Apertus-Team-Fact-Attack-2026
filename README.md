@@ -28,7 +28,7 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
 | Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Advanced** — booklet PDF + claim + vote | **0.940** | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
+| **Advanced** — booklet PDF + claim + vote | **0.940** | 0.934 | 5,576 | 58 | 2.1 s / 2.9 s |
 | **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 **Evidence:** every Entailment / Contradiction prediction cites at least one passage, verbatim with its page
@@ -42,7 +42,7 @@ Neutral predictions cite nothing, as the output format requires.
 | Full booklet (baseline) | 0.730 | 59,517 | 43.7 s* |
 | Our first pipeline (proposal filter + BM25, verbose JSON) | 0.795 | 3,408 | 36.2 s* |
 | Hybrid retrieval, 10 pages + `ids` prompt | 0.926 | 6,023 | 3.8 s |
-| **Final: 12 pages (long ones clipped), speaker boost, decision rules** | **0.947** | 5,713 | 2.8 s |
+| **Final: 12 pages (long ones clipped), speaker boost, decision rules** | **0.946** | 5,713 | 2.8 s |
 
 \* measured while several runs shared the endpoint. **Selecting a dozen pages beats sending the whole booklet by
 0.22 F1 with ~10× fewer tokens**: with up to 70k tokens of context the relevant passage gets lost.

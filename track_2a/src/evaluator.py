@@ -246,7 +246,8 @@ class BenchmarkEvaluator:
 
         return {
             "meta": {
-                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                # With the UTC offset: Docker containers run in UTC, local runs in local time
+                "timestamp": datetime.now().astimezone().isoformat(timespec="seconds"),
                 "git_commit": _git_commit(),
                 "model": self.engine.client.model_name,
                 "mock": self.engine.client.mock,
@@ -302,7 +303,7 @@ class BenchmarkEvaluator:
         RESULTS_DIR.mkdir(parents=True, exist_ok=True)
         m = report["meta"]
         model_short = m["model"].split("/")[-1]
-        stamp = m["timestamp"].replace(":", "").replace("-", "")
+        stamp = m["timestamp"][:19].replace(":", "").replace("-", "")
         name = f"{stamp}_{m['task']}_{m['strategy']}_{m.get('prompt_mode', 'json')}_{model_short}{('_' + m['tag']) if m['tag'] else ''}.json"
         out = RESULTS_DIR / name
         out.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
