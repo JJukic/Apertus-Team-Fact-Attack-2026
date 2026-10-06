@@ -29,7 +29,8 @@ from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient
 from src.inference import ClaimVerificationEngine, PredictionResult, EvidenceSource
 from src.evaluator import BenchmarkEvaluator
-from src.results_summary import build_summary
+from src.results_summary import build_summary, RESULTS_DIR
+from src.error_analysis import render_error_analysis
 from src.text_utils import best_snippet, guess_language
 from src import config
 
@@ -1731,6 +1732,8 @@ with tab_benchmark:
             hide_index=True,
         )
         st.caption("Latenz clientseitig gemessen; frühe Läufe teilten sich den Endpunkt mit anderen Läufen und sind dadurch langsamer.")
+
+    render_error_analysis(summary["runs"], RESULTS_DIR, head_adv["file"] if head_adv else None)
 
     # Live Evaluation
     with st.expander("Live-Benchmark ausführen", expanded=False):
