@@ -46,6 +46,7 @@ class PredictionResult(BaseModel):
     tokens_completion: int
     tokens_total: int
     latency_ms: float
+    retrieval_ms: float = 0.0
     error: Optional[str] = None
     stage_warnings: List[str] = Field(default_factory=list)
     extracted_statements: List[Dict[str, Any]] = Field(default_factory=list)
@@ -187,9 +188,11 @@ class ClaimVerificationEngine:
         strategy: str = config.DEFAULT_STRATEGY,
         apertus_client: Optional[ApertusClient] = None,
         prompt_mode: str = config.PROMPT_MODE,
+        dense_backend=None,
     ):
         self.strategy = strategy
         self.prompt_mode = prompt_mode
+        self.dense_backend = dense_backend
         self.client = apertus_client or ApertusClient()
         self.pdf_parser = PDFParser()
 
@@ -199,6 +202,34 @@ class ClaimVerificationEngine:
             parsed = load_parsed_booklet(pdf_path, self.pdf_parser)
             _GLOBAL_BOOKLET_CACHE[path_str] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
         return _GLOBAL_BOOKLET_CACHE[path_str]
+
+    def retrieve_context(self, claim, booklet_pdf, strategy=None, top_k=config.DEFAULT_TOP_K, vote=None):
+        """Local-only context retrieval shared by app preview and live inference."""
+        strat = strategy or self.strategy
+        if strat not in ("hybrid", "dense_title", "retrieval", "full"):
+            raise ValueError(f"Unknown context strategy: {strat}")
+        if top_k < 1:
+            raise ValueError("top_k must be positive")
+        data = self._get_booklet_data(booklet_pdf)
+        if strat == "full":
+            return data["paragraphs"]
+        side = attributed_section(claim)
+        excluded = opposing_sections(claim) if config.SPEAKER_AWARE else None
+        if strat == "dense_title":
+            from src.local_dense import retrieve_dense_title
+            candidates = retrieve_dense_title(data["paragraphs"], claim, vote, top_k,
+                backend=self.dense_backend, cache_dir=config.BASE_DIR / ".cache/e5",
+                section=side, boost=config.SPEAKER_BOOST, excluded=excluded)
+        elif strat == "hybrid":
+            candidates = data["retriever"].retrieve_hybrid(claim, top_k=top_k, target_vote=vote,
+                exclude_sections=excluded, ensure_sections={side: config.SPEAKER_BOOST}
+                if config.SPEAKER_BOOST and side else None)
+        else:
+            candidates = data["retriever"].retrieve(claim, top_k=top_k, target_vote=vote)
+        if config.PAGE_MAX_CHARS:
+            query = f"{claim} {vote or ''}"
+            candidates = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS)} for p in candidates]
+        return candidates
 
     def verify_claim(
         self,
@@ -215,40 +246,19 @@ class ClaimVerificationEngine:
         Supports ADVANCED TASK from Hack Apertus: accepts optional 'vote' title to scope proposal.
         """
         strat = strategy or self.strategy
+        retrieval_start = time.perf_counter()
+        candidate_paras = self.retrieve_context(claim, booklet_pdf, strat, top_k, vote)
+        retrieval_ms = (time.perf_counter() - retrieval_start) * 1000
         booklet_data = self._get_booklet_data(booklet_pdf)
-
-        candidate_paras = []
-        if strat == "full":
-            # Strategy 1: Provide full booklet text to Apertus
-            context = booklet_data["full_text"]
-            candidate_paras = booklet_data["paragraphs"]
-        else:
-            # Strategy 2: Retrieve top-k relevant paragraphs (with proposal isolation & vote targeting)
-            retriever: PassageRetriever = booklet_data["retriever"]
-            if strat == "hybrid":
-                # Strategy 3: booklet-wide BM25(claim) + BM25(vote title), no hard proposal filter
-                candidate_paras = retriever.retrieve_hybrid(
-                    claim, top_k=top_k, target_vote=vote,
-                    exclude_sections=opposing_sections(claim) if config.SPEAKER_AWARE else None,
-                    ensure_sections={side: config.SPEAKER_BOOST}
-                    if config.SPEAKER_BOOST and (side := attributed_section(claim)) else None,
-                )
-            else:
-                candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
-            if config.PAGE_MAX_CHARS:
-                query = f"{claim} {vote or ''}"
-                candidate_paras = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS)} for p in candidate_paras]
-            context_blocks = []
-            for p in candidate_paras:
-                context_blocks.append(f"[Page {p['page_number']}] {p['text']}")
-            context = "\n\n".join(context_blocks)
+        context = booklet_data["full_text"] if strat == "full" else "\n\n".join(
+            f"[Page {p['page_number']}] {p['text']}" for p in candidate_paras)
 
         # 1. Deterministic Numerical Conflict Check
         num_conflict: Optional[NumericalConflictResult] = detect_numerical_conflict(claim, context)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
         if self.prompt_mode in ("compact", "ids", "two_stage", "sentence_review"):
-            return self._compact_predict(
+            result = self._compact_predict(
                 passages=candidate_paras,
                 claim=claim,
                 claim_language=claim_language,
@@ -258,6 +268,8 @@ class ClaimVerificationEngine:
                 booklet_path=str(booklet_pdf),
                 numerical_conflict_msg=numerical_conflict_msg,
             )
+            result.retrieval_ms = retrieval_ms
+            return result
 
         # 2. Apertus Model Inference
         nli_output: NLIOutput = self.client.infer(
@@ -360,6 +372,7 @@ class ClaimVerificationEngine:
             tokens_completion=nli_output.tokens_completion,
             tokens_total=nli_output.tokens_total,
             latency_ms=nli_output.latency_ms,
+            retrieval_ms=retrieval_ms,
             error=nli_output.error,
         )
 

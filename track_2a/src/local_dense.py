@@ -31,6 +31,16 @@ def page_scores(chunk_scores, owners, count):
     return result
 
 
+def cosine_scores(vectors, query):
+    """Dot products without platform BLAS floating-point status warnings."""
+    matrix, vector = np.asarray(vectors), np.asarray(query)
+    if matrix.ndim != 2 or vector.ndim != 1 or matrix.shape[1] != len(vector):
+        raise ValueError("document and query dimensions differ")
+    if not np.isfinite(matrix).all() or not np.isfinite(vector).all():
+        raise ValueError("nonfinite query or document embedding")
+    return np.einsum('ij,j->i', matrix, vector, optimize=False)
+
+
 def ranking(scores):
     return sorted(range(len(scores)), key=lambda i: (-float(scores[i]), i))
 
@@ -112,3 +122,37 @@ class LocalE5:
         finally:
             temporary.unlink(missing_ok=True)
         return vectors, owners, 'built'
+
+# Shared model across Streamlit sessions; serialize device access and cold loading.
+import threading
+from functools import lru_cache
+_DENSE_LOCK = threading.RLock()
+
+@lru_cache(maxsize=1)
+def _backend(cache_dir):
+    return LocalE5(Path(cache_dir))
+
+
+def get_backend(cache_dir):
+    with _DENSE_LOCK:
+        return _backend(str(Path(cache_dir).resolve()))
+
+
+def retrieve_dense_title(passages, claim, vote=None, top_k=12, *, backend=None,
+                         cache_dir=None, section=None, boost=2, excluded=None):
+    """Select original passages using the measured claim+2*title recipe; no fallback."""
+    if not claim.strip() or top_k < 1:
+        raise ValueError('claim and a positive top_k are required')
+    if not passages:
+        return []
+    with _DENSE_LOCK:
+        if backend is None:
+            backend = get_backend(cache_dir)
+        vectors, owners, _ = backend.document(passages)
+        queries = backend.encode([claim] + ([vote] if vote else []), 'query')
+        claim_scores = page_scores(cosine_scores(vectors, queries[0]), owners, len(passages))
+        if not np.isfinite(claim_scores).all():
+            raise ValueError('embedding index does not cover all passages')
+        title_scores = page_scores(cosine_scores(vectors, queries[1]), owners, len(passages)) if vote else np.zeros(len(passages))
+        scores = minmax(claim_scores) + 2 * minmax(title_scores)
+    return select(ranking(scores), passages, top_k, section, boost, excluded)

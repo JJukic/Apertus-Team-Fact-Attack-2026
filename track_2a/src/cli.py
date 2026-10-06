@@ -64,7 +64,7 @@ def predict(
         config.DEFAULT_STRATEGY,
         "--strategy",
         "-s",
-        help="Strategy: 'retrieval' (selected passages) or 'full' (full document)",
+        help="Strategy: 'hybrid', 'dense_title', 'retrieval' or 'full'",
     ),
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Number of passages to retrieve when using retrieval strategy"),
     json_output: bool = typer.Option(False, "--json", help="Output strictly conforming to official OST JSON format"),
@@ -224,7 +224,7 @@ def case_booklet(item: Dict[str, Any], input_dir: Path) -> Optional[Path]:
 def run_batch(
     input_path: Path = typer.Option(..., "--input", "-i", help="Path to input JSON or JSONL file conforming to OST task schema"),
     output_path: Optional[Path] = typer.Option(None, "--output", "-o", help="Optional path to output JSON/JSONL file"),
-    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
+    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'dense_title', 'retrieval' or 'full'"),
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve"),
     task: str = typer.Option("auto", "--task", "-t", help="'auto' (booklet if the case names one, else reference text), 'advanced' or 'beginner'"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
@@ -311,7 +311,7 @@ def run_batch(
 @app.command()
 def benchmark(
     dataset: Optional[Path] = typer.Option(None, "--dataset", "-d", help="Path to JSONL benchmark dataset"),
-    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
+    strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'dense_title', 'retrieval' or 'full'"),
     limit: Optional[int] = typer.Option(None, "--limit", "-n", help="Label-balanced sample size"),
     task: str = typer.Option("advanced", "--task", "-t", help="'advanced' (booklet PDF) or 'beginner' (reference string)"),
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve when using retrieval strategy"),

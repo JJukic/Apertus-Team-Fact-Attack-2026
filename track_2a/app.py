@@ -1353,7 +1353,8 @@ with tab_factcheck:
         method = st.selectbox("Prüfmethode", ["Bisherige Pipeline", "Experiment: Aussagen extrahieren → prüfen", "Experiment: Satz-IDs mit vollständigem Kontext"], key="verification_method")
         mode = "sentence_review" if method.startswith("Experiment: Satz") else "two_stage" if method.startswith("Experiment") else config.PROMPT_MODE
         engine = get_engine(mode)
-        strat = "full" if st.session_state.get("strategy_option", "").startswith("Ganzes") else "hybrid"
+        strategy_choice = st.session_state.get("strategy_option", "")
+        strat = "full" if strategy_choice.startswith("Ganzes") else "dense_title" if strategy_choice.startswith("Semantische") else "hybrid"
         uploaded_file = st.session_state.get("uploaded_pdf")
         pdf_path = config.BOOKLETS_DIR / f"{selected_date}_{lang_code}.pdf"
         if uploaded_file is not None:
@@ -1404,11 +1405,29 @@ with tab_factcheck:
         )
 
         with st.expander("Erweitert: Kontext-Strategie & eigenes PDF", expanded=False):
-            st.radio("Kontext für Apertus", ["Hybrid-Retrieval (10 Seiten)", "Ganzes Büchlein"], horizontal=True, key="strategy_option")
+            st.radio("Kontext für Apertus", [f"BM25 + Vorlagentitel ({config.DEFAULT_TOP_K} Seiten)", f"Semantische Suche + Vorlagentitel ({config.DEFAULT_TOP_K} Seiten)", "Ganzes Büchlein"], horizontal=True, key="strategy_option")
             st.file_uploader("Eigenes PDF laden", type=["pdf"], key="uploaded_pdf")
+        preview_clicked = st.button("Suchtreffer lokal ansehen", key="preview_context", disabled=not claim.strip())
+        st.caption("Zeigt Dokumentstellen ohne CSCS-Aufruf. Die semantische Suche lädt beim ersten Start ein lokales Modell.")
 
     # ── Verification ─────────────────────────────────────────────────────────
     signature = (claim.strip(), hashlib.sha256(pdf_path.read_bytes()).hexdigest() if pdf_path.exists() else str(pdf_path), vote, strat, claim_lang, engine.prompt_mode)
+    if preview_clicked:
+        try:
+            with st.spinner("Suche passende Dokumentstellen lokal…"):
+                retrieved = engine.retrieve_context(claim, pdf_path, strat, config.DEFAULT_TOP_K, vote)
+            st.session_state["context_preview"] = {"signature": signature, "passages": retrieved}
+        except Exception as exc:
+            st.session_state.pop("context_preview", None)
+            st.error(f"Lokale Suche fehlgeschlagen: {exc}")
+    preview = st.session_state.get("context_preview")
+    if preview and preview["signature"] == signature:
+        with st.expander("Lokal gefundene Dokumentstellen", expanded=True):
+            st.caption("Suchtreffer sind keine Bestätigung oder Widerlegung der Behauptung.")
+            for index, passage in enumerate(preview["passages"], 1):
+                with st.expander(f"Treffer {index} · Seite {passage['page_number']} · {passage.get('section') or 'Abschnitt unbekannt'}"):
+                    st.write(passage["text"])
+
     verify_clicked = verify_clicked or st.session_state.pop("auto_verify", False)
     if verify_clicked and claim.strip():
         if not pdf_path.exists():
@@ -1593,6 +1612,8 @@ with tab_factcheck:
                 """, unsafe_allow_html=True)
                 st.caption("Konfidenzen schätzt Apertus selbst; sie sind nicht kalibriert.")
                 t1, t2, t3 = st.columns(3)
+                if result.retrieval_ms:
+                    st.caption(f"Lokale Suche und PDF-Aufbereitung: {result.retrieval_ms:.0f} ms (zusätzlich zur Modellzeit)")
                 t1.metric("Inferenzzeit", f"{result.latency_ms:.0f} ms")
                 t2.metric("Input-Tokens", fmt(result.tokens_prompt))
                 t3.metric("Output-Tokens", fmt(result.tokens_completion))
