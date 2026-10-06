@@ -28,7 +28,7 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
 | Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Advanced** — booklet PDF + claim + vote | **0.928** | 0.913 | 4,696 | 59 | 1.9 s / 3.3 s |
+| **Advanced** — booklet PDF + claim + vote | **0.925** | 0.916 | 5,628 | 58 | 2.1 s / 3.2 s |
 | **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 ### Full booklet vs. selected context (advanced task, same 150 test pairs)
@@ -71,7 +71,7 @@ Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
         │                                              │
         └──────────────► Hybrid retrieval ◄────────────┘
                  BM25(claim) + 2 × BM25(vote title) over all pages
-                 → top 10 pages, numbered [P1] … [P10]
+                 → top 12 pages (long ones clipped to 3,000 chars), numbered [P1] … [P12]
                                   │
                                   ▼
                  Apertus v1.5 (CSCS) — NLI prompt
@@ -110,7 +110,7 @@ Defaults (override via environment variables or `.env`):
 LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
 LLM_BASE_URL=https://api.inference.cscs.ch/v1
 NLI_STRATEGY=hybrid      # 'hybrid' | 'retrieval' | 'full'
-NLI_TOP_K=10
+NLI_TOP_K=12
 PROMPT_MODE=ids          # 'ids' | 'json' | 'compact'
 ```
 

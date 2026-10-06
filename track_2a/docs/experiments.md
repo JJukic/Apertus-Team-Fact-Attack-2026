@@ -21,10 +21,12 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| **Advanced** (booklet PDF + claim + vote) | **0.928** | 0.960 | 0.913 | 4,696 | 59 | 1.9 s / 3.3 s |
+| **Advanced** (booklet PDF + claim + vote) | **0.925** | 0.943 | 0.916 | 5,628 | 58 | 2.1 s / 3.2 s |
 | **Beginner** (reference string + claim) | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
-Configuration: hybrid retrieval (BM25 claim + 2 × BM25 vote title, booklet-wide), top 10 pages,
+Over **all 1,495 pairs** of the dataset (dev and test together) the advanced task reaches **0.931** (cross-lingual 0.924).
+
+Configuration: hybrid retrieval (BM25 claim + 2 × BM25 vote title, booklet-wide), top 12 pages,
 section labels (incl. closing recommendation boxes), `ids` prompt mode, model label kept when it disagrees
 with the model's own confidences (Decision-Rule 0), pages longer than 3,000 characters clipped to their best-matching
 window (`PAGE_MAX_CHARS`). Before these changes the advanced task scored 0.920 with 5,737 input tokens
@@ -34,9 +36,9 @@ Advanced macro-F1 by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 1.000 | 0.936 | 0.884 |
-| **fr** | 0.914 | 0.944 | 1.000 |
-| **it** | 0.798 | 0.922 | 0.940 |
+| **de** | 0.951 | 0.926 | 0.896 |
+| **fr** | 0.857 | 0.940 | 0.979 |
+| **it** | 0.810 | 0.952 | 0.934 |
 
 ## Before / after on the test split (same 150-pair sample)
 
@@ -232,6 +234,32 @@ claims) plus the page heading. Offline, no gold passage was lost at any cap betw
 | **dev 450, clip 3,000** | **0.913** | 4 / 2 | **4,435** | **5,762 / 6,921** | 2.0 s / 3.9 s |
 
 Adopted as default: −18 % input tokens on test (−42 % at p95) at unchanged or slightly better macro-F1.
+
+### 12 pages instead of 10 (2026-10-06)
+
+Clipping freed ~900 input tokens per claim, so we re-tested the number of pages (all runs clipped at 3,000 characters).
+
+| k | dev 450 | Input tokens | Latency mean / p95 |
+|---:|---:|---:|---:|
+| 10 | 0.913 | 4,435 | 2.0 s / 3.9 s |
+| **12** | **0.940** | 5,315 | 2.3 s / 2.9 s |
+| 14 | 0.942 | 6,175 | 2.6 s / 4.3 s |
+| 16 | 0.935 | 7,058 | 2.9 s / 3.8 s |
+
+k = 14 is within noise of 12 for ~860 more tokens; 16 is worse again (more distraction). The test split did not
+confirm k = 12 (0.928 → 0.925, 7 fixed / 8 broken), so we ran a third, independent sample: the 643 dev pairs that were
+never part of the 450-pair sample.
+
+| Sample | k = 10 | k = 12 | Fixed / broke |
+|---|---:|---:|---:|
+| dev 450 | 0.913 | 0.940 | 16 / 4 |
+| unused dev 643 | 0.903 | 0.928 | 28 / 12 |
+| test 402 (5 voting dates) | 0.928 | 0.925 | 7 / 8 |
+| **all 1,495 pairs** | **0.912** | **0.931** | **51 / 24** |
+
+Cross-lingual pairs gain most (0.894 → 0.924 over all pairs); most fixes are Entailment → Neutral errors where the
+supporting page was ranked 11th or 12th. The test split covers only 5 voting dates, so we decide on all 1,495 pairs:
+12 pages are the default (`NLI_TOP_K=12`), at +~890 input tokens (+20 %) and +0.25 s mean latency.
 
 ### Thinking mode: +2 F1 points for ~11× latency (rejected)
 

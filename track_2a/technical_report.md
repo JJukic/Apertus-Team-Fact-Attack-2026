@@ -16,8 +16,9 @@ French or Italian) and a claim (any of the three languages), it classifies the c
 token usage and inference time.
 
 On a test split of **5 voting dates never used during development** (402 pairs from the official dataset), the
-system reaches **macro-F1 0.928** on the advanced task (booklet PDF) and **0.975** on the beginner task (reference
-text), at ~4,700 / ~2,500 input tokens, ~57 output tokens and a p95 inference time of 3.3 s / 1.7 s.
+system reaches **macro-F1 0.925** on the advanced task (booklet PDF) and **0.975** on the beginner task (reference
+text), at ~5,600 / ~2,500 input tokens, ~57 output tokens and a p95 inference time of 3.2 s / 1.7 s. Over all 1,495 pairs
+of the dataset the advanced task reaches 0.931.
 
 The central finding for the challenge's research question: **sending ~10 well-chosen pages beats sending the
 whole booklet** — 0.926 vs. 0.730 macro-F1 with ~10× fewer input tokens.
@@ -36,7 +37,7 @@ whole booklet** — 0.926 vs. 0.730 macro-F1 with ~10× fewer input tokens.
         │                                              │
         └──────────────► Hybrid retrieval ◄────────────┘
                  score = BM25(claim) + 2 × BM25(vote title), over all pages
-                 → top 10 pages, numbered [P1] … [P10]
+                 → top 12 pages (long ones clipped to 3,000 chars), numbered [P1] … [P12]
                                   │
                                   ▼
                  Apertus v1.5 on CSCS — NLI prompt ('ids' mode)
@@ -55,7 +56,7 @@ opposing viewpoints: the model has to know whether a page states the committee's
 
 ### 2.2 Context selection: hybrid retrieval
 `retriever.py` scores every page of the booklet with normalised BM25 against the claim plus twice the
-normalised BM25 against the vote title, and keeps the top 10 pages.
+normalised BM25 against the vote title, and keeps the top 12 pages (10 before page clipping freed the token budget, see 5.3).
 
 - The **vote title is written in the booklet's language**, so it anchors the right proposal even when the claim
   is in another language; lexical matching of the claim alone fails for cross-lingual pairs.
@@ -114,16 +115,16 @@ numbered and sent with the same prompt, so evidence is a specific passage rather
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| Advanced | **0.928** | 0.960 | 0.913 | 4,696 | 59 | 1.9 s / 3.3 s |
+| Advanced | **0.925** | 0.943 | 0.916 | 5,628 | 58 | 2.1 s / 3.2 s |
 | Beginner | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 Advanced task by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 1.000 | 0.936 | 0.884 |
-| **fr** | 0.914 | 0.944 | 1.000 |
-| **it** | 0.798 | 0.922 | 0.940 |
+| **de** | 0.951 | 0.926 | 0.896 |
+| **fr** | 0.857 | 0.940 | 0.979 |
+| **it** | 0.810 | 0.952 | 0.934 |
 
 ### 5.2 Full document vs. selected context (advanced, same 150 test pairs)
 
@@ -158,6 +159,7 @@ efficiency measure but also improves NLI quality.
 | Keep the model's label when it disagrees with its own confidences (Decision-Rule 0) | 44 fixed / 13 broken over all saved runs; test 0.920 → 0.928 | adopted |
 | Section labels from bare speaker lines and closing recommendation boxes (older booklets) | Federal Council pages labelled as committee 27 → 0; F1-neutral (test 0.928 → 0.925, dev 0.908 → 0.908), dev E→C 23 → 16, evidence grounding 0.86 → 0.88 | adopted (correctness) |
 | Flip committee Contradictions that cite only Federal Council pages | dev 7 fixed / 8 broken, test 0 / 7 (simulated) | rejected |
+| 12 instead of 10 pages (after clipping) | all 1,495 pairs 0.912 → 0.931 (51 fixed / 24 broken); dev 450 0.913 → 0.940, unused dev 643 0.903 → 0.928, test 402 0.928 → 0.925; +~890 input tokens | adopted |
 | Clip pages > 3,000 characters to the window best matching claim + vote title | test 0.925 → 0.928, input tokens 5,725 → 4,696 (p95 12.7k → 7.4k); dev 0.908 → 0.913 | adopted |
 | Thinking before answering (prefilled reasoning marker) | dev 450: 0.908 → 0.929 (20 fixed / 11 broken); ~1,300 output tokens and ~23 s per claim instead of 59 and ~2 s; a 300-token budget with forced answer is worse | rejected (efficiency), `THINKING=false` |
 | Translate cross-lingual claims into the booklet language first | dev 0.908 → 0.919, test 0.925 → 0.923 (14 fixed / 11 broken overall); +0.6 s | rejected (noise) |
@@ -183,7 +185,7 @@ noise; close decisions were re-run on 450 pairs.
   think first; the reasoning marker has to be prefilled. Selective thinking saves little (it is needed on ~3/4 of claims), and a short hard budget is worse.
 - **Self-contradictory answers.** In ~2 % of answers the label and the stated confidences disagree; the label is right
   3× as often, so the decision rules now keep it.
-- **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.80); French claims
+- **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.81); French claims
   against Italian booklets reach 1.00.
 - **8B vs. 70B.** Apertus 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker, mostly on cross-lingual pairs and
   contradictions.
@@ -192,7 +194,7 @@ noise; close decisions were re-run on 450 pairs.
 
 ## 6. Limitations
 
-- **Italian claims against German booklets** are the weakest pair (0.80 F1). Most of these errors happen with the gold page
+- **Italian claims against German booklets** are the weakest pair (0.81 F1). Most of these errors happen with the gold page
   in context, so better retrieval alone would not fix them (gold-section recall is 0.92–0.93 overall).
 - **Remaining errors** on the test split (29): Entailment → Neutral 10, Contradiction → Neutral 8, Entailment →
   Contradiction 6 — mostly claims attributed to the committee (see 5.4) and 'if accepted, X must …' claims; prompt rules,
@@ -222,7 +224,7 @@ python -m src warm-cache                                   # pre-parse booklets 
 ```
 
 Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `LLM_API_KEY`,
-`NLI_STRATEGY` (`hybrid`), `NLI_TOP_K` (`10`), `PROMPT_MODE` (`ids`), `PASSAGE_CHARS` (`0` = pages).
+`NLI_STRATEGY` (`hybrid`), `NLI_TOP_K` (`12`), `PAGE_MAX_CHARS` (`3000`), `PROMPT_MODE` (`ids`), `PASSAGE_CHARS` (`0` = pages).
 
 ---
 

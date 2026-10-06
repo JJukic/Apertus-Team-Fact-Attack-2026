@@ -11,7 +11,7 @@ run:
 		-e LLM_BASE_URL="$${LLM_BASE_URL:-https://api.inference.cscs.ch/v1}" \
 		-e LLM_API_KEY="$${LLM_API_KEY}" \
 		-e NLI_STRATEGY="$${NLI_STRATEGY:-hybrid}" \
-		-e NLI_TOP_K="$${NLI_TOP_K:-10}" \
+		-e NLI_TOP_K="$${NLI_TOP_K:-12}" \
 		-e PROMPT_MODE="$${PROMPT_MODE:-ids}" \
 		$(IMAGE_NAME) benchmark
 
