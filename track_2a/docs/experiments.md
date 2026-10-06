@@ -233,7 +233,7 @@ claims) plus the page heading. Offline, no gold passage was lost at any cap betw
 
 Adopted as default: −18 % input tokens on test (−42 % at p95) at unchanged or slightly better macro-F1.
 
-### Thinking mode: +~3 F1 points for ~10× latency (rejected)
+### Thinking mode: +2 F1 points for ~11× latency (rejected)
 
 We use `Apertus-v1.5-70B-thinking` but by default ask for the JSON answer only (~60 output tokens).
 With `THINKING=true` the model reasons before it answers. A prompt instruction alone is not enough: asked to
@@ -242,25 +242,28 @@ Only prefilling the reasoning marker (`<|inner_prefix|>` as the start of the ass
 `continue_final_message`) makes it reason before deciding; the answer follows `<|inner_suffix|>`. It ignores
 a requested length limit ("at most 120 words") and walks through the passages one by one.
 
-Dev 450 (seed 7), paired with the fast configuration. 85 of the 450 thinking requests failed on the shared
-endpoint (84 × "invalid API key" interleaved with successful calls, 1 × 504) and are excluded here;
-the table covers the 363 pairs with a complete answer from both runs (this subset contains 40 of the 41 errors
-of the fast run, so its F1 is lower than the full-sample 0.908).
+Dev 450 (seed 7, no page clipping), paired with the fast configuration of the same date. 85 thinking requests
+first failed on the shared endpoint (84 × "invalid API key" interleaved with successful calls, 1 × 504) and were
+re-run, so every pair has a thinking answer.
 
-| Policy (363 pairs) | Macro-F1 | Fixed / broke | Thinking on | Output tokens (median) | Latency (median) |
+| Configuration (dev 450) | Macro-F1 | Fixed / broke | Output tokens median / p95 | Input tokens | Latency median / p95 |
 |---|---:|---:|---:|---:|---:|
-| Fast `ids` answer (current) | 0.889 | – | 0 % | 59 | ~2 s |
-| **Always think** | **0.931** | 20 / 5 | 100 % | ~1,200 | ~22 s |
-| Think if the fast answer is Neutral or Contradiction | 0.931 | 18 / 3 | 72 % | | |
-| Think if the claim names a speaker | 0.912 | 9 / 1 | 50 % | | |
-| Think if the fast answer is Contradiction | 0.909 | 7 / 0 | 32 % | | |
+| Fast `ids` answer (current) | 0.908 | – | 59 / 70 | 4,836 | 2.0 s / 4.3 s |
+| **Always think** (max. 4,000 tokens) | **0.929** | 20 / 11 | 1,296 / 2,802 | 4,884 | 23.2 s / 111 s* |
+| Thinking budget 300 tokens, then forced answer (82-pair probe) | – | 15 of 41 / 4 of 41 | 353 | ~9,600 | 7.4 s / 8.4 s |
 
-Extrapolated to all 450 pairs, always thinking would raise macro-F1 from 0.908 to roughly 0.94 (preliminary:
-the 85 failed requests still have to be re-run). Answers are long (p95 ~2,500 output tokens); 2 answers
-hit the 4,000-token limit without a decision, and long requests are the first to fail when the endpoint is
-under load. Selective thinking keeps the gain only when it runs on ~3/4 of the claims plus the fast call, so
-it saves little. Because tokens and latency are judged right after macro-F1, thinking stays off
-(`THINKING=false`); it is the clearest quality/efficiency trade-off we found for Apertus.
+\* p95 inflated by endpoint load. 6 thinking answers hit the 4,000-token limit without a decision.
+
+Selective thinking, simulated on the 363 pairs that had both answers in the first pass: thinking only when the fast
+answer is Neutral or Contradiction kept the gain of always thinking (18 fixed / 3 broke vs. 20 / 5) but runs on
+72 % of the claims plus the fast call; thinking only for claims that name a speaker (50 %) kept less than half of it.
+A hard budget does not help either: 300 tokens are never enough (all 82 answers had to be forced), it fixes fewer
+and breaks more errors than full thinking, and the second call re-sends the whole context (2× input tokens).
+
+Thinking fixes about half of the remaining errors, but for +0.021 macro-F1 it needs ~22× the output tokens and
+~11× the latency, and long requests are the first to fail under load. Because tokens and latency are judged
+right after macro-F1, it stays off (`THINKING=false`, `THINKING_BUDGET=0`); it is the clearest quality/efficiency
+trade-off we found for Apertus.
 
 ### Translating the claim into the booklet language (rejected)
 

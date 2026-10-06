@@ -51,8 +51,8 @@ Every number comes from a saved run in [`track_2a/results/`](track_2a/results/).
   3× as often, so we keep it (+0.008 F1 on test).
 - **Speaker attribution is the main weakness:** claims attributed to the initiative committee fail 16–18 % of the time
   (2–8 % otherwise), even with every booklet page labelled by who is speaking.
-- **Thinking pays in quality, not in efficiency:** reasoning before the answer adds ~3 F1 points but costs ~20× the output
-  tokens and ~10× the latency, so it is off by default (`THINKING=true` to reproduce).
+- **Thinking pays in quality, not in efficiency:** reasoning before the answer adds ~2 F1 points (dev) but costs ~22× the output
+  tokens and ~11× the latency, so it is off by default (`THINKING=true` to reproduce).
 - **8B vs. 70B:** 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker (0.851 vs. 0.908 on 450 dev pairs).
 
 Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).

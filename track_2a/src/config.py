@@ -53,6 +53,8 @@ FEW_SHOT = os.getenv("FEW_SHOT", "false").lower() in ("true", "1", "yes")
 # 'ids' mode: let the thinking model reason step by step before its JSON answer (much slower, more output tokens)
 THINKING = os.getenv("THINKING", "false").lower() in ("true", "1", "yes")
 THINKING_MAX_TOKENS = int(os.getenv("THINKING_MAX_TOKENS", "1500"))
+# Hard reasoning budget in tokens (0 = none): when it runs out, the reasoning is closed and the answer forced
+THINKING_BUDGET = int(os.getenv("THINKING_BUDGET", "0"))
 
 # Cross-lingual pairs: translate the claim into the booklet language first (one extra short call) and give
 # the model both the original and the translation

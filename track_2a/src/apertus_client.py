@@ -340,14 +340,34 @@ class ApertusClient:
             messages.append({"role": "assistant", "content": "<|inner_prefix|>"})
             extra["extra_body"] = {"continue_final_message": True, "add_generation_prompt": False}
 
+        budget = config.THINKING_BUDGET if thinking else 0
         response, last_exception = self._create_with_retry(
             model=self.model_name,
             messages=messages,
             temperature=0.0,
-            max_tokens=config.THINKING_MAX_TOKENS if thinking else (512 if passages is None else 160),
+            max_tokens=(budget or config.THINKING_MAX_TOKENS) if thinking else (512 if passages is None else 160),
             timeout=180.0 if thinking else 45.0,
             **extra,
         )
+
+        # Thinking budget used up before a decision: close the reasoning and let the model write the answer
+        forced_prompt = forced_completion = 0
+        if response is not None and budget:
+            partial = (response.choices[0].message.content or "").rstrip()
+            if "<|inner_suffix|>" not in partial:
+                answer, _ = self._create_with_retry(
+                    model=self.model_name,
+                    messages=messages[:-1] + [{"role": "assistant", "content": f"<|inner_prefix|>{partial} …<|inner_suffix|>"}],
+                    temperature=0.0,
+                    max_tokens=160,
+                    timeout=45.0,
+                    **extra,
+                )
+                if answer is not None:
+                    response.choices[0].message.content = f"{partial} …<|inner_suffix|>{answer.choices[0].message.content or ''}"
+                    usage = getattr(answer, "usage", None)
+                    forced_prompt = getattr(usage, "prompt_tokens", 0) or 0
+                    forced_completion = getattr(usage, "completion_tokens", 0) or 0
 
         if response is None:
             latency_ms = (time.time() - start_time) * 1000
@@ -371,6 +391,9 @@ class ApertusClient:
             tokens_prompt = usage.prompt_tokens if (usage and getattr(usage, "prompt_tokens", None)) else self._estimate_tokens(user_prompt)
             tokens_completion = usage.completion_tokens if (usage and getattr(usage, "completion_tokens", None)) else self._estimate_tokens(content)
             tokens_total = usage.total_tokens if (usage and getattr(usage, "total_tokens", None)) else (tokens_prompt + tokens_completion)
+            tokens_prompt += forced_prompt
+            tokens_completion += forced_completion
+            tokens_total += forced_prompt + forced_completion
 
             label_given = "label" in parsed_json
             raw_label = int(parsed_json.get("label", 1))

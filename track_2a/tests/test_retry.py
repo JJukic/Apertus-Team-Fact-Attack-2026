@@ -74,6 +74,44 @@ class TestRetry(unittest.TestCase):
         self.assertEqual(client.client.chat.completions.calls, config.LLM_MAX_RETRIES + 1)
 
 
+class _Sequence:
+    """Returns the queued answer texts in order and records the messages it was called with."""
+
+    def __init__(self, contents):
+        self.contents, self.calls = list(contents), []
+
+    def create(self, **kwargs):
+        self.calls.append(kwargs)
+        message = SimpleNamespace(content=self.contents.pop(0))
+        return SimpleNamespace(choices=[SimpleNamespace(message=message)],
+                               usage=SimpleNamespace(prompt_tokens=100, completion_tokens=50, total_tokens=150))
+
+
+class TestThinkingBudget(unittest.TestCase):
+    def test_exhausted_budget_forces_an_answer(self):
+        client = ApertusClient(api_key="test", mock=True)
+        client.mock = False
+        seq = _Sequence(["The committee says that rents", '{"label": 0, "p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "evidence_ids": [1]}'])
+        client.client = SimpleNamespace(chat=SimpleNamespace(completions=seq))
+        with mock.patch.object(config, "THINKING", True), mock.patch.object(config, "THINKING_BUDGET", 200):
+            out = client.infer(context="", claim="c", passages=["p"])
+        self.assertEqual(out.label, 0)
+        self.assertEqual(len(seq.calls), 2)
+        self.assertEqual(seq.calls[0]["max_tokens"], 200)
+        self.assertTrue(seq.calls[1]["messages"][-1]["content"].endswith("<|inner_suffix|>"))
+        self.assertEqual((out.tokens_prompt, out.tokens_completion), (200, 100))
+
+    def test_finished_reasoning_needs_no_second_call(self):
+        client = ApertusClient(api_key="test", mock=True)
+        client.mock = False
+        seq = _Sequence(['Short.<|inner_suffix|>{"label": 1, "p_neutral": 1.0, "evidence_ids": []}'])
+        client.client = SimpleNamespace(chat=SimpleNamespace(completions=seq))
+        with mock.patch.object(config, "THINKING", True), mock.patch.object(config, "THINKING_BUDGET", 200):
+            out = client.infer(context="", claim="c", passages=["p"])
+        self.assertEqual(out.label, 1)
+        self.assertEqual(len(seq.calls), 1)
+
+
 class TestCliRequiresKey(unittest.TestCase):
     def test_benchmark_without_key_exits_instead_of_mocking(self):
         from typer.testing import CliRunner

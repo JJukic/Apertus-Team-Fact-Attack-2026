@@ -252,6 +252,7 @@ class BenchmarkEvaluator:
                 "passage_chars": config.PASSAGE_CHARS if task == "advanced" else None,
                 "ids_reason": config.IDS_REASON,
                 "thinking": config.THINKING,
+                "thinking_budget": config.THINKING_BUDGET,
                 "translate_claim": config.TRANSLATE_CLAIM,
                 "page_max_chars": config.PAGE_MAX_CHARS,
                 "speaker_aware": config.SPEAKER_AWARE,

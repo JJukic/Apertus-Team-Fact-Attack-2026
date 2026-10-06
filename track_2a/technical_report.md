@@ -159,7 +159,7 @@ efficiency measure but also improves NLI quality.
 | Section labels from bare speaker lines and closing recommendation boxes (older booklets) | Federal Council pages labelled as committee 27 → 0; F1-neutral (test 0.928 → 0.925, dev 0.908 → 0.908), dev E→C 23 → 16, evidence grounding 0.86 → 0.88 | adopted (correctness) |
 | Flip committee Contradictions that cite only Federal Council pages | dev 7 fixed / 8 broken, test 0 / 7 (simulated) | rejected |
 | Clip pages > 3,000 characters to the window best matching claim + vote title | test 0.925 → 0.928, input tokens 5,725 → 4,696 (p95 12.7k → 7.4k); dev 0.908 → 0.913 | adopted |
-| Thinking before answering (prefilled reasoning marker) | ~+3 F1 (0.889 → 0.931 on 363 paired dev pairs, 20 fixed / 5 broken); ~1,200 output tokens and ~22 s per claim instead of 59 and ~2 s | rejected (efficiency), `THINKING=false` |
+| Thinking before answering (prefilled reasoning marker) | dev 450: 0.908 → 0.929 (20 fixed / 11 broken); ~1,300 output tokens and ~23 s per claim instead of 59 and ~2 s; a 300-token budget with forced answer is worse | rejected (efficiency), `THINKING=false` |
 | Translate cross-lingual claims into the booklet language first | dev 0.908 → 0.919, test 0.925 → 0.923 (14 fixed / 11 broken overall); +0.6 s | rejected (noise) |
 | Apertus 8B instead of 70B (450 dev pairs) | 0.851 vs. 0.908 F1, p95 1.2 s vs. 4.5 s | 70B kept (quality first) |
 
@@ -179,8 +179,8 @@ noise; close decisions were re-run on 450 pairs.
   verify, with worked examples, when the opposing argument pages are removed, and after fixing section labels that had
   marked Federal Council pages as committee pages in older booklets.
 - **Thinking helps, at a high price.** Letting the thinking model reason before its answer fixes half of the remaining
-  dev errors (~+3 F1), but needs ~20× the output tokens and ~10× the latency. A prompt instruction alone does not make it
-  think first; the reasoning marker has to be prefilled. Selective thinking saves little (it is needed on ~3/4 of claims).
+  dev errors (+0.021 F1 on dev 450), but needs ~22× the output tokens and ~11× the latency. A prompt instruction alone does not make it
+  think first; the reasoning marker has to be prefilled. Selective thinking saves little (it is needed on ~3/4 of claims), and a short hard budget is worse.
 - **Self-contradictory answers.** In ~2 % of answers the label and the stated confidences disagree; the label is right
   3× as often, so the decision rules now keep it.
 - **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.80); French claims
@@ -233,8 +233,8 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 3. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
 4. Layout-aware parsing (e.g. Docling) for tables and graphical headings.
 5. Fine-tuning or a stronger model for speaker attribution, the error class that resisted prompting and retrieval changes.
-6. A cheaper form of reasoning (a short, length-limited thinking budget enforced by `max_tokens` with a forced answer) to
-   keep part of the thinking gain at a fraction of its latency.
+6. Reasoning at lower cost: full thinking gains +0.02 F1 at ~11× latency, and a 300-token budget with a forced answer
+   is worse; fine-tuning a smaller Apertus on the reasoning traces could keep the gain without the latency.
 
 ---
 
