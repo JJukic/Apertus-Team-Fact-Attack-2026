@@ -10,7 +10,7 @@ or **contradicts (2)** a claim, and cites the booklet pages that justify the dec
 German, French and Italian.
 
 - **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.940** macro-F1 (**0.946** over all 1,495 pairs), beginner task **0.975**
-- **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ·
+- **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ([PDF](docs/FactAttack_Technical_Report.pdf)) ·
   **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
 > Predictions describe the relationship between a claim and the official booklet. They are not political advice.
@@ -105,6 +105,7 @@ track_2a/
 ├── app.py                    # Streamlit demo (fact check, benchmark dashboard, architecture)
 ├── technical_report.md       # Architecture, evaluation, findings, limitations
 ├── docs/experiments.md       # Every experiment with its numbers
+├── docs/FactAttack_Technical_Report.pdf  # Submission PDF of the report (docs/build_report_pdf.py)
 ├── results/                  # Saved benchmark runs + summary.json
 ├── data/
 │   ├── booklets/             # 2026-06-14 booklets (others are downloaded)
