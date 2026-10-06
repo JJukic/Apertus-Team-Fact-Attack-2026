@@ -11,7 +11,7 @@ from src import config
 from src.evaluator import evidence_grounded, load_records, stratified_sample
 from src.hf_dataset import DEV_PINNED_DATES, booklet_filename, split_dates
 from src.inference import ClaimVerificationEngine, chunk_reference
-from src.text_utils import best_snippet, split_passages
+from src.text_utils import best_snippet, clip_to_query, split_passages
 
 
 def _fake_response(content: str, top: dict):
@@ -92,6 +92,15 @@ class TestChunking(unittest.TestCase):
         claim = "La popolazione residente permanente della Svizzera non potrà superare i 10 milioni prima del 2050."
         snippet = best_snippet(page, claim)
         self.assertTrue(snippet.startswith("La population résidante permanente"))
+
+    def test_clip_to_query_keeps_matching_window_and_heading(self):
+        filler = " ".join(f"Absatz {i} regelt eine andere Bestimmung des Gesetzes." for i in range(200))
+        page = f"52 Zweite Vorlage: AHV 21 {filler} Der Mehrwertsteuersatz steigt von 7,7 auf 8,1 Prozent. {filler}"
+        clipped = clip_to_query(page, "Mehrwertsteuersatz 8,1 Prozent AHV", max_chars=1000)
+        self.assertLessEqual(len(clipped), 1000)
+        self.assertIn("8,1 Prozent", clipped)
+        self.assertTrue(clipped.startswith("52 Zweite Vorlage"))
+        self.assertEqual(clip_to_query("Kurze Seite.", "egal", max_chars=1000), "Kurze Seite.")
 
     def test_short_reference_is_single_chunk(self):
         self.assertEqual(chunk_reference("Ein einziger Absatz."), ["Ein einziger Absatz."])

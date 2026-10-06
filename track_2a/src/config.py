@@ -28,6 +28,10 @@ DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "10"))
 # Max characters per booklet passage; 0 = whole pages (default: on dev, n=450, pages scored 0.908 F1 vs 0.831 for 600-char passages)
 PASSAGE_CHARS = int(os.getenv("PASSAGE_CHARS", "0"))
 
+# Max characters per retrieved page sent to the model (0 = no limit). Longer pages keep the window of
+# sentences that best matches claim + vote title; only a few dense legal-text pages are affected
+PAGE_MAX_CHARS = int(os.getenv("PAGE_MAX_CHARS", "0"))
+
 # Prompt mode:
 #   'ids'     - JSON with confidences + cited passage ids (default: best F1, ~55 output tokens)
 #   'json'    - JSON with reasoning + verbatim quotes (~150 output tokens)

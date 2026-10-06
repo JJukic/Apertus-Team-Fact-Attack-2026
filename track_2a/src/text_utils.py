@@ -89,6 +89,35 @@ def best_snippet(page_text: str, claim: str, max_chars: int = 360) -> str:
     return snippet if len(snippet) <= max_chars else snippet[:max_chars].rsplit(" ", 1)[0] + " …"
 
 
+def clip_to_query(page_text: str, query: str, max_chars: int, head_chars: int = 150) -> str:
+    """
+    Shorten an over-long page to the window of consecutive sentences that best matches the query
+    (claim + vote title; the title is in the booklet language, so it also anchors cross-lingual claims).
+    The page's first characters (page number, proposal title) are kept as a heading. A few dense
+    legal-text pages reach 8-10k characters, against a median of ~1.4k.
+    """
+    if len(page_text) <= max_chars:
+        return page_text
+    text = normalise(page_text)
+    sentences = re.split(r"(?<=[.!?;:])\s+", text)
+    query_stems = _stems(query)
+    scores = [sum(3.0 if h.isdigit() else 1.0 for h in (query_stems & _stems(s))) for s in sentences]
+    budget = max_chars - head_chars
+    best_score, best_start, best_end = -1.0, 0, 0
+    for start in range(len(sentences)):
+        total, length, end = 0.0, 0, start
+        while end < len(sentences) and length + len(sentences[end]) + 1 <= budget:
+            total += scores[end]
+            length += len(sentences[end]) + 1
+            end += 1
+        if total > best_score:
+            best_score, best_start, best_end = total, start, end
+    window = " ".join(sentences[best_start:best_end]) or text[:budget]
+    if best_start == 0:
+        return window
+    return f"{text[:head_chars].rsplit(' ', 1)[0]} … {window}"
+
+
 _LANG_HINTS = {
     "de": {"der", "die", "das", "und", "nicht", "ist", "wird", "dass", "mit", "für", "den", "eine", "laut", "bundesrat"},
     "fr": {"le", "la", "les", "des", "et", "est", "que", "une", "pour", "dans", "du", "selon", "conseil", "fédéral"},

@@ -33,6 +33,7 @@ def _row(report: Dict[str, Any], path: Path) -> Dict[str, Any]:
         "ids_reason": bool(m.get("ids_reason", "reason" in m.get("tag", ""))),
         "thinking": bool(m.get("thinking", False)),
         "translate_claim": bool(m.get("translate_claim", False)),
+        "page_max_chars": m.get("page_max_chars", 0) or 0,
         "model": m["model"],
         "tag": m.get("tag", ""),
         "n": report["sample_count"],
@@ -68,7 +69,7 @@ def _matches_defaults(run: Dict[str, Any]) -> bool:
         return False
     if run["prompt_mode"] == "ids" and (run["ids_reason"] != config.IDS_REASON or run["thinking"] != config.THINKING):
         return False
-    if run["translate_claim"] != config.TRANSLATE_CLAIM:
+    if run["translate_claim"] != config.TRANSLATE_CLAIM or run["page_max_chars"] != config.PAGE_MAX_CHARS:
         return False
     if run["task"] == "beginner":
         return True
@@ -96,6 +97,7 @@ def build_summary(results_dir: Path = RESULTS_DIR) -> Dict[str, Any]:
             "ids_reason": config.IDS_REASON,
             "thinking": config.THINKING,
             "translate_claim": config.TRANSLATE_CLAIM,
+            "page_max_chars": config.PAGE_MAX_CHARS,
         },
         "headline": {task: headline(runs, task) for task in ("advanced", "beginner")},
         "runs": runs,

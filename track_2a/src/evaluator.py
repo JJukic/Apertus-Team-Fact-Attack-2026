@@ -253,6 +253,7 @@ class BenchmarkEvaluator:
                 "ids_reason": config.IDS_REASON,
                 "thinking": config.THINKING,
                 "translate_claim": config.TRANSLATE_CLAIM,
+                "page_max_chars": config.PAGE_MAX_CHARS,
                 "speaker_aware": config.SPEAKER_AWARE,
                 "few_shot": config.FEW_SHOT,
                 "dataset": str(path.name),

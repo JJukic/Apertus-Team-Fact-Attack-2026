@@ -17,7 +17,7 @@ from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
 from src import config
-from src.text_utils import guess_language
+from src.text_utils import clip_to_query, guess_language
 
 
 class EvidenceSource(BaseModel):
@@ -219,6 +219,9 @@ class ClaimVerificationEngine:
                 )
             else:
                 candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
+            if config.PAGE_MAX_CHARS:
+                query = f"{claim} {vote or ''}"
+                candidate_paras = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS)} for p in candidate_paras]
             context_blocks = []
             for p in candidate_paras:
                 context_blocks.append(f"[Page {p['page_number']}] {p['text']}")
