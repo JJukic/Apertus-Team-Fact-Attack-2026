@@ -11,8 +11,11 @@ Return only JSON: {"statements": [{"text": "exact quote", "passage_id": 1}]}.
 If nothing is relevant, return {"statements": []}.'''
 
 
-def infer_two_stage(client, passages, claim, claim_language=None):
+def infer_two_stage(client, passages, claim, claim_language=None, *, source_texts=None, sections=None, attributed_side=None):
     start = time.monotonic()
+    source_texts = passages if source_texts is None else source_texts
+    if len(source_texts) != len(passages) or (sections is not None and len(sections) != len(passages)):
+        raise ValueError("source texts and sections must align with passages")
     if client.mock:
         # Offline behavior checks wiring only, not extraction or model quality.
         return client.infer('', claim, claim_language=claim_language, passages=passages)
@@ -41,7 +44,7 @@ def infer_two_stage(client, passages, claim, claim_language=None):
             i, text = item['passage_id'], item['text']
             if type(i) is not int or not 1 <= i <= len(passages):
                 raise ValueError('invalid source passage id')
-            if not isinstance(text, str) or not text.strip() or text not in passages[i - 1]:
+            if not isinstance(text, str) or not text.strip() or text not in source_texts[i - 1]:
                 raise ValueError('extracted statement is not an exact source quote')
     except (ValueError, KeyError, TypeError) as exc:
         return failure(f'extraction parse: {exc}')
@@ -53,7 +56,12 @@ def infer_two_stage(client, passages, claim, claim_language=None):
     # Local ids are mapped back to original retrieved ids after classification.
     source_ids = list(dict.fromkeys(item['passage_id'] for item in statements))
     selected = [passages[i - 1] for i in source_ids]
-    out = client.infer('', claim, claim_language=claim_language, passages=selected)
+    judge_claim = claim
+    if sections is not None and attributed_side:
+        own_ids = [f"P{k}" for k, i in enumerate(source_ids, 1) if sections[i - 1] == attributed_side]
+        if own_ids:
+            judge_claim += f"\n(Passages written by {attributed_side}: {', '.join(own_ids)})"
+    out = client.infer('', judge_claim, claim_language=claim_language, passages=selected)
     out.evidence_ids = [source_ids[i - 1] for i in out.evidence_ids]
     out.extracted_statements = statements
     out.tokens_prompt += tp

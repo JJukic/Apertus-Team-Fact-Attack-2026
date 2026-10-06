@@ -36,3 +36,16 @@ class TestTwoStage(unittest.TestCase):
         client._chat.return_value = (None, RuntimeError('unavailable'))
         self.assertIn('extraction api', infer_two_stage(client, ['first'], 'claim').error)
         client.infer.assert_not_called()
+
+    def test_metadata_only_quote_rejected(self):
+        client = self.client('{"statements": [{"text": "Arguments of committee", "passage_id": 1}]}')
+        out = infer_two_stage(client, ['(Arguments of committee) source text'], 'claim', source_texts=['source text'])
+        self.assertIsNotNone(out.error)
+        client.infer.assert_not_called()
+
+    def test_speaker_hint_uses_selected_ids(self):
+        client = self.client('{"statements": [{"text": "third", "passage_id": 3}]}')
+        infer_two_stage(client, ['first', 'second', 'third'], 'claim', sections=['other', 'other', 'committee'], attributed_side='committee')
+        judge_claim = client.infer.call_args.args[1]
+        self.assertIn('committee: P1', judge_claim)
+        self.assertNotIn('P3', judge_claim)

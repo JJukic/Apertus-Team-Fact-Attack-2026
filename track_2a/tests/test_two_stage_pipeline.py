@@ -17,7 +17,7 @@ class Endpoint:
             document = kwargs['messages'][1]['content'].split('DOCUMENT:\n')[1].split('\n\nCLAIM:')[0]
             passages = re.split(r'\[P\d+\] ', document)[1:]
             self.source_id = min(2, len(passages))
-            quote = passages[self.source_id - 1].strip()[:100]
+            quote = re.sub(r"^\([^)]*\)\s*", "", passages[self.source_id - 1].strip())[:100]
             data = {'statements': [] if self.empty else [{'text': 'invented quote' if self.bad else quote, 'passage_id': self.source_id}]}
         else:
             data = {'label': self.label, 'p_entail': int(self.label == 0), 'p_neutral': int(self.label == 1), 'p_contra': int(self.label == 2), 'evidence_ids': [] if self.label == 1 else [1]}
@@ -69,4 +69,5 @@ class TestTwoStagePipeline(unittest.TestCase):
         _, endpoint, result = self.run_case(bad_judgment=True)
         self.assertEqual(len(endpoint.calls), 2)
         self.assertIn('parse:', result.error)
+        self.assertEqual(result.tokens_total, 240)
         self.assertEqual(result.evidence, [])

@@ -90,7 +90,7 @@ class PredictionResult(BaseModel):
 
 
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
-_PARSE_CACHE_VERSION = 6  # bump when parsing or section detection changes
+_PARSE_CACHE_VERSION = 7  # bump when parsing or section detection changes
 
 _COMMITTEE_SECTION = "Arguments of the initiative/referendum committee"
 _FEDERAL_COUNCIL_SECTION = "Arguments of the Federal Council and Parliament"
@@ -481,13 +481,16 @@ class ClaimVerificationEngine:
                 if translation:
                     name = self.client.LANGUAGE_NAMES.get(booklet_lang, booklet_lang)
                     model_claim = f"{claim}\n(Translation into {name}: {translation})"
-        if config.SPEAKER_HINT and (side := attributed_section(claim)):
+        if self.prompt_mode != "two_stage" and config.SPEAKER_HINT and (side := attributed_section(claim)):
             own = [f"P{k}" for k, p in enumerate(passages, 1) if p.get("section") == side]
             if own:
                 model_claim = f"{model_claim}\n(Passages written by the {_SPEAKER_NAMES[side]} itself: {', '.join(own)})"
         if self.prompt_mode == "two_stage":
             from src.two_stage import infer_two_stage
-            out = infer_two_stage(self.client, texts, model_claim, claim_language)
+            out = infer_two_stage(self.client, texts, model_claim, claim_language,
+                                  source_texts=[p["text"] for p in passages],
+                                  sections=[p.get("section") for p in passages],
+                                  attributed_side=attributed_section(claim) if config.SPEAKER_HINT else None)
         elif self.prompt_mode == "ids":
             out = self.client.infer(context="", claim=model_claim, claim_language=claim_language, passages=texts)
         else:

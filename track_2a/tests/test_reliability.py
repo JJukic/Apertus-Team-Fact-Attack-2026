@@ -39,3 +39,5 @@ class TestReliability(unittest.TestCase):
                 out = _stub_client(answer, {}).infer_compact(['text'], 'claim')
                 self.assertIsNotNone(out.error)
                 self.assertEqual(out.evidence_ids, [])
+                self.assertEqual(out.tokens_prompt, 100)
+                self.assertEqual(out.tokens_completion, 4)

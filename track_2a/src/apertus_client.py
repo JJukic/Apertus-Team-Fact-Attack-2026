@@ -116,18 +116,18 @@ class ApertusClient:
 
         choice = response.choices[0]
         content = (choice.message.content or "").strip()
-        m = re.fullmatch(r"([012])\|\s*((?:P?\d+\s*(?:,\s*P?\d+\s*)*)?)", content)
-        probs = self._label_probs(choice)
-        if not m:
-            return NLIOutput(label=1, reasoning="Invalid compact response", error="parse: invalid compact response", latency_ms=latency_ms)
-        label = int(m.group(1))
-        ids = list(dict.fromkeys(int(tok) for tok in re.findall(r"\d+", m.group(2))))
-        if any(not 1 <= i <= len(passages) for i in ids):
-            return NLIOutput(label=1, reasoning="Invalid passage id", error="parse: invalid passage id", latency_ms=latency_ms)
-
         usage = getattr(response, "usage", None)
         tp = getattr(usage, "prompt_tokens", None) or self._estimate_tokens(self.COMPACT_SYSTEM_PROMPT + user_prompt)
         tc = getattr(usage, "completion_tokens", None) or self._estimate_tokens(content)
+        m = re.fullmatch(r"([012])\|\s*((?:P?\d+\s*(?:,\s*P?\d+\s*)*)?)", content)
+        probs = self._label_probs(choice)
+        if not m:
+            return NLIOutput(label=1, reasoning="Invalid compact response", error="parse: invalid compact response", latency_ms=latency_ms, tokens_prompt=tp, tokens_completion=tc, tokens_total=tp + tc)
+        label = int(m.group(1))
+        ids = list(dict.fromkeys(int(tok) for tok in re.findall(r"\d+", m.group(2))))
+        if any(not 1 <= i <= len(passages) for i in ids):
+            return NLIOutput(label=1, reasoning="Invalid passage id", error="parse: invalid passage id", latency_ms=latency_ms, tokens_prompt=tp, tokens_completion=tc, tokens_total=tp + tc)
+
         return NLIOutput(
             label=label,
             reasoning=f"Apertus answer: {content}",
@@ -380,18 +380,20 @@ class ApertusClient:
                 latency_ms=round(latency_ms, 2),
             )
 
+        content = response.choices[0].message.content or ""
+        usage = getattr(response, "usage", None)
+        tokens_prompt = getattr(usage, "prompt_tokens", None)
+        tokens_completion = getattr(usage, "completion_tokens", None)
+        tokens_total = getattr(usage, "total_tokens", None)
+        tokens_prompt = tokens_prompt if tokens_prompt is not None else self._estimate_tokens(system_prompt + user_prompt)
+        tokens_completion = tokens_completion if tokens_completion is not None else self._estimate_tokens(content)
+        tokens_total = tokens_total if tokens_total is not None else tokens_prompt + tokens_completion
+        tokens_prompt += forced_prompt
+        tokens_completion += forced_completion
+        tokens_total += forced_prompt + forced_completion
         try:
             latency_ms = (time.time() - start_time) * 1000
-            content = response.choices[0].message.content.strip()
             parsed_json = self._parse_json(self._strip_thinking(content, thinking=thinking))
-
-            usage = getattr(response, "usage", None)
-            tokens_prompt = usage.prompt_tokens if (usage and getattr(usage, "prompt_tokens", None)) else self._estimate_tokens(user_prompt)
-            tokens_completion = usage.completion_tokens if (usage and getattr(usage, "completion_tokens", None)) else self._estimate_tokens(content)
-            tokens_total = usage.total_tokens if (usage and getattr(usage, "total_tokens", None)) else (tokens_prompt + tokens_completion)
-            tokens_prompt += forced_prompt
-            tokens_completion += forced_completion
-            tokens_total += forced_prompt + forced_completion
 
             label_given = "label" in parsed_json
             raw_label = parsed_json.get("label")
@@ -444,9 +446,9 @@ class ApertusClient:
                 reasoning=f"Response Parse Error: {str(e)}",
                 evidence=[],
                 error=f"parse: {e}",
-                tokens_prompt=0,
-                tokens_completion=0,
-                tokens_total=0,
+                tokens_prompt=tokens_prompt,
+                tokens_completion=tokens_completion,
+                tokens_total=tokens_total,
                 latency_ms=round(latency_ms, 2),
             )
 

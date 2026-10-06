@@ -4,7 +4,7 @@ Branch: `experiment/two-stage-fact-check`. Model quality has not been measured y
 
 Existing retrieval supplies numbered original passages. An additional Apertus call
 extracts at most eight relevant exact quotes with source ids. Invalid quotes or ids
-stop the check with an explicit error. A second call evaluates the original claim
+stop the check with an explicit error. Quotes are checked against source text without metadata prefixes. Speaker hints are rebuilt after passage selection; usage is retained even when judgment parsing fails. A second call evaluates the original claim
 against the complete source passages selected by extraction. Its evidence ids are
 mapped back to original retrieval ids. Tokens for both calls and overall model
 latency are recorded. Reports include `extracted_statements`.
