@@ -1,5 +1,6 @@
 """
-Batch CLI in the official OST input/output format (info-session slides 24/25), offline (mock model).
+Batch CLI in the official OST input/output format (info-session slides 24/25) and with Hugging Face dataset rows,
+offline (mock model).
 """
 
 import json
@@ -10,7 +11,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from src import config
-from src.cli import app, resolve_booklet_path
+from src.cli import app, case_booklet, load_cases, resolve_booklet_path
 from src.text_utils import guess_language
 
 BOOKLET = config.BOOKLETS_DIR / "2026-06-14_de.pdf"
@@ -48,8 +49,53 @@ class TestBatchCli(unittest.TestCase):
                 self.assertEqual(set(ev), {"page", "text"})
         self.assertEqual(preds[1]["label"], 1)  # missing booklet -> valid neutral record
 
+    def test_hugging_face_rows_use_the_booklet(self):
+        # Rows as published on Hugging Face: plain claim, reference_string, booklet_url, no id; the publish date
+        # (2026-05-28) differs from the booklet's vote date (2026-06-14), which only the URL carries
+        row = json.loads((config.DATA_DIR / "demo_dataset.jsonl").read_text(encoding="utf-8").splitlines()[0])
+        for f in ("entailment_label", "baseline_score"):
+            row.pop(f, None)
+        inp = self.tmp / "hf.csv"
+        import pandas as pd
+
+        pd.DataFrame([row, row]).to_csv(inp, index=False)
+        for args, page_evidence in ((["--task", "auto"], True), (["--task", "beginner"], False)):
+            result = CliRunner().invoke(app, ["run", "-i", str(inp), "--mock", *args])
+            self.assertEqual(result.exit_code, 0, result.output)
+            self.assertNotIn("warning", result.output)
+            preds = json.loads(result.output[result.output.index("["):])
+            self.assertEqual([p["id"] for p in preds], ["case-0001", "case-0002"])
+            pages = {ev["page"] for p in preds for ev in p["evidence"]}
+            if page_evidence and pages:
+                self.assertTrue(pages - {1}, "advanced: evidence carries booklet page numbers")
+
+    def test_advanced_task_without_booklet_is_a_reported_error(self):
+        inp = self.tmp / "ref.jsonl"
+        inp.write_text(json.dumps({"id": "r", "claim": "Test.", "reference_string": "Der Bundesrat lehnt ab."}), encoding="utf-8")
+        result = CliRunner().invoke(app, ["run", "-i", str(inp), "--mock", "--task", "advanced"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        self.assertIn("has no booklet", result.output)
+
 
 class TestHelpers(unittest.TestCase):
+    def test_case_booklet_from_hugging_face_fields(self):
+        if not BOOKLET.exists():
+            self.skipTest(f"Booklet not found at {BOOKLET}")
+        url = "https://www.bk.admin.ch/dam/de/sd-web/WeUrKyC0FyPc/2026-06-14_erlaeuterungen.pdf"
+        self.assertEqual(case_booklet({"booklet_url": url, "booklet_publish_date": "2026-05-28"}, Path(".")), BOOKLET)
+        self.assertEqual(case_booklet({"booklet_file": "2026-06-14_de.pdf"}, Path(".")), BOOKLET)
+        self.assertIsNone(case_booklet({"reference_string": "x"}, Path(".")))
+
+    def test_load_cases_formats(self):
+        tmp = Path(tempfile.mkdtemp())
+        one, many = {"claim": "a"}, [{"claim": "a"}, {"claim": "b"}]
+        (tmp / "one.json").write_text(json.dumps(one), encoding="utf-8")
+        (tmp / "list.json").write_text(json.dumps(many), encoding="utf-8")
+        (tmp / "rows.jsonl").write_text("\n".join(json.dumps(c) for c in many), encoding="utf-8")
+        self.assertEqual(load_cases(tmp / "one.json"), [one])
+        self.assertEqual(load_cases(tmp / "list.json"), many)
+        self.assertEqual(load_cases(tmp / "rows.jsonl"), many)
+
     def test_resolve_booklet_path_accepts_underscore_dates(self):
         if not BOOKLET.exists():
             self.skipTest(f"Booklet not found at {BOOKLET}")

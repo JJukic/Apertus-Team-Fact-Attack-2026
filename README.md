@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.11-blue.svg)](https://www.python.org/)
 [![Model](https://img.shields.io/badge/Model-Apertus%20v1.5--70B-orange.svg)](https://huggingface.co/swiss-ai)
 [![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
-[![License](https://img.shields.io/badge/License-MIT%20%2F%20CC--BY--4.0-green.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache--2.0%20(code)%20%2F%20CC--BY--4.0%20(docs)-green.svg)](LICENSE)
 
 An **Apertus-powered, document-grounded claim-verification system** that decides whether an official Swiss
 voting booklet (*Abstimmungsbüchlein*) **entails (0)**, is **neutral to (1)** or **contradicts (2)** a political
@@ -28,8 +28,12 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
 | Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Advanced** — booklet PDF + claim + vote | **0.940** | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
+| **Advanced** — booklet PDF + claim + vote | **0.940** | 0.934 | 5,576 | 58 | 2.1 s / 2.9 s |
 | **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
+
+**Evidence:** every Entailment / Contradiction prediction cites at least one passage, verbatim with its page
+number. In the advanced task 78 % of the cited pages lie inside the human-annotated reference section (beginner: 100 %);
+Neutral predictions cite nothing, as the output format requires.
 
 ### Full booklet vs. selected context (advanced task, same 150 test pairs)
 
@@ -37,10 +41,11 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 | :--- | :---: | :---: | :---: |
 | Full booklet (baseline) | 0.730 | 59,517 | 43.7 s* |
 | Our first pipeline (proposal filter + BM25, verbose JSON) | 0.795 | 3,408 | 36.2 s* |
-| **Hybrid retrieval + `ids` prompt (current)** | **0.926** | 6,023 | 3.8 s |
+| Hybrid retrieval, 10 pages + `ids` prompt | 0.926 | 6,023 | 3.8 s |
+| **Final: 12 pages (long ones clipped), speaker boost, decision rules** | **0.946** | 5,713 | 2.8 s |
 
-\* measured while several runs shared the endpoint. **Selecting ~10 pages beats sending the whole booklet by
-0.19 F1 with ~10× fewer tokens**: with up to 70k tokens of context the relevant passage gets lost.
+\* measured while several runs shared the endpoint. **Selecting a dozen pages beats sending the whole booklet by
+0.22 F1 with ~10× fewer tokens**: with up to 70k tokens of context the relevant passage gets lost.
 Every number comes from a saved run in [`track_2a/results/`](track_2a/results/).
 
 ### What we learned about Apertus
@@ -90,7 +95,10 @@ Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
    instead of ~150.
 3. **Booklet-aware prompt.** Booklets deliberately contain opposing viewpoints: a claim such as "the committee
    argues X" is checked against the committee's text only, and section labels tell the model who is speaking.
-4. **Measured, not assumed.** Every design choice was tested on a dev split; ideas that did not help (a hard
+4. **Speaker boost and decision rules.** If the claim names a side ("the committee argues …"), that side's two best
+   argument pages are always in the context; this cut the error rate on committee claims from 13 % to 7 %. A Neutral label next to a
+   confident other relation follows the confidences, otherwise Apertus' own label is kept.
+5. **Measured, not assumed.** Every design choice was tested on a dev split; ideas that did not help (a hard
    numerical override, label-only answers, small passages, full-booklet prompting) were dropped. See the
    [experiment log](track_2a/docs/experiments.md).
 
@@ -100,10 +108,13 @@ Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
 
 ```bash
 export LLM_API_KEY="your_api_key_here"
-make run          # builds the Docker image and runs the benchmark (report + JSON in track_2a/results/)
+make run          # Docker: benchmark on the 402-pair test split, ~4 min (report + JSON in track_2a/results/)
 make test         # unit tests (no API calls)
 make web          # Streamlit app at http://localhost:8501
 ```
+
+`make run` reproduces the advanced-task result above (macro-F1 ≈ 0.94; temperature 0, so runs differ by at most a
+few pairs). `NLI_DATASET=data/demo_dataset.jsonl make run` runs the 28-pair demo set instead (~40 s, ≈ 0.91).
 
 Defaults (override via environment variables or `.env`):
 
@@ -149,6 +160,12 @@ python -m src.results_summary                              # results/summary.jso
                                                     "claim": {"text": "Le Conseil fédéral recommande d'accepter l'initiative."}}
 ```
 
+`run` also reads rows as published in the OST dataset on Hugging Face (`claim`, `reference_string`, `booklet_url`,
+`booklet_publish_date`, `vote`, optionally `claim_language`), as JSONL, JSON, Parquet or CSV. `--task auto` (default)
+uses the booklet when a case names one and the reference text otherwise; `--task advanced` / `beginner` forces one.
+Booklets are found as given, relative to the input file, by file name among the 60 dataset booklets in the image,
+or downloaded from `booklet_url`.
+
 Each case yields `{"id", "label", "label_name", "evidence": [{"page", "text"}], "metrics": {"input_tokens",
 "output_tokens", "inference_time_ms"}}`; evidence is empty for neutral. The claim language is detected
 automatically, booklet paths are resolved robustly, and a failing case is reported on stderr and returned as a
@@ -179,3 +196,9 @@ track_2a/
     ├── results_summary.py    # Collects saved runs for the app and README
     └── cli.py                # predict / run / benchmark / download / web
 ```
+
+---
+
+## 📜 License
+
+Code: [Apache License 2.0](LICENSE). Documentation (READMEs, technical report, experiment log): CC-BY-4.0.

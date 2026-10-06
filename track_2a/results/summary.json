@@ -14,8 +14,8 @@
   },
   "headline": {
     "advanced": {
-      "file": "20261006T142147_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final.json",
-      "timestamp": "2026-10-06T14:21:47",
+      "file": "20261006T140501_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_docker.json",
+      "timestamp": "2026-10-06T14:05:01+00:00",
       "split": "test",
       "task": "advanced",
       "strategy": "hybrid",
@@ -29,16 +29,16 @@
       "speaker_boost": 2,
       "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
-      "tag": "final",
+      "tag": "final_docker",
       "n": 402,
       "macro_f1": 0.9402,
       "macro_f1_crosslingual": 0.9344,
-      "macro_f1_monolingual": 0.9518,
-      "evidence_grounded_rate": 0.7791,
+      "macro_f1_monolingual": 0.951,
+      "evidence_grounded_rate": 0.7799,
       "avg_prompt_tokens": 5576.3,
-      "avg_completion_tokens": 58.5,
-      "latency_mean_ms": 2088.7,
-      "latency_p95_ms": 3006.5,
+      "avg_completion_tokens": 57.7,
+      "latency_mean_ms": 2098.8,
+      "latency_p95_ms": 2922.7,
       "errors": 0,
       "by_language_pair": {
         "de->de": {
@@ -83,7 +83,7 @@
         },
         "it->it": {
           "count": 33,
-          "macro_f1": 0.9395,
+          "macro_f1": 0.9345,
           "accuracy": 0.9394
         }
       }
@@ -3912,6 +3912,81 @@
           "count": 56,
           "macro_f1": 0.9284,
           "accuracy": 0.9286
+        }
+      }
+    },
+    {
+      "file": "20261006T140501_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_docker.json",
+      "timestamp": "2026-10-06T14:05:01+00:00",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_docker",
+      "n": 402,
+      "macro_f1": 0.9402,
+      "macro_f1_crosslingual": 0.9344,
+      "macro_f1_monolingual": 0.951,
+      "evidence_grounded_rate": 0.7799,
+      "avg_prompt_tokens": 5576.3,
+      "avg_completion_tokens": 57.7,
+      "latency_mean_ms": 2098.8,
+      "latency_p95_ms": 2922.7,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9505,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9485,
+          "accuracy": 0.9583
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9156,
+          "accuracy": 0.913
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.8248,
+          "accuracy": 0.8333
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.9259,
+          "accuracy": 0.9302
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 0.9523,
+          "accuracy": 0.9531
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 0.9345,
+          "accuracy": 0.9394
         }
       }
     },

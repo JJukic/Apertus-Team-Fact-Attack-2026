@@ -4,6 +4,8 @@ IMAGE_NAME ?= hackapertus-track2a
 
 # Judges run `make run` from the root of the project.
 # It builds and executes the Docker container, passing required environment variables.
+# By default it benchmarks the held-out test split (402 pairs of 5 voting dates never used during development,
+# ~4 min with 4 parallel requests); NLI_DATASET=data/demo_dataset.jsonl runs the 28-pair demo set instead.
 # The run's JSON (metrics and per-sample predictions) is written to track_2a/results/ on the host.
 run:
 	docker build --build-arg GIT_COMMIT="$$(git rev-parse --short HEAD 2>/dev/null || echo unknown)" -t $(IMAGE_NAME) .
@@ -16,7 +18,7 @@ run:
 		-e NLI_STRATEGY="$${NLI_STRATEGY:-hybrid}" \
 		-e NLI_TOP_K="$${NLI_TOP_K:-12}" \
 		-e PROMPT_MODE="$${PROMPT_MODE:-ids}" \
-		$(IMAGE_NAME) benchmark
+		$(IMAGE_NAME) benchmark -d "$${NLI_DATASET:-data/hf/test.jsonl}" -w "$${NLI_WORKERS:-4}"
 
 test:
 	python -m unittest discover -s tests -p "test_*.py"
