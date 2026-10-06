@@ -34,6 +34,8 @@ def _row(report: Dict[str, Any], path: Path) -> Dict[str, Any]:
         "thinking": bool(m.get("thinking", False)),
         "translate_claim": bool(m.get("translate_claim", False)),
         "page_max_chars": m.get("page_max_chars", 0) or 0,
+        "speaker_boost": m.get("speaker_boost", 0) or 0,
+        "speaker_hint": bool(m.get("speaker_hint", False)),
         "model": m["model"],
         "tag": m.get("tag", ""),
         "n": report["sample_count"],
@@ -78,6 +80,8 @@ def _matches_defaults(run: Dict[str, Any]) -> bool:
         and run["top_k"] == config.DEFAULT_TOP_K
         and (run["passage_chars"] or 0) == config.PASSAGE_CHARS
         and run["page_max_chars"] == config.PAGE_MAX_CHARS
+        and run["speaker_boost"] == config.SPEAKER_BOOST
+        and run["speaker_hint"] == config.SPEAKER_HINT
     )
 
 
@@ -99,6 +103,8 @@ def build_summary(results_dir: Path = RESULTS_DIR) -> Dict[str, Any]:
             "thinking": config.THINKING,
             "translate_claim": config.TRANSLATE_CLAIM,
             "page_max_chars": config.PAGE_MAX_CHARS,
+            "speaker_boost": config.SPEAKER_BOOST,
+            "speaker_hint": config.SPEAKER_HINT,
         },
         "headline": {task: headline(runs, task) for task in ("advanced", "beginner")},
         "runs": runs,

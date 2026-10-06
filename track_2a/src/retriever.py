@@ -123,6 +123,7 @@ class PassageRetriever:
         target_vote: Optional[str] = None,
         vote_weight: float = 2.0,
         exclude_sections: Optional[set] = None,
+        ensure_sections: Optional[Dict[str, int]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Booklet-wide ranking: normalised BM25(claim) + vote_weight * normalised BM25(vote title).
@@ -150,7 +151,19 @@ class PassageRetriever:
         ranked = sorted(range(len(self.paragraphs)), key=lambda i: combined[i], reverse=True)
         if exclude_sections:
             ranked = [i for i in ranked if self.paragraphs[i].get("section") not in exclude_sections]
-        ranked = ranked[:top_k]
+        selected = ranked[:top_k]
+        # Guarantee the best pages of a section (e.g. the committee's arguments for a committee claim): they replace
+        # the lowest-ranked other pages, so the context size stays top_k
+        for section, n in (ensure_sections or {}).items():
+            wanted = [i for i in ranked if self.paragraphs[i].get("section") == section][:n]
+            missing = [i for i in wanted if i not in selected]
+            if not missing:
+                continue
+            removable = [i for i in reversed(selected) if self.paragraphs[i].get("section") != section]
+            for add, drop in zip(missing, removable):
+                selected[selected.index(drop)] = add
+            selected.sort(key=lambda i: combined[i], reverse=True)
+        ranked = selected
         results = []
         for idx in ranked:
             para = self.paragraphs[idx].copy()

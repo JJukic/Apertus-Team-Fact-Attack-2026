@@ -34,6 +34,14 @@ class TestApertusClient(unittest.TestCase):
         self.assertEqual(label, 0)
         self.assertIn("Decision-Rule 0", rule)
 
+    def test_neutral_label_with_confident_relation_follows_confidences(self):
+        # Rule 0b: "label": 1 with "p_contra": 1.0 is rarely Neutral
+        label, rule = ApertusClient._apply_calibrated_decision(
+            p_entail=0.0, p_neutral=0.0, p_contra=1.0, raw_label=1, label_given=True
+        )
+        self.assertEqual(label, 2)
+        self.assertIn("Decision-Rule 0b", rule)
+
     def test_calibrated_decision_consistent_label_still_uses_rules(self):
         label, rule = ApertusClient._apply_calibrated_decision(
             p_entail=0.48, p_neutral=0.06, p_contra=0.46, raw_label=0, label_given=True

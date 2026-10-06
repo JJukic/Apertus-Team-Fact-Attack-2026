@@ -255,6 +255,8 @@ class BenchmarkEvaluator:
                 "thinking_budget": config.THINKING_BUDGET,
                 "translate_claim": config.TRANSLATE_CLAIM,
                 "page_max_chars": config.PAGE_MAX_CHARS,
+                "speaker_boost": config.SPEAKER_BOOST,
+                "speaker_hint": config.SPEAKER_HINT,
                 "speaker_aware": config.SPEAKER_AWARE,
                 "few_shot": config.FEW_SHOT,
                 "dataset": str(path.name),

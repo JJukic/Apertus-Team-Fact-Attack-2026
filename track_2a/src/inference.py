@@ -114,6 +114,18 @@ def opposing_sections(claim: str) -> Optional[set]:
     return None
 
 
+def attributed_section(claim: str) -> Optional[str]:
+    """The argument section of the side a claim attributes its statement to (committee or Federal Council), if exactly one."""
+    committee = bool(_COMMITTEE_RE.search(claim))
+    federal_council = bool(_FEDERAL_COUNCIL_RE.search(claim))
+    if committee != federal_council:
+        return _COMMITTEE_SECTION if committee else _FEDERAL_COUNCIL_SECTION
+    return None
+
+
+_SPEAKER_NAMES = {_COMMITTEE_SECTION: "initiative/referendum committee", _FEDERAL_COUNCIL_SECTION: "Federal Council and Parliament"}
+
+
 def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[str, Any]:
     """
     Parse a booklet once (pages, passages, full text) and cache the result on disk.
@@ -216,6 +228,8 @@ class ClaimVerificationEngine:
                 candidate_paras = retriever.retrieve_hybrid(
                     claim, top_k=top_k, target_vote=vote,
                     exclude_sections=opposing_sections(claim) if config.SPEAKER_AWARE else None,
+                    ensure_sections={side: config.SPEAKER_BOOST}
+                    if config.SPEAKER_BOOST and (side := attributed_section(claim)) else None,
                 )
             else:
                 candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
@@ -466,6 +480,10 @@ class ClaimVerificationEngine:
                 if translation:
                     name = self.client.LANGUAGE_NAMES.get(booklet_lang, booklet_lang)
                     model_claim = f"{claim}\n(Translation into {name}: {translation})"
+        if config.SPEAKER_HINT and (side := attributed_section(claim)):
+            own = [f"P{k}" for k, p in enumerate(passages, 1) if p.get("section") == side]
+            if own:
+                model_claim = f"{model_claim}\n(Passages written by the {_SPEAKER_NAMES[side]} itself: {', '.join(own)})"
         if self.prompt_mode == "ids":
             out = self.client.infer(context="", claim=model_claim, claim_language=claim_language, passages=texts)
         else:

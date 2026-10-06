@@ -9,7 +9,7 @@ An Apertus-powered system that decides whether an official Swiss voting booklet 
 or **contradicts (2)** a claim, and cites the booklet pages that justify the decision — for every combination of
 German, French and Italian.
 
-- **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.925** macro-F1 (**0.931** over all 1,495 pairs), beginner task **0.975**
+- **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.940** macro-F1 (**0.946** over all 1,495 pairs), beginner task **0.975**
 - **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ·
   **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
@@ -34,6 +34,7 @@ NLI_STRATEGY=hybrid      # 'hybrid' (default) | 'retrieval' | 'full'
 NLI_TOP_K=12
 PROMPT_MODE=ids          # 'ids' (default) | 'json' | 'compact'
 PAGE_MAX_CHARS=3000      # clip over-long pages (0 = off)
+SPEAKER_BOOST=2          # always include the named side's 2 best argument pages (0 = off)
 ```
 
 Without `LLM_API_KEY` the system runs in an offline heuristic mock mode (for tests only).

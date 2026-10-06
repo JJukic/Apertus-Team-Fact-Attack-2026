@@ -8,12 +8,14 @@
     "ids_reason": false,
     "thinking": false,
     "translate_claim": false,
-    "page_max_chars": 3000
+    "page_max_chars": 3000,
+    "speaker_boost": 2,
+    "speaker_hint": false
   },
   "headline": {
     "advanced": {
-      "file": "20261006T133533_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_clip3000_k12.json",
-      "timestamp": "2026-10-06T13:35:33",
+      "file": "20261006T142147_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final.json",
+      "timestamp": "2026-10-06T14:21:47",
       "split": "test",
       "task": "advanced",
       "strategy": "hybrid",
@@ -24,17 +26,19 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
-      "tag": "clip3000_k12",
+      "tag": "final",
       "n": 402,
-      "macro_f1": 0.9254,
-      "macro_f1_crosslingual": 0.9161,
-      "macro_f1_monolingual": 0.9433,
-      "evidence_grounded_rate": 0.7897,
-      "avg_prompt_tokens": 5627.7,
-      "avg_completion_tokens": 58.4,
-      "latency_mean_ms": 2121.2,
-      "latency_p95_ms": 3153.4,
+      "macro_f1": 0.9402,
+      "macro_f1_crosslingual": 0.9344,
+      "macro_f1_monolingual": 0.9518,
+      "evidence_grounded_rate": 0.7791,
+      "avg_prompt_tokens": 5576.3,
+      "avg_completion_tokens": 58.5,
+      "latency_mean_ms": 2088.7,
+      "latency_p95_ms": 3006.5,
       "errors": 0,
       "by_language_pair": {
         "de->de": {
@@ -44,33 +48,33 @@
         },
         "de->fr": {
           "count": 48,
-          "macro_f1": 0.9265,
-          "accuracy": 0.9375
+          "macro_f1": 0.9485,
+          "accuracy": 0.9583
         },
         "de->it": {
           "count": 46,
-          "macro_f1": 0.8958,
+          "macro_f1": 0.9156,
           "accuracy": 0.913
         },
         "fr->de": {
           "count": 36,
-          "macro_f1": 0.8569,
-          "accuracy": 0.8611
+          "macro_f1": 0.8248,
+          "accuracy": 0.8333
         },
         "fr->fr": {
           "count": 56,
-          "macro_f1": 0.9403,
-          "accuracy": 0.9464
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
         },
         "fr->it": {
           "count": 38,
-          "macro_f1": 0.9791,
-          "accuracy": 0.9737
+          "macro_f1": 1.0,
+          "accuracy": 1.0
         },
         "it->de": {
           "count": 43,
-          "macro_f1": 0.8098,
-          "accuracy": 0.8372
+          "macro_f1": 0.9259,
+          "accuracy": 0.9302
         },
         "it->fr": {
           "count": 64,
@@ -79,7 +83,7 @@
         },
         "it->it": {
           "count": 33,
-          "macro_f1": 0.9345,
+          "macro_f1": 0.9395,
           "accuracy": 0.9394
         }
       }
@@ -97,6 +101,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_beginner",
       "n": 402,
@@ -172,6 +178,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "baseline",
       "n": 150,
@@ -245,6 +253,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2",
       "n": 150,
@@ -318,6 +328,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "baseline",
       "n": 150,
@@ -391,6 +403,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "baseline",
       "n": 150,
@@ -464,6 +478,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2",
       "n": 150,
@@ -537,6 +553,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2",
       "n": 150,
@@ -610,6 +628,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2",
       "n": 150,
@@ -683,6 +703,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2",
       "n": 150,
@@ -756,6 +778,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2k10",
       "n": 150,
@@ -829,6 +853,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v2k12",
       "n": 150,
@@ -902,6 +928,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v3viewpoints",
       "n": 150,
@@ -975,6 +1003,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "v3viewpoints",
       "n": 150,
@@ -1048,6 +1078,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_v1",
       "n": 150,
@@ -1121,6 +1153,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_v1",
       "n": 150,
@@ -1194,6 +1228,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_v1",
       "n": 150,
@@ -1267,6 +1303,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "c600k15",
       "n": 150,
@@ -1340,6 +1378,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "c600k20",
       "n": 150,
@@ -1413,6 +1453,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "c600k30",
       "n": 150,
@@ -1486,6 +1528,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "c900k15",
       "n": 150,
@@ -1559,6 +1603,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "c600k20_sec",
       "n": 150,
@@ -1632,6 +1678,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "page_k10_sec",
       "n": 150,
@@ -1705,6 +1753,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "c600k20_sec_reason",
       "n": 150,
@@ -1778,6 +1828,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_page_k10_sec",
       "n": 450,
@@ -1851,6 +1903,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_c600k20_sec",
       "n": 450,
@@ -1924,6 +1978,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_full",
       "n": 402,
@@ -1997,6 +2053,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_full",
       "n": 402,
@@ -2070,6 +2128,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_full_v2",
       "n": 402,
@@ -2143,6 +2203,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-8B",
       "tag": "big_8b",
       "n": 450,
@@ -2216,6 +2278,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_speaker",
       "n": 450,
@@ -2289,6 +2353,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_fewshot",
       "n": 450,
@@ -2362,6 +2428,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "rule0",
       "n": 402,
@@ -2435,6 +2503,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "rule0_sections",
       "n": 402,
@@ -2508,6 +2578,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_rule0_sections",
       "n": 450,
@@ -2581,6 +2653,8 @@
       "thinking": true,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "thinking_probe",
       "n": 82,
@@ -2654,6 +2728,8 @@
       "thinking": false,
       "translate_claim": true,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_translate",
       "n": 450,
@@ -2727,6 +2803,8 @@
       "thinking": false,
       "translate_claim": true,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "translate",
       "n": 402,
@@ -2800,6 +2878,8 @@
       "thinking": true,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "thinking_rest",
       "n": 368,
@@ -2873,6 +2953,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "clip3000",
       "n": 402,
@@ -2946,6 +3028,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_clip3000",
       "n": 450,
@@ -3019,6 +3103,8 @@
       "thinking": true,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "think_budget300",
       "n": 82,
@@ -3092,6 +3178,8 @@
       "thinking": true,
       "translate_claim": false,
       "page_max_chars": 0,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "thinking_retry",
       "n": 85,
@@ -3165,6 +3253,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_clip3000_k12",
       "n": 450,
@@ -3238,6 +3328,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "final_beginner",
       "n": 402,
@@ -3311,6 +3403,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_clip3000_k14",
       "n": 450,
@@ -3384,6 +3478,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "big_clip3000_k16",
       "n": 450,
@@ -3457,6 +3553,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "clip3000_k12",
       "n": 402,
@@ -3530,6 +3628,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "devrest_clip3000_k10",
       "n": 643,
@@ -3603,6 +3703,8 @@
       "thinking": false,
       "translate_claim": false,
       "page_max_chars": 3000,
+      "speaker_boost": 0,
+      "speaker_hint": false,
       "model": "swiss-ai/Apertus-v1.5-70B-thinking",
       "tag": "devrest_clip3000_k12",
       "n": 643,
@@ -3660,6 +3762,456 @@
           "count": 73,
           "macro_f1": 0.9852,
           "accuracy": 0.9863
+        }
+      }
+    },
+    {
+      "file": "20261006T135832_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_big_boost2.json",
+      "timestamp": "2026-10-06T13:58:32",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "big_boost2",
+      "n": 450,
+      "macro_f1": 0.9533,
+      "macro_f1_crosslingual": 0.958,
+      "macro_f1_monolingual": 0.944,
+      "evidence_grounded_rate": 0.8866,
+      "avg_prompt_tokens": 5298.1,
+      "avg_completion_tokens": 57.7,
+      "latency_mean_ms": 2251.6,
+      "latency_p95_ms": 2816.6,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 54,
+          "macro_f1": 0.9187,
+          "accuracy": 0.9259
+        },
+        "de->fr": {
+          "count": 53,
+          "macro_f1": 0.9616,
+          "accuracy": 0.9623
+        },
+        "de->it": {
+          "count": 51,
+          "macro_f1": 0.9426,
+          "accuracy": 0.9412
+        },
+        "fr->de": {
+          "count": 44,
+          "macro_f1": 0.9098,
+          "accuracy": 0.9091
+        },
+        "fr->fr": {
+          "count": 57,
+          "macro_f1": 0.9301,
+          "accuracy": 0.9298
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 0.9732,
+          "accuracy": 0.9737
+        },
+        "it->de": {
+          "count": 44,
+          "macro_f1": 0.9528,
+          "accuracy": 0.9545
+        },
+        "it->fr": {
+          "count": 53,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->it": {
+          "count": 56,
+          "macro_f1": 0.9811,
+          "accuracy": 0.9821
+        }
+      }
+    },
+    {
+      "file": "20261006T140248_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_big_boost2_hint.json",
+      "timestamp": "2026-10-06T14:02:48",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": true,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "big_boost2_hint",
+      "n": 450,
+      "macro_f1": 0.9379,
+      "macro_f1_crosslingual": 0.9473,
+      "macro_f1_monolingual": 0.9202,
+      "evidence_grounded_rate": 0.8741,
+      "avg_prompt_tokens": 5307.7,
+      "avg_completion_tokens": 57.4,
+      "latency_mean_ms": 2253.2,
+      "latency_p95_ms": 2812.4,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 54,
+          "macro_f1": 0.8763,
+          "accuracy": 0.8889
+        },
+        "de->fr": {
+          "count": 53,
+          "macro_f1": 0.9412,
+          "accuracy": 0.9434
+        },
+        "de->it": {
+          "count": 51,
+          "macro_f1": 0.9426,
+          "accuracy": 0.9412
+        },
+        "fr->de": {
+          "count": 44,
+          "macro_f1": 0.9326,
+          "accuracy": 0.9318
+        },
+        "fr->fr": {
+          "count": 57,
+          "macro_f1": 0.9485,
+          "accuracy": 0.9474
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 0.9465,
+          "accuracy": 0.9474
+        },
+        "it->de": {
+          "count": 44,
+          "macro_f1": 0.9291,
+          "accuracy": 0.9318
+        },
+        "it->fr": {
+          "count": 53,
+          "macro_f1": 0.977,
+          "accuracy": 0.9811
+        },
+        "it->it": {
+          "count": 56,
+          "macro_f1": 0.9284,
+          "accuracy": 0.9286
+        }
+      }
+    },
+    {
+      "file": "20261006T140852_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_devrest_boost2.json",
+      "timestamp": "2026-10-06T14:08:52",
+      "split": "dev_rest",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "devrest_boost2",
+      "n": 643,
+      "macro_f1": 0.9358,
+      "macro_f1_crosslingual": 0.9321,
+      "macro_f1_monolingual": 0.9422,
+      "evidence_grounded_rate": 0.8659,
+      "avg_prompt_tokens": 5359.2,
+      "avg_completion_tokens": 58.7,
+      "latency_mean_ms": 2156.2,
+      "latency_p95_ms": 2913.2,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 70,
+          "macro_f1": 0.9876,
+          "accuracy": 0.9857
+        },
+        "de->fr": {
+          "count": 83,
+          "macro_f1": 0.975,
+          "accuracy": 0.9759
+        },
+        "de->it": {
+          "count": 55,
+          "macro_f1": 0.87,
+          "accuracy": 0.8727
+        },
+        "fr->de": {
+          "count": 69,
+          "macro_f1": 0.8823,
+          "accuracy": 0.8841
+        },
+        "fr->fr": {
+          "count": 84,
+          "macro_f1": 0.8679,
+          "accuracy": 0.869
+        },
+        "fr->it": {
+          "count": 76,
+          "macro_f1": 0.986,
+          "accuracy": 0.9868
+        },
+        "it->de": {
+          "count": 61,
+          "macro_f1": 0.9026,
+          "accuracy": 0.9016
+        },
+        "it->fr": {
+          "count": 72,
+          "macro_f1": 0.9435,
+          "accuracy": 0.9444
+        },
+        "it->it": {
+          "count": 73,
+          "macro_f1": 0.9852,
+          "accuracy": 0.9863
+        }
+      }
+    },
+    {
+      "file": "20261006T141226_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_boost2.json",
+      "timestamp": "2026-10-06T14:12:26",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "boost2",
+      "n": 402,
+      "macro_f1": 0.9328,
+      "macro_f1_crosslingual": 0.9233,
+      "macro_f1_monolingual": 0.951,
+      "evidence_grounded_rate": 0.7835,
+      "avg_prompt_tokens": 5576.3,
+      "avg_completion_tokens": 57.6,
+      "latency_mean_ms": 2097.9,
+      "latency_p95_ms": 2968.8,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9505,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9485,
+          "accuracy": 0.9583
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.8958,
+          "accuracy": 0.913
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.8248,
+          "accuracy": 0.8333
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.8329,
+          "accuracy": 0.8605
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 0.9523,
+          "accuracy": 0.9531
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 0.9345,
+          "accuracy": 0.9394
+        }
+      }
+    },
+    {
+      "file": "20261006T142147_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final.json",
+      "timestamp": "2026-10-06T14:21:47",
+      "split": "test",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final",
+      "n": 402,
+      "macro_f1": 0.9402,
+      "macro_f1_crosslingual": 0.9344,
+      "macro_f1_monolingual": 0.9518,
+      "evidence_grounded_rate": 0.7791,
+      "avg_prompt_tokens": 5576.3,
+      "avg_completion_tokens": 58.5,
+      "latency_mean_ms": 2088.7,
+      "latency_p95_ms": 3006.5,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 38,
+          "macro_f1": 0.9505,
+          "accuracy": 0.9474
+        },
+        "de->fr": {
+          "count": 48,
+          "macro_f1": 0.9485,
+          "accuracy": 0.9583
+        },
+        "de->it": {
+          "count": 46,
+          "macro_f1": 0.9156,
+          "accuracy": 0.913
+        },
+        "fr->de": {
+          "count": 36,
+          "macro_f1": 0.8248,
+          "accuracy": 0.8333
+        },
+        "fr->fr": {
+          "count": 56,
+          "macro_f1": 0.9564,
+          "accuracy": 0.9643
+        },
+        "fr->it": {
+          "count": 38,
+          "macro_f1": 1.0,
+          "accuracy": 1.0
+        },
+        "it->de": {
+          "count": 43,
+          "macro_f1": 0.9259,
+          "accuracy": 0.9302
+        },
+        "it->fr": {
+          "count": 64,
+          "macro_f1": 0.9523,
+          "accuracy": 0.9531
+        },
+        "it->it": {
+          "count": 33,
+          "macro_f1": 0.9395,
+          "accuracy": 0.9394
+        }
+      }
+    },
+    {
+      "file": "20261006T143106_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final_dev_full.json",
+      "timestamp": "2026-10-06T14:31:06",
+      "split": "dev",
+      "task": "advanced",
+      "strategy": "hybrid",
+      "prompt_mode": "ids",
+      "top_k": 12,
+      "passage_chars": 0,
+      "ids_reason": false,
+      "thinking": false,
+      "translate_claim": false,
+      "page_max_chars": 3000,
+      "speaker_boost": 2,
+      "speaker_hint": false,
+      "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+      "tag": "final_dev_full",
+      "n": 1093,
+      "macro_f1": 0.9478,
+      "macro_f1_crosslingual": 0.9487,
+      "macro_f1_monolingual": 0.9452,
+      "evidence_grounded_rate": 0.8641,
+      "avg_prompt_tokens": 5334.0,
+      "avg_completion_tokens": 58.4,
+      "latency_mean_ms": 2029.7,
+      "latency_p95_ms": 2757.1,
+      "errors": 0,
+      "by_language_pair": {
+        "de->de": {
+          "count": 124,
+          "macro_f1": 0.956,
+          "accuracy": 0.9597
+        },
+        "de->fr": {
+          "count": 136,
+          "macro_f1": 0.9699,
+          "accuracy": 0.9706
+        },
+        "de->it": {
+          "count": 106,
+          "macro_f1": 0.9406,
+          "accuracy": 0.9434
+        },
+        "fr->de": {
+          "count": 113,
+          "macro_f1": 0.8958,
+          "accuracy": 0.8938
+        },
+        "fr->fr": {
+          "count": 141,
+          "macro_f1": 0.9033,
+          "accuracy": 0.9007
+        },
+        "fr->it": {
+          "count": 114,
+          "macro_f1": 0.9816,
+          "accuracy": 0.9825
+        },
+        "it->de": {
+          "count": 105,
+          "macro_f1": 0.9243,
+          "accuracy": 0.9238
+        },
+        "it->fr": {
+          "count": 125,
+          "macro_f1": 0.9686,
+          "accuracy": 0.968
+        },
+        "it->it": {
+          "count": 129,
+          "macro_f1": 0.9842,
+          "accuracy": 0.9845
         }
       }
     }

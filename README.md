@@ -28,7 +28,7 @@ held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
 | Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Advanced** — booklet PDF + claim + vote | **0.925** | 0.916 | 5,628 | 58 | 2.1 s / 3.2 s |
+| **Advanced** — booklet PDF + claim + vote | **0.940** | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
 | **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 ### Full booklet vs. selected context (advanced task, same 150 test pairs)
@@ -49,8 +49,9 @@ Every number comes from a saved run in [`track_2a/results/`](track_2a/results/).
 - **Over-confident:** the label probability is ~1.0 for wrong answers too, so confidence thresholds cannot catch errors.
 - **Sometimes self-contradictory:** in ~2 % of answers the label and the stated confidences disagree; the label is right
   3× as often, so we keep it (+0.008 F1 on test).
-- **Speaker attribution is the main weakness:** claims attributed to the initiative committee fail 16–18 % of the time
-  (2–8 % otherwise), even with every booklet page labelled by who is speaking.
+- **Speaker attribution was mostly a retrieval problem:** committee claims failed 13 % of the time because the committee's
+  own page was often ranked just outside the context; always including the named side's best pages brought this to 7 %,
+  the same as claims without a speaker.
 - **Thinking pays in quality, not in efficiency:** reasoning before the answer adds ~2 F1 points (dev) but costs ~22× the output
   tokens and ~11× the latency, so it is off by default (`THINKING=true` to reproduce).
 - **8B vs. 70B:** 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker (0.851 vs. 0.908 on 450 dev pairs).

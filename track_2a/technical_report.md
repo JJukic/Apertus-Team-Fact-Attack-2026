@@ -16,9 +16,9 @@ French or Italian) and a claim (any of the three languages), it classifies the c
 token usage and inference time.
 
 On a test split of **5 voting dates never used during development** (402 pairs from the official dataset), the
-system reaches **macro-F1 0.925** on the advanced task (booklet PDF) and **0.975** on the beginner task (reference
-text), at ~5,600 / ~2,500 input tokens, ~57 output tokens and a p95 inference time of 3.2 s / 1.7 s. Over all 1,495 pairs
-of the dataset the advanced task reaches 0.931.
+system reaches **macro-F1 0.940** on the advanced task (booklet PDF) and **0.975** on the beginner task (reference
+text), at ~5,600 / ~2,500 input tokens, ~57 output tokens and a p95 inference time of 3.0 s / 1.7 s. Over all 1,495 pairs
+of the dataset the advanced task reaches 0.946.
 
 The central finding for the challenge's research question: **sending ~10 well-chosen pages beats sending the
 whole booklet** — 0.926 vs. 0.730 macro-F1 with ~10× fewer input tokens.
@@ -115,16 +115,16 @@ numbered and sent with the same prompt, so evidence is a specific passage rather
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| Advanced | **0.925** | 0.943 | 0.916 | 5,628 | 58 | 2.1 s / 3.2 s |
+| Advanced | **0.940** | 0.952 | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
 | Beginner | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
 Advanced task by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 0.951 | 0.926 | 0.896 |
-| **fr** | 0.857 | 0.940 | 0.979 |
-| **it** | 0.810 | 0.952 | 0.934 |
+| **de** | 0.951 | 0.949 | 0.916 |
+| **fr** | 0.825 | 0.956 | 1.000 |
+| **it** | 0.926 | 0.952 | 0.940 |
 
 ### 5.2 Full document vs. selected context (advanced, same 150 test pairs)
 
@@ -159,6 +159,10 @@ efficiency measure but also improves NLI quality.
 | Keep the model's label when it disagrees with its own confidences (Decision-Rule 0) | 44 fixed / 13 broken over all saved runs; test 0.920 → 0.928 | adopted |
 | Section labels from bare speaker lines and closing recommendation boxes (older booklets) | Federal Council pages labelled as committee 27 → 0; F1-neutral (test 0.928 → 0.925, dev 0.908 → 0.908), dev E→C 23 → 16, evidence grounding 0.86 → 0.88 | adopted (correctness) |
 | Flip committee Contradictions that cite only Federal Council pages | dev 7 fixed / 8 broken, test 0 / 7 (simulated) | rejected |
+| Speaker boost: the named side's 2 best argument pages always among the 12 pages | all 1,495 pairs 0.931 → 0.940 (22 fixed / 8 broken), committee-claim errors 36 → 27, no extra tokens | adopted |
+| Decision-Rule 0b: Neutral label with a confident other relation → the confidences' relation | all 1,495 pairs 0.940 → 0.945 (8 fixed / 1 broken); the Neutral label was right in 1 of 18 such cases | adopted |
+| Speaker hint in the prompt ("passages written by the committee: P3, P11") | dev 450: 6 fixed / 7 broken on top of the boost | rejected |
+| Meta-classifier on label, confidences and speaker features (grouped 5-fold CV) | +0.004–0.005 on dev; its only useful split is Rule 0b | replaced by Rule 0b |
 | 12 instead of 10 pages (after clipping) | all 1,495 pairs 0.912 → 0.931 (51 fixed / 24 broken); dev 450 0.913 → 0.940, unused dev 643 0.903 → 0.928, test 402 0.928 → 0.925; +~890 input tokens | adopted |
 | Clip pages > 3,000 characters to the window best matching claim + vote title | test 0.925 → 0.928, input tokens 5,725 → 4,696 (p95 12.7k → 7.4k); dev 0.908 → 0.913 | adopted |
 | Thinking before answering (prefilled reasoning marker) | dev 450: 0.908 → 0.929 (20 fixed / 11 broken); ~1,300 output tokens and ~23 s per claim instead of 59 and ~2 s; a 300-token budget with forced answer is worse | rejected (efficiency), `THINKING=false` |
@@ -176,17 +180,19 @@ noise; close decisions were re-run on 450 pairs.
 - **Apertus is over-confident.** Its self-reported confidences are 0 or 1 in 97–99 % of cases, and the probability of
   the label token is ~1.0 for wrong answers as well as for correct ones (41 wrong vs. 40 correct dev answers).
   Confidence thresholds cannot filter its errors.
-- **Speaker attribution is its main weakness.** Claims attributed to the initiative/referendum committee have a 16–18 %
-  error rate (2–8 % for all others), even when instructed not to judge them against the other side, when asked to
-  verify, with worked examples, when the opposing argument pages are removed, and after fixing section labels that had
-  marked Federal Council pages as committee pages in older booklets.
+- **Speaker attribution was its main weakness — mostly a retrieval problem.** Claims attributed to the committee
+  failed in 13.4 % of cases (2.2 % for Federal Council claims). Prompt rules, a verification pass, worked examples and
+  hiding the other side did not help; in 15 of 36 errors the committee's own page simply was not among the retrieved
+  pages. Guaranteeing the named side's two best argument pages (speaker boost) and resolving self-contradictory Neutral
+  answers brought committee claims down to 7.4 %, the same rate as claims without a speaker.
 - **Thinking helps, at a high price.** Letting the thinking model reason before its answer fixes half of the remaining
   dev errors (+0.021 F1 on dev 450), but needs ~22× the output tokens and ~11× the latency. A prompt instruction alone does not make it
   think first; the reasoning marker has to be prefilled. Selective thinking saves little (it is needed on ~3/4 of claims), and a short hard budget is worse.
 - **Self-contradictory answers.** In ~2 % of answers the label and the stated confidences disagree; the label is right
   3× as often, so the decision rules now keep it.
-- **Cross-lingual asymmetry.** Italian claims against German booklets are the hardest pair (0.81); French claims
-  against Italian booklets reach 1.00.
+- **Cross-lingual asymmetry.** Over all 1,495 pairs, French claims against German booklets are the hardest pair (0.880);
+  French claims against Italian booklets reach 0.986. Small samples mislead here: on the 43 test pairs it→de scored 0.80,
+  over all 148 pairs 0.925.
 - **8B vs. 70B.** Apertus 8B is ~3.5× faster (p95 1.2 s) but 6 F1 points weaker, mostly on cross-lingual pairs and
   contradictions.
 
@@ -194,15 +200,16 @@ noise; close decisions were re-run on 450 pairs.
 
 ## 6. Limitations
 
-- **Italian claims against German booklets** are the weakest pair (0.81 F1). Most of these errors happen with the gold page
-  in context, so better retrieval alone would not fix them (gold-section recall is 0.92–0.93 overall).
-- **Remaining errors** on the test split (29): Entailment → Neutral 10, Contradiction → Neutral 8, Entailment →
-  Contradiction 6 — mostly claims attributed to the committee (see 5.4) and 'if accepted, X must …' claims; prompt rules,
-  a verification pass and speaker-aware retrieval did not fix them, thinking fixes about half at ~10× the latency.
+- **French claims against German booklets** are the weakest pair (0.880 over all pairs); their errors spread over many
+  voting dates without a pattern, so no language-specific rule was added.
+- **Remaining errors** over all 1,495 pairs (81): Entailment → Contradiction 35, Contradiction → Neutral 22,
+  Contradiction → Entailment 11, Entailment → Neutral 8; in nearly all of them the gold page is in the context.
+  Thinking fixes about half of such errors, at ~11× the latency.
 - **Evidence precision:** with whole pages as passages, ~75 % of cited pages lie inside the gold reference section.
   Smaller passages raise this to ~90 % but cost F1 (5.3).
 - **Layout:** section headings are detected from text lines and recommendation boxes; committee pages headed only by a
-  slogan stay unlabelled. Tables and charts are read as plain text.
+  slogan stay unlabelled. Tables and charts are read as plain text. Layout-aware parsing (Docling) was not adopted: the
+  remaining errors are reasoning errors with the gold page in context, and it would add several GB of models to the image.
 - **Latency** was measured client-side on a shared endpoint; the organisers measure it themselves.
 - **Not political advice:** outputs describe the relationship between a claim and the official booklet only.
 

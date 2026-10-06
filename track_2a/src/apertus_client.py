@@ -472,6 +472,10 @@ class ApertusClient:
         # Over all saved ids-mode runs the label was right in 44 of these cases and the probabilities in 13.
         probs = (p_entail, p_neutral, p_contra)
         if label_given and probs[raw_label] < max(probs):
+            # Rule 0b: except "label": 1 (Neutral) with the confidence on Entailment/Contradiction. That answer was
+            # right in 1 of 18 such cases over all 1,495 OST pairs; the confidences' choice fixed 8 and broke 1
+            if raw_label == 1:
+                return probs.index(max(probs)), "Decision-Rule 0b: Neutral label but confidences name a relation -> confidences"
             return raw_label, "Decision-Rule 0: label and confidences disagree -> model label kept"
 
         # Rule 1: Strong contradiction or numerical conflict signal

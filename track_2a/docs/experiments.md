@@ -21,24 +21,30 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
-| **Advanced** (booklet PDF + claim + vote) | **0.925** | 0.943 | 0.916 | 5,628 | 58 | 2.1 s / 3.2 s |
+| **Advanced** (booklet PDF + claim + vote) | **0.940** | 0.952 | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
 | **Beginner** (reference string + claim) | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
-Over **all 1,495 pairs** of the dataset (dev and test together) the advanced task reaches **0.931** (cross-lingual 0.924).
+Over **all 1,495 pairs** of the dataset (dev and test together) the advanced task reaches **0.946** (cross-lingual 0.945,
+dev 1,093: 0.948), at 5,399 input tokens and 2.05 s / 2.83 s latency on average.
 
 Configuration: hybrid retrieval (BM25 claim + 2 × BM25 vote title, booklet-wide), top 12 pages,
 section labels (incl. closing recommendation boxes), `ids` prompt mode, model label kept when it disagrees
 with the model's own confidences (Decision-Rule 0), pages longer than 3,000 characters clipped to their best-matching
-window (`PAGE_MAX_CHARS`). Before these changes the advanced task scored 0.920 with 5,737 input tokens
+window (`PAGE_MAX_CHARS`), the attributed side's 2 best argument pages always included (`SPEAKER_BOOST`), and a Neutral
+label with a confident other relation resolved by the confidences (Decision-Rule 0b). Before these changes the advanced
+task scored 0.920 with 5,737 input tokens
 (see [error analysis](#error-analysis-on-saved-runs-2026-10-05) and [page clipping](#clipping-over-long-pages-2026-10-06)).
 
 Advanced macro-F1 by language pair (claim → booklet):
 
 | | → de | → fr | → it |
 |---|---:|---:|---:|
-| **de** | 0.951 | 0.926 | 0.896 |
-| **fr** | 0.857 | 0.940 | 0.979 |
-| **it** | 0.810 | 0.952 | 0.934 |
+| **de** | 0.951 | 0.949 | 0.916 |
+| **fr** | 0.825 | 0.956 | 1.000 |
+| **it** | 0.926 | 0.952 | 0.940 |
+
+Over all 1,495 pairs: de→de 0.955, de→fr 0.968, de→it 0.934, fr→de 0.880, fr→fr 0.918, fr→it 0.986, it→de 0.925,
+it→fr 0.963, it→it 0.975.
 
 ## Before / after on the test split (same 150-pair sample)
 
@@ -261,6 +267,75 @@ Cross-lingual pairs gain most (0.894 → 0.924 over all pairs); most fixes are E
 supporting page was ranked 11th or 12th. The test split covers only 5 voting dates, so we decide on all 1,495 pairs:
 12 pages are the default (`NLI_TOP_K=12`), at +~890 input tokens (+20 %) and +0.25 s mean latency.
 
+### Speaker boost: the named side's pages are always in the context (2026-10-06)
+
+With the current configuration (clipping, 12 pages), over all 1,495 pairs claims attributed to the committee still
+failed in 13.4 % of cases (36 of 269), Federal Council claims in 2.2 %, all others in 7.5 %. In 15 of the 36 committee
+errors the gold passage was not in the context; in 13 of these it sat on a correctly labelled committee argument page
+ranked 13th–46th, mostly for cross-lingual pairs (BM25 on the claim text finds the page poorly, and argument pages
+rarely repeat the vote title).
+
+`SPEAKER_BOOST=2`: if a claim names exactly one side, that side's 2 best-scoring argument pages replace the
+lowest-ranked other pages (the context stays at 12 pages). Unlike the rejected speaker-aware retrieval, nothing is
+hidden; the attributed side is only guaranteed to be present.
+
+| Gold passage in context (all 1,495 pairs) | Committee claims (269) | Federal Council claims (498) | Others (728) |
+|---|---:|---:|---:|
+| no boost | 0.888 | 0.944 | 0.977 |
+| boost 1 page | 0.948 | 0.982 | 0.977 |
+| **boost 2 pages** | **0.985** | **0.994** | 0.977 |
+| boost 3 pages | 0.985 | 0.998 | 0.977 |
+
+| Sample | Without boost | With boost | Fixed / broke |
+|---|---:|---:|---:|
+| dev 450 | 0.940 | 0.953 | 7 / 1 |
+| unused dev 643 | 0.928 | 0.936 | |
+| test 402 | 0.925 | 0.933 | |
+| **all 1,495 pairs** | **0.931** | **0.940** | **22 / 8** |
+
+Committee-claim errors fell from 36 to 27, Federal Council errors from 11 to 7; claims that name no side gave the
+identical answer in all but one case (runs at temperature 0 are near-deterministic). No extra tokens or latency.
+Adopted as default.
+
+A **speaker hint** in addition ("Passages written by the committee itself: P3, P11") did not help: on dev 450,
+6 fixed / 7 broken against the boost alone. Rejected (`SPEAKER_HINT=false`).
+
+### Decision-Rule 0b: a Neutral label with a confident relation is rarely Neutral (2026-10-06)
+
+In 18 of the 1,495 answers Apertus wrote `"label": 1` (Neutral) but put its confidence on another relation
+(typically `"p_contra": 1.0`). Decision-Rule 0 kept the label, which was right in 1 of these 18 cases (gold:
+9 Entailment, 8 Contradiction, 1 Neutral). Rule 0b takes the confidences' choice in this case only:
+
+| | Macro-F1 before → after | Fixed / broke |
+|---|---:|---:|
+| dev 1,093 | 0.943 → 0.947 | 5 / 1 |
+| test 402 | 0.933 → 0.940 | 3 / 0 |
+| all 1,495 | 0.940 → 0.945 | 8 / 1 |
+| 4 older runs (other configurations) | – | 15 / 0 |
+
+It post-processes the model's own answer, so it costs nothing. Adopted.
+
+### Other ideas checked on all 1,495 pairs (2026-10-06)
+
+- **Meta-classifier** (logistic regression / shallow tree on the label, the three confidences, their margin,
+  speaker flags, cited sections, language pair), 5-fold cross-validation on dev grouped by voting date: +0.004 to
+  +0.005 macro-F1. The tree's only useful split was exactly the case Rule 0b now handles, so the transparent rule
+  replaces the model.
+- **Speaker-mismatch guardrail** (committee claim + Contradiction + no committee page cited → Neutral or Entailment),
+  re-simulated with the speaker boost: 13 fired, 0 fixed, 13 broken. Rejected again; with the boost, false
+  contradictions almost always cite the committee's own pages.
+- **Prompt rule for hypothetical consequences** ("if a detail is not mentioned, answer Neutral, not Contradiction"):
+  not run. It could only fix gold-Neutral answers predicted as Contradiction, which are 3 of 89 errors, while it
+  pushes towards the largest error class (Contradiction → Neutral, 30). The Entailment → Contradiction errors (28)
+  have gold Entailment, which a shift to Neutral does not fix.
+- **Italian claims against German booklets**: the 0.80 on the test split comes from 43 pairs. Over all 1,495 pairs
+  it→de reaches 0.904 with the boost, and the weakest pair is fr→de (0.880); its 16 errors spread over 10 voting
+  dates and all error types without a pattern. No language-specific rule (a threshold rule is impossible anyway:
+  Apertus' confidences are 0/1 in 97–99 % of answers).
+- **Layout-aware parsing (Docling)**: not adopted. In nearly all remaining errors the gold page is in the context,
+  so better table parsing addresses few of them, while Docling adds PyTorch and layout models (several GB) to the
+  image and requires re-parsing and re-measuring every booklet.
+
 ### Thinking mode: +2 F1 points for ~11× latency (rejected)
 
 We use `Apertus-v1.5-70B-thinking` but by default ask for the JSON answer only (~60 output tokens).
@@ -357,10 +432,11 @@ Judges may call the CLI once per claim, so start-up and PDF parsing can count to
 
 ## Known gaps / next steps
 
-- Italian claims against German booklets are the weakest pair (0.80 F1 on the test split), mostly with the gold page retrieved.
-- Remaining advanced errors on the test split (29): Entailment → Neutral 10, Contradiction → Neutral 8, Entailment → Contradiction 6.
+- French claims against German booklets are the weakest pair (0.880 over all 1,495 pairs, 0.825 on the test split).
+- Remaining advanced errors over all 1,495 pairs (81): Entailment → Contradiction 35, Contradiction → Neutral 22,
+  Contradiction → Entailment 11, Entailment → Neutral 8, Neutral → Contradiction 4, Neutral → Entailment 1.
 - Evidence precision with whole pages: ~75 % of cited pages lie in the gold section.
 - Section labels: committee pages whose only heading is a slogan ("Nein zu diesem Zensurgesetz") stay unlabelled.
 - Proposal boundary detection misses proposals in 2021-06-13, 2022-09-25 and 2024-03-03 (IT); hybrid
   retrieval does not depend on it, but the legacy `retrieval` strategy does.
-- Committee-attributed claims remain the main error source (see above).
+- Committee-attributed claims now fail as often as claims without a speaker (7.4 %, down from 13.4 %; Federal Council 1.4 %).

@@ -70,3 +70,16 @@ class TestPassageRetriever(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestEnsureSections(unittest.TestCase):
+    def test_best_pages_of_a_section_replace_the_lowest_ranked(self):
+        paras = [{"id": i, "page_number": i, "proposal_id": 1, "section": "COM" if i >= 8 else None,
+                  "text": ("Mieten Kündigung Eigenbedarf " * (10 - i)) + f"Seite {i} Text"} for i in range(10)]
+        retriever = PassageRetriever(paras)
+        plain = retriever.retrieve_hybrid("Mieten Kündigung Eigenbedarf", top_k=4)
+        boosted = retriever.retrieve_hybrid("Mieten Kündigung Eigenbedarf", top_k=4, ensure_sections={"COM": 2})
+        self.assertEqual(len(boosted), 4)
+        self.assertFalse(any(p["section"] == "COM" for p in plain))
+        self.assertEqual(sum(p["section"] == "COM" for p in boosted), 2)
+        self.assertEqual([p["page_number"] for p in boosted[:2]], [p["page_number"] for p in plain[:2]])
