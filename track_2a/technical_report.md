@@ -4,6 +4,8 @@
 - **Event:** Hack Apertus Online (October 1–16, 2026)
 - **Team:** Team Fact Attack 2026 — Josip Jukic, Felipe Wüthrich
 - **Repository:** [GitHub](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026) · **Experiment log:** [docs/experiments.md](docs/experiments.md)
+- **Demo:** Streamlit app (`make web`: claim check with highlighted evidence pages, benchmark dashboard) and the
+  entailment CLI (`python -m src run -i cases.jsonl -o predictions.jsonl`, also inside the Docker image, see 2.5)
 
 ---
 
@@ -56,16 +58,20 @@ opposing viewpoints: the model has to know whether a page states the committee's
 
 ### 2.2 Context selection: hybrid retrieval
 `retriever.py` scores every page of the booklet with normalised BM25 against the claim plus twice the
-normalised BM25 against the vote title, and keeps the top 12 pages (10 before page clipping freed the token budget, see 5.3).
+normalised BM25 against the vote title, and keeps the top 12 pages. Pages longer than 3,000 characters are clipped to
+the window that best matches claim and vote title (plus the page heading).
 
 - The **vote title is written in the booklet's language**, so it anchors the right proposal even when the claim
   is in another language; lexical matching of the claim alone fails for cross-lingual pairs.
 - Our first version filtered hard to one detected proposal. That dropped the per-proposal overview pages at the
   front of the booklet, where the gold passage sits for ~11 % of pairs, and chose the wrong proposal for another
   ~10 %. Booklet-wide scoring raised gold-section recall on the dev split from 0.74 to 0.93.
+- **Speaker boost:** if the claim names a side ("the initiative committee argues …", "selon le Conseil fédéral …"),
+  the two best argument pages of that side are always among the 12 pages, replacing the lowest-ranked others.
+  Without it, the committee's own page was missing in 15 of 36 committee-claim errors.
 
 ### 2.3 Apertus as the NLI model
-The selected pages are numbered `[P1]…[P10]`. The system prompt defines the three labels, tells the model to
+The selected pages are numbered `[P1]…[P12]`. The system prompt defines the three labels, tells the model to
 judge only against the passages (not world knowledge), to answer Neutral for topics or details the passages do
 not address, to check claims attributed to an actor only against that actor's text, and to read "recommends
 rejecting X" as supported when the Federal Council and Parliament recommend "No". Apertus answers with a small
@@ -76,10 +82,27 @@ JSON object: three confidences, the label, and the ids of the pages that justify
   than halves inference time (p95 5.5 s → 1.8 s on the dev split) at equal or better F1.
 - For **Neutral**, the evidence list is empty, as required by the output format. If the model predicts 0 or 2
   without citing a page, the top-ranked page is returned as evidence.
+- **Decision rules:** in ~2 % of answers the label and the stated confidences disagree. The label is right 3× as
+  often, so it is kept (Rule 0) — except a Neutral label next to a confident other relation, which was right in only
+  1 of 18 cases and follows the confidences (Rule 0b). Otherwise label and confidences agree and are used as given.
 
 ### 2.4 Beginner task
 The reference string (up to 25k characters) is split into passages of ≤ 700 characters at sentence boundaries,
 numbered and sent with the same prompt, so evidence is a specific passage rather than the whole reference.
+
+### 2.5 CLI and output format
+`python -m src run -i cases.jsonl -o predictions.jsonl` reads the official case format (JSON or JSONL; a case has
+`booklet.path` + `vote` for the advanced task or `reference.text` for the beginner task) and writes one record per case:
+
+```json
+{"id": "case-0042", "label": 2, "label_name": "contradiction",
+ "evidence": [{"page": 7, "text": "<verbatim page text>"}],
+ "metrics": {"input_tokens": 5512, "output_tokens": 58, "inference_time_ms": 1934}}
+```
+
+Evidence is empty for Neutral. The claim language is detected automatically, and a failing case is reported on
+stderr and returned as a valid Neutral record instead of aborting the batch. `python -m src predict` checks a
+single claim.
 
 ---
 
@@ -90,7 +113,8 @@ numbered and sent with the same prompt, so evidence is a specific passage rather
 - **Where it runs:** CSCS inference endpoint (`https://api.inference.cscs.ch/v1`), OpenAI-compatible chat
   completions, temperature 0, retries with exponential backoff.
 - **Role:** Apertus is the only model in the pipeline. It performs the NLI classification and selects the
-  evidence pages; retrieval is lexical (BM25) and runs locally.
+  evidence pages; retrieval is lexical (BM25) and runs locally. Apertus 8B v1.5 was used only for a comparison
+  run (5.3); no other model was used for development or evaluation.
 
 ---
 
@@ -145,28 +169,20 @@ efficiency measure but also improves NLI quality.
 
 | Change | Effect | Decision |
 |---|---|---|
-| Hard numerical override (force Contradiction on number mismatch) | fired 5×, wrong 5× (unmentioned years are Neutral) | off by default |
-| Label-only answer with logprob confidences (8 output tokens) | beginner F1 0.724 (Neutral recall 0.34) | rejected |
 | `ids` answer instead of JSON with reasoning + quotes | beginner 0.973 → 0.980, advanced 0.786 → 0.797, p95 5.5 s → 1.8 s | adopted |
 | Hybrid retrieval instead of proposal filter | advanced 0.797 → 0.862 | adopted |
 | Viewpoint and recommendation rules in the prompt | advanced 0.862 → 0.870, beginner 0.980 → 0.993 | adopted |
+| Decision-Rule 0: keep the label when it disagrees with the confidences | 44 fixed / 13 broken over all saved runs; test 0.920 → 0.928 | adopted |
+| Section labels from bare speaker lines and closing recommendation boxes | Federal Council pages labelled as committee 27 → 0; F1-neutral, evidence grounding 0.86 → 0.88 | adopted |
+| Clip pages > 3,000 characters to the best-matching window | test 0.925 → 0.928, input tokens 5,725 → 4,696 (p95 12.7k → 7.4k) | adopted |
+| 12 instead of 10 pages (after clipping) | all 1,495 pairs 0.912 → 0.931 (51 fixed / 24 broken); +~890 input tokens | adopted |
+| Speaker boost (2.2) | all pairs 0.931 → 0.940 (22 fixed / 8 broken), committee-claim errors 36 → 27, no extra tokens | adopted |
+| Decision-Rule 0b (2.3) | all pairs 0.940 → 0.945 (8 fixed / 1 broken) | adopted |
 | 600-character passages instead of pages (n = 450, paired) | 0.831 vs. 0.908; better evidence precision, fewer tokens | rejected |
-| One-sentence reasoning before the confidences | no gain on a full run, +40 output tokens | rejected |
-| Second, focused verification pass for every "contradiction" | fixed 0 of 23 errors, broke 24 correct answers (0.908 → 0.852) | rejected |
-| Speaker-aware retrieval (hide the opposing side's argument pages) | 0.908 → 0.896 | rejected |
-| Few-shot examples for committee vs. Federal Council claims | 0.908 → 0.906; errors shift from E→C to E→N | rejected |
-| Confidence threshold on label logprobs | wrong answers are as confident as correct ones | rejected |
-| Keep the model's label when it disagrees with its own confidences (Decision-Rule 0) | 44 fixed / 13 broken over all saved runs; test 0.920 → 0.928 | adopted |
-| Section labels from bare speaker lines and closing recommendation boxes (older booklets) | Federal Council pages labelled as committee 27 → 0; F1-neutral (test 0.928 → 0.925, dev 0.908 → 0.908), dev E→C 23 → 16, evidence grounding 0.86 → 0.88 | adopted (correctness) |
-| Flip committee Contradictions that cite only Federal Council pages | dev 7 fixed / 8 broken, test 0 / 7 (simulated) | rejected |
-| Speaker boost: the named side's 2 best argument pages always among the 12 pages | all 1,495 pairs 0.931 → 0.940 (22 fixed / 8 broken), committee-claim errors 36 → 27, no extra tokens | adopted |
-| Decision-Rule 0b: Neutral label with a confident other relation → the confidences' relation | all 1,495 pairs 0.940 → 0.945 (8 fixed / 1 broken); the Neutral label was right in 1 of 18 such cases | adopted |
-| Speaker hint in the prompt ("passages written by the committee: P3, P11") | dev 450: 6 fixed / 7 broken on top of the boost | rejected |
-| Meta-classifier on label, confidences and speaker features (grouped 5-fold CV) | +0.004–0.005 on dev; its only useful split is Rule 0b | replaced by Rule 0b |
-| 12 instead of 10 pages (after clipping) | all 1,495 pairs 0.912 → 0.931 (51 fixed / 24 broken); dev 450 0.913 → 0.940, unused dev 643 0.903 → 0.928, test 402 0.928 → 0.925; +~890 input tokens | adopted |
-| Clip pages > 3,000 characters to the window best matching claim + vote title | test 0.925 → 0.928, input tokens 5,725 → 4,696 (p95 12.7k → 7.4k); dev 0.908 → 0.913 | adopted |
-| Thinking before answering (prefilled reasoning marker) | dev 450: 0.908 → 0.929 (20 fixed / 11 broken); ~1,300 output tokens and ~23 s per claim instead of 59 and ~2 s; a 300-token budget with forced answer is worse | rejected (efficiency), `THINKING=false` |
-| Translate cross-lingual claims into the booklet language first | dev 0.908 → 0.919, test 0.925 → 0.923 (14 fixed / 11 broken overall); +0.6 s | rejected (noise) |
+| Thinking before answering (prefilled reasoning marker) | dev 450: 0.908 → 0.929 (20 fixed / 11 broken); ~1,300 output tokens and ~23 s per claim instead of 59 and ~2 s; a 300-token budget is worse | rejected (efficiency) |
+| Translate cross-lingual claims into the booklet language first | dev 0.908 → 0.919, test 0.925 → 0.923 (14 fixed / 11 broken); +0.6 s | rejected (noise) |
+| Other fixes for speaker attribution: second verification pass, hiding the opposing side, few-shot examples, speaker hint in the prompt, flipping committee contradictions | each broke at least as many answers as it fixed (verification pass: 0 fixed / 24 broken) | rejected |
+| Other answer formats and filters: label-only answer with logprobs, one-sentence reasoning, confidence thresholds, numerical override, meta-classifier | no gain, or worse (label-only: beginner 0.724); the meta-classifier's only useful split became Rule 0b | rejected |
 | Apertus 8B instead of 70B (450 dev pairs) | 0.851 vs. 0.908 F1, p95 1.2 s vs. 4.5 s | 70B kept (quality first) |
 
 Full tables: [docs/experiments.md](docs/experiments.md). Runs on 150 pairs carry about ±3 F1 points of sampling
@@ -181,15 +197,11 @@ noise; close decisions were re-run on 450 pairs.
   the label token is ~1.0 for wrong answers as well as for correct ones (41 wrong vs. 40 correct dev answers).
   Confidence thresholds cannot filter its errors.
 - **Speaker attribution was its main weakness — mostly a retrieval problem.** Claims attributed to the committee
-  failed in 13.4 % of cases (2.2 % for Federal Council claims). Prompt rules, a verification pass, worked examples and
-  hiding the other side did not help; in 15 of 36 errors the committee's own page simply was not among the retrieved
-  pages. Guaranteeing the named side's two best argument pages (speaker boost) and resolving self-contradictory Neutral
-  answers brought committee claims down to 7.4 %, the same rate as claims without a speaker.
+  failed in 13.4 % of cases (2.2 % for Federal Council claims), and no prompt change helped. The speaker boost and
+  Rule 0b brought them down to 7.4 %, the same rate as claims without a speaker.
 - **Thinking helps, at a high price.** Letting the thinking model reason before its answer fixes half of the remaining
   dev errors (+0.021 F1 on dev 450), but needs ~22× the output tokens and ~11× the latency. A prompt instruction alone does not make it
   think first; the reasoning marker has to be prefilled. Selective thinking saves little (it is needed on ~3/4 of claims), and a short hard budget is worse.
-- **Self-contradictory answers.** In ~2 % of answers the label and the stated confidences disagree; the label is right
-  3× as often, so the decision rules now keep it.
 - **Cross-lingual asymmetry.** Over all 1,495 pairs, French claims against German booklets are the hardest pair (0.880);
   French claims against Italian booklets reach 0.986. Small samples mislead here: on the 43 test pairs it→de scored 0.80,
   over all 148 pairs 0.925.
@@ -237,13 +249,12 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 
 ## 8. Next steps
 
-1. Error analysis of the remaining Entailment → Contradiction cases on Italian claims (it→de), where the gold page is retrieved.
-2. Multilingual dense retrieval (e.g. BGE-M3) — low priority: perfect retrieval would fix at most ~2 F1 points.
-3. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
-4. Layout-aware parsing (e.g. Docling) for tables and graphical headings.
-5. Fine-tuning or a stronger model for speaker attribution, the error class that resisted prompting and retrieval changes.
-6. Reasoning at lower cost: full thinking gains +0.02 F1 at ~11× latency, and a 300-token budget with a forced answer
-   is worse; fine-tuning a smaller Apertus on the reasoning traces could keep the gain without the latency.
+1. Error analysis of the remaining Entailment → Contradiction cases (35 of 81 errors), where the gold page is in the context.
+2. Return a precise sentence within each cited page as evidence, keeping whole pages as model context.
+3. Reasoning at lower cost: full thinking gains +0.02 F1 at ~11× latency; fine-tuning a smaller Apertus on the
+   reasoning traces could keep the gain without the latency.
+4. Multilingual dense retrieval (e.g. BGE-M3) and layout-aware parsing (e.g. Docling) — low priority: the remaining
+   errors are mostly reasoning errors with the gold page retrieved.
 
 ---
 

@@ -14,7 +14,7 @@ Italian, in any combination.
 
 - **Challenge:** [Hack Apertus Track 2A (OST)](https://hackapertus.ch/)
 - **Team:** Josip Jukic, Felipe Wüthrich
-- **Technical Report:** [track_2a/technical_report.md](track_2a/technical_report.md) · **Experiment log:** [track_2a/docs/experiments.md](track_2a/docs/experiments.md)
+- **Technical Report:** [track_2a/technical_report.md](track_2a/technical_report.md) ([PDF](track_2a/docs/FactAttack_Technical_Report.pdf)) · **Experiment log:** [track_2a/docs/experiments.md](track_2a/docs/experiments.md)
 
 > Predictions describe the relationship between a claim and the official booklet. They are not political advice.
 
@@ -164,6 +164,7 @@ track_2a/
 ├── app.py                    # Streamlit app (claim check, benchmark dashboard from results/)
 ├── technical_report.md       # Architecture, evaluation, limitations
 ├── docs/experiments.md       # Every experiment with its numbers
+├── docs/FactAttack_Technical_Report.pdf  # Submission PDF of the report (docs/build_report_pdf.py)
 ├── results/                  # Saved benchmark runs (+ summary.json)
 ├── data/                     # Demo dataset, 2026-06-14 booklets; hf/ and other booklets are downloaded
 ├── tests/                    # Unit tests
