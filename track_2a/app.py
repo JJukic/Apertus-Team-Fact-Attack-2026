@@ -1075,8 +1075,8 @@ st.markdown("""
 # Cache Resources
 # =============================================================================
 @st.cache_resource
-def get_engine():
-    return ClaimVerificationEngine()
+def get_engine(prompt_mode=config.PROMPT_MODE):
+    return ClaimVerificationEngine(prompt_mode=prompt_mode)
 
 @st.cache_resource
 def get_parser():
@@ -1350,6 +1350,8 @@ with tab_factcheck:
             selected_lang = st.radio("Sprache des Büchleins", ["DE", "FR", "IT"], horizontal=True, key="booklet_lang")
             lang_code = selected_lang.lower()
 
+        method = st.selectbox("Prüfmethode", ["Bisherige Pipeline", "Experiment: Aussagen extrahieren → prüfen"], key="verification_method")
+        engine = get_engine("two_stage" if method.startswith("Experiment") else config.PROMPT_MODE)
         strat = "full" if st.session_state.get("strategy_option", "").startswith("Ganzes") else "hybrid"
         uploaded_file = st.session_state.get("uploaded_pdf")
         pdf_path = config.BOOKLETS_DIR / f"{selected_date}_{lang_code}.pdf"
@@ -1405,7 +1407,7 @@ with tab_factcheck:
             st.file_uploader("Eigenes PDF laden", type=["pdf"], key="uploaded_pdf")
 
     # ── Verification ─────────────────────────────────────────────────────────
-    signature = (claim.strip(), hashlib.sha256(pdf_path.read_bytes()).hexdigest() if pdf_path.exists() else str(pdf_path), vote, strat, claim_lang)
+    signature = (claim.strip(), hashlib.sha256(pdf_path.read_bytes()).hexdigest() if pdf_path.exists() else str(pdf_path), vote, strat, claim_lang, engine.prompt_mode)
     verify_clicked = verify_clicked or st.session_state.pop("auto_verify", False)
     if verify_clicked and claim.strip():
         if not pdf_path.exists():
@@ -1426,7 +1428,7 @@ with tab_factcheck:
                     raise RuntimeError(live.error)
                 result = live
             except Exception as exc:
-                if cached_case and strat == "hybrid":
+                if cached_case and strat == "hybrid" and engine.prompt_mode != "two_stage":
                     result = PredictionResult(**cached_case["cached_result"])
                     notice = ("Die Live-Verbindung zu Apertus ist gerade nicht verfügbar. Angezeigt wird das gespeicherte "
                               "Ergebnis dieses Beispiels (vorab live auf CSCS geprüft).")
@@ -1560,6 +1562,11 @@ with tab_factcheck:
 
             for page_number in sorted({src.page_number for src in result.evidence_sources if src.page_number in pages_by_no}):
                 show_original_page(page_number)
+
+            if result.extracted_statements:
+                with st.expander("Stufe 1: Extrahierte Aussagen"):
+                    for item in result.extracted_statements:
+                        st.write(f"P{item['passage_id']}: {item['text']}")
 
             with st.expander("Konfidenz & Messwerte", expanded=False):
                 st.markdown(f"""

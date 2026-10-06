@@ -87,6 +87,9 @@ def render_error_analysis(runs, results_dir: Path, preferred_file=None):
     st.write(row.get('reasoning') or 'Keine Begründung gespeichert.')
     if row.get('decision_rule'):
         st.caption('Entscheidungsregel: ' + row['decision_rule'])
+    if row.get('extracted_statements'):
+        with st.expander('Stufe 1: Extrahierte Aussagen'):
+            st.json(row['extracted_statements'])
     st.markdown('**Vom Modell angeführte Belege**')
     evidence = row.get('evidence', [])
     pages = row.get('evidence_pages', [])

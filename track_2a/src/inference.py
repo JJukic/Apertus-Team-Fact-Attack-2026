@@ -47,6 +47,7 @@ class PredictionResult(BaseModel):
     tokens_total: int
     latency_ms: float
     error: Optional[str] = None
+    extracted_statements: List[Dict[str, Any]] = Field(default_factory=list)
     context_pages: List[int] = Field(default_factory=list)  # booklet pages supplied to Apertus
 
     def to_official_dict(self, case_id: Optional[str] = None) -> Dict[str, Any]:
@@ -245,7 +246,7 @@ class ClaimVerificationEngine:
         num_conflict: Optional[NumericalConflictResult] = detect_numerical_conflict(claim, context)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
-        if self.prompt_mode in ("compact", "ids"):
+        if self.prompt_mode in ("compact", "ids", "two_stage"):
             return self._compact_predict(
                 passages=candidate_paras,
                 claim=claim,
@@ -378,7 +379,7 @@ class ClaimVerificationEngine:
         num_conflict = detect_numerical_conflict(claim, reference)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
-        if self.prompt_mode in ("compact", "ids"):
+        if self.prompt_mode in ("compact", "ids", "two_stage"):
             chunks = [{"text": c, "page_number": None, "proposal_id": None} for c in chunk_reference(reference)]
             return self._compact_predict(
                 passages=chunks,
@@ -484,7 +485,10 @@ class ClaimVerificationEngine:
             own = [f"P{k}" for k, p in enumerate(passages, 1) if p.get("section") == side]
             if own:
                 model_claim = f"{model_claim}\n(Passages written by the {_SPEAKER_NAMES[side]} itself: {', '.join(own)})"
-        if self.prompt_mode == "ids":
+        if self.prompt_mode == "two_stage":
+            from src.two_stage import infer_two_stage
+            out = infer_two_stage(self.client, texts, model_claim, claim_language)
+        elif self.prompt_mode == "ids":
             out = self.client.infer(context="", claim=model_claim, claim_language=claim_language, passages=texts)
         else:
             out = self.client.infer_compact(texts, model_claim, claim_language=claim_language, vote=vote)
@@ -527,5 +531,6 @@ class ClaimVerificationEngine:
             tokens_total=out.tokens_total,
             latency_ms=out.latency_ms,
             error=out.error,
+            extracted_statements=out.extracted_statements,
             context_pages=list(dict.fromkeys(p["page_number"] for p in passages if p.get("page_number"))),
         )

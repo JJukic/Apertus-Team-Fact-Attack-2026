@@ -32,6 +32,7 @@ class NLIOutput(BaseModel):
     tokens_total: int = 0
     latency_ms: float = 0.0
     error: Optional[str] = None
+    extracted_statements: List[Dict[str, Any]] = Field(default_factory=list)
     evidence_ids: List[int] = Field(default_factory=list, description="1-based ids of cited passages (compact mode)")
 
 

@@ -242,6 +242,7 @@ class BenchmarkEvaluator:
                 "tokens_completion": p.tokens_completion,
                 "latency_ms": p.latency_ms,
                 "error": p.error,
+                "extracted_statements": p.extracted_statements,
             })
 
         return {
