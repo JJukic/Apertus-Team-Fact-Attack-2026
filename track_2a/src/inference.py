@@ -47,6 +47,7 @@ class PredictionResult(BaseModel):
     tokens_total: int
     latency_ms: float
     error: Optional[str] = None
+    stage_warnings: List[str] = Field(default_factory=list)
     extracted_statements: List[Dict[str, Any]] = Field(default_factory=list)
     context_pages: List[int] = Field(default_factory=list)  # booklet pages supplied to Apertus
 
@@ -246,7 +247,7 @@ class ClaimVerificationEngine:
         num_conflict: Optional[NumericalConflictResult] = detect_numerical_conflict(claim, context)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
-        if self.prompt_mode in ("compact", "ids", "two_stage"):
+        if self.prompt_mode in ("compact", "ids", "two_stage", "sentence_review"):
             return self._compact_predict(
                 passages=candidate_paras,
                 claim=claim,
@@ -379,7 +380,7 @@ class ClaimVerificationEngine:
         num_conflict = detect_numerical_conflict(claim, reference)
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
-        if self.prompt_mode in ("compact", "ids", "two_stage"):
+        if self.prompt_mode in ("compact", "ids", "two_stage", "sentence_review"):
             chunks = [{"text": c, "page_number": None, "proposal_id": None} for c in chunk_reference(reference)]
             return self._compact_predict(
                 passages=chunks,
@@ -481,11 +482,14 @@ class ClaimVerificationEngine:
                 if translation:
                     name = self.client.LANGUAGE_NAMES.get(booklet_lang, booklet_lang)
                     model_claim = f"{claim}\n(Translation into {name}: {translation})"
-        if self.prompt_mode != "two_stage" and config.SPEAKER_HINT and (side := attributed_section(claim)):
+        if self.prompt_mode not in ("two_stage", "sentence_review") and config.SPEAKER_HINT and (side := attributed_section(claim)):
             own = [f"P{k}" for k, p in enumerate(passages, 1) if p.get("section") == side]
             if own:
                 model_claim = f"{model_claim}\n(Passages written by the {_SPEAKER_NAMES[side]} itself: {', '.join(own)})"
-        if self.prompt_mode == "two_stage":
+        if self.prompt_mode == "sentence_review":
+            from src.sentence_review import infer_sentence_review
+            out = infer_sentence_review(self.client, passages, model_claim, claim_language)
+        elif self.prompt_mode == "two_stage":
             from src.two_stage import infer_two_stage
             out = infer_two_stage(self.client, texts, model_claim, claim_language,
                                   source_texts=[p["text"] for p in passages],
@@ -507,7 +511,12 @@ class ClaimVerificationEngine:
 
         sources: List[EvidenceSource] = []
         evidence: List[str] = []
-        if out.label != 1:
+        if out.label != 1 and out.evidence_spans:
+            for span in out.evidence_spans:
+                p = passages[span["passage_id"] - 1]
+                evidence.append(span["text"])
+                sources.append(EvidenceSource(quote=span["text"], page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
+        elif out.label != 1:
             for i in ids:
                 p = passages[i - 1]
                 evidence.append(p["text"])
@@ -535,5 +544,6 @@ class ClaimVerificationEngine:
             latency_ms=out.latency_ms,
             error=out.error,
             extracted_statements=out.extracted_statements,
+            stage_warnings=out.stage_warnings,
             context_pages=list(dict.fromkeys(p["page_number"] for p in passages if p.get("page_number"))),
         )

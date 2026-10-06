@@ -83,6 +83,8 @@ def render_error_analysis(runs, results_dir: Path, preferred_file=None):
     right.metric('Modellvorhersage', LABELS.get(row.get('pred_label'), 'Unbekannt'))
     if row.get('error'):
         st.error(row['error'])
+    for warning in row.get('stage_warnings', []):
+        st.warning(warning)
     st.markdown('**Gespeicherte Modellantwort**')
     st.write(row.get('reasoning') or 'Keine Begründung gespeichert.')
     if row.get('decision_rule'):

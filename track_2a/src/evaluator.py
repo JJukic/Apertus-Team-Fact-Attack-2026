@@ -243,6 +243,7 @@ class BenchmarkEvaluator:
                 "latency_ms": p.latency_ms,
                 "error": p.error,
                 "extracted_statements": p.extracted_statements,
+                "stage_warnings": p.stage_warnings,
             })
 
         return {

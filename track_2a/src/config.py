@@ -43,6 +43,8 @@ PAGE_MAX_CHARS = int(os.getenv("PAGE_MAX_CHARS", "3000"))
 #   'ids'     - JSON with confidences + cited passage ids (default: best F1, ~55 output tokens)
 #   'json'    - JSON with reasoning + verbatim quotes (~150 output tokens)
 #   'compact' - label digit + ids with logprob confidences (fewest tokens, weaker on Neutral)
+#   'two_stage' - experimental quote extraction then judge selected original passages
+#   'sentence_review' - experimental sentence selection and full-context judgment
 PROMPT_MODE = os.getenv("PROMPT_MODE", "ids")
 
 # 'ids' mode: let the model write one short sentence before its confidences (a minimal reasoning step)

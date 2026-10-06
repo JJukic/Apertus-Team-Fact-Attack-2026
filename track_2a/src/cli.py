@@ -319,7 +319,7 @@ def benchmark(
     seed: int = typer.Option(42, "--seed", help="Sampling seed"),
     tag: str = typer.Option("", "--tag", help="Label appended to the saved results file"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
-    prompt_mode: str = typer.Option(config.PROMPT_MODE, "--prompt-mode", "-p", help="'ids', 'json', 'compact' or 'two_stage'"),
+    prompt_mode: str = typer.Option(config.PROMPT_MODE, "--prompt-mode", "-p", help="'ids', 'json', 'compact', 'two_stage' or 'sentence_review'"),
 ):
     """
     Run evaluation over a benchmark (e.g. data/hf/dev.jsonl) and save a Macro-F1 report to results/.

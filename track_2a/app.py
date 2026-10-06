@@ -1350,8 +1350,9 @@ with tab_factcheck:
             selected_lang = st.radio("Sprache des Büchleins", ["DE", "FR", "IT"], horizontal=True, key="booklet_lang")
             lang_code = selected_lang.lower()
 
-        method = st.selectbox("Prüfmethode", ["Bisherige Pipeline", "Experiment: Aussagen extrahieren → prüfen"], key="verification_method")
-        engine = get_engine("two_stage" if method.startswith("Experiment") else config.PROMPT_MODE)
+        method = st.selectbox("Prüfmethode", ["Bisherige Pipeline", "Experiment: Aussagen extrahieren → prüfen", "Experiment: Satz-IDs mit vollständigem Kontext"], key="verification_method")
+        mode = "sentence_review" if method.startswith("Experiment: Satz") else "two_stage" if method.startswith("Experiment") else config.PROMPT_MODE
+        engine = get_engine(mode)
         strat = "full" if st.session_state.get("strategy_option", "").startswith("Ganzes") else "hybrid"
         uploaded_file = st.session_state.get("uploaded_pdf")
         pdf_path = config.BOOKLETS_DIR / f"{selected_date}_{lang_code}.pdf"
@@ -1428,7 +1429,7 @@ with tab_factcheck:
                     raise RuntimeError(live.error)
                 result = live
             except Exception as exc:
-                if cached_case and strat == "hybrid" and engine.prompt_mode != "two_stage":
+                if cached_case and strat == "hybrid" and engine.prompt_mode not in ("two_stage", "sentence_review"):
                     result = PredictionResult(**cached_case["cached_result"])
                     notice = ("Die Live-Verbindung zu Apertus ist gerade nicht verfügbar. Angezeigt wird das gespeicherte "
                               "Ergebnis dieses Beispiels (vorab live auf CSCS geprüft).")
@@ -1527,7 +1528,7 @@ with tab_factcheck:
                 snippets = []
                 for src in result.evidence_sources:
                     page_obj = pages_by_no.get(src.page_number)
-                    snippets.append(best_snippet(page_obj["text"] if page_obj else src.quote, claim))
+                    snippets.append(src.quote if engine.prompt_mode == "sentence_review" else best_snippet(page_obj["text"] if page_obj else src.quote, claim))
                 first = result.evidence_sources[0]
                 primary_quote, primary_page = snippets[0], first.page_number
                 st.markdown(evidence_html(first, snippets[0]), unsafe_allow_html=True)
@@ -1563,6 +1564,8 @@ with tab_factcheck:
             for page_number in sorted({src.page_number for src in result.evidence_sources if src.page_number in pages_by_no}):
                 show_original_page(page_number)
 
+            for warning in result.stage_warnings:
+                st.warning(warning)
             if result.extracted_statements:
                 with st.expander("Stufe 1: Extrahierte Aussagen"):
                     for item in result.extracted_statements:
