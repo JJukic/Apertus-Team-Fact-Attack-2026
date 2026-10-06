@@ -45,10 +45,10 @@ def _stub_client(content: str, top: dict) -> ApertusClient:
 
 class TestCompactInference(unittest.TestCase):
     def test_label_ids_and_probs_are_parsed(self):
-        client = _stub_client("2|P2,P3,P9", {"2": -0.1, "1": -2.5, "0": -6.0})
+        client = _stub_client("2|P2,P3", {"2": -0.1, "1": -2.5, "0": -6.0})
         out = client.infer_compact(["a", "b", "c"], "claim", claim_language="de")
         self.assertEqual(out.label, 2)
-        self.assertEqual(out.evidence_ids, [2, 3])  # P9 is out of range and dropped
+        self.assertEqual(out.evidence_ids, [2, 3])
         self.assertEqual(out.evidence, ["b", "c"])
         self.assertAlmostEqual(out.p_entail + out.p_neutral + out.p_contra, 1.0, places=3)
         self.assertGreater(out.p_contra, out.p_neutral)
@@ -61,12 +61,12 @@ class TestCompactInference(unittest.TestCase):
         self.assertEqual(res.evidence, [])
         self.assertEqual(res.to_official_dict()["evidence"], [])
 
-    def test_missing_ids_fall_back_to_top_passage(self):
+    def test_missing_ids_are_reported_without_inventing_evidence(self):
         engine = ClaimVerificationEngine(apertus_client=_stub_client("0|", {"0": -0.01}), prompt_mode="compact")
         res = engine.verify_premise("x", "Erster Absatz mit genug Text darin.\n\nZweiter Absatz mit genug Text darin.")
         self.assertEqual(res.label, 0)
-        self.assertEqual(len(res.evidence), 1)
-        self.assertIn("evidence fallback", res.decision_rule)
+        self.assertEqual(res.evidence, [])
+        self.assertIn("evidence:", res.error)
 
 
 class TestChunking(unittest.TestCase):

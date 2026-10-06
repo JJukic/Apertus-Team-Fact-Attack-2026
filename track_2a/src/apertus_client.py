@@ -115,21 +115,14 @@ class ApertusClient:
 
         choice = response.choices[0]
         content = (choice.message.content or "").strip()
-        m = re.match(r"\s*\**\s*([012])", content)
+        m = re.fullmatch(r"([012])\|\s*((?:P?\d+\s*(?:,\s*P?\d+\s*)*)?)", content)
         probs = self._label_probs(choice)
-        if m:
-            label = int(m.group(1))
-        elif probs:
-            label = max(probs, key=probs.get)
-        else:
-            return NLIOutput(label=1, reasoning=f"Unparseable answer: {content!r}", error=f"parse: {content!r}", latency_ms=latency_ms)
-
-        ids_part = content.split("|", 1)[1] if "|" in content else ""
-        ids = []
-        for tok in re.findall(r"\d+", ids_part):
-            i = int(tok)
-            if 1 <= i <= len(passages) and i not in ids:
-                ids.append(i)
+        if not m:
+            return NLIOutput(label=1, reasoning="Invalid compact response", error="parse: invalid compact response", latency_ms=latency_ms)
+        label = int(m.group(1))
+        ids = list(dict.fromkeys(int(tok) for tok in re.findall(r"\d+", m.group(2))))
+        if any(not 1 <= i <= len(passages) for i in ids):
+            return NLIOutput(label=1, reasoning="Invalid passage id", error="parse: invalid passage id", latency_ms=latency_ms)
 
         usage = getattr(response, "usage", None)
         tp = getattr(usage, "prompt_tokens", None) or self._estimate_tokens(self.COMPACT_SYSTEM_PROMPT + user_prompt)
@@ -261,7 +254,11 @@ class ApertusClient:
         if self.mock:
             # Deterministic heuristic mock for offline development and testing
             latency_ms = (time.time() - start_time) * 1000 + 15.0
-            return self._mock_infer(context, claim, latency_ms)
+            out = self._mock_infer(context, claim, latency_ms)
+            if passages is not None and out.label != 1 and passages:
+                out.evidence_ids = [1]
+                out.evidence = [passages[0]]
+            return out
 
         system_prompt = (
             "You are an expert multilingual document-grounded Natural Language Inference (NLI) system "
@@ -396,13 +393,16 @@ class ApertusClient:
             tokens_total += forced_prompt + forced_completion
 
             label_given = "label" in parsed_json
-            raw_label = int(parsed_json.get("label", 1))
-            if raw_label not in (0, 1, 2):
-                raw_label, label_given = 1, False
+            raw_label = parsed_json.get("label")
+            if type(raw_label) is not int or raw_label not in (0, 1, 2):
+                raise ValueError("label must be an integer in 0, 1, 2")
 
             p_entail = float(parsed_json.get("p_entail", 0.0))
             p_neutral = float(parsed_json.get("p_neutral", 0.0))
             p_contra = float(parsed_json.get("p_contra", 0.0))
+
+            if not all(math.isfinite(p) and 0 <= p <= 1 for p in (p_entail, p_neutral, p_contra)):
+                raise ValueError("confidences must be finite values between 0 and 1")
 
             # Apply Calibrated Decision Arbiter
             final_label, decision_rule = self._apply_calibrated_decision(
@@ -415,10 +415,9 @@ class ApertusClient:
             evidence_ids: List[int] = []
             if passages is not None:
                 raw_ids = parsed_json.get("evidence_ids", [])
-                for tok in re.findall(r"\d+", json.dumps(raw_ids)):
-                    i = int(tok)
-                    if 1 <= i <= len(passages) and i not in evidence_ids:
-                        evidence_ids.append(i)
+                if not isinstance(raw_ids, list) or any(type(i) is not int or not 1 <= i <= len(passages) for i in raw_ids):
+                    raise ValueError("evidence_ids must contain valid integer passage ids")
+                evidence_ids = list(dict.fromkeys(raw_ids))
                 evidence = [passages[i - 1] for i in evidence_ids]
 
             return NLIOutput(
@@ -530,25 +529,7 @@ class ApertusClient:
                 except Exception:
                     pass
             
-            # Regex fallback
-            import re
-            label_match = re.search(r'"label"\s*:\s*([012])', text)
-            p_entail_match = re.search(r'"p_entail"\s*:\s*([0-9.]+)', text)
-            p_neutral_match = re.search(r'"p_neutral"\s*:\s*([0-9.]+)', text)
-            p_contra_match = re.search(r'"p_contra"\s*:\s*([0-9.]+)', text)
-            
-            ids_match = re.search(r'"evidence_ids"\s*:\s*\[([^\]]*)\]', text)
-            if label_match:
-                return {
-                    "evidence_ids": re.findall(r"\d+", ids_match.group(1)) if ids_match else [],
-                    "label": int(label_match.group(1)),
-                    "p_entail": float(p_entail_match.group(1)) if p_entail_match else 0.0,
-                    "p_neutral": float(p_neutral_match.group(1)) if p_neutral_match else 0.0,
-                    "p_contra": float(p_contra_match.group(1)) if p_contra_match else 0.0,
-                    "reasoning": "Parsed via regex fallback",
-                    "evidence": []
-                }
-            return {"label": 1, "reasoning": "Could not parse model response as JSON", "evidence": []}
+            raise ValueError("Could not parse model response as JSON")
 
     @staticmethod
     def _estimate_tokens(text: str) -> int:

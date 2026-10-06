@@ -10,6 +10,11 @@ import json
 import time
 import re
 import html
+import hashlib
+import base64
+from io import BytesIO
+from pypdf import PdfReader, PdfWriter
+import streamlit.components.v1 as components
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 import streamlit as st
@@ -1348,8 +1353,10 @@ with tab_factcheck:
         uploaded_file = st.session_state.get("uploaded_pdf")
         pdf_path = config.BOOKLETS_DIR / f"{selected_date}_{lang_code}.pdf"
         if uploaded_file is not None:
-            pdf_path = config.BOOKLETS_DIR / f"custom_{uploaded_file.name}"
-            pdf_path.write_bytes(uploaded_file.getbuffer())
+            upload_bytes = uploaded_file.getvalue()
+            pdf_path = config.BOOKLETS_DIR / f"custom_{hashlib.sha256(upload_bytes).hexdigest()}.pdf"
+            if not pdf_path.exists():
+                pdf_path.write_bytes(upload_bytes)
             st.success(f"✓ {uploaded_file.name} geladen")
 
         vote_options = [VOTE_AUTO] + ([] if uploaded_file is not None else DEMO_VOTES.get(pdf_path.name, []))
@@ -1397,7 +1404,7 @@ with tab_factcheck:
             st.file_uploader("Eigenes PDF laden", type=["pdf"], key="uploaded_pdf")
 
     # ── Verification ─────────────────────────────────────────────────────────
-    signature = (claim.strip(), str(pdf_path), vote, strat, claim_lang)
+    signature = (claim.strip(), hashlib.sha256(pdf_path.read_bytes()).hexdigest() if pdf_path.exists() else str(pdf_path), vote, strat, claim_lang)
     verify_clicked = verify_clicked or st.session_state.pop("auto_verify", False)
     if verify_clicked and claim.strip():
         if not pdf_path.exists():
@@ -1496,6 +1503,22 @@ with tab_factcheck:
                 return (f'<div class="evidence-block animate-in"><div class="evidence-header">{tags}</div>'
                         f'<p class="evidence-quote">«{html.escape(snippet)}»</p></div>')
 
+            def show_original_page(page_number: int):
+                with st.expander(f"Original-PDF · Seite {page_number}"):
+                    writer = PdfWriter()
+                    writer.add_page(PdfReader(pdf_path).pages[page_number - 1])
+                    buffer = BytesIO()
+                    writer.write(buffer)
+                    page_bytes = buffer.getvalue()
+                    encoded = base64.b64encode(page_bytes).decode("ascii")
+                    components.html(
+                        f'<iframe title="Original-PDF Seite {page_number}" src="data:application/pdf;base64,{encoded}" width="100%" height="600"></iframe>',
+                        height=620,
+                    )
+                    st.download_button("PDF-Seite herunterladen", page_bytes,
+                                       file_name=f"beleg_seite_{page_number}.pdf", mime="application/pdf",
+                                       key=f"pdf_evidence_{page_number}")
+
             if result.label != 1 and result.evidence_sources:
                 st.markdown('<div class="claim-stage-label">Belegstellen im Abstimmungsbüchlein</div>', unsafe_allow_html=True)
                 snippets = []
@@ -1533,6 +1556,9 @@ with tab_factcheck:
                     <div class="page-chips">{chips}</div>
                 </div>
                 """, unsafe_allow_html=True)
+
+            for page_number in sorted({src.page_number for src in result.evidence_sources if src.page_number in pages_by_no}):
+                show_original_page(page_number)
 
             with st.expander("Konfidenz & Messwerte", expanded=False):
                 st.markdown(f"""

@@ -192,9 +192,9 @@ class ClaimVerificationEngine:
         self.pdf_parser = PDFParser()
 
     def _get_booklet_data(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:
-        path_str = str(Path(pdf_path).resolve())
+        path_str = hashlib.sha256(Path(pdf_path).read_bytes()).hexdigest()
         if path_str not in _GLOBAL_BOOKLET_CACHE:
-            parsed = load_parsed_booklet(path_str, self.pdf_parser)
+            parsed = load_parsed_booklet(pdf_path, self.pdf_parser)
             _GLOBAL_BOOKLET_CACHE[path_str] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
         return _GLOBAL_BOOKLET_CACHE[path_str]
 
@@ -495,9 +495,8 @@ class ClaimVerificationEngine:
 
         ids = list(out.evidence_ids)
         decision_rule = out.decision_rule_applied
-        if out.label != 1 and not ids and passages:
-            ids = [1]  # model cited nothing: fall back to the top-ranked passage
-            decision_rule = f"{decision_rule or ''} | evidence fallback: top passage".strip(" |")
+        if out.label != 1 and not ids:
+            out.error = out.error or "evidence: model supplied no valid supporting passage"
 
         sources: List[EvidenceSource] = []
         evidence: List[str] = []
