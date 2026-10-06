@@ -92,7 +92,9 @@ numbered and sent with the same prompt, so evidence is a specific passage rather
 
 ### 2.5 CLI and output format
 `python -m src run -i cases.jsonl -o predictions.jsonl` reads the official case format (JSON or JSONL; a case has
-`booklet.path` + `vote` for the advanced task or `reference.text` for the beginner task) and writes one record per case:
+`booklet.path` + `vote` for the advanced task or `reference.text` for the beginner task) as well as rows of the OST
+dataset on Hugging Face (`claim`, `reference_string`, `booklet_url`, `vote`; also Parquet or CSV), and writes one
+record per case:
 
 ```json
 {"id": "case-0042", "label": 2, "label_name": "contradiction",
@@ -142,6 +144,9 @@ single claim.
 | Advanced | **0.940** | 0.952 | 0.934 | 5,576 | 59 | 2.1 s / 3.0 s |
 | Beginner | **0.975** | 0.984 | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
 
+Evidence is given for every Entailment / Contradiction prediction; 78 % of the cited pages (advanced) and 100 % of the
+cited passages (beginner) lie inside the human-annotated reference section.
+
 Advanced task by language pair (claim → booklet):
 
 | | → de | → fr | → it |
@@ -157,7 +162,8 @@ Advanced task by language pair (claim → booklet):
 | Full booklet | JSON | 0.730 | 59,517 | 202 | 43.7 s* |
 | Proposal filter, top 5 pages | JSON | 0.795 | 3,408 | 157 | 36.2 s* |
 | Proposal filter, top 10 pages | ids | 0.880 | 6,502 | 54 | 4.1 s |
-| **Hybrid, top 10 pages** | **ids** | **0.926** | 6,023 | 55 | 3.8 s |
+| Hybrid, top 10 pages | ids | 0.926 | 6,023 | 55 | 3.8 s |
+| **Final (12 pages, clipping, speaker boost, decision rules)** | **ids** | **0.947** | 5,713 | 59 | 2.8 s |
 
 \* measured while three runs shared the endpoint.
 
@@ -231,7 +237,7 @@ noise; close decisions were re-run on 450 pairs.
 
 ```bash
 export LLM_API_KEY="your_api_key_here"
-make run                    # Docker build + benchmark on the demo set
+make run                    # Docker build + benchmark on the 402-pair test split (~4 min)
 make test                   # unit tests, no API calls
 
 cd track_2a
@@ -260,4 +266,5 @@ Configuration is read from environment variables: `LLM_NAME`, `LLM_BASE_URL`, `L
 
 ## License
 
-Creative Commons Attribution 4.0 (CC-BY-4.0).
+Code: Apache License 2.0 ([LICENSE](../LICENSE)). Documentation, including this report: Creative Commons
+Attribution 4.0 (CC-BY-4.0), as required by the Hack Apertus terms (section 6).

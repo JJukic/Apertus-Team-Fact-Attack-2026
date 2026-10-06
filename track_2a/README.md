@@ -37,7 +37,8 @@ PAGE_MAX_CHARS=3000      # clip over-long pages (0 = off)
 SPEAKER_BOOST=2          # always include the named side's 2 best argument pages (0 = off)
 ```
 
-Without `LLM_API_KEY` the system runs in an offline heuristic mock mode (for tests only).
+Without `LLM_API_KEY` the CLI stops with an error; `--mock` (or `MOCK_APERTUS=true`) runs an offline heuristic mock
+mode for tests only.
 
 ---
 
@@ -48,7 +49,7 @@ Without `LLM_API_KEY` the system runs in an offline heuristic mock mode (for tes
 | **Runtime** | Docker (`make run` builds and runs everything in a `python:3.11-slim` container); locally Python 3.9+ with `requirements.txt` |
 | **Hardware** | Any CPU machine, no GPU: ~300 MB RAM (peak 253 MB measured), ~1.4 GB disk for the image. The model runs remotely |
 | **API keys** | `LLM_API_KEY` for the CSCS inference service (Apertus). `LLM_NAME` and `LLM_BASE_URL` default to `swiss-ai/Apertus-v1.5-70B-thinking` and `https://api.inference.cscs.ch/v1` |
-| **Model weights** | None to download: Apertus v1.5 70B is served by CSCS. No other model is used, neither in the pipeline nor for evaluation |
+| **Model weights** | None to download: Apertus v1.5 70B is served by CSCS. Apertus is the only model in the pipeline; Apertus 8B v1.5 was used once for a comparison run, no other model for development or evaluation |
 | **Network** | At build time: Hugging Face (OST dataset) and admin.ch (booklet PDFs). At run time: the CSCS endpoint |
 
 ---
@@ -64,7 +65,7 @@ python -m src predict -b data/booklets/2026-06-14_fr.pdf \
 # Beginner task: reference text + claim
 python -m src predict -r "Der Bundesrat lehnt die Initiative ab." -c "Le Conseil fédéral recommande d'accepter l'initiative." --json
 
-# Batch file in the official OST format (JSON or JSONL) -> one prediction per case
+# Batch file in the official OST format or as Hugging Face dataset rows (JSON, JSONL, Parquet, CSV)
 python -m src run -i cases.jsonl -o predictions.jsonl
 
 # Evaluation on the OST dataset
@@ -86,15 +87,18 @@ The input/output format is documented in the [overview README](../README.md#offi
 
 ```bash
 export LLM_API_KEY="your_api_key_here"
-make run      # builds the image (downloads + pre-parses the booklets) and runs the benchmark
+make run      # builds the image (downloads + pre-parses the booklets), benchmarks the 402-pair test split (~4 min)
 make test     # unit tests, no API calls
 ```
 
+`NLI_DATASET=data/demo_dataset.jsonl` selects the 28-pair demo set, `NLI_WORKERS` the parallel requests (default 4).
 The report is printed to the console; the run's JSON (metrics, run settings incl. the image's git commit, and
 per-sample predictions) is written to `track_2a/results/` on the host.
 
 Other commands run inside the container the same way, e.g. `docker run --rm -e LLM_API_KEY -v $PWD/cases:/cases
-hackapertus-track2a run -i /cases/cases.jsonl -o /cases/predictions.jsonl`.
+hackapertus-track2a run -i /cases/cases.jsonl -o /cases/predictions.jsonl`. Booklet paths in the cases are resolved
+relative to the input file (so PDFs can sit next to it in the mounted folder); the 60 dataset booklets are already
+in the image, and a `booklet_url` that is not is downloaded.
 
 ---
 

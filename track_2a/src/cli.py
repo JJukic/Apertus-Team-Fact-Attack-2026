@@ -5,7 +5,7 @@ Provides claim verification, benchmark evaluation, and strategy comparison.
 
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 _pkg_root = Path(__file__).resolve().parent.parent
 if str(_pkg_root) not in sys.path:
@@ -31,6 +31,7 @@ from src.inference import ClaimVerificationEngine, PredictionResult
 from src.apertus_client import ApertusClient
 from src import config
 from src.text_utils import guess_language
+from src.hf_dataset import _download
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
 console = Console(legacy_windows=False)
@@ -168,16 +169,69 @@ def resolve_booklet_path(path_str: str, input_dir: Path) -> Path:
     raise FileNotFoundError(f"booklet not found: {path_str}")
 
 
+def load_cases(input_path: Path) -> List[Dict[str, Any]]:
+    """Read cases from JSON (object or list), JSONL, Parquet or CSV (e.g. the OST dataset as published on Hugging Face)."""
+    suffix = input_path.suffix.lower()
+    if suffix in (".parquet", ".csv"):
+        import pandas as pd
+
+        frame = pd.read_parquet(input_path) if suffix == ".parquet" else pd.read_csv(input_path)
+        return [{k: (None if pd.isna(v) else v) for k, v in row.items()} for row in frame.astype(object).to_dict("records")]
+    content = input_path.read_text(encoding="utf-8").strip()
+    if content.startswith("["):
+        return json.loads(content)
+    try:
+        return [json.loads(content)]
+    except json.JSONDecodeError:
+        return [json.loads(line) for line in content.splitlines() if line.strip()]
+
+
+def _text(value: Any) -> str:
+    """A field given as plain text or as {"text": ...}."""
+    if isinstance(value, dict):
+        return str(value.get("text") or "")
+    return "" if value is None else str(value)
+
+
+def case_booklet(item: Dict[str, Any], input_dir: Path) -> Optional[Path]:
+    """
+    The booklet PDF a case refers to, or None if it names none. Accepts {"booklet": {"path": ...}}, "booklet_file",
+    and the Hugging Face fields "booklet_url" + "booklet_publish_date": the 60 dataset booklets are in the Docker
+    image, an unknown one is downloaded from its URL.
+    """
+    booklet = item.get("booklet")
+    path_str = (booklet.get("path") or booklet.get("file")) if isinstance(booklet, dict) else booklet
+    if path_str or item.get("booklet_file"):
+        return resolve_booklet_path(str(path_str or item["booklet_file"]), input_dir)
+    url = item.get("booklet_url")
+    if not url:
+        return None
+    m = re.search(r"/dam/(de|fr|it)/", url)
+    lang = m.group(1) if m else str(item.get("reference_language") or "de")
+    # Files are named after the vote date; the publish date can differ from it, the URL usually carries the vote date
+    dates = [str(item.get("booklet_publish_date") or "")[:10]] + re.findall(r"\d{4}-\d{2}-\d{2}", url)
+    names = [f"{d}_{lang}.pdf" for d in dates if d]
+    for name in names:
+        if (config.BOOKLETS_DIR / name).exists():
+            return config.BOOKLETS_DIR / name
+    target = config.BOOKLETS_DIR / (names[0] if names else Path(url).name)
+    if _download(url, target):
+        return target
+    raise FileNotFoundError(f"booklet could not be downloaded: {url}")
+
+
 @app.command(name="run")
 def run_batch(
     input_path: Path = typer.Option(..., "--input", "-i", help="Path to input JSON or JSONL file conforming to OST task schema"),
     output_path: Optional[Path] = typer.Option(None, "--output", "-o", help="Optional path to output JSON/JSONL file"),
     strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve"),
+    task: str = typer.Option("auto", "--task", "-t", help="'auto' (booklet if the case names one, else reference text), 'advanced' or 'beginner'"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
 ):
     """
-    Execute verification across an official OST evaluation file (JSON or JSONL).
+    Execute verification across an evaluation file: JSON, JSONL, Parquet or CSV, in the case format of the README
+    or with the fields of the OST dataset on Hugging Face (claim, reference_string, booklet_url, vote).
     Supports both Beginner Task (direct reference) and Advanced Task (booklet + vote).
     Outputs results strictly adhering to the Hack Apertus Track 2A schema.
     """
@@ -185,19 +239,10 @@ def run_batch(
         console.print(f"[bold red]Error:[/bold red] Input file not found: {input_path}")
         raise typer.Exit(code=1)
 
-    with open(input_path, "r", encoding="utf-8") as f:
-        content = f.read().strip()
-
-    cases = []
-    if content.startswith("["):
-        cases = json.loads(content)
-    elif content.startswith("{") and "\n{" not in content:
-        try:
-            cases = [json.loads(content)]
-        except Exception:
-            cases = [json.loads(line) for line in content.splitlines() if line.strip()]
-    else:
-        cases = [json.loads(line) for line in content.splitlines() if line.strip()]
+    if task not in ("auto", "advanced", "beginner"):
+        console.print(f"[bold red]Error:[/bold red] --task must be 'auto', 'advanced' or 'beginner', not '{task}'")
+        raise typer.Exit(code=1)
+    cases = load_cases(input_path)
 
     client = ApertusClient(mock=True) if mock else None
     engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
@@ -207,19 +252,27 @@ def run_batch(
     for idx, item in enumerate(cases, 1):
         cid = item.get("id", f"case-{idx:04d}")
         try:
-            claim_obj = item.get("claim", "")
-            claim_text = claim_obj.get("text", "") if isinstance(claim_obj, dict) else str(claim_obj)
-            claim_lang = guess_language(claim_text)  # the input format carries no language field
+            claim_text = _text(item.get("claim"))
+            given_lang = str(item.get("claim_language") or "").lower()
+            claim_lang = given_lang if given_lang in ("de", "fr", "it") else guess_language(claim_text)
+            ref_text = _text(item.get("reference")) or _text(item.get("reference_string"))
 
-            ref_obj = item.get("reference")
-            ref_text = (ref_obj.get("text", "") if isinstance(ref_obj, dict) else str(ref_obj)) if ref_obj else None
+            booklet_pdf = None
+            if task != "beginner":
+                try:
+                    booklet_pdf = case_booklet(item, input_path.parent)
+                except FileNotFoundError:
+                    if task == "advanced" or not ref_text:
+                        raise
+                    print(f"[warning] {cid}: booklet not found, using the reference text", file=sys.stderr)
+            if booklet_pdf is None and task == "advanced":
+                raise FileNotFoundError("case has no booklet (booklet.path, booklet_file or booklet_url)")
+            if booklet_pdf is None and not ref_text:
+                raise ValueError("case has neither a booklet nor a reference text")
 
-            if ref_text:
+            if booklet_pdf is None:
                 res = engine.verify_premise(claim=claim_text, reference=ref_text, claim_language=claim_lang, case_id=cid)
             else:
-                booklet_obj = item.get("booklet", "")
-                booklet_path_str = booklet_obj.get("path", "") if isinstance(booklet_obj, dict) else str(booklet_obj)
-                booklet_pdf = resolve_booklet_path(booklet_path_str, input_path.parent)
                 res = engine.verify_claim(
                     claim=claim_text,
                     booklet_pdf=booklet_pdf,
@@ -276,6 +329,14 @@ def benchmark(
         prompt_mode=prompt_mode,
     )
     _require_model(engine, mock)
+    if dataset and not dataset.exists() and dataset.parent.resolve() == (config.DATA_DIR / "hf").resolve():
+        # The Docker build fetches the OST dataset; if that failed (e.g. offline build), fetch it now
+        from src import hf_dataset
+
+        hf_dataset.main()
+    if dataset and not dataset.exists():
+        console.print(f"[bold red]Error:[/bold red] Dataset not found: {dataset}")
+        raise typer.Exit(code=1)
     from src.evaluator import BenchmarkEvaluator  # lazy: sklearn is slow to import
 
     evaluator = BenchmarkEvaluator(engine=engine)
