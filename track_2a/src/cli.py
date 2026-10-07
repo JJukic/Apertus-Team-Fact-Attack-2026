@@ -38,6 +38,58 @@ app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim
 console = Console(legacy_windows=False)
 
 
+@app.command("adaptive-predict")
+def adaptive_predict(
+    claim: str = typer.Option(..., "--claim", "-c"),
+    booklet: Path = typer.Option(..., "--booklet", "-b"),
+    claim_language: Optional[str] = typer.Option(None, "--claim-language"),
+    booklet_language: Optional[str] = typer.Option(None, "--booklet-language"),
+    experiment: str = typer.Option("E6", "--experiment", help="Explicit experimental profile E0–E8"),
+    top_k: int = typer.Option(5, "--top-k"),
+    candidate_k: int = typer.Option(20, "--candidate-k"),
+    neighbors: int = typer.Option(1, "--neighbors"),
+    neutral_policy: Optional[Path] = typer.Option(None, "--neutral-policy"),
+    max_api_requests: Optional[int] = typer.Option(None, "--max-api-requests"),
+    retrieval_only: bool = typer.Option(False, "--retrieval-only", help="Skip final NLI; cross-language translations can use API"),
+    trace: Optional[Path] = typer.Option(None, "--trace"),
+):
+    """Experimental source-ID retrieval and Apertus NLI; existing defaults remain unchanged."""
+    from src.adaptive_engine import AdaptiveVerificationEngine, experiment_settings
+    from src.adaptive_retrieval import AdaptiveSettings
+    from src.grounded_apertus import ApertusJSONTransport
+    from src.adaptive_calibration import NeutralPolicy
+    api_path = trace.with_suffix(".api.jsonl") if trace else None
+    if trace and (trace.exists() or api_path.exists()):
+        raise typer.BadParameter("Trace artifacts already exist; choose a new path")
+    def journal(event):
+        if api_path:
+            api_path.parent.mkdir(parents=True, exist_ok=True)
+            with api_path.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(event, ensure_ascii=False)+"\n")
+                handle.flush()
+    transport = ApertusJSONTransport(maximum=max_api_requests, journal=journal)
+    engine = AdaptiveVerificationEngine(transport=transport)
+    settings = experiment_settings(experiment, base=AdaptiveSettings(candidate_k=candidate_k,
+        evidence_k=top_k), neighbor_radius=neighbors)
+    policy = NeutralPolicy(**json.loads(neutral_policy.read_text())) if neutral_policy else None
+    from contextlib import redirect_stdout
+    # Keep optional-library diagnostics out of machine-readable stdout.
+    with redirect_stdout(sys.stderr):
+        if retrieval_only:
+            result = engine.prepare(claim, booklet, claim_language=claim_language,
+                booklet_language=booklet_language, experiment=experiment, settings=settings)
+            result["retrieval"]["evidence"] = [u.to_dict() for u in result["retrieval"]["evidence"]]
+            output = result
+        else:
+            result = engine.verify(claim, booklet, claim_language=claim_language,
+                booklet_language=booklet_language, experiment=experiment, settings=settings, neutral_policy=policy)
+            output = result["official"]
+    if trace:
+        trace.parent.mkdir(parents=True, exist_ok=True)
+        trace.write_text(json.dumps(result, ensure_ascii=False, indent=2)+"\n")
+    typer.echo(json.dumps(output, ensure_ascii=False))
+
+
 @app.command()
 def predict(
     claim: str = typer.Option(..., "--claim", "-c", help="Political claim to verify against the booklet"),

@@ -1,0 +1,846 @@
+{
+  "kind": "synthetic_runtime_smoke_not_dataset_f1",
+  "model": "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7",
+  "revision": "b5113eb38ab63efdd7f280f8c144ea8b13f978ce",
+  "seconds": 30.827313082991168,
+  "pairs": [
+    {
+      "pair": "de->de",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-1",
+            "section": "section",
+            "language": "de",
+            "text": "Der Bundesrat lehnt die Initiative ab.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.0033855438232421875,
+            "neutral": 0.0030384063720703125,
+            "contradiction": 0.99365234375
+          },
+          "reranker_score": 0.9970378875732422,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-0",
+            "section": "section",
+            "language": "de",
+            "text": "Der Bundesrat unterstützt die Initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.9833984375,
+            "neutral": 0.0159912109375,
+            "contradiction": 0.000606536865234375
+          },
+          "reranker_score": 0.9840049743652344,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-2",
+            "section": "section",
+            "language": "de",
+            "text": "Die Initiative betrifft die Finanzierung öffentlicher Verkehrsmittel.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.01099395751953125,
+            "neutral": 0.98876953125,
+            "contradiction": 0.00011968612670898438
+          },
+          "reranker_score": 0.011113643646240234,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "de->fr",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-1",
+            "section": "section",
+            "language": "fr",
+            "text": "Le Conseil fédéral rejette l’initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.0088348388671875,
+            "neutral": 0.006198883056640625,
+            "contradiction": 0.98486328125
+          },
+          "reranker_score": 0.9936981201171875,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-0",
+            "section": "section",
+            "language": "fr",
+            "text": "Le Conseil fédéral soutient l’initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.904296875,
+            "neutral": 0.09271240234375,
+            "contradiction": 0.0030517578125
+          },
+          "reranker_score": 0.9073486328125,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-2",
+            "section": "section",
+            "language": "fr",
+            "text": "L’initiative concerne le financement des transports publics.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.008331298828125,
+            "neutral": 0.99169921875,
+            "contradiction": 0.00013124942779541016
+          },
+          "reranker_score": 0.00846254825592041,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "de->it",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-1",
+            "section": "section",
+            "language": "it",
+            "text": "Il Consiglio federale respinge l’iniziativa.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00336456298828125,
+            "neutral": 0.0025615692138671875,
+            "contradiction": 0.994140625
+          },
+          "reranker_score": 0.9975051879882812,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-0",
+            "section": "section",
+            "language": "it",
+            "text": "Il Consiglio federale sostiene l’iniziativa.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.98779296875,
+            "neutral": 0.011383056640625,
+            "contradiction": 0.0008187294006347656
+          },
+          "reranker_score": 0.9886116981506348,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-2",
+            "section": "section",
+            "language": "it",
+            "text": "L’iniziativa riguarda il finanziamento dei trasporti pubblici.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00893402099609375,
+            "neutral": 0.99072265625,
+            "contradiction": 0.00010877847671508789
+          },
+          "reranker_score": 0.009042799472808838,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "fr->de",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-1",
+            "section": "section",
+            "language": "de",
+            "text": "Der Bundesrat lehnt die Initiative ab.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.003391265869140625,
+            "neutral": 0.0023193359375,
+            "contradiction": 0.994140625
+          },
+          "reranker_score": 0.9975318908691406,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-0",
+            "section": "section",
+            "language": "de",
+            "text": "Der Bundesrat unterstützt die Initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.407958984375,
+            "neutral": 0.58544921875,
+            "contradiction": 0.00677490234375
+          },
+          "reranker_score": 0.41473388671875,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-2",
+            "section": "section",
+            "language": "de",
+            "text": "Die Initiative betrifft die Finanzierung öffentlicher Verkehrsmittel.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00490570068359375,
+            "neutral": 0.9951171875,
+            "contradiction": 0.000133514404296875
+          },
+          "reranker_score": 0.005039215087890625,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "fr->fr",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-1",
+            "section": "section",
+            "language": "fr",
+            "text": "Le Conseil fédéral rejette l’initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.0081024169921875,
+            "neutral": 0.00659942626953125,
+            "contradiction": 0.9853515625
+          },
+          "reranker_score": 0.9934539794921875,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-0",
+            "section": "section",
+            "language": "fr",
+            "text": "Le Conseil fédéral soutient l’initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.98681640625,
+            "neutral": 0.01247406005859375,
+            "contradiction": 0.0007429122924804688
+          },
+          "reranker_score": 0.9875593185424805,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-2",
+            "section": "section",
+            "language": "fr",
+            "text": "L’initiative concerne le financement des transports publics.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.006565093994140625,
+            "neutral": 0.9931640625,
+            "contradiction": 0.00017762184143066406
+          },
+          "reranker_score": 0.006742715835571289,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "fr->it",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-1",
+            "section": "section",
+            "language": "it",
+            "text": "Il Consiglio federale respinge l’iniziativa.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00406646728515625,
+            "neutral": 0.002811431884765625,
+            "contradiction": 0.9931640625
+          },
+          "reranker_score": 0.9972305297851562,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-0",
+            "section": "section",
+            "language": "it",
+            "text": "Il Consiglio federale sostiene l’iniziativa.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.99267578125,
+            "neutral": 0.00696563720703125,
+            "contradiction": 0.0005970001220703125
+          },
+          "reranker_score": 0.9932727813720703,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-2",
+            "section": "section",
+            "language": "it",
+            "text": "L’iniziativa riguarda il finanziamento dei trasporti pubblici.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00495147705078125,
+            "neutral": 0.9951171875,
+            "contradiction": 0.00012493133544921875
+          },
+          "reranker_score": 0.005076408386230469,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "it->de",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-1",
+            "section": "section",
+            "language": "de",
+            "text": "Der Bundesrat lehnt die Initiative ab.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00191497802734375,
+            "neutral": 0.0010728836059570312,
+            "contradiction": 0.9970703125
+          },
+          "reranker_score": 0.9989852905273438,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-0",
+            "section": "section",
+            "language": "de",
+            "text": "Der Bundesrat unterstützt die Initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.98388671875,
+            "neutral": 0.0154266357421875,
+            "contradiction": 0.0006189346313476562
+          },
+          "reranker_score": 0.9845056533813477,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "de-2",
+            "section": "section",
+            "language": "de",
+            "text": "Die Initiative betrifft die Finanzierung öffentlicher Verkehrsmittel.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:de-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.003688812255859375,
+            "neutral": 0.99609375,
+            "contradiction": 0.00016415119171142578
+          },
+          "reranker_score": 0.0038529634475708008,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "it->fr",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-1",
+            "section": "section",
+            "language": "fr",
+            "text": "Le Conseil fédéral rejette l’initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.005954742431640625,
+            "neutral": 0.006145477294921875,
+            "contradiction": 0.98779296875
+          },
+          "reranker_score": 0.9937477111816406,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-0",
+            "section": "section",
+            "language": "fr",
+            "text": "Le Conseil fédéral soutient l’initiative.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.9912109375,
+            "neutral": 0.00803375244140625,
+            "contradiction": 0.0005736351013183594
+          },
+          "reranker_score": 0.9917845726013184,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "fr-2",
+            "section": "section",
+            "language": "fr",
+            "text": "L’initiative concerne le financement des transports publics.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:fr-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.004726409912109375,
+            "neutral": 0.9951171875,
+            "contradiction": 0.00023484230041503906
+          },
+          "reranker_score": 0.004961252212524414,
+          "windows": 1
+        }
+      ]
+    },
+    {
+      "pair": "it->it",
+      "support_and_contradiction_above_topic": true,
+      "ranking": [
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-1",
+            "section": "section",
+            "language": "it",
+            "text": "Il Consiglio federale respinge l’iniziativa.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 1,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-1",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.00794219970703125,
+            "neutral": 0.008087158203125,
+            "contradiction": 0.98388671875
+          },
+          "reranker_score": 0.9918289184570312,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-0",
+            "section": "section",
+            "language": "it",
+            "text": "Il Consiglio federale sostiene l’iniziativa.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 0,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-0",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.990234375,
+            "neutral": 0.009033203125,
+            "contradiction": 0.0005698204040527344
+          },
+          "reranker_score": 0.9908041954040527,
+          "windows": 1
+        },
+        {
+          "unit": {
+            "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "page": 1,
+            "paragraph_id": "it-2",
+            "section": "section",
+            "language": "it",
+            "text": "L’iniziativa riguarda il finanziamento dei trasporti pubblici.",
+            "bbox": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "order": 2,
+            "kind": "paragraph",
+            "id": "aaaaaaaaaaaaaaaa:it-2",
+            "page_number": 1
+          },
+          "ranks": {},
+          "scores": {},
+          "nli_probabilities": {
+            "entailment": 0.0052032470703125,
+            "neutral": 0.99462890625,
+            "contradiction": 0.00024127960205078125
+          },
+          "reranker_score": 0.005444526672363281,
+          "windows": 1
+        }
+      ]
+    }
+  ],
+  "passed_pairs": 9
+}

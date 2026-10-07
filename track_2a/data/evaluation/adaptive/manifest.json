@@ -1,0 +1,90 @@
+{
+  "status": "prepared_no_predictions",
+  "source_revision": "9ff08597fb79dc68cbb3af9eb1388f34d21223e6",
+  "source_sha256": "87ee4afd9c0ee8861106c50f05884481402ca668aecf927df68fc52d915b02fd",
+  "source_url": "https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets/resolve/9ff08597fb79dc68cbb3af9eb1388f34d21223e6/v1.1.jsonl",
+  "gold_evidence_note": "References are broad regions. Verified decisive-unit annotations remain required.",
+  "split_policy": "Entire booklet dates held out, all three document languages together.",
+  "splits": {
+    "train": {
+      "file": "data/evaluation/adaptive/train.jsonl",
+      "sha256": "f5c225509a802f6bcb538ed0bc0ad800fda674205881a193b5b618341f47460f",
+      "count": 157,
+      "dates": [
+        "2024-06-09",
+        "2024-09-22"
+      ],
+      "labels": {
+        "0": 57,
+        "1": 52,
+        "2": 48
+      },
+      "language_pairs": {
+        "de->it": 20,
+        "de->fr": 16,
+        "de->de": 8,
+        "fr->it": 17,
+        "fr->fr": 25,
+        "fr->de": 19,
+        "it->de": 19,
+        "it->it": 11,
+        "it->fr": 22
+      }
+    },
+    "validation": {
+      "file": "data/evaluation/adaptive/validation.jsonl",
+      "sha256": "1e63fb6ff73cd9c57d5437a9ecf055b6fb857d28c613b377a0026fdbb78a3c7f",
+      "count": 108,
+      "dates": [
+        "2024-11-24"
+      ],
+      "labels": {
+        "0": 34,
+        "1": 42,
+        "2": 32
+      },
+      "language_pairs": {
+        "de->de": 9,
+        "de->it": 6,
+        "fr->it": 12,
+        "fr->fr": 9,
+        "fr->de": 10,
+        "it->fr": 12,
+        "it->it": 24,
+        "it->de": 10,
+        "de->fr": 16
+      }
+    },
+    "test": {
+      "file": "data/evaluation/adaptive/test.jsonl",
+      "sha256": "486eb04421e0e7366ab1d8c40e4ca9d20f16bd6cef767c831984976a45866fb7",
+      "count": 202,
+      "dates": [
+        "2025-11-30",
+        "2026-03-08"
+      ],
+      "labels": {
+        "0": 64,
+        "1": 75,
+        "2": 63
+      },
+      "language_pairs": {
+        "de->fr": 25,
+        "de->de": 21,
+        "de->it": 11,
+        "fr->it": 28,
+        "fr->fr": 31,
+        "fr->de": 18,
+        "it->fr": 21,
+        "it->de": 23,
+        "it->it": 24
+      }
+    }
+  },
+  "normalized_exact_claim_overlap": {
+    "train->validation": 0,
+    "train->test": 0,
+    "validation->test": 0
+  },
+  "excluded_training_exact_claim_duplicates": 1
+}

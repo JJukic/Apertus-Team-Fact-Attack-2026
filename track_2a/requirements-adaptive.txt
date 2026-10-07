@@ -1,0 +1,5 @@
+# Optional dependencies for the adaptive paragraph-level pipeline.
+-r requirements-hybrid.txt
+PyMuPDF==1.28.2
+langid==1.1.6
+sentencepiece==0.2.2

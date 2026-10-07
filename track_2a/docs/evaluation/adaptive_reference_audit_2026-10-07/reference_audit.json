@@ -1,0 +1,408 @@
+{
+  "status": "retrieval_only",
+  "split": "validation",
+  "split_sha256": "1e63fb6ff73cd9c57d5437a9ecf055b6fb857d28c613b377a0026fdbb78a3c7f",
+  "git_commit": "f10bbad6dedeb853c8f394a1495177049702f439",
+  "source_sha256": {
+    "scripts/audit_adaptive_references.py": "b7a0f562cbaaa0a35825cb69b052a05d514366018ba1b0f5c97e109ccc3a6e41",
+    "src/evidence_units.py": "ce1fc95309a5331a6bea118464c30aca60f57eb8bb047761495b84f7afbb0778",
+    "src/adaptive_retrieval.py": "4297e5f49a750139dc07123b28449f73987581ade70fcec22b2a3a4a45bf924f",
+    "src/adaptive_metrics.py": "0a373a15109f80e75cf95d50d867475dc9ff1f90318e1c46e7fcaf89faad96ae"
+  },
+  "configuration": {
+    "method": "bm25_original",
+    "k1": 1.5,
+    "b": 0.75,
+    "top_k": 20
+  },
+  "api_requests": 0,
+  "nli_macro_f1": null,
+  "reference_proxy_warning": "Any matching unit in a broad region; does not establish decisive evidence recall.",
+  "overall": {
+    "count": 108,
+    "nonneutral_count": 66,
+    "gold_evidence": {
+      "measured_cases": 3,
+      "metrics": {
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 0.6666666666666666,
+        "recall@10": 0.6666666666666666,
+        "recall@20": 0.6666666666666666,
+        "complete@1": 0.3333333333333333,
+        "complete@3": 0.3333333333333333,
+        "complete@5": 0.6666666666666666,
+        "complete@10": 0.6666666666666666,
+        "complete@20": 0.6666666666666666,
+        "mrr": 0.39999999999999997,
+        "mean_gold_rank_hits_only": 3.0,
+        "rank_misses": 1,
+        "candidate_recall": 0.6666666666666666,
+        "candidate_complete": 0.6666666666666666
+      }
+    },
+    "reference_region_proxy": {
+      "measured_cases": 66,
+      "metrics": {
+        "recall@1": 0.2727272727272727,
+        "recall@3": 0.3181818181818182,
+        "recall@5": 0.3939393939393939,
+        "recall@10": 0.4696969696969697,
+        "recall@20": 0.5151515151515151,
+        "complete@1": 0.2727272727272727,
+        "complete@3": 0.3181818181818182,
+        "complete@5": 0.3939393939393939,
+        "complete@10": 0.4696969696969697,
+        "complete@20": 0.5151515151515151,
+        "mrr": 0.32676767676767676,
+        "mean_gold_rank_hits_only": 3.6176470588235294,
+        "rank_misses": 32,
+        "candidate_recall": 0.5151515151515151,
+        "candidate_complete": 0.5151515151515151
+      }
+    }
+  },
+  "reference_alignment_missing_ids": [],
+  "language_pairs": {
+    "de->de": {
+      "count": 9,
+      "nonneutral_count": 8,
+      "gold_evidence": {
+        "measured_cases": 3,
+        "metrics": {
+          "recall@1": 0.5,
+          "recall@3": 0.5,
+          "recall@5": 0.6666666666666666,
+          "recall@10": 0.6666666666666666,
+          "recall@20": 0.6666666666666666,
+          "complete@1": 0.3333333333333333,
+          "complete@3": 0.3333333333333333,
+          "complete@5": 0.6666666666666666,
+          "complete@10": 0.6666666666666666,
+          "complete@20": 0.6666666666666666,
+          "mrr": 0.39999999999999997,
+          "mean_gold_rank_hits_only": 3.0,
+          "rank_misses": 1,
+          "candidate_recall": 0.6666666666666666,
+          "candidate_complete": 0.6666666666666666
+        }
+      },
+      "reference_region_proxy": {
+        "measured_cases": 8,
+        "metrics": {
+          "recall@1": 1.0,
+          "recall@3": 1.0,
+          "recall@5": 1.0,
+          "recall@10": 1.0,
+          "recall@20": 1.0,
+          "complete@1": 1.0,
+          "complete@3": 1.0,
+          "complete@5": 1.0,
+          "complete@10": 1.0,
+          "complete@20": 1.0,
+          "mrr": 1.0,
+          "mean_gold_rank_hits_only": 1.0,
+          "rank_misses": 0,
+          "candidate_recall": 1.0,
+          "candidate_complete": 1.0
+        }
+      }
+    },
+    "de->fr": {
+      "count": 16,
+      "nonneutral_count": 7,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 7,
+        "metrics": {
+          "recall@1": 0.0,
+          "recall@3": 0.0,
+          "recall@5": 0.0,
+          "recall@10": 0.0,
+          "recall@20": 0.0,
+          "complete@1": 0.0,
+          "complete@3": 0.0,
+          "complete@5": 0.0,
+          "complete@10": 0.0,
+          "complete@20": 0.0,
+          "mrr": 0.0,
+          "mean_gold_rank_hits_only": null,
+          "rank_misses": 7,
+          "candidate_recall": 0.0,
+          "candidate_complete": 0.0
+        }
+      }
+    },
+    "de->it": {
+      "count": 6,
+      "nonneutral_count": 6,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 6,
+        "metrics": {
+          "recall@1": 0.16666666666666666,
+          "recall@3": 0.3333333333333333,
+          "recall@5": 0.3333333333333333,
+          "recall@10": 0.3333333333333333,
+          "recall@20": 0.3333333333333333,
+          "complete@1": 0.16666666666666666,
+          "complete@3": 0.3333333333333333,
+          "complete@5": 0.3333333333333333,
+          "complete@10": 0.3333333333333333,
+          "complete@20": 0.3333333333333333,
+          "mrr": 0.25,
+          "mean_gold_rank_hits_only": 1.5,
+          "rank_misses": 4,
+          "candidate_recall": 0.3333333333333333,
+          "candidate_complete": 0.3333333333333333
+        }
+      }
+    },
+    "fr->de": {
+      "count": 10,
+      "nonneutral_count": 7,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 7,
+        "metrics": {
+          "recall@1": 0.0,
+          "recall@3": 0.0,
+          "recall@5": 0.0,
+          "recall@10": 0.0,
+          "recall@20": 0.14285714285714285,
+          "complete@1": 0.0,
+          "complete@3": 0.0,
+          "complete@5": 0.0,
+          "complete@10": 0.0,
+          "complete@20": 0.14285714285714285,
+          "mrr": 0.011904761904761904,
+          "mean_gold_rank_hits_only": 12.0,
+          "rank_misses": 6,
+          "candidate_recall": 0.14285714285714285,
+          "candidate_complete": 0.14285714285714285
+        }
+      }
+    },
+    "fr->fr": {
+      "count": 9,
+      "nonneutral_count": 5,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 5,
+        "metrics": {
+          "recall@1": 0.4,
+          "recall@3": 0.8,
+          "recall@5": 1.0,
+          "recall@10": 1.0,
+          "recall@20": 1.0,
+          "complete@1": 0.4,
+          "complete@3": 0.8,
+          "complete@5": 1.0,
+          "complete@10": 1.0,
+          "complete@20": 1.0,
+          "mrr": 0.64,
+          "mean_gold_rank_hits_only": 2.2,
+          "rank_misses": 0,
+          "candidate_recall": 1.0,
+          "candidate_complete": 1.0
+        }
+      }
+    },
+    "fr->it": {
+      "count": 12,
+      "nonneutral_count": 6,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 6,
+        "metrics": {
+          "recall@1": 0.0,
+          "recall@3": 0.0,
+          "recall@5": 0.0,
+          "recall@10": 0.5,
+          "recall@20": 0.6666666666666666,
+          "complete@1": 0.0,
+          "complete@3": 0.0,
+          "complete@5": 0.0,
+          "complete@10": 0.5,
+          "complete@20": 0.6666666666666666,
+          "mrr": 0.07916666666666666,
+          "mean_gold_rank_hits_only": 9.0,
+          "rank_misses": 2,
+          "candidate_recall": 0.6666666666666666,
+          "candidate_complete": 0.6666666666666666
+        }
+      }
+    },
+    "it->de": {
+      "count": 10,
+      "nonneutral_count": 8,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 8,
+        "metrics": {
+          "recall@1": 0.0,
+          "recall@3": 0.0,
+          "recall@5": 0.0,
+          "recall@10": 0.0,
+          "recall@20": 0.0,
+          "complete@1": 0.0,
+          "complete@3": 0.0,
+          "complete@5": 0.0,
+          "complete@10": 0.0,
+          "complete@20": 0.0,
+          "mrr": 0.0,
+          "mean_gold_rank_hits_only": null,
+          "rank_misses": 8,
+          "candidate_recall": 0.0,
+          "candidate_complete": 0.0
+        }
+      }
+    },
+    "it->fr": {
+      "count": 12,
+      "nonneutral_count": 9,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 9,
+        "metrics": {
+          "recall@1": 0.0,
+          "recall@3": 0.0,
+          "recall@5": 0.2222222222222222,
+          "recall@10": 0.3333333333333333,
+          "recall@20": 0.4444444444444444,
+          "complete@1": 0.0,
+          "complete@3": 0.0,
+          "complete@5": 0.2222222222222222,
+          "complete@10": 0.3333333333333333,
+          "complete@20": 0.4444444444444444,
+          "mrr": 0.08148148148148147,
+          "mean_gold_rank_hits_only": 7.25,
+          "rank_misses": 5,
+          "candidate_recall": 0.4444444444444444,
+          "candidate_complete": 0.4444444444444444
+        }
+      }
+    },
+    "it->it": {
+      "count": 24,
+      "nonneutral_count": 10,
+      "gold_evidence": {
+        "measured_cases": 0,
+        "metrics": null
+      },
+      "reference_region_proxy": {
+        "measured_cases": 10,
+        "metrics": {
+          "recall@1": 0.7,
+          "recall@3": 0.7,
+          "recall@5": 0.9,
+          "recall@10": 1.0,
+          "recall@20": 1.0,
+          "complete@1": 0.7,
+          "complete@3": 0.7,
+          "complete@5": 0.9,
+          "complete@10": 1.0,
+          "complete@20": 1.0,
+          "mrr": 0.7575000000000001,
+          "mean_gold_rank_hits_only": 2.4,
+          "rank_misses": 0,
+          "candidate_recall": 1.0,
+          "candidate_complete": 1.0
+        }
+      }
+    }
+  },
+  "same_language": {
+    "count": 42,
+    "nonneutral_count": 23,
+    "gold_evidence": {
+      "measured_cases": 3,
+      "metrics": {
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 0.6666666666666666,
+        "recall@10": 0.6666666666666666,
+        "recall@20": 0.6666666666666666,
+        "complete@1": 0.3333333333333333,
+        "complete@3": 0.3333333333333333,
+        "complete@5": 0.6666666666666666,
+        "complete@10": 0.6666666666666666,
+        "complete@20": 0.6666666666666666,
+        "mrr": 0.39999999999999997,
+        "mean_gold_rank_hits_only": 3.0,
+        "rank_misses": 1,
+        "candidate_recall": 0.6666666666666666,
+        "candidate_complete": 0.6666666666666666
+      }
+    },
+    "reference_region_proxy": {
+      "measured_cases": 23,
+      "metrics": {
+        "recall@1": 0.7391304347826086,
+        "recall@3": 0.8260869565217391,
+        "recall@5": 0.9565217391304348,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "complete@1": 0.7391304347826086,
+        "complete@3": 0.8260869565217391,
+        "complete@5": 0.9565217391304348,
+        "complete@10": 1.0,
+        "complete@20": 1.0,
+        "mrr": 0.8163043478260869,
+        "mean_gold_rank_hits_only": 1.8695652173913044,
+        "rank_misses": 0,
+        "candidate_recall": 1.0,
+        "candidate_complete": 1.0
+      }
+    }
+  },
+  "cross_language": {
+    "count": 66,
+    "nonneutral_count": 43,
+    "gold_evidence": {
+      "measured_cases": 0,
+      "metrics": null
+    },
+    "reference_region_proxy": {
+      "measured_cases": 43,
+      "metrics": {
+        "recall@1": 0.023255813953488372,
+        "recall@3": 0.046511627906976744,
+        "recall@5": 0.09302325581395349,
+        "recall@10": 0.18604651162790697,
+        "recall@20": 0.2558139534883721,
+        "complete@1": 0.023255813953488372,
+        "complete@3": 0.046511627906976744,
+        "complete@5": 0.09302325581395349,
+        "complete@10": 0.18604651162790697,
+        "complete@20": 0.2558139534883721,
+        "mrr": 0.06492248062015503,
+        "mean_gold_rank_hits_only": 7.2727272727272725,
+        "rank_misses": 32,
+        "candidate_recall": 0.2558139534883721,
+        "candidate_complete": 0.2558139534883721
+      }
+    }
+  }
+}

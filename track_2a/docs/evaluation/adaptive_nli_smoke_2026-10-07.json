@@ -1,0 +1,910 @@
+{
+  "id": "case-0001",
+  "claim": "Mieter müssen eine schriftliche Zustimmung für die Untermiete einholen.",
+  "experiment": "E1",
+  "label": 0,
+  "raw_label": 0,
+  "label_name": "Entailment",
+  "decision": {
+    "label": 0,
+    "reasoning": "Die Belege U0001, U0002 und U0004 bestätigen explizit, dass Mieterinnen und Mieter für die Untermiete eine schriftliche Zustimmung der Vermieterin oder des Vermieters benötigen. U0005 nennt die Konsequenz bei fehlender Zustimmung, was die Notwendigkeit der Zustimmung impliziert.",
+    "probabilities": {
+      "entailment": 1.0,
+      "neutral": 0.0,
+      "contradiction": 0.0
+    },
+    "evidence_ids": [
+      "9ea4ea66c852f580:p0006:b0004:s0",
+      "9ea4ea66c852f580:p0026:b0001:s0",
+      "9ea4ea66c852f580:p0030:b0006:s0"
+    ],
+    "evidence": [
+      {
+        "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+        "page": 6,
+        "paragraph_id": "p0006:b0004:s0",
+        "section": "Die Vorlage",
+        "language": "de",
+        "text": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an \n\ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen. \nNeu darf die Vermieterin oder der Vermieter eine Unterver­\nmietung insbesondere dann ablehnen, wenn sie mehr als zwei \nJahre dauern soll. Verletzt die Mieterin oder der Mieter die \nPflichten im Zusammenhang mit der Untermiete, so kann \n\ndie Vermieterin oder der Vermieter schriftlich mahnen. Bleibt \n\ndie Mahnung erfolglos, so kann die Vermieterin oder der \nVermieter den Mietvertrag mit einer Frist von 30 Tagen kündi­\ngen. Gegen die Vorlage wurde das Referendum ergriffen, \ndarum kommt es zur Abstimmung.",
+        "bbox": [
+          121.88980102539062,
+          281.9949035644531,
+          389.329345703125,
+          448.659912109375
+        ],
+        "order": 55,
+        "kind": "paragraph",
+        "id": "9ea4ea66c852f580:p0006:b0004:s0",
+        "page_number": 6
+      },
+      {
+        "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+        "page": 26,
+        "paragraph_id": "p0026:b0001:s0",
+        "section": "Strengere Regeln",
+        "language": "de",
+        "text": "Die neue Regelung soll solche Missbräuche bei der Unter­\nmiete verhindern. Künftig müssen Mieterinnen und Mieter \n\nein schriftliches Gesuch stellen, wenn sie Räume untervermieten \nwollen. Zudem müssen sie für die Untervermietung über die \nschriftliche Zustimmung der Vermieterin oder des Vermieters \nverfügen. Sowohl das Gesuch als auch die Zustimmung müssen \nentweder handschriftlich unterzeichnet oder mit einer quali­\nfizierten elektronischen Signatur versehen sein. Ein einfaches \nE-Mail genügt also nicht. Mieterinnen und Mieter sind neu \nverpflichtet, die Vermieterin oder den Vermieter über Änderun­\ngen zu informieren, zum Beispiel wenn die Untermieterin oder \nder Untermieter wechselt oder wenn sie den Untermietzins \nerhöhen.",
+        "bbox": [
+          121.88986206054688,
+          65.99491119384766,
+          391.1072692871094,
+          220.659912109375
+        ],
+        "order": 232,
+        "kind": "paragraph",
+        "id": "9ea4ea66c852f580:p0026:b0001:s0",
+        "page_number": 26
+      },
+      {
+        "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+        "page": 30,
+        "paragraph_id": "p0030:b0006:s0",
+        "section": "Verbesserte \nRechtssicherheit",
+        "language": "de",
+        "text": "Die Untermiete wird an klare Voraussetzungen geknüpft: \nDie Mieterin oder der Mieter muss das Gesuch schriftlich stel­\nlen und braucht die schriftliche Zustimmung der Vermieterin \noder des Vermieters. Zudem ist für die Mieterinnen und Mieter \nklarer, welche Pflichten für sie bei der Untermiete gelten.",
+        "bbox": [
+          121.88980102539062,
+          389.9949035644531,
+          392.2220458984375,
+          448.659912109375
+        ],
+        "order": 276,
+        "kind": "paragraph",
+        "id": "9ea4ea66c852f580:p0030:b0006:s0",
+        "page_number": 30
+      }
+    ],
+    "calls": [
+      {
+        "api_attempts": 1,
+        "latency_ms": 4004.259666893631,
+        "input_tokens": 1212,
+        "output_tokens": 160,
+        "returned_model": "swiss-ai/Apertus-v1.5-70B-thinking"
+      }
+    ],
+    "mode": "direct"
+  },
+  "booklet": "data/booklets/2024-11-24_de.pdf",
+  "booklet_sha256": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+  "claim_language": "de",
+  "booklet_language": "de",
+  "configuration": {
+    "candidate_k": 20,
+    "evidence_k": 5,
+    "bm25_k1": 1.5,
+    "bm25_b": 0.75,
+    "translated_bm25": false,
+    "dense": false,
+    "ranking": "bm25",
+    "neighbor_radius": 0,
+    "reranker_model": "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7",
+    "reranker_revision": "b5113eb38ab63efdd7f280f8c144ea8b13f978ce",
+    "reranker_max_length": 512,
+    "reranker_stride": 64,
+    "reranker_batch_size": 4,
+    "device": "cpu",
+    "local_files_only": true
+  },
+  "parsing": {
+    "parser_version": "layout-blocks-v2-visible-original-headings-tables",
+    "pymupdf_version": "1.28.2",
+    "document_sha256": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+    "pages": 72,
+    "units": 749,
+    "discarded_nonpainting_or_offpage_spans": 0,
+    "detected_language": "de",
+    "declared_language": "de",
+    "limits": "Text blocks approximate paragraphs. Arbitrary occlusion and scanned tables require visual/OCR review."
+  },
+  "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+  "dense_configuration": {
+    "model": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "device": "cpu",
+    "batch_size": 4,
+    "max_length": 2048,
+    "local_files_only": true,
+    "cache_dir": "/Users/josipjukic/Apertus-Team-Fact-Attack-2026/track_2a/.cache/embeddings",
+    "candidates": 40,
+    "final_pages": 10,
+    "rrf_k": 60,
+    "fallback": false
+  },
+  "queries": {
+    "original": "Mieter müssen eine schriftliche Zustimmung für die Untermiete einholen.",
+    "claim_language": "de",
+    "detected_language": "de",
+    "queries": {
+      "de": "Mieter müssen eine schriftliche Zustimmung für die Untermiete einholen.",
+      "fr": "Mieter müssen eine schriftliche Zustimmung für die Untermiete einholen.",
+      "it": "Mieter müssen eine schriftliche Zustimmung für die Untermiete einholen."
+    },
+    "translation": null
+  },
+  "retrieval": {
+    "generators": {
+      "bm25_original": [
+        {
+          "id": "9ea4ea66c852f580:p0030:b0006:s0",
+          "score": 13.14685596065954,
+          "rank": 1
+        },
+        {
+          "id": "9ea4ea66c852f580:p0026:b0001:s0",
+          "score": 10.824955493628472,
+          "rank": 2
+        },
+        {
+          "id": "9ea4ea66c852f580:p0033:b0002:s0",
+          "score": 9.9154219600337,
+          "rank": 3
+        },
+        {
+          "id": "9ea4ea66c852f580:p0006:b0004:s0",
+          "score": 9.667955835005765,
+          "rank": 4
+        },
+        {
+          "id": "9ea4ea66c852f580:p0027:b0001:s0",
+          "score": 9.317964333413068,
+          "rank": 5
+        },
+        {
+          "id": "9ea4ea66c852f580:p0026:b0003:s0",
+          "score": 8.637581792382356,
+          "rank": 6
+        },
+        {
+          "id": "9ea4ea66c852f580:p0026:b0002:s0",
+          "score": 8.54412344580399,
+          "rank": 7
+        },
+        {
+          "id": "9ea4ea66c852f580:p0032:b0008:s0",
+          "score": 7.732769457870936,
+          "rank": 8
+        },
+        {
+          "id": "9ea4ea66c852f580:p0030:b0004:s0",
+          "score": 7.355102656025669,
+          "rank": 9
+        },
+        {
+          "id": "9ea4ea66c852f580:p0027:b0006:s0",
+          "score": 7.249509238013025,
+          "rank": 10
+        },
+        {
+          "id": "9ea4ea66c852f580:p0028:b0005:s0",
+          "score": 6.273495330418403,
+          "rank": 11
+        },
+        {
+          "id": "9ea4ea66c852f580:p0055:b0002:s0",
+          "score": 6.001158648212099,
+          "rank": 12
+        },
+        {
+          "id": "9ea4ea66c852f580:p0030:b0005:s0",
+          "score": 5.977488986181118,
+          "rank": 13
+        },
+        {
+          "id": "9ea4ea66c852f580:p0032:b0013:s0",
+          "score": 5.85792417129901,
+          "rank": 14
+        },
+        {
+          "id": "9ea4ea66c852f580:p0025:b0001:s0",
+          "score": 5.8412427037067784,
+          "rank": 15
+        },
+        {
+          "id": "9ea4ea66c852f580:p0029:b0002:s0",
+          "score": 5.8094116154167885,
+          "rank": 16
+        },
+        {
+          "id": "9ea4ea66c852f580:p0028:b0006:s0",
+          "score": 5.754334378340598,
+          "rank": 17
+        },
+        {
+          "id": "9ea4ea66c852f580:p0033:b0004:s0",
+          "score": 5.6633766155241645,
+          "rank": 18
+        },
+        {
+          "id": "9ea4ea66c852f580:p0006:b0002:s0",
+          "score": 5.633844099714786,
+          "rank": 19
+        },
+        {
+          "id": "9ea4ea66c852f580:p0061:b0002:s0",
+          "score": 5.462879922539245,
+          "rank": 20
+        }
+      ]
+    },
+    "candidates": [
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 30,
+          "paragraph_id": "p0030:b0006:s0",
+          "section": "Verbesserte \nRechtssicherheit",
+          "language": "de",
+          "text": "Die Untermiete wird an klare Voraussetzungen geknüpft: \nDie Mieterin oder der Mieter muss das Gesuch schriftlich stel­\nlen und braucht die schriftliche Zustimmung der Vermieterin \noder des Vermieters. Zudem ist für die Mieterinnen und Mieter \nklarer, welche Pflichten für sie bei der Untermiete gelten.",
+          "bbox": [
+            121.88980102539062,
+            389.9949035644531,
+            392.2220458984375,
+            448.659912109375
+          ],
+          "order": 276,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0030:b0006:s0",
+          "page_number": 30
+        },
+        "ranks": {
+          "bm25_original": 1
+        },
+        "scores": {
+          "bm25_original": 13.14685596065954
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 26,
+          "paragraph_id": "p0026:b0001:s0",
+          "section": "Strengere Regeln",
+          "language": "de",
+          "text": "Die neue Regelung soll solche Missbräuche bei der Unter­\nmiete verhindern. Künftig müssen Mieterinnen und Mieter \n\nein schriftliches Gesuch stellen, wenn sie Räume untervermieten \nwollen. Zudem müssen sie für die Untervermietung über die \nschriftliche Zustimmung der Vermieterin oder des Vermieters \nverfügen. Sowohl das Gesuch als auch die Zustimmung müssen \nentweder handschriftlich unterzeichnet oder mit einer quali­\nfizierten elektronischen Signatur versehen sein. Ein einfaches \nE-Mail genügt also nicht. Mieterinnen und Mieter sind neu \nverpflichtet, die Vermieterin oder den Vermieter über Änderun­\ngen zu informieren, zum Beispiel wenn die Untermieterin oder \nder Untermieter wechselt oder wenn sie den Untermietzins \nerhöhen.",
+          "bbox": [
+            121.88986206054688,
+            65.99491119384766,
+            391.1072692871094,
+            220.659912109375
+          ],
+          "order": 232,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0026:b0001:s0",
+          "page_number": 26
+        },
+        "ranks": {
+          "bm25_original": 2
+        },
+        "scores": {
+          "bm25_original": 10.824955493628472
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 33,
+          "paragraph_id": "p0033:b0002:s0",
+          "section": "Obligationenrecht\n(Mietrecht: Untermiete)\nÄnderung vom 29. September 2023",
+          "language": "de",
+          "text": "6 Erfolgt die Untermiete ohne schriftliche Zustimmung des Vermieters \noder hat der Mieter falsche Angaben gemacht oder den Vermieter über \nÄnderungen gemäss Absatz 3 nicht informiert, so kann der Vermieter \ndem Mieter nach erfolgloser schriftlicher Mahnung mit einer Kündi-\ngungsfrist von mindestens 30 Tagen kündigen.",
+          "bbox": [
+            107.99620056152344,
+            98.70759582519531,
+            365.48675537109375,
+            150.9075927734375
+          ],
+          "order": 308,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0033:b0002:s0",
+          "page_number": 33
+        },
+        "ranks": {
+          "bm25_original": 3
+        },
+        "scores": {
+          "bm25_original": 9.9154219600337
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 6,
+          "paragraph_id": "p0006:b0004:s0",
+          "section": "Die Vorlage",
+          "language": "de",
+          "text": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an \n\ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen. \nNeu darf die Vermieterin oder der Vermieter eine Unterver­\nmietung insbesondere dann ablehnen, wenn sie mehr als zwei \nJahre dauern soll. Verletzt die Mieterin oder der Mieter die \nPflichten im Zusammenhang mit der Untermiete, so kann \n\ndie Vermieterin oder der Vermieter schriftlich mahnen. Bleibt \n\ndie Mahnung erfolglos, so kann die Vermieterin oder der \nVermieter den Mietvertrag mit einer Frist von 30 Tagen kündi­\ngen. Gegen die Vorlage wurde das Referendum ergriffen, \ndarum kommt es zur Abstimmung.",
+          "bbox": [
+            121.88980102539062,
+            281.9949035644531,
+            389.329345703125,
+            448.659912109375
+          ],
+          "order": 55,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0006:b0004:s0",
+          "page_number": 6
+        },
+        "ranks": {
+          "bm25_original": 4
+        },
+        "scores": {
+          "bm25_original": 9.667955835005765
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 27,
+          "paragraph_id": "p0027:b0001:s0",
+          "section": "Regelung bei \nPachtverträgen",
+          "language": "de",
+          "text": "Auch Pächterinnen und Pächter müssen bereits heute \nüber die Zustimmung der Verpächterin oder des Verpächters \nverfügen, wenn sie Räume an eine Drittperson weitergeben \nwollen. Geschieht dies durch einen Mietvertrag, so kommen \ndie neuen Bestimmungen für die Untermiete sinngemäss zur \nAnwendung. Bei einer Unterpacht gilt weiterhin die bisherige \nRegelung: Die Verpächterin oder der Verpächter kann die \nZustimmung ohne Begründung verweigern.",
+          "bbox": [
+            121.88980102539062,
+            317.9949035644531,
+            389.6892395019531,
+            412.659912109375
+          ],
+          "order": 247,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0027:b0001:s0",
+          "page_number": 27
+        },
+        "ranks": {
+          "bm25_original": 5
+        },
+        "scores": {
+          "bm25_original": 9.317964333413068
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 26,
+          "paragraph_id": "p0026:b0003:s0",
+          "section": "Kündigungsrecht",
+          "language": "de",
+          "text": "Verletzen Mieterinnen und Mieter die Regeln zur Unter­\nmiete, dürfen ihnen die Vermieterinnen und Vermieter kündi­\ngen. Neu weist das Gesetz auf dieses Recht ausdrücklich hin: \nDie Kündigung ist zum Beispiel möglich, wenn Mieterinnen \nund Mieter ohne schriftliche Zustimmung untervermieten, \nfalsche Angaben machen oder nicht über Änderungen wäh­\nrend der Untermiete informieren. Vor einer allfälligen Kündi­\ngung muss die Vermieterin oder der Vermieter schriftlich \nmahnen. Verletzt die Mieterin oder der Mieter die Regeln zur \nUntermiete trotz Mahnung weiterhin, darf die Vermieterin \noder der Vermieter mit einer Frist von 30 Tagen kündigen.",
+          "bbox": [
+            121.8897705078125,
+            401.9949035644531,
+            386.1830139160156,
+            532.6598510742188
+          ],
+          "order": 236,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0026:b0003:s0",
+          "page_number": 26
+        },
+        "ranks": {
+          "bm25_original": 6
+        },
+        "scores": {
+          "bm25_original": 8.637581792382356
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 26,
+          "paragraph_id": "p0026:b0002:s0",
+          "section": "Verweigerung \n\nder Untermiete",
+          "language": "de",
+          "text": "Heute müssen Vermieterinnen und Vermieter einer Un­\ntermiete in den meisten Fällen zustimmen. Sie dürfen sie nur \ndann verbieten, wenn die Mieterin oder der Mieter die Bedin­\ngungen der Untermiete (zum Beispiel die Höhe des Untermiet­\nzinses) nicht bekannt gibt, wenn der Untermietzins zu hoch \n\nist oder wenn der Vermieterin oder dem Vermieter wesentliche \nNachteile entstehen, zum Beispiel wenn andere Mieterinnen \nund Mieter gestört würden. Neu könnten Vermieterinnen \n\nund Vermieter eine Untermiete auch dann verbieten, wenn sie \nmehr als zwei Jahre dauern soll. Zudem könnte künftig die \nZustimmung aus Gründen verweigert werden, die das Gesetz \nzwar nicht ausdrücklich erwähnt, die aber eine Ablehnung der \nUntermiete ebenfalls rechtfertigen.",
+          "bbox": [
+            121.8897705078125,
+            233.9949188232422,
+            393.3161926269531,
+            388.659912109375
+          ],
+          "order": 234,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0026:b0002:s0",
+          "page_number": 26
+        },
+        "ranks": {
+          "bm25_original": 7
+        },
+        "scores": {
+          "bm25_original": 8.54412344580399
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 32,
+          "paragraph_id": "p0032:b0008:s0",
+          "section": "Obligationenrecht\n(Mietrecht: Untermiete)\nÄnderung vom 29. September 2023",
+          "language": "de",
+          "text": "1 Der Mieter kann die Sache mit der schriftlichen Zustimmung des Ver-\nmieters ganz oder teilweise untervermieten.",
+          "bbox": [
+            107.5238037109375,
+            294.57012939453125,
+            362.7518615722656,
+            316.7101135253906
+          ],
+          "order": 295,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0032:b0008:s0",
+          "page_number": 32
+        },
+        "ranks": {
+          "bm25_original": 8
+        },
+        "scores": {
+          "bm25_original": 7.732769457870936
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 30,
+          "paragraph_id": "p0030:b0004:s0",
+          "section": "Missbräuche \nverhindern",
+          "language": "de",
+          "text": "Die Änderungen dienen dazu, Missbräuche bei der Unter­\nmiete zu verhindern. Sie sollen darüber hinaus sicherstellen, \ndass eine Vermieterin oder ein Vermieter weiss, wer die Wohn- \noder Geschäftsräume tatsächlich gebraucht. Die Möglichkeit, \ndie Untermiete auf zwei Jahre zu begrenzen, verhindert \n\nin vielen Fällen, dass die Mieterin oder der Mieter durch eine \nlängere Untermiete einen missbräuchlichen Gewinn erzielt.",
+          "bbox": [
+            121.88983154296875,
+            209.9949188232422,
+            391.5174560546875,
+            292.659912109375
+          ],
+          "order": 272,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0030:b0004:s0",
+          "page_number": 30
+        },
+        "ranks": {
+          "bm25_original": 9
+        },
+        "scores": {
+          "bm25_original": 7.355102656025669
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 27,
+          "paragraph_id": "p0027:b0006:s0",
+          "section": "Nach Annahme  \nder Vorlage",
+          "language": "de",
+          "text": "Wenn die Mieterin oder der  \nMieter nicht über die Bedingungen  \nder Untermiete informiert.",
+          "bbox": [
+            257.94940185546875,
+            162.32151794433594,
+            388.0218811035156,
+            190.21401977539062
+          ],
+          "order": 242,
+          "kind": "table",
+          "id": "9ea4ea66c852f580:p0027:b0006:s0",
+          "page_number": 27
+        },
+        "ranks": {
+          "bm25_original": 10
+        },
+        "scores": {
+          "bm25_original": 7.249509238013025
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 28,
+          "paragraph_id": "p0028:b0005:s0",
+          "section": "Missbräuche sind \nbereits verboten",
+          "language": "de",
+          "text": "Die Einschränkung der Untermiete ist eine reine Schikane. \nSie ist schon heute nur mit Einwilligung der Vermieterin oder \ndes Vermieters möglich. Ausserdem ist es verboten, zu hohe \nMieten für die Untermiete zu verlangen. Das Missbrauchs­\npotenzial ist also sehr gering. Konkrete Fälle sind selten. Künf­\ntig wäre das Recht zur Untervermietung stark eingeschränkt. \nDie Vermieterseite könnte eine Untermiete sehr einfach \nablehnen.",
+          "bbox": [
+            121.88980102539062,
+            317.9949035644531,
+            392.9212341308594,
+            412.659912109375
+          ],
+          "order": 255,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0028:b0005:s0",
+          "page_number": 28
+        },
+        "ranks": {
+          "bm25_original": 11
+        },
+        "scores": {
+          "bm25_original": 6.273495330418403
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 55,
+          "paragraph_id": "p0055:b0002:s0",
+          "section": "Pflegeleistungen \nzuverlässig \nfinanzieren",
+          "language": "de",
+          "text": "Die Pflege im Pflegeheim und zu Hause erhält eine stabile \nund zuverlässige Finanzierung. Pflegeeinrichtungen und \n\nKrankenkassen vereinbaren zusammen Tarife. Diese müssen \ndie Kosten decken, die eine effiziente Pflege verursacht, und \nersetzen das bisherige Modell mit der teilweise unzureichenden \nRestfinanzierung durch die Kantone. Damit verbessern \n\nsich die Rahmenbedingungen für die Pflegeeinrichtungen \n\nund das Personal.",
+          "bbox": [
+            121.88980102539062,
+            137.9949188232422,
+            390.47833251953125,
+            232.659912109375
+          ],
+          "order": 514,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0055:b0002:s0",
+          "page_number": 55
+        },
+        "ranks": {
+          "bm25_original": 12
+        },
+        "scores": {
+          "bm25_original": 6.001158648212099
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 30,
+          "paragraph_id": "p0030:b0005:s0",
+          "section": "Vorteile bleiben",
+          "language": "de",
+          "text": "Mieterinnen und Mieter können die Vorteile der Unter­\nmiete weiterhin nutzen. Sie dürfen eine Wohnung, ein Ge­\nschäftslokal oder einzelne Räume auch künftig untervermie­\nten. Die neuen Regeln erschweren aber Missbrauch, zum \nBeispiel überrissene Untermietzinse. Davon profitieren auch \ndie Untermieterinnen und Untermieter.",
+          "bbox": [
+            121.88975524902344,
+            305.9949035644531,
+            379.830322265625,
+            376.6599426269531
+          ],
+          "order": 274,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0030:b0005:s0",
+          "page_number": 30
+        },
+        "ranks": {
+          "bm25_original": 13
+        },
+        "scores": {
+          "bm25_original": 5.977488986181118
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 32,
+          "paragraph_id": "p0032:b0013:s0",
+          "section": "Obligationenrecht\n(Mietrecht: Untermiete)\nÄnderung vom 29. September 2023",
+          "language": "de",
+          "text": "4 Der Vermieter kann die Zustimmung insbesondere verweigern, wenn:",
+          "bbox": [
+            107.5238037109375,
+            424.5301208496094,
+            364.9589538574219,
+            436.6531066894531
+          ],
+          "order": 300,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0032:b0013:s0",
+          "page_number": 32
+        },
+        "ranks": {
+          "bm25_original": 14
+        },
+        "scores": {
+          "bm25_original": 5.85792417129901
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 25,
+          "paragraph_id": "p0025:b0001:s0",
+          "section": "Ausgangslage",
+          "language": "de",
+          "text": "Heute darf eine Mieterin oder ein Mieter die Wohnung, \ndas Geschäftslokal oder einzelne Räume untervermieten. Dies \nkann beispielsweise der Fall sein, wenn jemand vorübergehend \nins Ausland geht oder die Wohnkosten mit weiteren Personen \nteilen will. Manchmal verlangen Mieterinnen und Mieter \n\naber einen zu hohen Untermietzins oder holen die erforderliche \nZustimmung der Vermieterin oder des Vermieters nicht ein. \n\nDas Parlament will solche Missbräuche gezielter bekämpfen. \n\nEs hat entschieden, dass die geltenden Regeln für die Unter­\nmiete von Miet- und Pachtobjekten angepasst werden sollen. \nDer Bundesrat war ursprünglich der Meinung, dass solche \nMissbräuche bereits mit dem heutigen Gesetz bekämpft wer­\nden können.",
+          "bbox": [
+            121.8897705078125,
+            65.99491119384766,
+            393.445068359375,
+            220.65994262695312
+          ],
+          "order": 225,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0025:b0001:s0",
+          "page_number": 25
+        },
+        "ranks": {
+          "bm25_original": 15
+        },
+        "scores": {
+          "bm25_original": 5.8412427037067784
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 29,
+          "paragraph_id": "p0029:b0002:s0",
+          "section": "Kündigungsschutz \nwird geschwächt",
+          "language": "de",
+          "text": "Die Einschränkung der Untermiete ist also nur ein Vor­\nwand, um den Kündigungsschutz zu schwächen. Mit dem \nneuen Gesetz können Vermietende schon bei kleinen Versäum­\nnissen eine Kündigung aussprechen. Mit den entsprechend \nnegativen Folgen für die Mieterinnen und Mieter: Erstens, weil \nder Wohnungsverlust für Betroffene schlimm ist. Zweitens, \nweil die meisten Wohnungen danach teurer neu vermietet \nwerden und das Mietzinsniveau weiter steigt.",
+          "bbox": [
+            121.88983154296875,
+            65.99491119384766,
+            392.22564697265625,
+            160.65988159179688
+          ],
+          "order": 260,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0029:b0002:s0",
+          "page_number": 29
+        },
+        "ranks": {
+          "bm25_original": 16
+        },
+        "scores": {
+          "bm25_original": 5.8094116154167885
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 28,
+          "paragraph_id": "p0028:b0006:s0",
+          "section": "Mieten in der \nSchweiz sind \n\nzu hoch",
+          "language": "de",
+          "text": "Die Einschränkung der Untermiete dient vor allem der \nProfitmaximierung der Immobilien-Wirtschaft. Die Mieten \n\nsind in den letzten Jahrzenten explodiert, weit über die gesetz­\nlichen Limiten hinaus. So zahlen die Mieterinnen und Mieter \njährlich mehrere Milliarden Franken zu viel – für missbräuch­\nliche Renditen. Treiber dieses Missstandes sind Mietzinserhö­\nhungen nach einem Mieter-Wechsel.",
+          "bbox": [
+            121.88980102539062,
+            425.9949035644531,
+            386.41754150390625,
+            508.659912109375
+          ],
+          "order": 257,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0028:b0006:s0",
+          "page_number": 28
+        },
+        "ranks": {
+          "bm25_original": 17
+        },
+        "scores": {
+          "bm25_original": 5.754334378340598
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 33,
+          "paragraph_id": "p0033:b0004:s0",
+          "section": "Obligationenrecht\n(Mietrecht: Untermiete)\nÄnderung vom 29. September 2023",
+          "language": "de",
+          "text": "1 Der Pächter kann die Sache mit Zustimmung des Verpächters ganz \noder teilweise unterverpachten oder vermieten. Bei einer Vermietung \nmuss die Zustimmung des Verpächters schriftlich erfolgen.",
+          "bbox": [
+            107.99620056152344,
+            176.7065887451172,
+            365.5681457519531,
+            208.87258911132812
+          ],
+          "order": 311,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0033:b0004:s0",
+          "page_number": 33
+        },
+        "ranks": {
+          "bm25_original": 18
+        },
+        "scores": {
+          "bm25_original": 5.6633766155241645
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 6,
+          "paragraph_id": "p0006:b0002:s0",
+          "section": "Ausgangslage",
+          "language": "de",
+          "text": "Mieterinnen und Mieter dürfen ihre Wohnung oder \neinzelne Zimmer vorübergehend untervermieten. Das Gleiche \ngilt für Geschäftsräume. Manchmal fehlt jedoch die erforder­\nliche Zustimmung der Vermieterin oder des Vermieters oder \ndie Wohnung wird zu teuer untervermietet. Das Parlament will \nsolche Missbräuche verhindern und die Regelungen im Obliga­\ntionenrecht ändern.",
+          "bbox": [
+            121.88980102539062,
+            185.9949188232422,
+            392.417236328125,
+            268.6599426269531
+          ],
+          "order": 53,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0006:b0002:s0",
+          "page_number": 6
+        },
+        "ranks": {
+          "bm25_original": 19
+        },
+        "scores": {
+          "bm25_original": 5.633844099714786
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      },
+      {
+        "unit": {
+          "document_id": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+          "page": 61,
+          "paragraph_id": "p0061:b0002:s0",
+          "section": "61\n61",
+          "language": "de",
+          "text": "3 Der Bundesrat legt für die Leistungserbringer nach Absatz 1 jeweils eine einheitliche \nStruktur für die Kostenrechnung und die Leistungsstatistik fest.",
+          "bbox": [
+            56.702796936035156,
+            90.02650451660156,
+            365.23175048828125,
+            112.16650390625
+          ],
+          "order": 603,
+          "kind": "paragraph",
+          "id": "9ea4ea66c852f580:p0061:b0002:s0",
+          "page_number": 61
+        },
+        "ranks": {
+          "bm25_original": 20
+        },
+        "scores": {
+          "bm25_original": 5.462879922539245
+        },
+        "nli_probabilities": {},
+        "reranker_score": 0.0,
+        "windows": 0
+      }
+    ],
+    "ranked_ids": [
+      "9ea4ea66c852f580:p0030:b0006:s0",
+      "9ea4ea66c852f580:p0026:b0001:s0",
+      "9ea4ea66c852f580:p0033:b0002:s0",
+      "9ea4ea66c852f580:p0006:b0004:s0",
+      "9ea4ea66c852f580:p0027:b0001:s0",
+      "9ea4ea66c852f580:p0026:b0003:s0",
+      "9ea4ea66c852f580:p0026:b0002:s0",
+      "9ea4ea66c852f580:p0032:b0008:s0",
+      "9ea4ea66c852f580:p0030:b0004:s0",
+      "9ea4ea66c852f580:p0027:b0006:s0",
+      "9ea4ea66c852f580:p0028:b0005:s0",
+      "9ea4ea66c852f580:p0055:b0002:s0",
+      "9ea4ea66c852f580:p0030:b0005:s0",
+      "9ea4ea66c852f580:p0032:b0013:s0",
+      "9ea4ea66c852f580:p0025:b0001:s0",
+      "9ea4ea66c852f580:p0029:b0002:s0",
+      "9ea4ea66c852f580:p0028:b0006:s0",
+      "9ea4ea66c852f580:p0033:b0004:s0",
+      "9ea4ea66c852f580:p0006:b0002:s0",
+      "9ea4ea66c852f580:p0061:b0002:s0"
+    ],
+    "selected_ids": [
+      "9ea4ea66c852f580:p0030:b0006:s0",
+      "9ea4ea66c852f580:p0026:b0001:s0",
+      "9ea4ea66c852f580:p0033:b0002:s0",
+      "9ea4ea66c852f580:p0006:b0004:s0",
+      "9ea4ea66c852f580:p0027:b0001:s0"
+    ],
+    "expanded_ids": [
+      "9ea4ea66c852f580:p0006:b0004:s0",
+      "9ea4ea66c852f580:p0026:b0001:s0",
+      "9ea4ea66c852f580:p0027:b0001:s0",
+      "9ea4ea66c852f580:p0030:b0006:s0",
+      "9ea4ea66c852f580:p0033:b0002:s0"
+    ],
+    "signals": {
+      "best_reranker_score": 0.0,
+      "reranker_margin": 0.0,
+      "retrieval_agreement": 1
+    },
+    "reranking_ms": 0.6417499389499426,
+    "retrieval_ms": 2.22266698256135,
+    "dense_metrics": {}
+  },
+  "neutral_policy": null,
+  "cost": {
+    "api_requests": 1,
+    "input_tokens": 1212,
+    "output_tokens": 160,
+    "observed_latency_ms": 8398.544792085886,
+    "preparation_reused": false,
+    "total_latency_ms": 8398.544792085886
+  },
+  "official": {
+    "id": "case-0001",
+    "label": 0,
+    "label_name": "entailment",
+    "evidence": [
+      {
+        "page": 6,
+        "text": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an \n\ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen. \nNeu darf die Vermieterin oder der Vermieter eine Unterver­\nmietung insbesondere dann ablehnen, wenn sie mehr als zwei \nJahre dauern soll. Verletzt die Mieterin oder der Mieter die \nPflichten im Zusammenhang mit der Untermiete, so kann \n\ndie Vermieterin oder der Vermieter schriftlich mahnen. Bleibt \n\ndie Mahnung erfolglos, so kann die Vermieterin oder der \nVermieter den Mietvertrag mit einer Frist von 30 Tagen kündi­\ngen. Gegen die Vorlage wurde das Referendum ergriffen, \ndarum kommt es zur Abstimmung."
+      },
+      {
+        "page": 26,
+        "text": "Die neue Regelung soll solche Missbräuche bei der Unter­\nmiete verhindern. Künftig müssen Mieterinnen und Mieter \n\nein schriftliches Gesuch stellen, wenn sie Räume untervermieten \nwollen. Zudem müssen sie für die Untervermietung über die \nschriftliche Zustimmung der Vermieterin oder des Vermieters \nverfügen. Sowohl das Gesuch als auch die Zustimmung müssen \nentweder handschriftlich unterzeichnet oder mit einer quali­\nfizierten elektronischen Signatur versehen sein. Ein einfaches \nE-Mail genügt also nicht. Mieterinnen und Mieter sind neu \nverpflichtet, die Vermieterin oder den Vermieter über Änderun­\ngen zu informieren, zum Beispiel wenn die Untermieterin oder \nder Untermieter wechselt oder wenn sie den Untermietzins \nerhöhen."
+      },
+      {
+        "page": 30,
+        "text": "Die Untermiete wird an klare Voraussetzungen geknüpft: \nDie Mieterin oder der Mieter muss das Gesuch schriftlich stel­\nlen und braucht die schriftliche Zustimmung der Vermieterin \noder des Vermieters. Zudem ist für die Mieterinnen und Mieter \nklarer, welche Pflichten für sie bei der Untermiete gelten."
+      }
+    ],
+    "metrics": {
+      "input_tokens": 1212,
+      "output_tokens": 160,
+      "inference_time_ms": 8399
+    }
+  }
+}
