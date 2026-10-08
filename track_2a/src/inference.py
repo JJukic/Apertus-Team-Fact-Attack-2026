@@ -7,6 +7,7 @@ page-attributed evidence extraction, and Apertus LLM inference.
 import hashlib
 import json
 import re
+import threading
 import time
 from pathlib import Path
 from typing import Optional, Union, Dict, Any, List
@@ -17,7 +18,7 @@ from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
 from src import config
-from src.text_utils import clip_to_query, guess_language
+from src.text_utils import clip_to_query, guess_language, split_evenly
 
 
 class EvidenceSource(BaseModel):
@@ -63,7 +64,7 @@ class PredictionResult(BaseModel):
                     clean_text = re.sub(r"^\[(?:page|seite)\s+\d+\]\s*\d*\s*", "", src.quote, flags=re.IGNORECASE).strip(' "«»')
                     if clean_text:
                         ev_list.append({
-                            "page": src.page_number or 1,
+                            "page": src.page_number,  # null for a reference text (task B)
                             "text": clean_text,
                         })
             elif self.evidence:
@@ -71,7 +72,7 @@ class PredictionResult(BaseModel):
                     clean_text = re.sub(r"^\[(?:page|seite)\s+\d+\]\s*\d*\s*", "", ev, flags=re.IGNORECASE).strip(' "«»')
                     if clean_text:
                         ev_list.append({
-                            "page": 1,
+                            "page": None,
                             "text": clean_text,
                         })
 
@@ -89,6 +90,8 @@ class PredictionResult(BaseModel):
 
 
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
+_BOOKLET_LOCKS: Dict[str, threading.Lock] = {}
+_BOOKLET_LOCKS_GUARD = threading.Lock()
 _PARSE_CACHE_VERSION = 6  # bump when parsing or section detection changes
 
 _COMMITTEE_SECTION = "Arguments of the initiative/referendum committee"
@@ -134,12 +137,14 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
     """
     pdf_path = Path(pdf_path)
     digest = hashlib.sha1(pdf_path.read_bytes()).hexdigest()[:16]
-    cache_file = config.BOOKLET_CACHE_DIR / f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
-    try:
-        if cache_file.exists():
-            return json.loads(cache_file.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        pass
+    name = f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
+    cache_file = config.BOOKLET_CACHE_DIR / name
+    for candidate in (cache_file, config.BOOKLET_CACHE_PREBUILT / name):
+        try:
+            if candidate.exists():
+                return json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            pass
 
     pages = parser.extract_pages(pdf_path)
     paragraphs = parser.extract_paragraphs(pdf_path, passage_chars=config.PASSAGE_CHARS or None, pages=pages)
@@ -151,6 +156,49 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
     except OSError:
         pass
     return parsed
+
+
+def evidence_items(passages: List[Dict[str, Any]], cited: List[int], query: str) -> List[Any]:
+    """
+    Evidence as (quote, passage) pairs, most relevant first. Only the first five items are scored, each at most
+    ~one page (5,000 chars), and an item counts if it lies inside the gold passage or contains it.
+    - A whole page often does neither (the gold section covers most of it, but not its header or the next section),
+      so the first cited pages are cut into pieces (EVIDENCE_SPLIT, e.g. '2,2': first two cited pages in halves).
+    - In ~30 % of the misses Apertus cites another page than the annotated one (often the overview instead of the
+      detailed section), so the remaining slots hold the best-matching third of further pages: the other cited
+      pages first, then the retrieved ones by rank (EVIDENCE_FILL).
+    Quotes are unclipped page text, verbatim in the booklet language. Reference chunks (task B, not scored) are
+    returned whole and only when cited.
+    """
+    pieces_per_page = [int(n) for n in config.EVIDENCE_SPLIT.split(",") if n.strip()] or [1]
+
+    def page_text(p: Dict[str, Any]) -> str:
+        text = p.get("page_text") or p["text"]
+        if len(text) > config.EVIDENCE_MAX_CHARS:
+            text = clip_to_query(text, query, config.EVIDENCE_MAX_CHARS, head_chars=0)
+        return text
+
+    on_pages = bool(passages) and passages[0].get("page_number") is not None
+    if not on_pages:
+        return [(passages[i - 1]["text"], passages[i - 1]) for i in cited][:config.EVIDENCE_MAX_ITEMS]
+
+    items: List[Any] = []
+    split_ids = cited[:len(pieces_per_page)]
+    for rank, i in enumerate(split_ids):
+        items += [(piece, passages[i - 1]) for piece in split_evenly(page_text(passages[i - 1]), pieces_per_page[rank])]
+    if config.EVIDENCE_FILL:
+        rest = [i for i in cited if i not in split_ids] + [i for i in range(1, len(passages) + 1) if i not in cited]
+        for i in rest:
+            if len(items) >= config.EVIDENCE_MAX_ITEMS:
+                break
+            p = passages[i - 1]
+            text = p.get("page_text") or p["text"]
+            if len(text) > 1200:  # best-matching window of about a third of the page
+                text = clip_to_query(text, query, max(400, len(text) // 3), head_chars=0)
+            items.append((text, p))
+    else:
+        items += [(page_text(passages[i - 1]), passages[i - 1]) for i in cited[len(split_ids):]]
+    return items[:config.EVIDENCE_MAX_ITEMS]
 
 
 def chunk_reference(text: str, max_chars: int = 700, min_chars: int = 80) -> List[str]:
@@ -193,9 +241,14 @@ class ClaimVerificationEngine:
 
     def _get_booklet_data(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:
         path_str = str(Path(pdf_path).resolve())
-        if path_str not in _GLOBAL_BOOKLET_CACHE:
-            parsed = load_parsed_booklet(path_str, self.pdf_parser)
-            _GLOBAL_BOOKLET_CACHE[path_str] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
+        if path_str in _GLOBAL_BOOKLET_CACHE:
+            return _GLOBAL_BOOKLET_CACHE[path_str]
+        with _BOOKLET_LOCKS_GUARD:
+            lock = _BOOKLET_LOCKS.setdefault(path_str, threading.Lock())
+        with lock:  # parallel cases on the same booklet parse it once
+            if path_str not in _GLOBAL_BOOKLET_CACHE:
+                parsed = load_parsed_booklet(path_str, self.pdf_parser)
+                _GLOBAL_BOOKLET_CACHE[path_str] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
         return _GLOBAL_BOOKLET_CACHE[path_str]
 
     def verify_claim(
@@ -235,7 +288,8 @@ class ClaimVerificationEngine:
                 candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
             if config.PAGE_MAX_CHARS:
                 query = f"{claim} {vote or ''}"
-                candidate_paras = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS)} for p in candidate_paras]
+                candidate_paras = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS), "page_text": p["text"]}
+                                   for p in candidate_paras]
             context_blocks = []
             for p in candidate_paras:
                 context_blocks.append(f"[Page {p['page_number']}] {p['text']}")
@@ -501,11 +555,12 @@ class ClaimVerificationEngine:
 
         sources: List[EvidenceSource] = []
         evidence: List[str] = []
-        if out.label != 1:
-            for i in ids:
-                p = passages[i - 1]
-                evidence.append(p["text"])
-                sources.append(EvidenceSource(quote=p["text"], page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
+        if out.label != 1 or (config.EVIDENCE_ON_NEUTRAL and passages and passages[0].get("page_number")):
+            # Neutral answers cite nothing: fall back to the best-ranked passages
+            cited = ids or list(range(1, min(len(passages), 2) + 1))
+            for quote, p in evidence_items(passages, cited, query=f"{claim} {vote or ''}"):
+                evidence.append(quote)
+                sources.append(EvidenceSource(quote=quote, page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
 
         return PredictionResult(
             id=case_id or "case-0001",

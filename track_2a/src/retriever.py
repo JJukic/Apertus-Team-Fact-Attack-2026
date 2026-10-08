@@ -6,7 +6,6 @@ the most relevant passages for a given claim.
 
 import re
 from typing import List, Dict, Any, Optional
-from rank_bm25 import BM25Okapi
 
 
 class PassageRetriever:
@@ -14,6 +13,8 @@ class PassageRetriever:
         self.paragraphs = paragraphs
         self.tokenized_corpus = [self._tokenize(p["text"]) for p in paragraphs]
         if self.tokenized_corpus:
+            from rank_bm25 import BM25Okapi  # lazy: pulls in numpy, not needed for reference-only cases
+
             self.bm25 = BM25Okapi(self.tokenized_corpus)
         else:
             self.bm25 = None
@@ -197,6 +198,8 @@ class PassageRetriever:
         if not tokenized_corpus:
             return []
             
+        from rank_bm25 import BM25Okapi
+
         bm25 = BM25Okapi(tokenized_corpus)
         tokenized_claim = self._tokenize(claim)
         

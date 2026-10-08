@@ -9,7 +9,6 @@ any voting date, any number of proposals. No hardcoded page numbers.
 import re
 from pathlib import Path
 from typing import List, Dict, Any, Union, Optional, Tuple
-import pypdf
 
 from src.text_utils import split_passages
 
@@ -165,6 +164,8 @@ class PDFParser:
         pdf_path = Path(pdf_path)
         if not pdf_path.exists():
             raise FileNotFoundError(f"PDF not found at: {pdf_path}")
+
+        import pypdf  # lazy: slow to import, and only needed for booklets missing from the parse cache
 
         reader = pypdf.PdfReader(str(pdf_path))
         pages = []

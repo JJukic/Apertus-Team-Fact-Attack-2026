@@ -4,7 +4,10 @@ Provides claim verification, benchmark evaluation, and strategy comparison.
 """
 
 import sys
+import time
 from pathlib import Path
+
+_START = time.perf_counter()
 from typing import Any, Dict, List, Optional
 
 _pkg_root = Path(__file__).resolve().parent.parent
@@ -38,11 +41,11 @@ console = Console(legacy_windows=False)
 
 
 def _require_model(engine: ClaimVerificationEngine, mock: bool) -> None:
-    """Without LLM_API_KEY the client silently falls back to heuristic mock answers; refuse that unless asked for."""
+    """Without an API key the client silently falls back to heuristic mock answers; refuse that unless asked for."""
     if engine.client.mock and not mock and not config.MOCK_APERTUS:
         typer.echo(
-            "Error: LLM_API_KEY is not set, so no Apertus model can be called. Set it in the environment "
-            "(Docker: -e LLM_API_KEY) or in .env; use --mock or MOCK_APERTUS=true for an offline mock run.",
+            "Error: API_KEY (or LLM_API_KEY) is not set, so no Apertus model can be called. Set it in the environment "
+            "(Docker: -e API_KEY) or in .env; use --mock or MOCK_APERTUS=true for an offline mock run.",
             err=True,
         )
         raise typer.Exit(code=2)
@@ -227,6 +230,7 @@ def run_batch(
     strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve"),
     task: str = typer.Option("auto", "--task", "-t", help="'auto' (booklet if the case names one, else reference text), 'advanced' or 'beginner'"),
+    workers: int = typer.Option(config.BATCH_WORKERS, "--workers", "-w", help="Cases processed in parallel"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
 ):
     """
@@ -247,13 +251,14 @@ def run_batch(
     client = ApertusClient(mock=True) if mock else None
     engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
     _require_model(engine, mock)
-    official_results = []
 
-    for idx, item in enumerate(cases, 1):
+    def process(idx: int, item: Dict[str, Any]) -> Dict[str, Any]:
         cid = item.get("id", f"case-{idx:04d}")
         try:
             claim_text = _text(item.get("claim"))
-            given_lang = str(item.get("claim_language") or "").lower()
+            claim_field = item.get("claim")
+            given_lang = str((claim_field.get("language") if isinstance(claim_field, dict) else None)
+                             or item.get("claim_language") or "").lower()
             claim_lang = given_lang if given_lang in ("de", "fr", "it") else guess_language(claim_text)
             ref_text = _text(item.get("reference")) or _text(item.get("reference_string"))
 
@@ -277,24 +282,52 @@ def run_batch(
                     claim=claim_text,
                     booklet_pdf=booklet_pdf,
                     claim_language=claim_lang,
-                    vote=item.get("vote"),
+                    vote=_text(item.get("vote")) or None,
                     strategy=strategy,
                     top_k=top_k,
                     case_id=cid,
                 )
-            official_results.append(res.to_official_dict(case_id=cid))
+            return res.to_official_dict(case_id=cid)
         except Exception as exc:
             # One broken case must never cost the whole batch: emit a valid (neutral) record and continue
             print(f"[warning] {cid}: {type(exc).__name__}: {exc}", file=sys.stderr)
-            official_results.append({
+            return {
                 "id": cid,
                 "label": 1,
                 "label_name": "neutral",
                 "evidence": [],
                 "metrics": {"input_tokens": 0, "output_tokens": 0, "inference_time_ms": 0},
-            })
+            }
+
+    # Cases run in parallel (parsing overlaps with other cases' LLM requests); the output keeps the input order
+    # and every case is predicted independently, so results do not depend on case order
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    from src.apertus_client import LLM_CLOCK
+
+    def prefetch_booklets() -> None:
+        # Parse uncached booklets one after another in the background: once the first cases are waiting for Apertus,
+        # parsing overlaps with requests in flight instead of stalling every worker at the same time
+        for item in cases:
+            try:
+                pdf = case_booklet(item, input_path.parent) if task != "beginner" else None
+                if pdf is not None:
+                    engine._get_booklet_data(pdf)
+            except Exception:
+                pass  # the case itself reports the problem
+
+    threading.Thread(target=prefetch_booklets, daemon=True).start()
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        official_results = list(pool.map(process, range(1, len(cases) + 1), cases))
+    # Our estimate of the scored processing time: wall clock (incl. start-up) minus time with an LLM request in flight
+    wall_s = time.perf_counter() - _START
+    non_llm_ms = (wall_s - LLM_CLOCK.busy_s()) * 1000 / max(1, len(cases))
+    if output_path:  # without --output, stdout carries the predictions only
+        print(f"[timing] {len(cases)} cases, wall {wall_s:.1f} s, non-LLM {non_llm_ms:.1f} ms/case", file=sys.stderr)
 
     if output_path:
+        if output_path.parent:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as out_f:
             if str(output_path).endswith(".jsonl"):
                 for r in official_results:

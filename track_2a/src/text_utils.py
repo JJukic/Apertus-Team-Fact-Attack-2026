@@ -113,9 +113,33 @@ def clip_to_query(page_text: str, query: str, max_chars: int, head_chars: int = 
         if total > best_score:
             best_score, best_start, best_end = total, start, end
     window = " ".join(sentences[best_start:best_end]) or text[:budget]
-    if best_start == 0:
+    if best_start == 0 or head_chars <= 0:  # no heading: a verbatim excerpt (evidence), without an inserted '…'
         return window
     return f"{text[:head_chars].rsplit(' ', 1)[0]} … {window}"
+
+
+def split_evenly(text: str, parts: int) -> List[str]:
+    """
+    Cut a page into `parts` consecutive pieces of about equal length, at sentence ends. Used for evidence: the gold
+    passage often covers most of a page but not its header or the start of the next section, so a whole page neither
+    lies inside it nor contains it, while a third of the page usually lies inside it.
+    """
+    text = text.strip()
+    if parts <= 1 or not text:
+        return [text] if text else []
+    sentences = re.split(r"(?<=[.!?:;»])\s+", text)
+    target = len(text) / parts
+    pieces: List[str] = []
+    current = ""
+    for sentence in sentences:
+        if current and len(current) + len(sentence) > target and len(pieces) < parts - 1:
+            pieces.append(current)
+            current = sentence
+        else:
+            current = f"{current} {sentence}".strip()
+    if current:
+        pieces.append(current)
+    return pieces
 
 
 _LANG_HINTS = {

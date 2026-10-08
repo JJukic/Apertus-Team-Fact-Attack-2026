@@ -13,10 +13,10 @@ run:
 	docker run --rm \
 		-v "$(CURDIR)/results:/app/results" \
 		-e LLM_NAME="$${LLM_NAME:-swiss-ai/Apertus-v1.5-70B-thinking}" \
-		-e LLM_BASE_URL="$${LLM_BASE_URL:-https://api.inference.cscs.ch/v1}" \
-		-e LLM_API_KEY="$${LLM_API_KEY}" \
+		-e BASE_URL="$${BASE_URL:-$${LLM_BASE_URL:-https://api.inference.cscs.ch/v1}}" \
+		-e API_KEY="$${API_KEY:-$${LLM_API_KEY}}" \
 		-e NLI_STRATEGY="$${NLI_STRATEGY:-hybrid}" \
-		-e NLI_TOP_K="$${NLI_TOP_K:-12}" \
+		-e NLI_TOP_K="$${NLI_TOP_K:-8}" \
 		-e PROMPT_MODE="$${PROMPT_MODE:-ids}" \
 		$(IMAGE_NAME) benchmark -d "$${NLI_DATASET:-data/hf/test.jsonl}" -w "$${NLI_WORKERS:-4}"
 

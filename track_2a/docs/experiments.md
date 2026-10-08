@@ -17,7 +17,94 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 - **Model:** `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS (the only model our key is authorised for).
 - Latency is measured client-side with 3–4 parallel requests; runs that overlapped with other runs are slower.
 
-## Final result: full test split (402 pairs, 5 unseen voting dates)
+## Official evaluation contract and scoring (OST Q&A, 2026-10-08)
+
+The Q&A fixed how submissions are run and scored: the container is called with `--input /data/cases.jsonl --output
+/output/predictions.jsonl`, the endpoint comes from `BASE_URL` / `API_KEY` (a token-counting proxy), and the score is
+`0.6 · S_A + 0.4 · S_B` with S_A = 50 % macro-F1 + 20 % evidence Hit@5 + 15 % processing time + 15 % tokens and
+S_B = 70 % macro-F1 + 15 % time + 15 % tokens. Time and tokens are scored relative to the best team (best ÷ own);
+time is the wall clock minus the time with an LLM request in flight. Final scoring uses a held-out private set.
+
+All numbers in this section come from the starter repo's `evaluate.py` on cases generated with its `prepare_cases.py`
+(dataset v1.1), restricted to our test split (401 pairs, 5 unseen voting dates) or to 300 random dev pairs ("dev300").
+Predictions and score reports are in [`results/official/`](../results/official/).
+
+**Contract fixes.** Our container only accepted `python -m src run …` and read `LLM_BASE_URL` / `LLM_API_KEY`, so
+the official call would have failed for every case. It now accepts the bare `--input/--output` call, reads `BASE_URL` /
+`API_KEY` first, writes its parse cache to `/tmp` (the image keeps a read-only cache of the 60 dataset booklets), and
+returns `"page": null` for task B evidence. A CI step runs the image exactly as the organisers do.
+
+**Evidence (Hit@5).** An evidence item counts if it lies inside the gold passage or contains it (`partial_ratio` ≥ 90,
+first five items, ≤ 5,000 chars), for every gold entailment/contradiction case. Our baseline scored only **0.34**: of
+the 267 cases, 130 cited a page that mostly lies inside the gold passage but also holds a header or the start of the
+next section (best ratio typically 80–89), 33 cited a page clipped to 3,000 chars, 13 predicted Neutral. Cutting the
+cited pages into pieces fixes this without touching the label or the tokens (offline replay on the real citations):
+
+| Evidence items (test, 267 cases) | Hit@5 |
+|---|---:|
+| Cited pages, clipped to 3,000 chars (baseline) | 0.341 |
+| Cited pages, full text | 0.371 |
+| First cited page in 2 / 3 / 4 / 5 pieces | 0.479 / 0.521 / 0.551 / 0.547 |
+| **First cited page in 3 pieces + second in 2** | **0.625** |
+| … and the top retrieved pages for Neutral predictions | 0.640 |
+
+On dev300 citations the split variants rank the same way (`3,2` 0.706, `4,1` 0.692, `4` 0.692, `3,1,1` 0.668,
+`2,2` 0.659, `5` 0.630, whole pages 0.483). Evidence for Neutral predictions (+0.015) is implemented but off
+(`EVIDENCE_ON_NEUTRAL`), since the contract only asks for evidence with labels 0/2.
+
+**Filling the free slots.** With `3,2` all five items come from at most two pages. Of the remaining misses on test
+(k=8), 83 of 106 cite another page than the annotated one (often the overview instead of the detailed section), 17 are
+Neutral predictions, 5 gold passages are not found in our PDF text, and only 1 cites the right page without a matching
+piece. So the free slots now go to further pages: the best-matching third (`clip_to_query`) of the other cited pages,
+then of the retrieved pages by rank. Offline replay (k=8 citations), chosen on dev300:
+
+| Evidence items | dev300 | test |
+|---|---:|---:|
+| `3,2` (previous default) | 0.763 | 0.603 |
+| `3,2` + free slots filled with retrieved thirds | 0.806 | 0.704 |
+| **`2,2` + further cited / retrieved thirds** | **0.810** | **0.749** |
+| `3` + 2 thirds | 0.787 | 0.708 |
+| `2,2` + start of the next page instead of the best third | 0.791 | 0.768 |
+| 5 pages, best third each | 0.592 | 0.524 |
+
+Real runs with `EVIDENCE_SPLIT=2,2`, `EVIDENCE_FILL=true`: **test Hit@5 0.727** (0.603 before), dev300 0.792
+(0.758 before); the replay overestimates by ~0.02–0.03 because Apertus cites slightly different pages from run to run.
+Excerpts are verbatim (no inserted `…`).
+
+**Fewer pages (tokens).** Tokens are scored relative to the most frugal team, so k was re-tuned on dev300 (task A,
+evidence split on):
+
+| k pages | Macro-F1 | Hit@5 | Input tokens |
+|---:|---:|---:|---:|
+| 12 | 0.937 | 0.701 | 5,370 |
+| 10 | 0.934 | 0.697 | 4,495 |
+| **8** | **0.934** | **0.758** | **3,721** |
+| 7 | 0.924 | 0.720 | 3,360 |
+| 6 | 0.904 | 0.716 | 3,023 |
+
+k=8 is the new default. On the test split it costs more F1 than on dev (below), but under the scoring formula 31 % fewer
+tokens outweigh −0.017 F1 unless the best team needs less than ~1/8 of our tokens.
+
+**Shorter prompt: rejected.** A condensed system prompt with the same rules (`PROMPT_SHORT=true`) saves 6–13 % input
+tokens, but Apertus then labels unrelated passages as Contradiction: dev300 B 0.980 → 0.850 (first version 0.550,
+every Neutral became Contradiction; schema written as `0-1` made all confidences 0), dev300 A 0.937 → 0.781.
+
+**Processing time.** Cases now run in parallel (`NLI_WORKERS=4`), booklets missing from the cache are parsed by a
+background thread while other cases wait for Apertus, and `pypdf` / `rank_bm25` are imported only when needed (CLI
+import ~17 s → ~1 s on the dev laptop under load). The CLI prints its own estimate of the scored time (wall clock minus
+time with a request in flight): **~4 ms per case** on the test split with cached booklets; with 22 uncached booklets in
+40 cases ~650 ms per case.
+
+**Result on the test split (401 pairs, official `evaluate.py`):**
+
+| Task | Configuration | Macro-F1 | Hit@5 | Input / output tokens | Non-LLM time |
+|---|---|---:|---:|---:|---:|
+| A | baseline (k=12, whole cited pages) | 0.945 | 0.341 | 5,598 / 59 | – |
+| A | k=8, evidence split 3,2 | 0.928 | 0.603 | 3,877 / 57 | ~4 ms |
+| A | **k=8, evidence split 2,2 + filled slots** | **0.930** | **0.727** | **3,877** / 56 | ~5 ms |
+| B | unchanged | 0.975 / 0.973 (rerun) | – | 2,532 / 56 | ~3 ms |
+
+## Earlier result (own evaluator, k=12, before the Q&A): full test split (402 pairs)
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|

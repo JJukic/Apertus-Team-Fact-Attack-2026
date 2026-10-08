@@ -17,10 +17,11 @@ elif (REPO_ROOT / ".env").exists():
 else:
     load_dotenv()
 
-# Apertus / LLM Endpoint Config
+# Apertus / LLM Endpoint Config. The official evaluation injects BASE_URL (its token-counting proxy) and API_KEY;
+# they take precedence over the older LLM_* names, so no call can bypass the proxy
 LLM_NAME = os.getenv("LLM_NAME", "swiss-ai/Apertus-v1.5-70B-thinking")
-LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.inference.cscs.ch/v1")
-LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+LLM_BASE_URL = os.getenv("BASE_URL") or os.getenv("LLM_BASE_URL") or "https://api.inference.cscs.ch/v1"
+LLM_API_KEY = os.getenv("API_KEY") or os.getenv("LLM_API_KEY") or ""
 
 # Retries on transient API errors (timeouts, 429, 5xx): exponential backoff within a time budget per request.
 # A failed request would otherwise silently count as Neutral
@@ -29,8 +30,10 @@ LLM_RETRY_BUDGET_S = float(os.getenv("LLM_RETRY_BUDGET_S", "120"))
 
 # Context strategy: 'hybrid' (booklet-wide BM25 claim + vote title), 'retrieval' (proposal filter + BM25) or 'full'
 DEFAULT_STRATEGY = os.getenv("NLI_STRATEGY", "hybrid")
-# 12 pages (with PAGE_MAX_CHARS clipping): all 1,495 OST pairs 0.912 -> 0.931 macro-F1 vs. 10 pages, +~890 input tokens
-DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "12"))
+# 8 pages: on 300 dev cases (official evaluate.py) k=12 / 10 / 8 / 7 / 6 give macro-F1 0.937 / 0.934 / 0.934 / 0.924 / 0.904,
+# Hit@5 0.70 / 0.70 / 0.76 / 0.72 / 0.72 and 5,370 / 4,495 / 3,721 / 3,360 / 3,023 input tokens: tokens are scored
+# relative to the most frugal team, so k=8 trades -0.003 F1 for 31 % fewer tokens
+DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "8"))
 # Max characters per booklet passage; 0 = whole pages (default: on dev, n=450, pages scored 0.908 F1 vs 0.831 for 600-char passages)
 PASSAGE_CHARS = int(os.getenv("PASSAGE_CHARS", "0"))
 
@@ -47,6 +50,9 @@ PROMPT_MODE = os.getenv("PROMPT_MODE", "ids")
 
 # 'ids' mode: let the model write one short sentence before its confidences (a minimal reasoning step)
 IDS_REASON = os.getenv("IDS_REASON", "false").lower() in ("true", "1", "yes")
+
+# 'ids' mode: a condensed system/user prompt with the same rules (fewer input tokens per case)
+PROMPT_SHORT = os.getenv("PROMPT_SHORT", "false").lower() in ("true", "1", "yes")
 
 # 'ids' mode: add worked examples for claims attributed to one side of the booklet
 FEW_SHOT = os.getenv("FEW_SHOT", "false").lower() in ("true", "1", "yes")
@@ -92,8 +98,27 @@ LABEL_EXPLANATIONS = {
     2: "The booklet contradicts the statement.",
 }
 
-# Parsed booklets are cached on disk, keyed by file content (so a re-mounted PDF path still hits the cache)
+# Parsed booklets are cached on disk, keyed by file content (so a re-mounted PDF path still hits the cache).
+# New entries go to BOOKLET_CACHE_DIR (the Docker image sets it to /tmp, the only writable cache location at
+# evaluation); BOOKLET_CACHE_PREBUILT is a read-only cache baked into the image at build time
 BOOKLET_CACHE_DIR = Path(os.getenv("BOOKLET_CACHE_DIR", str(BASE_DIR / ".cache" / "booklets")))
+BOOKLET_CACHE_PREBUILT = Path(os.getenv("BOOKLET_CACHE_PREBUILT", str(BASE_DIR / ".cache" / "booklets")))
+
+# Evidence (task A, Hit@5): the first cited pages cut into pieces ('2,2' = first two cited pages in halves), the
+# remaining slots filled with the best-matching third of further pages (other cited pages, then retrieved ones).
+# Official evaluate.py, replayed on saved runs: dev 300 Hit@5 0.763 ('3,2', no fill) -> 0.810, test 0.603 -> 0.749.
+# At most EVIDENCE_MAX_ITEMS items (only five are scored) of at most EVIDENCE_MAX_CHARS each
+EVIDENCE_SPLIT = os.getenv("EVIDENCE_SPLIT", "2,2")
+EVIDENCE_FILL = os.getenv("EVIDENCE_FILL", "true").lower() in ("true", "1", "yes")
+EVIDENCE_MAX_ITEMS = int(os.getenv("EVIDENCE_MAX_ITEMS", "5"))
+EVIDENCE_MAX_CHARS = int(os.getenv("EVIDENCE_MAX_CHARS", "4800"))
+# Also give evidence (the top-ranked pages) for Neutral answers; it is scored for gold entailment/contradiction
+# cases whatever the predicted label, but the contract only asks for it with labels 0/2
+EVIDENCE_ON_NEUTRAL = os.getenv("EVIDENCE_ON_NEUTRAL", "false").lower() in ("true", "1", "yes")
+
+# Parallel cases in the batch CLI: parsing and retrieval of one case overlap with LLM requests of others, so
+# they do not count as processing time (wall clock minus time with an LLM request in flight)
+BATCH_WORKERS = int(os.getenv("NLI_WORKERS", "4"))
 
 # Directories
 DATA_DIR = BASE_DIR / "data"

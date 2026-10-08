@@ -23,12 +23,15 @@ RUN python -m src.download_data || true
 # Pre-parse the booklets so the first claim per booklet does not pay for PDF parsing
 # Also fetch all 60 booklets of the OST dataset so known booklets are pre-parsed (falls back silently offline)
 RUN python -m src.hf_dataset || true
-RUN python -m src warm-cache || true
+RUN BOOKLET_CACHE_DIR=/app/.cache/booklets python -m src warm-cache || true
 
 EXPOSE 8501
 
 ENV PORT=8501
 ENV PYTHONUNBUFFERED=1
+# Evaluation contract: /data is read-only and caches belong in /tmp; the build-time cache is only read
+ENV BOOKLET_CACHE_DIR=/tmp/fact-attack/booklets
+ENV BOOKLET_CACHE_PREBUILT=/app/.cache/booklets
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["benchmark"]
