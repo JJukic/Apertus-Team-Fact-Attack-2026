@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 from src.grounded_apertus import (ApertusJSONTransport, GroundedApertusNLI, QueryPreparer,
-                                  ApertusResponseError, RequestLimitReached)
+                                  ApertusResponseError, RequestLimitReached, complete_json_answer)
 from src.evidence_units import EvidenceUnit
 from src.adaptive_calibration import search_neutral_policy
 
@@ -42,14 +42,42 @@ class GroundedApertusTests(unittest.TestCase):
             self.assertNotIn(cap, sdk.chat.completions.create.call_args.kwargs)
         self.assertEqual(transport.requests, 1)
         self.assertEqual(transport.input_tokens, 13)
+        self.assertEqual(sdk.chat.completions.create.call_args.kwargs["response_format"], {"type": "json_object"})
 
-    def test_unknown_source_is_error_without_label_or_retry(self):
+    def test_thinking_json_is_ignored_and_only_complete_final_answer_is_parsed(self):
+        content = '<|inner_prefix|>A draft: {"label":2}<|inner_suffix|>\n```json\n{"label":0}\n```'
+        self.assertEqual(complete_json_answer(content), {"label": 0})
+
+    def test_incomplete_or_ambiguous_answers_are_never_repaired(self):
+        for content in ('<|inner_prefix|>{"label":0}',
+                        '<|inner_prefix|>draft<|inner_suffix|>{"label":0} trailing',
+                        '{"label":0,"label":2}', '{"confidence":NaN}',
+                        'Explanation: {"label":0}', '```json\n{"label":0}'):
+            with self.subTest(content=content), self.assertRaises(ValueError):
+                complete_json_answer(content)
+
+    def test_persistently_unknown_source_is_error_without_label(self):
         transport, sdk = self.transport([dict(label=2, p_entail=0, p_neutral=0, p_contra=1,
-            reasoning="reasoning", evidence_ids=["U9999"])])
+            reasoning="reasoning", evidence_ids=["U9999"])]*2)
         with self.assertRaises(ApertusResponseError) as caught:
             GroundedApertusNLI(transport).classify("claim", [self.source()], claim_language="it")
         self.assertFalse(hasattr(caught.exception, "label"))
-        self.assertEqual(sdk.chat.completions.create.call_count, 1)
+        self.assertEqual(sdk.chat.completions.create.call_count, 2)
+
+    def test_invalid_selection_requires_a_measured_new_model_answer(self):
+        invalid = dict(label=2, p_entail=0, p_neutral=0, p_contra=1,
+                       reasoning="missing information", evidence_ids=[])
+        corrected = dict(label=1, p_entail=0, p_neutral=1, p_contra=0,
+                         reasoning="insufficient evidence", evidence_ids=[])
+        transport, sdk = self.transport([invalid, corrected])
+        result = GroundedApertusNLI(transport).classify("claim", [self.source()], claim_language="it")
+        self.assertEqual(result.label, 1)
+        self.assertEqual(transport.requests, 2)
+        self.assertEqual(len(result.calls), 2)
+        self.assertIn("validation_error", result.calls[0])
+        first, second = sdk.chat.completions.create.call_args_list
+        self.assertEqual(second.kwargs["messages"][:2], first.kwargs["messages"])
+        self.assertEqual(json.loads(second.kwargs["messages"][2]["content"]), invalid)
 
     def test_binary_no_no_yields_neutral_with_two_measured_calls(self):
         transport, _ = self.transport([dict(answer=False, confidence=.95, reasoning="no", evidence_ids=[])]*2)
@@ -58,6 +86,16 @@ class GroundedApertusTests(unittest.TestCase):
         self.assertEqual(result.evidence, [])
         self.assertEqual(transport.requests, 2)
         self.assertEqual(len(result.calls), 2)
+
+    def test_binary_invalid_yes_without_source_gets_one_measured_correction(self):
+        invalid = dict(answer=True, confidence=.9, reasoning="yes", evidence_ids=[])
+        no = dict(answer=False, confidence=.95, reasoning="no evidence", evidence_ids=[])
+        transport, sdk = self.transport([invalid, no, no])
+        result = GroundedApertusNLI(transport).classify("claim", [self.source()], claim_language="it", mode="binary")
+        self.assertEqual(result.label, 1)
+        self.assertEqual(transport.requests, 3)
+        self.assertEqual(len(result.calls), 3)
+        self.assertIn("answer (boolean)", sdk.chat.completions.create.call_args_list[1].kwargs["messages"][-1]["content"])
 
     def test_binary_yes_yes_uses_explicit_third_judge(self):
         yes = dict(answer=True, confidence=.9, reasoning="yes", evidence_ids=["U0001"])

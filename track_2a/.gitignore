@@ -30,3 +30,7 @@ build/
 # Downloaded historical booklets (downloaded dynamically via download_data.py)
 data/booklets/2024-*.pdf
 data/booklets/2025-*.pdf
+
+# Generated experiment artifacts stay local. Keep concise reports outside run_*.
+/docs/evaluation/adaptive/run_*/
+/docs/evaluation/adaptive/*.api.jsonl

@@ -40,6 +40,44 @@ class RequestLimitReached(RuntimeError):
     retryable = False
 
 
+def complete_json_answer(content):
+    """Parse the final answer, never JSON occurring inside the thinking phase.
+
+    Only the model's complete, explicit thinking envelope and a complete JSON
+    code fence are accepted wrappers. No substring extraction or label repair.
+    """
+    if not isinstance(content, str):
+        raise ValueError("Missing answer content")
+    answer = content.strip()
+    prefix, suffix = "<|inner_prefix|>", "<|inner_suffix|>"
+    if answer.startswith(prefix):
+        if answer.count(prefix) != 1 or answer.count(suffix) != 1:
+            raise ValueError("Incomplete or ambiguous thinking envelope")
+        answer = answer.split(suffix, 1)[1].strip()
+    if prefix in answer or suffix in answer:
+        raise ValueError("Unexpected thinking marker in final answer")
+    if answer.startswith("```json\n") or answer.startswith("```\n"):
+        if not answer.endswith("\n```"):
+            raise ValueError("Incomplete JSON fence")
+        answer = answer.split("\n", 1)[1][:-4].strip()
+
+    def reject_constant(value):
+        raise ValueError("Non-finite JSON constant")
+
+    def unique_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("Duplicate JSON key")
+            result[key] = value
+        return result
+
+    parsed = json.loads(answer, parse_constant=reject_constant, object_pairs_hook=unique_keys)
+    if not isinstance(parsed, dict):
+        raise ValueError("Expected JSON object")
+    return parsed
+
+
 class ApertusJSONTransport:
     def __init__(self, *, sdk=None, model=None, journal=None, maximum=None, timeout=180):
         self.model = model or config.LLM_NAME
@@ -71,11 +109,12 @@ class ApertusJSONTransport:
                 "model_requested": self.model, "messages": messages,
                 "messages_sha256": hashlib.sha256(json.dumps(messages, ensure_ascii=False,
                                                               sort_keys=True).encode()).hexdigest(),
-                "temperature": 0.0, "output_token_caps": {}, "status": "interrupted"}
+                "temperature": 0.0, "response_format": {"type": "json_object"},
+                "output_token_caps": {}, "status": "interrupted"}
             response = None
             try:
                 response = self.sdk.chat.completions.create(model=self.model, messages=messages,
-                    temperature=0.0, timeout=self.timeout)
+                    temperature=0.0, response_format={"type": "json_object"}, timeout=self.timeout)
                 event.update(status="success", response=response.model_dump(mode="json"))
                 usage = response.usage
                 if usage is None or usage.prompt_tokens is None or usage.completion_tokens is None:
@@ -102,10 +141,7 @@ class ApertusJSONTransport:
             choice = response.choices[0]
             if choice.finish_reason != "stop" or response.model != self.model:
                 raise ValueError("Incomplete answer or unexpected returned model")
-            # Deliberately accept only a complete JSON object, not partial regex extraction.
-            parsed = json.loads(choice.message.content)
-            if not isinstance(parsed, dict):
-                raise ValueError("Expected JSON object")
+            parsed = complete_json_answer(choice.message.content)
         except (ValueError, TypeError, IndexError, AttributeError):
             raise ApertusResponseError("Invalid complete JSON response", api_attempts=attempt+1,
                 tokens_prompt=getattr(usage, "prompt_tokens", None),
@@ -186,17 +222,44 @@ class GroundedApertusNLI:
                   for alias,unit in aliases.items()]
         return "\n\n".join(blocks), aliases
 
+    def _validated_request(self, messages, *, stage, validate,
+                           fields="label, p_entail, p_neutral, p_contra, reasoning, evidence_ids"):
+        """One measured model correction for an invalid output contract.
+
+        Never infer a replacement label from the error or modify model output.
+        The same original source context remains available for both requests.
+        """
+        calls = []
+        for attempt in range(2):
+            payload, cost = self.transport.request(messages, stage=stage if attempt == 0 else stage+"_validation_retry")
+            calls.append(cost)
+            try:
+                return validate(payload), calls
+            except ApertusResponseError as error:
+                cost["validation_error"] = str(error)
+                if attempt:
+                    raise
+                messages = messages + [{"role": "assistant", "content": json.dumps(payload, ensure_ascii=False)},
+                    {"role": "user", "content":
+                        f"The previous answer failed output validation: {error}. "
+                        "Re-evaluate the original claim against only the supplied evidence. "
+                        "Missing information is Neutral (label 1), not Contradiction (label 2). "
+                        "Entailment (0) and Contradiction (2) require decisive supplied evidence IDs. "
+                        "Do not invent an ID or evidence. Return one complete corrected JSON object "
+                        f"with fields {fields}; no output field is optional."}]
+
     def classify(self, claim, units, *, claim_language, mode="direct"):
         if mode not in ("direct", "binary"):
             raise ValueError("Choose direct or binary NLI")
         context, aliases = self.context(units)
         if mode == "binary":
             return self._binary(claim, units, claim_language, context, aliases)
-        payload, cost = self.transport.request([
+        decision, calls = self._validated_request([
             {"role": "system", "content": NLI_SYSTEM},
             {"role": "user", "content": f"Claim language: {claim_language}\n=== EVIDENCE ===\n{context}\n=== CLAIM ===\n{claim}"}],
-            stage="nli_direct")
-        return self._direct_decision(payload, aliases, [cost])
+            stage="nli_direct", validate=lambda payload: self._direct_decision(payload, aliases, []))
+        decision.calls = calls
+        return decision
 
     @staticmethod
     def _ids(identifiers, aliases):
@@ -226,18 +289,22 @@ class GroundedApertusNLI:
                 f"Determine only whether supplied evidence {relation} the claim. "
                 "Return JSON with answer: boolean, confidence: finite number [0,1], reasoning: concise string, "
                 "evidence_ids: supplied aliases proving a yes answer, or [] for no. Do not write evidence text.")
-            payload, cost = self.transport.request([
+            def validate_binary(payload):
+                confidence = payload.get("confidence")
+                if type(payload.get("answer")) is not bool or type(confidence) not in (int, float) or not math.isfinite(confidence) or not 0 <= confidence <= 1 or type(payload.get("reasoning")) is not str:
+                    raise ApertusResponseError("Invalid binary NLI answer")
+                ids = self._ids(payload.get("evidence_ids"), aliases)
+                if bool(ids) != payload["answer"]:
+                    raise ApertusResponseError("Binary decision lacks consistent evidence")
+                return {**payload, "evidence_ids": ids}
+
+            vote, measured = self._validated_request([
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": f"Claim language: {language}\nEvidence:\n{context}\nClaim:\n{claim}"}],
-                stage=f"nli_binary_{relation}")
-            calls.append(cost)
-            confidence = payload.get("confidence")
-            if type(payload.get("answer")) is not bool or type(confidence) not in (int, float) or not math.isfinite(confidence) or not 0 <= confidence <= 1 or type(payload.get("reasoning")) is not str:
-                raise ApertusResponseError("Invalid binary NLI answer")
-            ids = self._ids(payload.get("evidence_ids"), aliases)
-            if bool(ids) != payload["answer"]:
-                raise ApertusResponseError("Binary decision lacks consistent evidence")
-            votes[relation] = {**payload, "evidence_ids": ids}
+                stage=f"nli_binary_{relation}", validate=validate_binary,
+                fields="answer (boolean), confidence, reasoning, evidence_ids; answer false without decisive evidence for this relation")
+            calls.extend(measured)
+            votes[relation] = vote
         support, contra = votes["supports"]["answer"], votes["contradicts"]["answer"]
         if support and contra:
             # An explicit third grounded judge; never break a conflict by rule intuition.

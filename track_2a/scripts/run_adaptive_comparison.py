@@ -50,7 +50,9 @@ def read(path):
 
 
 def unit(value):
-    return EvidenceUnit(**{k:v for k,v in value.items() if k != "id"})
+    # id and page_number are derived aliases emitted by to_dict(), not
+    # constructor fields. Keep the original page and paragraph provenance.
+    return EvidenceUnit(**{k:v for k,v in value.items() if k not in ("id", "page_number")})
 
 
 def serialize(prepared):
@@ -160,11 +162,12 @@ def calibrate(rows):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("stage", choices=["prepare", "predict", "summarize", "freeze"])
+    parser.add_argument("stage", choices=["prepare", "predict", "run", "summarize", "freeze"])
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--split", choices=["validation", "test"], default="validation")
     parser.add_argument("--workers", type=int, default=4)
-    parser.add_argument("--device", choices=["cpu", "mps"], default="cpu")
+    parser.add_argument("--device", choices=["cpu", "mps", "cuda"], default="cpu")
+    parser.add_argument("--source-commit", help="Base Git commit for a source snapshot transferred to a cluster")
     parser.add_argument("--profiles", nargs="+", choices=PROFILES, default=list(PROFILES))
     parser.add_argument("--retry-errors", action="store_true")
     args = parser.parse_args()
@@ -204,7 +207,7 @@ def main():
             raise ValueError("Cannot resume with changed sources/configuration")
     else:
         write(manifest_path, {"signature":signature,
-            "git_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=BASE,text=True).strip(),
+            "git_commit":args.source_commit or subprocess.check_output(["git","rev-parse","HEAD"],cwd=BASE,text=True).strip(),
             "dependencies":{d.metadata["Name"]:d.version for d in distributions()},
             "selection_rule":"maximum validation macro_f1; ties: fewer components, then profile name",
             "nli_prompt":NLI_SYSTEM, "translation_prompt":TRANSLATION_SYSTEM})
@@ -220,51 +223,72 @@ def main():
                 handle.flush()
         return ApertusJSONTransport(journal=journal)
     random.seed(42)
-    if args.stage == "prepare":
+    def predict(case, name):
+        path = folder / "predictions" / name / f"{case['id']}.json"
+        if path.exists() and (read(path).get("label") is not None or not args.retry_errors):
+            return case["id"],name,"cached"
+        full = restore(read(folder / "prepared" / f"{case['id']}.json"))
+        units = [unit(u) for u in read(folder/"documents"/f"{full['parsing']['document_sha256']}.json")["units"]]
+        prepared = derive_preparation(full,name,profile(name,settings),units)
+        engine = AdaptiveVerificationEngine(transport=transport(case["id"],name),dense_settings=dense)
+        start = time.perf_counter()
+        try:
+            result = engine.verify(case["claim"],full["booklet"],case_id=case["id"],
+                experiment=prepared["experiment"],prepared=prepared)
+            result["experiment"] = name
+        except Exception as error:
+            result = {"id":case["id"],"experiment":name,"label":None,
+                "error_type":type(error).__name__,"cost":{"api_requests":engine.transport.requests,
+                "input_tokens":engine.transport.input_tokens,"output_tokens":engine.transport.output_tokens,
+                "total_latency_ms":(time.perf_counter()-start)*1000}}
+        # Scoring metadata is attached only after prediction.
+        result.update(split=args.split,entailment_label=case["entailment_label"],
+            claim_language=case["claim_language"],booklet_language=case["booklet_language"],claim=case["claim"])
+        write(path,result)
+        return case["id"],name,result.get("label")
+
+    if args.stage in ("prepare", "run"):
         import torch
         torch.manual_seed(42)
         engine = AdaptiveVerificationEngine(transport=transport("preparation","union"),dense_settings=dense)
-        for index, case in enumerate(cases):
-            path = folder / "prepared" / f"{case['id']}.json"
-            booklet = BASE / f"data/booklets/{case['booklet_date']}_{case['booklet_language']}.pdf"
-            if path.exists():
-                if read(path)["parsing"]["document_sha256"] != digest(booklet):
-                    raise ValueError("Prepared PDF changed")
-                continue
-            with redirect_stdout(sys.stderr):
-                full = engine.prepare(case["claim"], booklet, claim_language=case["claim_language"],
-                    booklet_language=case["booklet_language"],experiment="E5",settings=profile("E5",settings))
-                units, parsing = engine.document(booklet,case["booklet_language"])
-            document_path = folder / "documents" / f"{parsing['document_sha256']}.json"
-            if not document_path.exists():
-                write(document_path,{"parsing":parsing,"units":[u.to_dict() for u in units]})
-            write(path,serialize(full))
-            print(f"prepared {index+1}/{len(cases)} {case['id']}",flush=True)
+        def preparations():
+            for index, case in enumerate(cases):
+                path = folder / "prepared" / f"{case['id']}.json"
+                booklet = BASE / f"data/booklets/{case['booklet_date']}_{case['booklet_language']}.pdf"
+                if path.exists():
+                    if read(path)["parsing"]["document_sha256"] != digest(booklet):
+                        raise ValueError("Prepared PDF changed")
+                    yield case
+                    continue
+                with redirect_stdout(sys.stderr):
+                    full = engine.prepare(case["claim"], booklet, claim_language=case["claim_language"],
+                        booklet_language=case["booklet_language"],experiment="E5",settings=profile("E5",settings))
+                    units, parsing = engine.document(booklet,case["booklet_language"])
+                document_path = folder / "documents" / f"{parsing['document_sha256']}.json"
+                if not document_path.exists():
+                    write(document_path,{"parsing":parsing,"units":[u.to_dict() for u in units]})
+                write(path,serialize(full))
+                print(f"prepared {index+1}/{len(cases)} {case['id']}",flush=True)
+                yield case
+        if args.stage == "prepare":
+            for _ in preparations():
+                pass
+        else:
+            # API inference starts as soon as a case is prepared. Measure the
+            # adaptive pipeline and BM25 first, then the remaining ablations.
+            priority = [n for n in ("E6", "E1") if n in args.profiles]
+            jobs = []
+            with ThreadPoolExecutor(max_workers=args.workers) as executor:
+                for case in preparations():
+                    for name in priority:
+                        jobs.append(executor.submit(predict, case, name))
+                for name in args.profiles:
+                    if name not in priority:
+                        jobs.extend(executor.submit(predict, c, name) for c in cases)
+                for index, future in enumerate(as_completed(jobs)):
+                    print(f"prediction {index+1}/{len(jobs)} {future.result()}", flush=True)
         return
     if args.stage == "predict":
-        def predict(case, name):
-            path = folder / "predictions" / name / f"{case['id']}.json"
-            if path.exists() and (read(path).get("label") is not None or not args.retry_errors):
-                return case["id"],name,"cached"
-            full = restore(read(folder / "prepared" / f"{case['id']}.json"))
-            units = [unit(u) for u in read(folder/"documents"/f"{full['parsing']['document_sha256']}.json")["units"]]
-            prepared = derive_preparation(full,name,profile(name,settings),units)
-            engine = AdaptiveVerificationEngine(transport=transport(case["id"],name),dense_settings=dense)
-            start = time.perf_counter()
-            try:
-                result = engine.verify(case["claim"],full["booklet"],case_id=case["id"],
-                    experiment=prepared["experiment"],prepared=prepared)
-                result["experiment"] = name
-            except Exception as error:
-                result = {"id":case["id"],"experiment":name,"label":None,
-                    "error_type":type(error).__name__,"cost":{"api_requests":engine.transport.requests,
-                    "input_tokens":engine.transport.input_tokens,"output_tokens":engine.transport.output_tokens,
-                    "total_latency_ms":(time.perf_counter()-start)*1000}}
-            # Scoring metadata is attached only after prediction.
-            result.update(split=args.split,entailment_label=case["entailment_label"],
-                claim_language=case["claim_language"],booklet_language=case["booklet_language"],claim=case["claim"])
-            write(path,result)
-            return case["id"],name,result.get("label")
         with ThreadPoolExecutor(max_workers=args.workers) as executor:
             jobs = [executor.submit(predict,c,n) for c in cases for n in args.profiles]
             for index, future in enumerate(as_completed(jobs)):
@@ -286,7 +310,15 @@ def main():
             policy = NeutralPolicy(**selection["neutral_policy"])
             rows["E7"] = deepcopy(rows["E6"])
             for row in rows["E7"]:
-                row["label"] = policy.apply(row["label"],row["decision"]["probabilities"],row["retrieval"]["signals"])
+                row["experiment"] = "E7"
+                row["neutral_policy"] = policy.to_dict()
+                row["label"] = policy.apply(row["raw_label"],row["decision"]["probabilities"],row["retrieval"]["signals"])
+                row["decision"]["label"] = row["official"]["label"] = row["label"]
+                row["label_name"] = config.LABEL_MAPPING[row["label"]]
+                row["official"]["label_name"] = row["label_name"].lower()
+                if row["label"] == 1:
+                    row["decision"]["evidence_ids"] = row["decision"]["evidence"] = []
+                    row["official"]["evidence"] = []
     summary = {name:summaries(values,len(cases)) for name,values in rows.items()}
     write(folder/"results.json",summary)
     for name, values in rows.items():

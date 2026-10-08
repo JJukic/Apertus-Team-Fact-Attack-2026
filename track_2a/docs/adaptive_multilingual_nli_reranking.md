@@ -109,5 +109,10 @@ Nachbarschaftsradien 0/1/2. Komponenten bleiben nur bei belegtem Qualitätsnutze
 | Sprachvergleich | DE/FR/IT, neun Paare, same-/cross-language | offen |
 | finale Auswahl/Test | Validation-Auswahl, Freeze, einmaliger Test | offen |
 
-Noch keine neue Macro-F1-Aussage. Ein guter Architekturentwurf oder bestandene
-Unit-Tests allein erfüllen diese Abschlussanforderungen nicht.
+Die wiederaufgenommene Messung vom 8. Oktober liefert erste vollständige
+Validation-Scores auf 108 November-Fällen: E1 **0.4666**, E6 **0.7397**, E7
+**0.8517**. E7 ist auf diesen Fällen kalibriert; sein Score ist kein unabhängiger
+Testnachweis. Die übrigen Ablationen und die finale Auswahl stehen noch aus.
+Siehe [Messstand und Protokoll](evaluation/adaptive_measurement_2026-10-08.md).
+Ein guter Architekturentwurf oder bestandene Unit-Tests allein erfüllen die
+weiteren Abschlussanforderungen nicht.

@@ -17,6 +17,14 @@ warm-up, Docker, dev comparison and actual CPU measurements.
 The [completed live quality comparison](docs/evaluation/hybrid_quality_2026-10-05.md)
 reports both runs, language pairs, runtime and dataset limitations; the default remains unchanged.
 
+The adaptive multilingual method adds translated BM25, NLI reranking and neighboring
+source paragraphs. See [the architecture and ablations](docs/adaptive_multilingual_nli_reranking.md)
+and [the resumed measurement with CSCS GPU preparation](docs/evaluation/adaptive_measurement_2026-10-08.md).
+The current experiment writes predictions, API attempts and live coverage to
+`docs/evaluation/adaptive/run_2026-10-08_cscs_json_v3/validation/`.
+Incomplete coverage cannot select a configuration; the separate test stays
+held out until validation selection is frozen.
+
 ---
 
 ## 🎯 The Challenge & Task
