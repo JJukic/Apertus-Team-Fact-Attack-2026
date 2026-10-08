@@ -150,6 +150,26 @@ With booklet order there is no interval without a request in flight after the fi
 start-up until it (~3.3 s: imports, first booklet, its passages). Real API without cache (20 cases): labels,
 evidence and token counts identical (20/20), output in input order.
 
+**Robustness for an unseen evaluation set (2026-10-08).** Checked with a case file of broken inputs against a fake
+Apertus that answers 429 every 5th, 500 every 7th request and drops every 11th connection:
+
+| Input | Before | Now |
+|---|---|---|
+| UTF-8 byte order mark, or one line of invalid JSON | **whole run crashed, no output** | other cases unaffected; a broken line with a readable `id` is answered neutral |
+| JSON value that is not an object (`[1, 2, 3]`) | crash | skipped with a warning |
+| missing / truncated / non-PDF booklet, no source | neutral (per-case error handling) | unchanged |
+| 429 / 500 / dropped connection | retried | retried (all 14 cases answered, exit 0) |
+| process-pool worker killed while parsing | — | after `PARSE_TASK_TIMEOUT_S` the booklet is parsed sequentially |
+
+18 booklets outside the dataset (2014-02-09, 2016-06-05, 2018-03-04, 2018-09-23, 2019-02-10, 2019-05-19, DE/FR/IT,
+from bk.admin.ch): all parse. pypdf 6.19 rejects a font on 3 of 32 pages of the 2018-03-04 booklets ("More than one
+/FontFile found"), which used to fail the **whole booklet**; such pages are now read with pypdfium2. Section labels:
+booklets in the current layout (since 2018-09) get the same committee / Federal Council / voting text pattern as
+2020–2026 (one gap: the committee pages of the second 2019-05-19 proposal in German); in the old layout (2014,
+2016, 2018-03) speaker sections are found partly or not at all (2014 DE: none), so the speaker boost does not apply
+there; no swapped speakers were seen. Dependencies are pinned to the tested versions, and the image build fails on
+a code error in `warm-cache` instead of shipping an image without parse cache.
+
 ## Earlier result (own evaluator, k=12, before the Q&A): full test split (402 pairs)
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |

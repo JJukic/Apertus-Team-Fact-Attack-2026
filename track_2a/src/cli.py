@@ -180,13 +180,28 @@ def load_cases(input_path: Path) -> List[Dict[str, Any]]:
 
         frame = pd.read_parquet(input_path) if suffix == ".parquet" else pd.read_csv(input_path)
         return [{k: (None if pd.isna(v) else v) for k, v in row.items()} for row in frame.astype(object).to_dict("records")]
-    content = input_path.read_text(encoding="utf-8").strip()
-    if content.startswith("["):
-        return json.loads(content)
+    content = input_path.read_text(encoding="utf-8-sig").strip()  # tolerates a byte order mark
     try:
-        return [json.loads(content)]
+        parsed = json.loads(content)
+        items = parsed if isinstance(parsed, list) else [parsed]
     except json.JSONDecodeError:
-        return [json.loads(line) for line in content.splitlines() if line.strip()]
+        items = []
+        for n, line in enumerate(content.splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                items.append(json.loads(line))
+            except json.JSONDecodeError as exc:
+                # A broken line must not cost the other cases. If its id is readable, it still gets a (neutral) answer:
+                # a missing line counts as wrong anyway
+                m = re.search(r'"id"\s*:\s*"((?:[^"\\]|\\.)*)"', line)
+                print(f"[warning] line {n}: invalid JSON ({exc.msg})" + (", answered as neutral" if m else ", skipped"), file=sys.stderr)
+                if m:
+                    items.append({"id": json.loads(f'"{m.group(1)}"'), "_invalid": f"invalid JSON: {exc.msg}"})
+    cases = [item for item in items if isinstance(item, dict)]
+    if len(cases) < len(items):
+        print(f"[warning] {len(items) - len(cases)} entries are not JSON objects and were skipped", file=sys.stderr)
+    return cases
 
 
 def _text(value: Any) -> str:
@@ -255,6 +270,8 @@ def run_batch(
     def process(idx: int, item: Dict[str, Any]) -> Dict[str, Any]:
         cid = item.get("id", f"case-{idx:04d}")
         try:
+            if item.get("_invalid"):
+                raise ValueError(item["_invalid"])
             claim_text = _text(item.get("claim"))
             claim_field = item.get("claim")
             given_lang = str((claim_field.get("language") if isinstance(claim_field, dict) else None)
@@ -455,9 +472,14 @@ def warm_cache(
 
     parser = PDFParser()
     pdfs = sorted(booklets_dir.glob("*.pdf"))
+    cached = 0
     for pdf in pdfs:
-        load_parsed_booklet(pdf, parser)
-    console.print(f"[bold green]Cached {len(pdfs)} booklet(s) in {config.BOOKLET_CACHE_DIR}[/bold green]")
+        try:
+            load_parsed_booklet(pdf, parser)
+            cached += 1
+        except Exception as exc:  # a broken download must not fail the build; a code error still does (import time)
+            print(f"[warning] {pdf.name}: not cached ({type(exc).__name__}: {exc})", file=sys.stderr)
+    console.print(f"[bold green]Cached {cached} of {len(pdfs)} booklet(s) in {config.BOOKLET_CACHE_DIR}[/bold green]")
 
 
 @app.command()

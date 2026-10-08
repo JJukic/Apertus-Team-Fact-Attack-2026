@@ -7,6 +7,8 @@ any voting date, any number of proposals. No hardcoded page numbers.
 """
 
 import re
+import sys
+import threading
 from pathlib import Path
 from typing import List, Dict, Any, Union, Optional, Tuple
 
@@ -152,6 +154,36 @@ def detect_section_heading(page_text: str) -> Optional[str]:
     return None
 
 
+_PDFIUM_LOCK = threading.Lock()
+
+
+def extract_page_text(reader: Any, index: int, pdf_path: Union[str, Path]) -> str:
+    """
+    Text of one page (0-based) with pypdf. pypdf rejects some fonts of older booklets ("More than one /FontFile found"
+    on 3 of 32 pages of the 2018-03-04 booklets); such a page is read with pypdfium2 instead of losing the booklet.
+    """
+    try:
+        return (reader.pages[index].extract_text() or "").strip()
+    except Exception as exc:
+        try:
+            import pypdfium2
+
+            with _PDFIUM_LOCK:  # pdfium is not thread-safe
+                doc = pypdfium2.PdfDocument(str(pdf_path))
+                try:
+                    text = doc[index].get_textpage().get_text_range()
+                finally:
+                    doc.close()
+            text = "\n".join(line.rstrip() for line in text.replace("\r\n", "\n").replace("\r", "\n").split("\n")).strip()
+            print(f"[warning] {Path(pdf_path).name} p. {index + 1}: pypdf failed ({type(exc).__name__}), read with pdfium",
+                  file=sys.stderr)
+            return text
+        except Exception as fallback_exc:
+            print(f"[warning] {Path(pdf_path).name} p. {index + 1}: no text ({type(exc).__name__}; "
+                  f"pdfium: {type(fallback_exc).__name__})", file=sys.stderr)
+            return ""
+
+
 class PDFParser:
     def __init__(self, cache_dir: Union[Path, None] = None):
         self.cache_dir = cache_dir
@@ -175,9 +207,8 @@ class PDFParser:
 
         reader = pypdf.PdfReader(str(pdf_path))
         pages = []
-        for idx, page in enumerate(reader.pages):
-            text = page.extract_text() or ""
-            text = text.strip()
+        for idx in range(len(reader.pages)):
+            text = extract_page_text(reader, idx, pdf_path)
             if text:
                 pages.append({
                     "page_number": idx + 1,

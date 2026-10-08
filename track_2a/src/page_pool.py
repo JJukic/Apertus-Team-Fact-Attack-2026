@@ -21,6 +21,8 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 TASKS_PER_BOOKLET = int(os.getenv("PARSE_TASKS_PER_BOOKLET", "1"))  # after the first booklet
 MAX_PROCESSES = 16
+# A worker that dies (e.g. killed for memory) loses its task and get() would wait forever: give up and parse sequentially
+TASK_TIMEOUT_S = float(os.getenv("PARSE_TASK_TIMEOUT_S", "300"))
 
 _lock = threading.Lock()
 _pool = None
@@ -51,8 +53,10 @@ def processes() -> int:
 def _extract_stride(path: str, j: int, k: int) -> List[Tuple[int, str]]:
     import pypdf
 
+    from src.pdf_parser import extract_page_text
+
     reader = pypdf.PdfReader(path)
-    return [(i, (reader.pages[i].extract_text() or "").strip()) for i in range(j, len(reader.pages), k)]
+    return [(i, extract_page_text(reader, i, path)) for i in range(j, len(reader.pages), k)]
 
 
 def _key(pdf_path: Union[str, Path]) -> str:
@@ -99,7 +103,7 @@ def extract_pages(pdf_path: Union[str, Path]) -> Optional[List[Dict[str, Any]]]:
     if jobs is None:
         return None
     try:
-        pages = sorted(page for job in jobs for page in job.get())
-    except Exception:
+        pages = sorted(page for job in jobs for page in job.get(timeout=TASK_TIMEOUT_S))
+    except Exception:  # also multiprocessing.TimeoutError
         return None  # the caller extracts sequentially
     return [{"page_number": i + 1, "text": text} for i, text in pages if text]

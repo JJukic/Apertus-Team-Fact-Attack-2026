@@ -23,7 +23,8 @@ RUN python -m src.download_data || true
 # Pre-parse the booklets so the first claim per booklet does not pay for PDF parsing
 # Also fetch all 60 booklets of the OST dataset so known booklets are pre-parsed (falls back silently offline)
 RUN python -m src.hf_dataset || true
-RUN BOOKLET_CACHE_DIR=/app/.cache/booklets python -m src warm-cache || true
+# No "|| true" here: a broken booklet only warns, but a code error must fail the build
+RUN BOOKLET_CACHE_DIR=/app/.cache/booklets python -m src warm-cache
 
 EXPOSE 8501
 
