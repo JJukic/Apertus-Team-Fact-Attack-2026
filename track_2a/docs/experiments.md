@@ -554,6 +554,20 @@ Fewer pages save tokens but cost F1 and Hit@5 on dev and do not help on the new 
 The two remaining misses on the new booklet are retrieval misses (cross-lingual claims whose wording does not
 match the booklet language) — the candidate fix is translating the retrieval query, still to be measured.
 
+### Schema-constrained answers (`response_format: json_schema`, rejected, 2026-10-08)
+
+Another team constrains the answer with a JSON schema to avoid unparseable answers. We have none to avoid: 0 parse
+errors in over 4,000 saved `ids`-mode answers. Paired on 150 dev task-A cases (50 per label, official evaluate.py,
+each variant run twice alternately, scores of the second runs):
+
+| Variant | Macro-F1 | Hit@5 | Input / output tokens | Inference time |
+|---|---:|---:|---:|---:|
+| free JSON (default) | **0.933** | **0.78** | 3,681 / 57 | 926 ms |
+| `json_schema` (strict) | 0.833 | 0.69 | 3,681 / 54 | 894 ms |
+
+25 labels changed: 4 fixed, 19 broken, mostly towards Contradiction (Neutral predictions 56 → 37). Constrained
+decoding shifts Apertus' answers; kept off.
+
 ### The 30 remaining test errors
 
 - They come from only ~19 distinct claims: the same claim is paired with the DE, FR and IT booklet
