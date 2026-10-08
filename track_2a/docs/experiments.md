@@ -535,6 +535,25 @@ original and the translation to the NLI prompt (tokens and latency of both calls
 \* measured while another run shared the endpoint. Over both splits 14 fixes against 11 breakages on
 cross-lingual pairs: within run-to-run noise, for +0.6 s and ~20 extra output tokens per claim. Kept off.
 
+### Dropping low-value pages from the context (rejected, 2026-10-08)
+
+On an own set of 36 claims × task A/B on the newest booklet (27 September 2026, all 9 language pairs; not part
+of the dataset) task A scored macro-F1 0.804 (task B 0.970). All 7 task-A errors are cross-lingual; in 5 the gold
+page was among the 8 retrieved pages and Apertus still answered a confident Neutral, with only the gold page in
+context it was right. An ablation with fewer pages fixed 3 of the 7, so we tried dropping low-value pages without
+refilling (`CONTEXT_FILTER`): `low` drops tables of contents, cover pages and pages under 700 characters,
+`low+legal1` additionally keeps at most one voting-text page.
+
+| Variant | dev 300: macro-F1 / Hit@5 / input tokens | Sep 2026: task-A macro-F1 |
+|---|---|---:|
+| off (baseline) | 0.927 / 0.791 / 3,721 | 0.804 |
+| low | 0.917 / 0.773 / 3,478 | 0.804 |
+| low+legal1 | 0.910 / 0.749 / 2,988 | 0.779 |
+
+Fewer pages save tokens but cost F1 and Hit@5 on dev and do not help on the new booklet; the code was removed.
+The two remaining misses on the new booklet are retrieval misses (cross-lingual claims whose wording does not
+match the booklet language) — the candidate fix is translating the retrieval query, still to be measured.
+
 ### The 30 remaining test errors
 
 - They come from only ~19 distinct claims: the same claim is paired with the DE, FR and IT booklet
