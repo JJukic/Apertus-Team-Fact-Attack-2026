@@ -441,3 +441,16 @@ Judges may call the CLI once per claim, so start-up and PDF parsing can count to
 - Proposal boundary detection misses proposals in 2021-06-13, 2022-09-25 and 2024-03-03 (IT); hybrid
   retrieval does not depend on it, but the legacy `retrieval` strategy does.
 - Committee-attributed claims now fail as often as claims without a speaker (7.4 %, down from 13.4 %; Federal Council 1.4 %).
+# Competition-score optimization audit (2026-10-08)
+
+An isolated `experiment/competition-score-optimization` branch starts at
+`a0e9e772dd388bdff4b8635ef0e09872ef705af6`. Recalculating the saved 402-case
+predictions confirms Advanced F1 0.940236 and Beginner F1 0.974948. This is an
+archive audit, not a fresh API reproduction. All 70 existing tests pass.
+
+The audit found that the historical evidence metric differs from official
+Hit@5, page 1 is used for missing metadata, and the official bare CLI arguments
+and `BASE_URL/API_KEY` are not supported yet. The current public dataset has
+1,488 rows compared with the historical 1,495. No optimization is recommended
+from these checks alone. See [the ongoing report](competition_optimization_report.md)
+and [machine-readable baseline audit](../results/competition_optimization/baseline.json).

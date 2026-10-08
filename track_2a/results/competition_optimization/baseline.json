@@ -1,0 +1,261 @@
+{
+  "status": "historical_archive_verified_fresh_reproduction_pending",
+  "starting_commit": "a0e9e772dd388bdff4b8635ef0e09872ef705af6",
+  "audit_python": "3.12.6",
+  "tasks": {
+    "A": {
+      "measurement_type": "historical_prediction_recalculation",
+      "fresh_api_run": false,
+      "source_file": "20261006T142147_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final.json",
+      "source_sha256": "074ca5600d296705f5598a7e0c05267e39d09fa997c7c6399e47e4c8fac16eba",
+      "historical_meta": {
+        "timestamp": "2026-10-06T14:21:47",
+        "git_commit": "0036922-dirty",
+        "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+        "mock": false,
+        "task": "advanced",
+        "strategy": "hybrid",
+        "top_k": 12,
+        "prompt_mode": "ids",
+        "passage_chars": 0,
+        "ids_reason": false,
+        "thinking": false,
+        "thinking_budget": 0,
+        "translate_claim": false,
+        "page_max_chars": 3000,
+        "speaker_boost": 2,
+        "speaker_hint": false,
+        "speaker_aware": false,
+        "few_shot": false,
+        "dataset": "test.jsonl",
+        "seed": 42,
+        "workers": 4,
+        "tag": "final",
+        "wall_time_s": 210.8
+      },
+      "cases": 402,
+      "macro_f1": 0.9402360566545679,
+      "accuracy": 0.9402985074626866,
+      "per_class": {
+        "0": {
+          "precision": 0.9765625,
+          "recall": 0.9124087591240876,
+          "f1-score": 0.9433962264150944,
+          "support": 137.0
+        },
+        "1": {
+          "precision": 0.9097222222222222,
+          "recall": 0.9776119402985075,
+          "f1-score": 0.9424460431654677,
+          "support": 134.0
+        },
+        "2": {
+          "precision": 0.9384615384615385,
+          "recall": 0.9312977099236641,
+          "f1-score": 0.9348659003831418,
+          "support": 131.0
+        },
+        "accuracy": 0.9402985074626866,
+        "macro avg": {
+          "precision": 0.941582086894587,
+          "recall": 0.9404394697820865,
+          "f1-score": 0.9402360566545679,
+          "support": 402.0
+        },
+        "weighted avg": {
+          "precision": 0.941866422428456,
+          "recall": 0.9402985074626866,
+          "f1-score": 0.9402997158040601,
+          "support": 402.0
+        }
+      },
+      "language_pair_direction": "claim->reference",
+      "by_language_pair": {
+        "de->de": {
+          "cases": 38,
+          "macro_f1": 0.9505494505494506
+        },
+        "de->fr": {
+          "cases": 48,
+          "macro_f1": 0.9485065710872163
+        },
+        "de->it": {
+          "cases": 46,
+          "macro_f1": 0.9155773420479303
+        },
+        "fr->de": {
+          "cases": 36,
+          "macro_f1": 0.8247765006385697
+        },
+        "fr->fr": {
+          "cases": 56,
+          "macro_f1": 0.9564091045223121
+        },
+        "fr->it": {
+          "cases": 38,
+          "macro_f1": 1.0
+        },
+        "it->de": {
+          "cases": 43,
+          "macro_f1": 0.9259259259259259
+        },
+        "it->fr": {
+          "cases": 64,
+          "macro_f1": 0.9523293328171377
+        },
+        "it->it": {
+          "cases": 33,
+          "macro_f1": 0.9394755003450657
+        }
+      },
+      "cross_language_macro_f1": 0.934396102471804,
+      "reported_error_count": 0,
+      "input_tokens_reported": {
+        "sum": 2241673,
+        "mean": 5576.300995024875,
+        "median": 5364.0,
+        "p95": 8653
+      },
+      "output_tokens_reported": {
+        "sum": 23502,
+        "mean": 58.46268656716418,
+        "median": 54.0,
+        "p95": 64
+      },
+      "official_evidence_hit5": null,
+      "non_llm_processing_time": null,
+      "limitations": [
+        "Historical test dates were subsequently used in architecture selection.",
+        "Historical word-overlap evidence metric is not official Evidence Hit@5.",
+        "Reported token counts cannot establish accounting for every failed API attempt.",
+        "Archive contains no request intervals for measuring the union of in-flight requests."
+      ]
+    },
+    "B": {
+      "measurement_type": "historical_prediction_recalculation",
+      "fresh_api_run": false,
+      "source_file": "20261006T132045_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_final_beginner.json",
+      "source_sha256": "7213d60e94130f75eeecc393e39144536e84bc5fa35d032ec837fd322b534f14",
+      "historical_meta": {
+        "timestamp": "2026-10-06T13:20:45",
+        "git_commit": "841f7e6",
+        "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+        "mock": false,
+        "task": "beginner",
+        "strategy": "direct_reference",
+        "top_k": 10,
+        "prompt_mode": "ids",
+        "passage_chars": null,
+        "ids_reason": false,
+        "thinking": false,
+        "thinking_budget": 0,
+        "translate_claim": false,
+        "page_max_chars": 3000,
+        "speaker_aware": false,
+        "few_shot": false,
+        "dataset": "test.jsonl",
+        "seed": 42,
+        "workers": 4,
+        "tag": "final_beginner",
+        "wall_time_s": 114.5
+      },
+      "cases": 402,
+      "macro_f1": 0.9749484870737414,
+      "accuracy": 0.9751243781094527,
+      "per_class": {
+        "0": {
+          "precision": 0.9854014598540146,
+          "recall": 0.9854014598540146,
+          "f1-score": 0.9854014598540146,
+          "support": 137.0
+        },
+        "1": {
+          "precision": 0.9776119402985075,
+          "recall": 0.9776119402985075,
+          "f1-score": 0.9776119402985075,
+          "support": 134.0
+        },
+        "2": {
+          "precision": 0.9618320610687023,
+          "recall": 0.9618320610687023,
+          "f1-score": 0.9618320610687023,
+          "support": 131.0
+        },
+        "accuracy": 0.9751243781094527,
+        "macro avg": {
+          "precision": 0.9749484870737414,
+          "recall": 0.9749484870737414,
+          "f1-score": 0.9749484870737414,
+          "support": 402.0
+        },
+        "weighted avg": {
+          "precision": 0.9751243781094527,
+          "recall": 0.9751243781094527,
+          "f1-score": 0.9751243781094527,
+          "support": 402.0
+        }
+      },
+      "language_pair_direction": "claim->reference",
+      "by_language_pair": {
+        "de->de": {
+          "cases": 38,
+          "macro_f1": 0.9483643892339545
+        },
+        "de->fr": {
+          "cases": 48,
+          "macro_f1": 0.9767195767195768
+        },
+        "de->it": {
+          "cases": 46,
+          "macro_f1": 0.9814135485448765
+        },
+        "fr->de": {
+          "cases": 36,
+          "macro_f1": 0.9063127025775582
+        },
+        "fr->fr": {
+          "cases": 56,
+          "macro_f1": 1.0
+        },
+        "fr->it": {
+          "cases": 38,
+          "macro_f1": 1.0
+        },
+        "it->de": {
+          "cases": 43,
+          "macro_f1": 0.9194847020933977
+        },
+        "it->fr": {
+          "cases": 64,
+          "macro_f1": 1.0
+        },
+        "it->it": {
+          "cases": 33,
+          "macro_f1": 1.0
+        }
+      },
+      "cross_language_macro_f1": 0.9706069003851366,
+      "reported_error_count": 0,
+      "input_tokens_reported": {
+        "sum": 1014266,
+        "mean": 2523.049751243781,
+        "median": 1641.5,
+        "p95": 5294
+      },
+      "output_tokens_reported": {
+        "sum": 22205,
+        "mean": 55.2363184079602,
+        "median": 53.0,
+        "p95": 63
+      },
+      "official_evidence_hit5": null,
+      "non_llm_processing_time": null,
+      "limitations": [
+        "Historical test dates were subsequently used in architecture selection.",
+        "Historical word-overlap evidence metric is not official Evidence Hit@5.",
+        "Reported token counts cannot establish accounting for every failed API attempt.",
+        "Archive contains no request intervals for measuring the union of in-flight requests."
+      ]
+    }
+  }
+}
