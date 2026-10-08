@@ -129,6 +129,20 @@ def attributed_section(claim: str) -> Optional[str]:
 _SPEAKER_NAMES = {_COMMITTEE_SECTION: "initiative/referendum committee", _FEDERAL_COUNCIL_SECTION: "Federal Council and Parliament"}
 
 
+def _cache_name(pdf_path: Path) -> str:
+    digest = hashlib.sha1(pdf_path.read_bytes()).hexdigest()[:16]
+    return f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
+
+
+def is_parse_cached(pdf_path: Union[str, Path]) -> bool:
+    """True if the booklet's parse is on disk (written at run time or baked into the image)."""
+    try:
+        name = _cache_name(Path(pdf_path))
+        return any((d / name).exists() for d in (config.BOOKLET_CACHE_DIR, config.BOOKLET_CACHE_PREBUILT))
+    except OSError:
+        return False
+
+
 def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[str, Any]:
     """
     Parse a booklet once (pages, passages, full text) and cache the result on disk.
@@ -136,8 +150,7 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
     Cache I/O failures (e.g. a read-only filesystem) silently fall back to parsing.
     """
     pdf_path = Path(pdf_path)
-    digest = hashlib.sha1(pdf_path.read_bytes()).hexdigest()[:16]
-    name = f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
+    name = _cache_name(pdf_path)
     cache_file = config.BOOKLET_CACHE_DIR / name
     for candidate in (cache_file, config.BOOKLET_CACHE_PREBUILT / name):
         try:

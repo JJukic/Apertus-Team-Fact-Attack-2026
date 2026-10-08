@@ -305,20 +305,42 @@ def run_batch(
     from concurrent.futures import ThreadPoolExecutor
     from src.apertus_client import LLM_CLOCK
 
+    from src import page_pool
+    from src.inference import is_parse_cached
+
+    # Booklets ordered by their number of cases (then first appearance); cases are processed booklet by booklet in this
+    # order, so the workers stay on booklets that are ready while the next ones are parsed. The pages of uncached
+    # booklets are queued at once in a process pool (src/page_pool.py, forked here before any other thread starts).
+    # Results are written in input order, and the processing order does not change any prediction.
+    case_pdfs: List[Optional[Path]] = []
+    for item in cases:
+        try:
+            case_pdfs.append(case_booklet(item, input_path.parent) if task != "beginner" else None)
+        except Exception:
+            case_pdfs.append(None)  # the case itself reports the problem
+    first_seen = {pdf: n for n, pdf in reversed(list(enumerate(case_pdfs))) if pdf is not None}
+    n_cases = {pdf: case_pdfs.count(pdf) for pdf in first_seen}
+    pdfs = sorted(first_seen, key=lambda pdf: (-n_cases[pdf], first_seen[pdf]))
+    rank = {pdf: r for r, pdf in enumerate(pdfs)}
+    order = sorted(range(len(cases)), key=lambda i: (rank.get(case_pdfs[i], -1), i))
+    page_pool.start([pdf for pdf in pdfs if not is_parse_cached(pdf)])
+
     def prefetch_booklets() -> None:
-        # Parse uncached booklets one after another in the background: once the first cases are waiting for Apertus,
-        # parsing overlaps with requests in flight instead of stalling every worker at the same time
-        for item in cases:
+        # numpy (via rank_bm25) loads while the first booklet is extracted; then passages and BM25 index booklet by
+        # booklet in the same order, in the background
+        if pdfs:
+            import rank_bm25  # noqa: F401
+        for pdf in pdfs:
             try:
-                pdf = case_booklet(item, input_path.parent) if task != "beginner" else None
-                if pdf is not None:
-                    engine._get_booklet_data(pdf)
+                engine._get_booklet_data(pdf)
             except Exception:
                 pass  # the case itself reports the problem
 
     threading.Thread(target=prefetch_booklets, daemon=True).start()
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
-        official_results = list(pool.map(process, range(1, len(cases) + 1), cases))
+        done = dict(zip(order, pool.map(lambda i: process(i + 1, cases[i]), order)))
+    official_results = [done[i] for i in range(len(cases))]
+    page_pool.stop()
     # Our estimate of the scored processing time: wall clock (incl. start-up) minus time with an LLM request in flight
     wall_s = time.perf_counter() - _START
     non_llm_ms = (wall_s - LLM_CLOCK.busy_s()) * 1000 / max(1, len(cases))

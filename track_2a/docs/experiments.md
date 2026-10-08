@@ -121,6 +121,35 @@ On the real API (20 cases, 10 A + 10 B) labels, evidence and token counts are id
 logprobs are read as before. Note: Docker Desktop on Windows bind mounts make `stat` slow (~1–2 ms per call), which
 inflated our local real run to ~10 ms per case; the organisers run on Linux.
 
+**Booklets that are not in the image (2026-10-08).** The organisers confirmed that the evaluation set is a new
+dataset, so none of its booklets are pre-parsed. pypdf needs 1.5–4 s per booklet (~50 ms per page; passages and BM25
+are negligible). Without the cache the scored time rose from ~4 to **104 ms per case**: one background thread parsed
+booklet after booklet while the four workers, following the input order, waited for booklets that were not ready.
+Two changes, both without effect on any prediction:
+
+1. `src/page_pool.py`: a process pool, forked from the main thread before any other thread starts, extracts the
+   pages of all uncached booklets of the case file at once. The first booklet is split over all workers (ready after
+   ~0.9 s instead of ~2.7 s); the others run one task each in parallel. Up to 16 processes, limited to the CPUs the
+   container may use (affinity and cgroup quota, e.g. `--cpus=2`). The text is identical to the sequential parser
+   (60/60 booklets); without fork (Windows) or with one CPU extraction stays sequential.
+2. Cases are processed booklet by booklet, the booklet with the most cases first, so the workers stay on booklets
+   that are ready while the next ones are parsed; numpy (for BM25) is imported in the background meanwhile. The
+   output keeps the input order, and every case is still predicted independently.
+
+Local fake Apertus (1.0–2.2 s per request), 401 test cases of task A on 18 booklets:
+
+| Setting | Non-LLM time per case | Wall clock |
+|---|---:|---:|
+| booklets cached (image) | 3.2 ms | 168.6 s |
+| uncached, before | 103.8 ms | 224.5 s |
+| uncached, process pool | 14.4 ms | 177.2 s |
+| **uncached, process pool + booklet order** | **8.2 ms** | **170.7 s** |
+| uncached, process pool + booklet order, `--cpus=2` | 13.9 ms | 173.1 s |
+
+With booklet order there is no interval without a request in flight after the first request; what remains is the
+start-up until it (~3.3 s: imports, first booklet, its passages). Real API without cache (20 cases): labels,
+evidence and token counts identical (20/20), output in input order.
+
 ## Earlier result (own evaluator, k=12, before the Q&A): full test split (402 pairs)
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |

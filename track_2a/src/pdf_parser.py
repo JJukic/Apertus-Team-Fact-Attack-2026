@@ -165,6 +165,12 @@ class PDFParser:
         if not pdf_path.exists():
             raise FileNotFoundError(f"PDF not found at: {pdf_path}")
 
+        from src import page_pool  # same text, pages extracted in parallel processes when more than one CPU is available
+
+        parallel = page_pool.extract_pages(pdf_path)
+        if parallel is not None:
+            return parallel
+
         import pypdf  # lazy: slow to import, and only needed for booklets missing from the parse cache
 
         reader = pypdf.PdfReader(str(pdf_path))
