@@ -88,18 +88,18 @@ class _Sequence:
 
 
 class TestThinkingBudget(unittest.TestCase):
-    def test_exhausted_budget_forces_an_answer(self):
+    def test_thinking_is_uncapped_even_with_a_legacy_budget_setting(self):
         client = ApertusClient(api_key="test", mock=True)
         client.mock = False
-        seq = _Sequence(["The committee says that rents", '{"label": 0, "p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "evidence_ids": [1]}'])
+        seq = _Sequence(['Reasoning.<|inner_suffix|>{"label": 0, "p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "evidence_ids": [1]}'])
         client.client = SimpleNamespace(chat=SimpleNamespace(completions=seq))
         with mock.patch.object(config, "THINKING", True), mock.patch.object(config, "THINKING_BUDGET", 200):
             out = client.infer(context="", claim="c", passages=["p"])
         self.assertEqual(out.label, 0)
-        self.assertEqual(len(seq.calls), 2)
-        self.assertEqual(seq.calls[0]["max_tokens"], 200)
-        self.assertTrue(seq.calls[1]["messages"][-1]["content"].endswith("<|inner_suffix|>"))
-        self.assertEqual((out.tokens_prompt, out.tokens_completion), (200, 100))
+        self.assertEqual(len(seq.calls), 1)
+        self.assertNotIn("max_tokens", seq.calls[0])
+        self.assertNotIn("max_completion_tokens", seq.calls[0])
+        self.assertEqual((out.tokens_prompt, out.tokens_completion), (100, 50))
 
     def test_finished_reasoning_needs_no_second_call(self):
         client = ApertusClient(api_key="test", mock=True)

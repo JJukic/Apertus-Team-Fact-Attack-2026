@@ -1,0 +1,24 @@
+{
+  "status": "C1_full_validation_complete_final_selection_pending_retrieval_and_Docker",
+  "provisional_starting_architecture": "weighted BM25 Top-12 + two-page speaker boost + Apertus ids NLI",
+  "candidate_under_validation": {
+    "EVIDENCE_POLICY": "raw_pages_and_blocks",
+    "CACHE_SINGLE_FLIGHT": true,
+    "SOURCE_PAGES_LAZY": true,
+    "LLM_STREAMING": true,
+    "LLM_JSON_REPAIR": true
+  },
+  "baseline_remains_selectable": true,
+  "recommended_as_final": false,
+  "submission_ready": false,
+  "reason": "Full C1 improves evidence and coverage, with a small Advanced F1 regression. R1/R2, broader source-cause audit, CPU profile and final Docker checks remain.",
+  "strongest_complete_fresh_candidate": "C1",
+  "candidate_validation": {
+    "Advanced_macro_f1": 0.9440341569790694,
+    "Beginner_macro_f1": 0.9824974405651722,
+    "Advanced_evidence_hit5": 0.7555555555555555,
+    "cases": 2976,
+    "invalid_predictions": 0,
+    "grouped_folds": 5
+  }
+}

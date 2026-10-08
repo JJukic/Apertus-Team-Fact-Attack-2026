@@ -8,21 +8,23 @@ import hashlib
 import json
 import re
 import time
+import threading
+import tempfile
 from pathlib import Path
 from typing import Optional, Union, Dict, Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StrictInt
 
 from src.pdf_parser import PDFParser
 from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
 from src import config
-from src.text_utils import clip_to_query, guess_language
+from src.text_utils import clip_to_query, guess_language, official_normalize
 
 
 class EvidenceSource(BaseModel):
     quote: str
-    page_number: Optional[int] = None
+    page_number: Optional[StrictInt] = None
     proposal_id: Optional[int] = None
 
 
@@ -48,37 +50,41 @@ class PredictionResult(BaseModel):
     latency_ms: float
     error: Optional[str] = None
     context_pages: List[int] = Field(default_factory=list)  # booklet pages supplied to Apertus
+    retrieval_query_metadata: Dict[str, Any] = Field(default_factory=dict)
 
     def to_official_dict(self, case_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Export output strictly conforming to the Hack Apertus Track 2A (OST) JSON Schema.
         For Neutral (1), evidence is strictly an empty list [].
         """
-        cid = case_id or self.id or "case-0001"
+        cid = case_id if case_id is not None else (self.id if self.id is not None else "case-0001")
         ev_list: List[Dict[str, Any]] = []
-
-        if self.label != 1:  # Evidence is only valid for Entailment (0) and Contradiction (2)
-            if self.evidence_sources:
-                for src in self.evidence_sources:
-                    clean_text = re.sub(r"^\[(?:page|seite)\s+\d+\]\s*\d*\s*", "", src.quote, flags=re.IGNORECASE).strip(' "«»')
-                    if clean_text:
-                        ev_list.append({
-                            "page": src.page_number or 1,
-                            "text": clean_text,
-                        })
-            elif self.evidence:
-                for ev in self.evidence:
-                    clean_text = re.sub(r"^\[(?:page|seite)\s+\d+\]\s*\d*\s*", "", ev, flags=re.IGNORECASE).strip(' "«»')
-                    if clean_text:
-                        ev_list.append({
-                            "page": 1,
-                            "text": clean_text,
-                        })
+        if self.label not in config.LABEL_MAPPING:
+            raise ValueError("Invalid NLI label")
+        beginner = self.strategy == "direct_reference"
+        seen = set()
+        if self.label != 1:
+            for source in self.evidence_sources:
+                page = None if beginner else source.page_number
+                if not beginner and (type(page) is not int or page < 1):
+                    continue  # An unknown physical page is never attributed to page 1.
+                # Only remove the engine's synthetic prefix; retain source numbers,
+                # quotation marks, Unicode and original whitespace verbatim.
+                quote = re.sub(r"^\[(?:page|seite)\s+\d+\] ?", "", source.quote, flags=re.IGNORECASE)
+                normalized = official_normalize(quote)
+                identity = (page, normalized)
+                if normalized and len(normalized) <= 5000 and identity not in seen:
+                    ev_list.append({"page": page, "text": quote})
+                    seen.add(identity)
+                if len(ev_list) == 5:
+                    break
+        if config.OFFICIAL_IO and not beginner and self.label != 1 and not ev_list:
+            raise ValueError("Non-neutral Advanced prediction has no attributed evidence")
 
         return {
             "id": cid,
             "label": self.label,
-            "label_name": self.label_name.lower(),
+            "label_name": config.LABEL_MAPPING[self.label].lower(),
             "evidence": ev_list,
             "metrics": {
                 "input_tokens": int(self.tokens_prompt),
@@ -89,6 +95,8 @@ class PredictionResult(BaseModel):
 
 
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
+_BOOKLET_LOCKS: Dict[Any, threading.Lock] = {}
+_BOOKLET_LOCK_GUARD = threading.Lock()
 _PARSE_CACHE_VERSION = 6  # bump when parsing or section detection changes
 
 _COMMITTEE_SECTION = "Arguments of the initiative/referendum committee"
@@ -147,7 +155,9 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
     parsed = {"pages": pages, "paragraphs": paragraphs, "full_text": full_text}
     try:
         cache_file.parent.mkdir(parents=True, exist_ok=True)
-        cache_file.write_text(json.dumps(parsed, ensure_ascii=False), encoding="utf-8")
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=cache_file.parent, delete=False) as temporary:
+            json.dump(parsed, temporary, ensure_ascii=False)
+        Path(temporary.name).replace(cache_file)
     except OSError:
         pass
     return parsed
@@ -190,13 +200,48 @@ class ClaimVerificationEngine:
         self.prompt_mode = prompt_mode
         self.client = apertus_client or ApertusClient()
         self.pdf_parser = PDFParser()
+        self._source_pages = None
+        self._source_pages_lock = threading.Lock()
+        self._query_translator = None
 
     def _get_booklet_data(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:
         path_str = str(Path(pdf_path).resolve())
-        if path_str not in _GLOBAL_BOOKLET_CACHE:
+        key = path_str
+        if config.CACHE_SINGLE_FLIGHT:
+            stat = Path(path_str).stat()
+            key = (path_str, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns, config.PASSAGE_CHARS)
+            with _BOOKLET_LOCK_GUARD:
+                lock = _BOOKLET_LOCKS.setdefault(key, threading.Lock())
+            with lock:
+                return self._cached_booklet(key, path_str)
+        return self._cached_booklet(key, path_str)
+
+    def _cached_booklet(self, key, path_str):
+        if key not in _GLOBAL_BOOKLET_CACHE:
             parsed = load_parsed_booklet(path_str, self.pdf_parser)
-            _GLOBAL_BOOKLET_CACHE[path_str] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
-        return _GLOBAL_BOOKLET_CACHE[path_str]
+            _GLOBAL_BOOKLET_CACHE[key] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
+        return _GLOBAL_BOOKLET_CACHE[key]
+
+    def _finalize_evidence(self, result, vote=None):
+        if config.EVIDENCE_POLICY == "legacy" or result.strategy == "direct_reference" or result.error:
+            return result
+        from src.evidence import SourcePages, construct_evidence
+        with self._source_pages_lock:
+            if self._source_pages is None:
+                self._source_pages = SourcePages(Path("."), lazy=config.SOURCE_PAGES_LAZY)
+        # The postprocessor receives baseline-attributed pages and inference inputs
+        # (including the baseline's explicit top-page fallback for missing IDs).
+        # No expected labels, reference passage or gold evidence enter this path.
+        raw = {"id": result.id, "label": result.label,
+               "evidence": [{"page": s.page_number, "text": s.quote} for s in result.evidence_sources]}
+        case = {"booklet": {"path": str(Path(result.booklet_path).resolve())},
+                "claim": {"text": result.claim}, "vote": vote or ""}
+        new = construct_evidence(raw, case, self._source_pages, config.EVIDENCE_POLICY)
+        proposals = {s.page_number: s.proposal_id for s in result.evidence_sources}
+        result.evidence_sources = [EvidenceSource(quote=s["text"], page_number=s["page"],
+                                                 proposal_id=proposals.get(s["page"])) for s in new["evidence"]]
+        result.evidence = [s.quote for s in result.evidence_sources]
+        return result
 
     def verify_claim(
         self,
@@ -207,6 +252,7 @@ class ClaimVerificationEngine:
         top_k: int = config.DEFAULT_TOP_K,
         vote: Optional[str] = None,
         case_id: Optional[str] = None,
+        booklet_language: Optional[str] = None,
     ) -> PredictionResult:
         """
         Verify whether the voting booklet entails, contradicts, or is neutral to the claim.
@@ -214,6 +260,29 @@ class ClaimVerificationEngine:
         """
         strat = strategy or self.strategy
         booklet_data = self._get_booklet_data(booklet_pdf)
+        retrieval_claim, query_variants = claim, None
+        translation_usage, query_metadata = (0, 0), {}
+        if config.RETRIEVAL_QUERY_MODE != "original":
+            if strat != "hybrid" or config.TRANSLATE_CLAIM or self.prompt_mode not in ("ids", "compact"):
+                raise ValueError("Query translation requires hybrid ids/compact retrieval and an unchanged NLI claim")
+            source_language = booklet_language or guess_language(" ".join(p['text'] for p in booklet_data['pages'][:3]))
+            language = claim_language or guess_language(claim)
+            query_metadata = {'mode': config.RETRIEVAL_QUERY_MODE, 'claim_language': language,
+                              'booklet_language': source_language, 'translation_used': False}
+            if language != source_language:
+                from src.query_translation import QueryTranslator
+                with self._source_pages_lock:
+                    if self._query_translator is None:
+                        self._query_translator = QueryTranslator(self.client, config.QUERY_TRANSLATION_CACHE_DIR)
+                translated, prompt_tokens, completion_tokens, receipt = self._query_translator.get(claim, language, source_language)
+                translation_usage = prompt_tokens, completion_tokens
+                query_metadata.update(receipt)
+                if translated:
+                    query_metadata['translation_used'] = True
+                    if config.RETRIEVAL_QUERY_MODE == "translated":
+                        retrieval_claim = translated
+                    else:
+                        query_variants = [translated]
 
         candidate_paras = []
         if strat == "full":
@@ -226,7 +295,8 @@ class ClaimVerificationEngine:
             if strat == "hybrid":
                 # Strategy 3: booklet-wide BM25(claim) + BM25(vote title), no hard proposal filter
                 candidate_paras = retriever.retrieve_hybrid(
-                    claim, top_k=top_k, target_vote=vote,
+                    retrieval_claim, top_k=top_k, target_vote=vote,
+                    query_variants=query_variants,
                     exclude_sections=opposing_sections(claim) if config.SPEAKER_AWARE else None,
                     ensure_sections={side: config.SPEAKER_BOOST}
                     if config.SPEAKER_BOOST and (side := attributed_section(claim)) else None,
@@ -246,7 +316,7 @@ class ClaimVerificationEngine:
         numerical_conflict_msg = num_conflict.explanation if num_conflict else None
 
         if self.prompt_mode in ("compact", "ids"):
-            return self._compact_predict(
+            result = self._compact_predict(
                 passages=candidate_paras,
                 claim=claim,
                 claim_language=claim_language,
@@ -256,6 +326,12 @@ class ClaimVerificationEngine:
                 booklet_path=str(booklet_pdf),
                 numerical_conflict_msg=numerical_conflict_msg,
             )
+            result.tokens_prompt += translation_usage[0]
+            result.tokens_completion += translation_usage[1]
+            result.tokens_total += sum(translation_usage)
+            result.latency_ms += query_metadata.get('remote_ms', 0)
+            result.retrieval_query_metadata = query_metadata
+            return result
 
         # 2. Apertus Model Inference
         nli_output: NLIOutput = self.client.infer(
@@ -338,8 +414,8 @@ class ClaimVerificationEngine:
                 )
             final_evidence_list = nli_output.evidence
 
-        return PredictionResult(
-            id=case_id or "case-0001",
+        return self._finalize_evidence(PredictionResult(
+            id=case_id if case_id is not None else "case-0001",
             claim=claim,
             label=final_label,
             label_name=label_name,
@@ -359,7 +435,7 @@ class ClaimVerificationEngine:
             tokens_total=nli_output.tokens_total,
             latency_ms=nli_output.latency_ms,
             error=nli_output.error,
-        )
+        ), vote=vote)
 
     def verify_premise(
         self,
@@ -424,14 +500,13 @@ class ClaimVerificationEngine:
         final_ev: List[str] = []
 
         if final_label != 1:
-            clean_ref = re.sub(r"^\[(?:page|seite)\s+\d+\]\s*\d*\s*", "", reference, flags=re.IGNORECASE).strip(' "«»')
-            ev_sources.append(EvidenceSource(quote=clean_ref, page_number=1, proposal_id=1))
-            final_ev = [clean_ref]
+            ev_sources.append(EvidenceSource(quote=reference, page_number=None, proposal_id=None))
+            final_ev = [reference]
 
         elapsed_ms = (time.time() - start_time) * 1000
 
         return PredictionResult(
-            id=case_id or "case-0001",
+            id=case_id if case_id is not None else "case-0001",
             claim=claim,
             label=final_label,
             label_name=label_name,
@@ -507,8 +582,8 @@ class ClaimVerificationEngine:
                 evidence.append(p["text"])
                 sources.append(EvidenceSource(quote=p["text"], page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
 
-        return PredictionResult(
-            id=case_id or "case-0001",
+        return self._finalize_evidence(PredictionResult(
+            id=case_id if case_id is not None else "case-0001",
             claim=claim,
             label=out.label,
             label_name=config.LABEL_MAPPING.get(out.label, "Unknown"),
@@ -529,4 +604,4 @@ class ClaimVerificationEngine:
             latency_ms=out.latency_ms,
             error=out.error,
             context_pages=list(dict.fromkeys(p["page_number"] for p in passages if p.get("page_number"))),
-        )
+        ), vote=vote)

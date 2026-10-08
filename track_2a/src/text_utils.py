@@ -6,6 +6,17 @@ import re
 import unicodedata
 from typing import List
 
+
+def official_normalize(text: str) -> str:
+    """Exact normalization from the pinned starter, without importing sklearn.
+
+    Source: hackapertus-starter 5e6957729b77a126006049305ad1ef241211a5b4,
+    evaluate.py. Parity is tested against that unmodified vendored implementation.
+    """
+    text = unicodedata.normalize("NFKC", text).replace("\u00ad", "")
+    text = re.sub(r"(\w) ?-\s*\n\s*(\w)", r"\1\2", text)
+    return re.sub(r"\s+", " ", text).strip().lower()
+
 # "Personenfreizü -\ngigkeit" / "Zuwande-\nrung" -> "Personenfreizügigkeit" / "Zuwanderung"
 _HYPHEN_BREAK = re.compile(r"(\w)\s?-\s*\n\s*([a-zäöüàâçéèêëîïôûùœ])")
 _SENTENCE_END = re.compile(r"(?<=[.!?;:»])\s+(?=[A-ZÄÖÜÀÂÇÉÈÊËÎÏÔÛÙ«\"0-9])")

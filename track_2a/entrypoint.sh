@@ -8,7 +8,7 @@ set -e
 #   docker run <image> predict [args]    -> runs single claim verification
 #   docker run <image> web               -> launches Streamlit dashboard
 #   docker run <image> test              -> runs test suite
-#   docker run <image>                   -> defaults to benchmark
+#   docker run <image>                   -> displays CLI help
 
 if [ "$1" = "streamlit" ] || [ "$1" = "web" ]; then
     exec streamlit run app.py --server.port="${PORT:-8501}" --server.address=0.0.0.0
@@ -30,7 +30,7 @@ elif [ "$1" = "test" ]; then
 elif [ "$1" = "python" ] || [ "$1" = "sh" ] || [ "$1" = "bash" ]; then
     exec "$@"
 elif [ "$#" -eq 0 ]; then
-    exec python -m src benchmark
+    exec python -m src --help
 else
     exec python -m src "$@"
 fi

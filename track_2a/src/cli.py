@@ -162,7 +162,7 @@ def resolve_booklet_path(path_str: str, input_dir: Path) -> Path:
     given = Path(path_str)
     name = given.name
     names = [name, name.replace("_", "-", 2), re.sub(r"^(\d{4})-(\d{2})-(\d{2})", r"\1_\2_\3", name)]
-    candidates = [given, input_dir / given] + [config.BOOKLETS_DIR / n for n in names]
+    candidates = ([given] if given.is_absolute() else [input_dir / given, given]) + [config.BOOKLETS_DIR / n for n in names]
     for candidate in candidates:
         if candidate.exists():
             return candidate
@@ -196,8 +196,8 @@ def _text(value: Any) -> str:
 def case_booklet(item: Dict[str, Any], input_dir: Path) -> Optional[Path]:
     """
     The booklet PDF a case refers to, or None if it names none. Accepts {"booklet": {"path": ...}}, "booklet_file",
-    and the Hugging Face fields "booklet_url" + "booklet_publish_date": the 60 dataset booklets are in the Docker
-    image, an unknown one is downloaded from its URL.
+    and the Hugging Face fields "booklet_url" + "booklet_publish_date".
+    Booklets must already exist locally; inference never downloads sources.
     """
     booklet = item.get("booklet")
     path_str = (booklet.get("path") or booklet.get("file")) if isinstance(booklet, dict) else booklet
@@ -214,10 +214,7 @@ def case_booklet(item: Dict[str, Any], input_dir: Path) -> Optional[Path]:
     for name in names:
         if (config.BOOKLETS_DIR / name).exists():
             return config.BOOKLETS_DIR / name
-    target = config.BOOKLETS_DIR / (names[0] if names else Path(url).name)
-    if _download(url, target):
-        return target
-    raise FileNotFoundError(f"booklet could not be downloaded: {url}")
+    raise FileNotFoundError("booklet is unavailable locally; prepare sources before inference")
 
 
 @app.command(name="run")
@@ -248,55 +245,71 @@ def run_batch(
     engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
     _require_model(engine, mock)
     official_results = []
+    failures = []
+    from src.measurement import RequestRecorder
+    from uuid import uuid4
+    import tempfile
+    import time
+    import os
+    journal = (Path(os.environ['REQUEST_JOURNAL_PATH']) if os.environ.get('REQUEST_JOURNAL_PATH') else
+               Path(tempfile.mkdtemp(prefix="fact-attack-requests-")) / "requests.jsonl")
+    recorder = RequestRecorder(journal, uuid4().hex)
+    if not engine.client.mock:
+        engine.client._request_completion = recorder.wrap(engine.client._request_completion)
+    started = time.perf_counter()
 
     for idx, item in enumerate(cases, 1):
         cid = item.get("id", f"case-{idx:04d}")
         try:
             claim_text = _text(item.get("claim"))
-            given_lang = str(item.get("claim_language") or "").lower()
+            nested_language = item.get("claim", {}).get("language") if isinstance(item.get("claim"), dict) else None
+            given_lang = str(nested_language or item.get("claim_language") or "").lower()
             claim_lang = given_lang if given_lang in ("de", "fr", "it") else guess_language(claim_text)
             ref_text = _text(item.get("reference")) or _text(item.get("reference_string"))
 
             booklet_pdf = None
             if task != "beginner":
-                try:
-                    booklet_pdf = case_booklet(item, input_path.parent)
-                except FileNotFoundError:
-                    if task == "advanced" or not ref_text:
-                        raise
-                    print(f"[warning] {cid}: booklet not found, using the reference text", file=sys.stderr)
+                booklet_pdf = case_booklet(item, input_path.parent)
             if booklet_pdf is None and task == "advanced":
                 raise FileNotFoundError("case has no booklet (booklet.path, booklet_file or booklet_url)")
             if booklet_pdf is None and not ref_text:
                 raise ValueError("case has neither a booklet nor a reference text")
 
-            if booklet_pdf is None:
-                res = engine.verify_premise(claim=claim_text, reference=ref_text, claim_language=claim_lang, case_id=cid)
-            else:
-                res = engine.verify_claim(
-                    claim=claim_text,
-                    booklet_pdf=booklet_pdf,
-                    claim_language=claim_lang,
-                    vote=item.get("vote"),
-                    strategy=strategy,
-                    top_k=top_k,
-                    case_id=cid,
-                )
-            official_results.append(res.to_official_dict(case_id=cid))
+            with recorder.case(cid):
+                if booklet_pdf is None:
+                    res = engine.verify_premise(claim=claim_text, reference=ref_text, claim_language=claim_lang, case_id=cid)
+                else:
+                    res = engine.verify_claim(
+                        claim=claim_text, booklet_pdf=booklet_pdf,
+                        booklet_language=item.get('booklet', {}).get('language') if isinstance(item.get('booklet'), dict) else None,
+                        claim_language=claim_lang, vote=item.get("vote"),
+                        strategy=strategy, top_k=top_k, case_id=cid)
+            if res.error:
+                raise RuntimeError("Apertus inference failed")
+            prediction = res.to_official_dict(case_id=cid)
+            if not engine.client.mock:
+                own = [e for e in recorder.events if e['case_id'] == cid]
+                for key in ('input_tokens', 'output_tokens'):
+                    prediction['metrics'][key] = sum(e[key] for e in own if type(e.get(key)) is int)
+            official_results.append(prediction)
         except Exception as exc:
             # One broken case must never cost the whole batch: emit a valid (neutral) record and continue
             print(f"[warning] {cid}: {type(exc).__name__}: {exc}", file=sys.stderr)
+            failures.append({'id': cid, 'error_type': type(exc).__name__})
             official_results.append({
                 "id": cid,
                 "label": 1,
                 "label_name": "neutral",
                 "evidence": [],
-                "metrics": {"input_tokens": 0, "output_tokens": 0, "inference_time_ms": 0},
+                "metrics": {"input_tokens": sum(e['input_tokens'] for e in recorder.events if e['case_id'] == cid and type(e.get('input_tokens')) is int),
+                            "output_tokens": sum(e['output_tokens'] for e in recorder.events if e['case_id'] == cid and type(e.get('output_tokens')) is int),
+                            "inference_time_ms": 0},
             })
 
     if output_path:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as out_f:
-            if str(output_path).endswith(".jsonl"):
+            if config.OFFICIAL_IO or str(output_path).endswith(".jsonl"):
                 for r in official_results:
                     out_f.write(json.dumps(r, ensure_ascii=False) + "\n")
             else:
@@ -304,8 +317,20 @@ def run_batch(
                 out_f.write(json.dumps(out_payload, indent=2, ensure_ascii=False) + "\n")
         console.print(f"[bold green]Successfully processed {len(official_results)} case(s) -> {output_path}[/bold green]")
     else:
-        out_payload = official_results if len(official_results) > 1 else official_results[0]
-        print(json.dumps(out_payload, indent=2, ensure_ascii=False))
+        if config.OFFICIAL_IO:
+            for prediction in official_results:
+                print(json.dumps(prediction, ensure_ascii=False))
+        else:
+            out_payload = official_results if len(official_results) > 1 else official_results[0]
+            print(json.dumps(out_payload, indent=2, ensure_ascii=False))
+    diagnostics = {'cases': len(cases), 'failures': failures, 'api_attempts': len(recorder.events),
+                   'usage_unknown_attempts': sum(not e['usage_known'] for e in recorder.events),
+                   'non_llm_seconds_local': recorder.processing_seconds(started, time.perf_counter()),
+                   'request_journal': str(journal)}
+    if config.OFFICIAL_IO and output_path:
+        output_path.with_name(output_path.name + '.diagnostics.json').write_text(json.dumps(diagnostics, indent=2) + '\n')
+    if config.OFFICIAL_IO and failures:
+        raise typer.Exit(code=2)
 
 
 @app.command()

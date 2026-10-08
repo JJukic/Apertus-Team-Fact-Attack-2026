@@ -4,7 +4,11 @@ Configuration and Environment Management for Hack Apertus Track 2A (OST).
 
 import os
 from pathlib import Path
+import tempfile
 from dotenv import load_dotenv
+
+_RUNTIME_LLM_ENV = {name: os.environ[name] for name in
+                    ("BASE_URL", "API_KEY", "LLM_BASE_URL", "LLM_API_KEY") if name in os.environ}
 
 # Search for .env in track_2a directory or repo root
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,8 +23,20 @@ else:
 
 # Apertus / LLM Endpoint Config
 LLM_NAME = os.getenv("LLM_NAME", "swiss-ai/Apertus-v1.5-70B-thinking")
-LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.inference.cscs.ch/v1")
-LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+def _endpoint_setting(official, legacy):
+    # Any runtime setting outranks a .env value, including across alias names.
+    for name in (official, legacy):
+        if name in _RUNTIME_LLM_ENV:
+            return _RUNTIME_LLM_ENV[name]
+    return os.getenv(official) or os.getenv(legacy) or ""
+
+
+LLM_BASE_URL = _endpoint_setting("BASE_URL", "LLM_BASE_URL")
+LLM_API_KEY = _endpoint_setting("API_KEY", "LLM_API_KEY")
+LLM_STREAMING = os.getenv("LLM_STREAMING", "false").lower() in ("true", "1", "yes")
+LLM_REQUEST_TIMEOUT_S = float(os.getenv("LLM_REQUEST_TIMEOUT_S", "600"))
+LLM_JSON_REPAIR = os.getenv("LLM_JSON_REPAIR", "false").lower() in ("true", "1", "yes")
+OFFICIAL_IO = os.getenv("NLI_OFFICIAL_IO", "false").lower() in ("true", "1", "yes")
 
 # Retries on transient API errors (timeouts, 429, 5xx): exponential backoff within a time budget per request.
 # A failed request would otherwise silently count as Neutral
@@ -76,6 +92,17 @@ SPEAKER_HINT = os.getenv("SPEAKER_HINT", "false").lower() in ("true", "1", "yes"
 # (claims citing a year the booklet never mentions are Neutral, not contradicted).
 NUMERIC_OVERRIDE = os.getenv("NUMERIC_OVERRIDE", "false").lower() in ("true", "1", "yes")
 
+# Independent evidence postprocessing; 'legacy' preserves the baseline policy.
+EVIDENCE_POLICY = os.getenv("EVIDENCE_POLICY", "legacy")
+if EVIDENCE_POLICY not in ("legacy", "raw_pages", "raw_pages_and_blocks"):
+    raise ValueError("Unsupported EVIDENCE_POLICY")
+CACHE_SINGLE_FLIGHT = os.getenv("CACHE_SINGLE_FLIGHT", "false").lower() in ("true", "1", "yes")
+SOURCE_PAGES_LAZY = os.getenv("SOURCE_PAGES_LAZY", "false").lower() in ("true", "1", "yes")
+RETRIEVAL_QUERY_MODE = os.getenv("RETRIEVAL_QUERY_MODE", "original")
+if RETRIEVAL_QUERY_MODE not in ("original", "translated", "union"):
+    raise ValueError("Unsupported RETRIEVAL_QUERY_MODE")
+QUERY_TRANSLATION_CACHE_DIR = Path(os.getenv("QUERY_TRANSLATION_CACHE_DIR", str(Path(tempfile.gettempdir()) / "fact-attack" / "queries")))
+
 # Mock Mode (useful for offline testing or prior to receiving CSCS key)
 MOCK_APERTUS = os.getenv("MOCK_APERTUS", "false").lower() in ("true", "1", "yes")
 
@@ -93,7 +120,7 @@ LABEL_EXPLANATIONS = {
 }
 
 # Parsed booklets are cached on disk, keyed by file content (so a re-mounted PDF path still hits the cache)
-BOOKLET_CACHE_DIR = Path(os.getenv("BOOKLET_CACHE_DIR", str(BASE_DIR / ".cache" / "booklets")))
+BOOKLET_CACHE_DIR = Path(os.getenv("BOOKLET_CACHE_DIR", str(Path(tempfile.gettempdir()) / "fact-attack" / "booklets")))
 
 # Directories
 DATA_DIR = BASE_DIR / "data"

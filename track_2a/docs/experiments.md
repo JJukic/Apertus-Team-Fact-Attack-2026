@@ -454,3 +454,42 @@ and `BASE_URL/API_KEY` are not supported yet. The current public dataset has
 1,488 rows compared with the historical 1,495. No optimization is recommended
 from these checks alone. See [the ongoing report](competition_optimization_report.md)
 and [machine-readable baseline audit](../results/competition_optimization/baseline.json).
+
+
+## Competition optimization — 2026-10-08 (in progress)
+
+Isolated branch `experiment/competition-score-optimization`, from main
+`a0e9e772dd388bdff4b8635ef0e09872ef705af6`; adaptive WIP is preserved.
+See [the optimization report](competition_optimization_report.md) and
+`results/competition_optimization/` for frozen sources, dataset and evaluator hashes.
+
+- Historical 402-row archives verified; v1.0 restores all historical row identities.
+- Fresh 804 mixed cases: A F1 0.945152, B F1 0.974948, official A Hit@5 0.361940.
+  Small F1 movement is not attributed to architecture; responses are now uncapped.
+- E1, original full PDF pages only: Hit@5 0.582090, 59 evidence fixes / 0 breaks.
+- E2, source pages plus complete blocks: Hit@5 0.720149, 97 fixes / 1 break.
+  Labels and remote requests are unchanged. The lost terrorism example is an
+  ordering regression (fourth cited detailed page displaced by a text block).
+- Confidence-based Neutral override with p_neutral>=0.99 and absent citations:
+  diagnostic found zero applicable cases; no feature added or improvement claimed.
+- N1, conditional JSON grammar after transport exhaustion: the persistent
+  v1.1-row-289-A gateway failure completed in 1.15 s, 51 output tokens, after
+  identical primary request hashes still failed. Validity is not label correctness.
+  Its assembled replay is not treated as a fresh full candidate execution.
+- T3, single-flight PDF/index cache and lazy evidence-page extraction: independent
+  flags, concurrency/source-change/source-text tests; full measured execution pending.
+- Original complete v1.1 baseline: 2,976 cases / 20 dates, one unresolved technical
+  failure counted as invalid. C1 full candidate runs independently on those same
+  date-grouped folds. No final candidate has been selected.
+- First linux/amd64 CPU image: build, 95 tests / six subtests, offline mixed
+  read-only input contract and two real Apertus calls passed. Final image rerun
+  is required after the latest feature additions. No image was published.
+
+### 8 October: full C1 and source review checkpoint
+
+- C1 completed all 2,976 mixed cases: Advanced F1 0.944034, Beginner 0.982497, Hit@5 0.755556, zero invalid answers. B0 has 0.947699/0.981830/0.467677 with one invalid answer retained. C1 label fixed/broken counts are 3/7; evidence 292/7. Advanced F1 regresses slightly; this is not described as an accuracy gain.
+- Five-fold mean/std: Advanced 0.944348/0.030060; Beginner 0.981952/0.004897. Known 11,732,096 input and 191,322 output tokens; 19 failed attempts have unknown usage. The 3.0134 s local mixed processing timer cannot establish separate official task efficiencies.
+- Source review covers all 32 historical label errors, retaining one scope ambiguity without relabeling gold. Confirmed overlapping causes E/F/G/H/I are 2/8/18/6/2; J remains unconfirmed. PDF text blocks, pages and source hashes are verified.
+- Lazy extraction preserves every replay prediction byte for byte; E2 mean component time decreases from 20.838 to 7.731 ms, while p95 increases. This is offline component profiling, not proxy time.
+- R1/R2 now execute independently and sequentially over the full identical v1.1 population. Translations change only ranking, preserve the original NLI claim, and all acquisition/rejection costs count. Private cold caches prevent warm-cache cost borrowing between methods.
+- 111 tests and six subtests pass. Final source selection, broader source-cause audit, final image, README and final acceptance remain open.

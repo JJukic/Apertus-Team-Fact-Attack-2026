@@ -1,0 +1,1442 @@
+{
+  "cases": 804,
+  "responses": 804,
+  "issues": {},
+  "tasks": {
+    "A": {
+      "cases": 402,
+      "macro_f1": 0.9402360566545679,
+      "threshold": 0.6,
+      "passes_threshold": true,
+      "accuracy": 0.9402985074626866,
+      "per_class": {
+        "entailment": {
+          "precision": 0.9765625,
+          "recall": 0.9124087591240876,
+          "f1": 0.9433962264150944,
+          "support": 137
+        },
+        "neutral": {
+          "precision": 0.9097222222222222,
+          "recall": 0.9776119402985075,
+          "f1": 0.9424460431654677,
+          "support": 134
+        },
+        "contradiction": {
+          "precision": 0.9384615384615385,
+          "recall": 0.9312977099236641,
+          "f1": 0.9348659003831418,
+          "support": 131
+        }
+      },
+      "evidence_score": 0.34701492537313433,
+      "evidence": {
+        "cases": 268,
+        "found": 93,
+        "without_gold_passage": 0
+      }
+    },
+    "B": {
+      "cases": 402,
+      "macro_f1": 0.9749484870737414,
+      "threshold": 0.7,
+      "passes_threshold": true,
+      "accuracy": 0.9751243781094527,
+      "per_class": {
+        "entailment": {
+          "precision": 0.9854014598540146,
+          "recall": 0.9854014598540146,
+          "f1": 0.9854014598540146,
+          "support": 137
+        },
+        "neutral": {
+          "precision": 0.9776119402985075,
+          "recall": 0.9776119402985075,
+          "f1": 0.9776119402985075,
+          "support": 134
+        },
+        "contradiction": {
+          "precision": 0.9618320610687023,
+          "recall": 0.9618320610687023,
+          "f1": 0.9618320610687023,
+          "support": 131
+        }
+      }
+    }
+  },
+  "languages": {
+    "A de->de": {
+      "cases": 38,
+      "macro_f1": 0.9505494505494506
+    },
+    "A de->fr": {
+      "cases": 36,
+      "macro_f1": 0.8247765006385697
+    },
+    "A de->it": {
+      "cases": 43,
+      "macro_f1": 0.9259259259259259
+    },
+    "A fr->de": {
+      "cases": 48,
+      "macro_f1": 0.9485065710872163
+    },
+    "A fr->fr": {
+      "cases": 56,
+      "macro_f1": 0.9564091045223121
+    },
+    "A fr->it": {
+      "cases": 64,
+      "macro_f1": 0.9523293328171377
+    },
+    "A it->de": {
+      "cases": 46,
+      "macro_f1": 0.9155773420479303
+    },
+    "A it->fr": {
+      "cases": 38,
+      "macro_f1": 1.0
+    },
+    "A it->it": {
+      "cases": 33,
+      "macro_f1": 0.9394755003450657
+    },
+    "B de->de": {
+      "cases": 38,
+      "macro_f1": 0.9483643892339545
+    },
+    "B de->fr": {
+      "cases": 36,
+      "macro_f1": 0.9063127025775582
+    },
+    "B de->it": {
+      "cases": 43,
+      "macro_f1": 0.9194847020933977
+    },
+    "B fr->de": {
+      "cases": 48,
+      "macro_f1": 0.9767195767195768
+    },
+    "B fr->fr": {
+      "cases": 56,
+      "macro_f1": 1.0
+    },
+    "B fr->it": {
+      "cases": 64,
+      "macro_f1": 1.0
+    },
+    "B it->de": {
+      "cases": 46,
+      "macro_f1": 0.9814135485448765
+    },
+    "B it->fr": {
+      "cases": 38,
+      "macro_f1": 1.0
+    },
+    "B it->it": {
+      "cases": 33,
+      "macro_f1": 1.0
+    }
+  },
+  "usage_mean_per_case": {
+    "input_tokens": 4049.6753731343283,
+    "output_tokens": 56.84950248756219,
+    "inference_time_ms": 1611.8619402985075
+  },
+  "provenance": {
+    "measurement_type": "historical_official_export_replay",
+    "fresh_api_run": false,
+    "archives": {
+      "A": {
+        "file": "20261006T142147_advanced_hybrid_ids_Apertus-v1.5-70B-thinking_final.json",
+        "sha256": "074ca5600d296705f5598a7e0c05267e39d09fa997c7c6399e47e4c8fac16eba",
+        "metadata": {
+          "timestamp": "2026-10-06T14:21:47",
+          "git_commit": "0036922-dirty",
+          "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+          "mock": false,
+          "task": "advanced",
+          "strategy": "hybrid",
+          "top_k": 12,
+          "prompt_mode": "ids",
+          "passage_chars": 0,
+          "ids_reason": false,
+          "thinking": false,
+          "thinking_budget": 0,
+          "translate_claim": false,
+          "page_max_chars": 3000,
+          "speaker_boost": 2,
+          "speaker_hint": false,
+          "speaker_aware": false,
+          "few_shot": false,
+          "dataset": "test.jsonl",
+          "seed": 42,
+          "workers": 4,
+          "tag": "final",
+          "wall_time_s": 210.8
+        }
+      },
+      "B": {
+        "file": "20261006T132045_beginner_direct_reference_ids_Apertus-v1.5-70B-thinking_final_beginner.json",
+        "sha256": "7213d60e94130f75eeecc393e39144536e84bc5fa35d032ec837fd322b534f14",
+        "metadata": {
+          "timestamp": "2026-10-06T13:20:45",
+          "git_commit": "841f7e6",
+          "model": "swiss-ai/Apertus-v1.5-70B-thinking",
+          "mock": false,
+          "task": "beginner",
+          "strategy": "direct_reference",
+          "top_k": 10,
+          "prompt_mode": "ids",
+          "passage_chars": null,
+          "ids_reason": false,
+          "thinking": false,
+          "thinking_budget": 0,
+          "translate_claim": false,
+          "page_max_chars": 3000,
+          "speaker_aware": false,
+          "few_shot": false,
+          "dataset": "test.jsonl",
+          "seed": 42,
+          "workers": 4,
+          "tag": "final_beginner",
+          "wall_time_s": 114.5
+        }
+      }
+    },
+    "dataset": {
+      "dataset": "v1.0",
+      "revision": "adca9a5ee87e9813cef80b305c3b12e3e8a05959",
+      "sha256": "f13c50392bd36d744a304fdacb1e61d53ab5eab5c9062f2a5182a175814fb88c",
+      "rows": 1495,
+      "url": "https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets/resolve/adca9a5ee87e9813cef80b305c3b12e3e8a05959/v1.0.jsonl",
+      "scope": "historical-test",
+      "case_count": 804,
+      "rows_selected": 402,
+      "fold_count": 5,
+      "fold_by_date": {
+        "2026-06-14": 0,
+        "2021-09-26": 1,
+        "2024-11-24": 2,
+        "2021-06-13": 3,
+        "2022-09-25": 4,
+        "2024-09-22": 0,
+        "2025-02-09": 1,
+        "2026-03-08": 2,
+        "2021-11-28": 3,
+        "2024-06-09": 4,
+        "2025-11-30": 0,
+        "2023-06-18": 1,
+        "2020-09-27": 2,
+        "2024-03-03": 3,
+        "2020-11-29": 4,
+        "2025-09-28": 0,
+        "2022-02-13": 1,
+        "2022-05-15": 2,
+        "2020-02-09": 3,
+        "2021-03-07": 4
+      },
+      "booklets": {
+        "2021-06-13_de.pdf": {
+          "sha256": "521e39af06717d2adeb2f787a08b533164921a952c59b7ad3e5b114fcadec744",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/UxUxfYD5ma0h/2021-06-13_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2021-06-13_fr.pdf": {
+          "sha256": "65c54df2537b8ab9d6e155c0e602d6bc2379e47741004bc66565064d0aee4ab4",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/UxUxfYD5ma0h/2021-06-13_explications_du_conseil_federal.pdf"
+        },
+        "2021-06-13_it.pdf": {
+          "sha256": "89443719a1e8c0ea4d954754d50e81253bb2f4d2f6ce4d2ad1c19cf0edd570de",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/UxUxfYD5ma0h/2021-06-13_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2021-09-26_de.pdf": {
+          "sha256": "ebb4288817f5f5fdbde3aa24bf67688220e6c8e2f9fcf82f947a44aec046f341",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/NJXQlhZXHqDA/2021-09-26_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2021-09-26_fr.pdf": {
+          "sha256": "ae46dce97c0eb0b000339159ba998f373126f1879eff6bcfed6398d147d30ecf",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/NJXQlhZXHqDA/2021-09-26_explications_du_conseil_federal.pdf"
+        },
+        "2021-09-26_it.pdf": {
+          "sha256": "d01075b2fabc1609d8c7e2b5ede595286c504d35ea4947b1fa0709fddbb63538",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/NJXQlhZXHqDA/2021-09-26_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2022-09-25_de.pdf": {
+          "sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/SwAIDvDocLte/2022-09-25_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2022-09-25_fr.pdf": {
+          "sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/SwAIDvDocLte/2022-09-25_explications_du_conseil_federal.pdf"
+        },
+        "2022-09-25_it.pdf": {
+          "sha256": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/SwAIDvDocLte/2022-09-25_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2024-06-09_de.pdf": {
+          "sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/z11TVw3xAFqy/2024-06-09_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2024-06-09_fr.pdf": {
+          "sha256": "8cedb2df05d10299734c86d6d37d80fbd4bb4a6685044455792c77fc73f2d7f6",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/z11TVw3xAFqy/2024-06-09_explications_du_conseil_federal.pdf"
+        },
+        "2024-06-09_it.pdf": {
+          "sha256": "691ad90ad95cb4983dfc0bf1f7b43750af34ccc7d3f737ad19a48c263ee54676",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/z11TVw3xAFqy/2024-06-09_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2024-09-22_de.pdf": {
+          "sha256": "d8e0047ae589df3bdaa91c93fcb0f6dd0cbb5e36f7aab00fe293ad996a9bfed4",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/iWYLyEPfLvhn/2024-09-22_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2024-09-22_fr.pdf": {
+          "sha256": "e6717534db788bf85e15bc505c5ab6f839cd61396be0f84a5aa035c767de8578",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/iWYLyEPfLvhn/2024-09-22_explications_du_conseil_federal.pdf"
+        },
+        "2024-09-22_it.pdf": {
+          "sha256": "581a2c4bdacc8e31bd1d9f854e16918d13f2bf2687971daa886300193de6f327",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/iWYLyEPfLvhn/2024-09-22_spiegazioni_del_consigliofederale.pdf"
+        }
+      },
+      "historical_test_is_observed": true,
+      "untouched_holdout_available": false,
+      "file_hashes": {
+        "cases.jsonl": "36641a08c09b13eb49d62f5df7ba68103bfe19806e7b74acefdfabab5e0cced6",
+        "expected-labels.jsonl": "c4862e99164403925d7f860c2846486fa0be6d72ee6d300d2965afadc5283b35",
+        "folds.jsonl": "ac9cc40a74103f9a04af34c34a1d56bf65a52ee5e71482731ef562d14a51f48e"
+      }
+    },
+    "official_evaluator": {
+      "repository": "https://gitlab.com/ifsoftware/hackapertus-starter",
+      "commit": "5e6957729b77a126006049305ad1ef241211a5b4",
+      "file": "evaluate.py",
+      "sha256": "c96ad66334021aeb5636b113ed0f060ccfcbd2f0074c9fd37f1524f98290bd8b",
+      "local_modifications": false
+    }
+  },
+  "fresh_804_case_evidence_ablation": {
+    "measurement_type": "offline_evidence_ablation_fixed_predictions",
+    "input_sha256": "264fa90a21bb3e8ccdadb5c4da6b56ea551b9390e28f29caf99a9b628febb6be",
+    "cases_sha256": "36641a08c09b13eb49d62f5df7ba68103bfe19806e7b74acefdfabab5e0cced6",
+    "label_changes": 0,
+    "remote_api_calls": 0,
+    "construction_code_sha256": "460f0d14a8d3ec151252b86da6e3929f62274e5001cdf89f6c240caaf5a89a11",
+    "source_hashes": {
+      "scripts/evaluate_evidence_candidates.py": "460f0d14a8d3ec151252b86da6e3929f62274e5001cdf89f6c240caaf5a89a11",
+      "src/evidence.py": "cbc9a8f16c334b4d5462360b5aae4dc6d65c69ea7b23f354ee3be8087cc0d23e",
+      "src/text_utils.py": "32497b054948a8604e0eac4710308d9627a4fbd4eee075eb5565f23545117cab"
+    },
+    "official_evaluator": {
+      "repository": "https://gitlab.com/ifsoftware/hackapertus-starter",
+      "commit": "5e6957729b77a126006049305ad1ef241211a5b4",
+      "file": "evaluate.py",
+      "sha256": "c96ad66334021aeb5636b113ed0f060ccfcbd2f0074c9fd37f1524f98290bd8b",
+      "local_modifications": false
+    },
+    "dataset_manifest": {
+      "dataset": "v1.0",
+      "revision": "adca9a5ee87e9813cef80b305c3b12e3e8a05959",
+      "sha256": "f13c50392bd36d744a304fdacb1e61d53ab5eab5c9062f2a5182a175814fb88c",
+      "rows": 1495,
+      "url": "https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets/resolve/adca9a5ee87e9813cef80b305c3b12e3e8a05959/v1.0.jsonl",
+      "scope": "historical-test",
+      "case_count": 804,
+      "rows_selected": 402,
+      "fold_count": 5,
+      "fold_by_date": {
+        "2026-06-14": 0,
+        "2021-09-26": 1,
+        "2024-11-24": 2,
+        "2021-06-13": 3,
+        "2022-09-25": 4,
+        "2024-09-22": 0,
+        "2025-02-09": 1,
+        "2026-03-08": 2,
+        "2021-11-28": 3,
+        "2024-06-09": 4,
+        "2025-11-30": 0,
+        "2023-06-18": 1,
+        "2020-09-27": 2,
+        "2024-03-03": 3,
+        "2020-11-29": 4,
+        "2025-09-28": 0,
+        "2022-02-13": 1,
+        "2022-05-15": 2,
+        "2020-02-09": 3,
+        "2021-03-07": 4
+      },
+      "booklets": {
+        "2021-06-13_de.pdf": {
+          "sha256": "521e39af06717d2adeb2f787a08b533164921a952c59b7ad3e5b114fcadec744",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/UxUxfYD5ma0h/2021-06-13_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2021-06-13_fr.pdf": {
+          "sha256": "65c54df2537b8ab9d6e155c0e602d6bc2379e47741004bc66565064d0aee4ab4",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/UxUxfYD5ma0h/2021-06-13_explications_du_conseil_federal.pdf"
+        },
+        "2021-06-13_it.pdf": {
+          "sha256": "89443719a1e8c0ea4d954754d50e81253bb2f4d2f6ce4d2ad1c19cf0edd570de",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/UxUxfYD5ma0h/2021-06-13_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2021-09-26_de.pdf": {
+          "sha256": "ebb4288817f5f5fdbde3aa24bf67688220e6c8e2f9fcf82f947a44aec046f341",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/NJXQlhZXHqDA/2021-09-26_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2021-09-26_fr.pdf": {
+          "sha256": "ae46dce97c0eb0b000339159ba998f373126f1879eff6bcfed6398d147d30ecf",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/NJXQlhZXHqDA/2021-09-26_explications_du_conseil_federal.pdf"
+        },
+        "2021-09-26_it.pdf": {
+          "sha256": "d01075b2fabc1609d8c7e2b5ede595286c504d35ea4947b1fa0709fddbb63538",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/NJXQlhZXHqDA/2021-09-26_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2022-09-25_de.pdf": {
+          "sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/SwAIDvDocLte/2022-09-25_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2022-09-25_fr.pdf": {
+          "sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/SwAIDvDocLte/2022-09-25_explications_du_conseil_federal.pdf"
+        },
+        "2022-09-25_it.pdf": {
+          "sha256": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/SwAIDvDocLte/2022-09-25_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2024-06-09_de.pdf": {
+          "sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/z11TVw3xAFqy/2024-06-09_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2024-06-09_fr.pdf": {
+          "sha256": "8cedb2df05d10299734c86d6d37d80fbd4bb4a6685044455792c77fc73f2d7f6",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/z11TVw3xAFqy/2024-06-09_explications_du_conseil_federal.pdf"
+        },
+        "2024-06-09_it.pdf": {
+          "sha256": "691ad90ad95cb4983dfc0bf1f7b43750af34ccc7d3f737ad19a48c263ee54676",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/z11TVw3xAFqy/2024-06-09_spiegazioni_del_consigliofederale.pdf"
+        },
+        "2024-09-22_de.pdf": {
+          "sha256": "d8e0047ae589df3bdaa91c93fcb0f6dd0cbb5e36f7aab00fe293ad996a9bfed4",
+          "url": "https://www.bk.admin.ch/dam/de/sd-web/iWYLyEPfLvhn/2024-09-22_erlaeuterungen_des_bundesrates.pdf"
+        },
+        "2024-09-22_fr.pdf": {
+          "sha256": "e6717534db788bf85e15bc505c5ab6f839cd61396be0f84a5aa035c767de8578",
+          "url": "https://www.bk.admin.ch/dam/fr/sd-web/iWYLyEPfLvhn/2024-09-22_explications_du_conseil_federal.pdf"
+        },
+        "2024-09-22_it.pdf": {
+          "sha256": "581a2c4bdacc8e31bd1d9f854e16918d13f2bf2687971daa886300193de6f327",
+          "url": "https://www.bk.admin.ch/dam/it/sd-web/iWYLyEPfLvhn/2024-09-22_spiegazioni_del_consigliofederale.pdf"
+        }
+      },
+      "historical_test_is_observed": true,
+      "untouched_holdout_available": false,
+      "file_hashes": {
+        "cases.jsonl": "36641a08c09b13eb49d62f5df7ba68103bfe19806e7b74acefdfabab5e0cced6",
+        "expected-labels.jsonl": "c4862e99164403925d7f860c2846486fa0be6d72ee6d300d2965afadc5283b35",
+        "folds.jsonl": "ac9cc40a74103f9a04af34c34a1d56bf65a52ee5e71482731ef562d14a51f48e"
+      }
+    },
+    "variants": {
+      "original": {
+        "tasks": {
+          "A": {
+            "cases": 402,
+            "macro_f1": 0.9451523035033141,
+            "threshold": 0.6,
+            "passes_threshold": true,
+            "accuracy": 0.945273631840796,
+            "per_class": {
+              "entailment": {
+                "precision": 0.9767441860465116,
+                "recall": 0.9197080291970803,
+                "f1": 0.9473684210526315,
+                "support": 137
+              },
+              "neutral": {
+                "precision": 0.9290780141843972,
+                "recall": 0.9776119402985075,
+                "f1": 0.9527272727272728,
+                "support": 134
+              },
+              "contradiction": {
+                "precision": 0.9318181818181818,
+                "recall": 0.9389312977099237,
+                "f1": 0.935361216730038,
+                "support": 131
+              }
+            },
+            "evidence_score": 0.3619402985074627,
+            "evidence": {
+              "cases": 268,
+              "found": 97,
+              "without_gold_passage": 0
+            }
+          },
+          "B": {
+            "cases": 402,
+            "macro_f1": 0.9749484870737414,
+            "threshold": 0.7,
+            "passes_threshold": true,
+            "accuracy": 0.9751243781094527,
+            "per_class": {
+              "entailment": {
+                "precision": 0.9854014598540146,
+                "recall": 0.9854014598540146,
+                "f1": 0.9854014598540146,
+                "support": 137
+              },
+              "neutral": {
+                "precision": 0.9776119402985075,
+                "recall": 0.9776119402985075,
+                "f1": 0.9776119402985075,
+                "support": 134
+              },
+              "contradiction": {
+                "precision": 0.9618320610687023,
+                "recall": 0.9618320610687023,
+                "f1": 0.9618320610687023,
+                "support": 131
+              }
+            }
+          }
+        },
+        "issues": {},
+        "missing_required_evidence": 0,
+        "evidence_component_ms_mean": 4.505272954702377e-05,
+        "evidence_component_ms_median": 4.190951585769653e-05,
+        "evidence_component_ms_p95": 8.312053978443146e-05,
+        "timing_scope": "offline evidence construction only, includes lazy PDF extraction"
+      },
+      "raw_pages": {
+        "tasks": {
+          "A": {
+            "cases": 402,
+            "macro_f1": 0.9451523035033141,
+            "threshold": 0.6,
+            "passes_threshold": true,
+            "accuracy": 0.945273631840796,
+            "per_class": {
+              "entailment": {
+                "precision": 0.9767441860465116,
+                "recall": 0.9197080291970803,
+                "f1": 0.9473684210526315,
+                "support": 137
+              },
+              "neutral": {
+                "precision": 0.9290780141843972,
+                "recall": 0.9776119402985075,
+                "f1": 0.9527272727272728,
+                "support": 134
+              },
+              "contradiction": {
+                "precision": 0.9318181818181818,
+                "recall": 0.9389312977099237,
+                "f1": 0.935361216730038,
+                "support": 131
+              }
+            },
+            "evidence_score": 0.582089552238806,
+            "evidence": {
+              "cases": 268,
+              "found": 156,
+              "without_gold_passage": 0
+            }
+          },
+          "B": {
+            "cases": 402,
+            "macro_f1": 0.9749484870737414,
+            "threshold": 0.7,
+            "passes_threshold": true,
+            "accuracy": 0.9751243781094527,
+            "per_class": {
+              "entailment": {
+                "precision": 0.9854014598540146,
+                "recall": 0.9854014598540146,
+                "f1": 0.9854014598540146,
+                "support": 137
+              },
+              "neutral": {
+                "precision": 0.9776119402985075,
+                "recall": 0.9776119402985075,
+                "f1": 0.9776119402985075,
+                "support": 134
+              },
+              "contradiction": {
+                "precision": 0.9618320610687023,
+                "recall": 0.9618320610687023,
+                "f1": 0.9618320610687023,
+                "support": 131
+              }
+            }
+          }
+        },
+        "issues": {},
+        "missing_required_evidence": 0,
+        "evidence_component_ms_mean": 22.775128612929574,
+        "evidence_component_ms_median": 0.0076249707490205765,
+        "evidence_component_ms_p95": 1.444375142455101,
+        "timing_scope": "offline evidence construction only, includes lazy PDF extraction"
+      },
+      "raw_pages_and_blocks": {
+        "tasks": {
+          "A": {
+            "cases": 402,
+            "macro_f1": 0.9451523035033141,
+            "threshold": 0.6,
+            "passes_threshold": true,
+            "accuracy": 0.945273631840796,
+            "per_class": {
+              "entailment": {
+                "precision": 0.9767441860465116,
+                "recall": 0.9197080291970803,
+                "f1": 0.9473684210526315,
+                "support": 137
+              },
+              "neutral": {
+                "precision": 0.9290780141843972,
+                "recall": 0.9776119402985075,
+                "f1": 0.9527272727272728,
+                "support": 134
+              },
+              "contradiction": {
+                "precision": 0.9318181818181818,
+                "recall": 0.9389312977099237,
+                "f1": 0.935361216730038,
+                "support": 131
+              }
+            },
+            "evidence_score": 0.7201492537313433,
+            "evidence": {
+              "cases": 268,
+              "found": 193,
+              "without_gold_passage": 0
+            }
+          },
+          "B": {
+            "cases": 402,
+            "macro_f1": 0.9749484870737414,
+            "threshold": 0.7,
+            "passes_threshold": true,
+            "accuracy": 0.9751243781094527,
+            "per_class": {
+              "entailment": {
+                "precision": 0.9854014598540146,
+                "recall": 0.9854014598540146,
+                "f1": 0.9854014598540146,
+                "support": 137
+              },
+              "neutral": {
+                "precision": 0.9776119402985075,
+                "recall": 0.9776119402985075,
+                "f1": 0.9776119402985075,
+                "support": 134
+              },
+              "contradiction": {
+                "precision": 0.9618320610687023,
+                "recall": 0.9618320610687023,
+                "f1": 0.9618320610687023,
+                "support": 131
+              }
+            }
+          }
+        },
+        "issues": {},
+        "missing_required_evidence": 0,
+        "evidence_component_ms_mean": 20.83786146162745,
+        "evidence_component_ms_median": 0.00958307646214962,
+        "evidence_component_ms_p95": 1.5439169947057962,
+        "timing_scope": "offline evidence construction only, includes lazy PDF extraction"
+      }
+    },
+    "extractor": {
+      "name": "pymupdf",
+      "version": "1.28.2"
+    }
+  },
+  "lazy_equivalence_on_804": {
+    "comparison_scope": "same 804 saved predictions; offline evidence construction only",
+    "variants": {
+      "original": {
+        "byte_identical_predictions": true,
+        "sha256": "264fa90a21bb3e8ccdadb5c4da6b56ea551b9390e28f29caf99a9b628febb6be",
+        "eager_mean_ms": 4.505272954702377e-05,
+        "lazy_mean_ms": 5.102697852535627e-05,
+        "lazy_median_ms": 4.190951585769653e-05,
+        "lazy_p95_ms": 8.312053978443146e-05,
+        "mean_time_reduction_fraction": -0.13260570532351168
+      },
+      "raw_pages": {
+        "byte_identical_predictions": true,
+        "sha256": "04106d7340bd95ac095ef1f5d005eab82bf8005e2e70bf660f9126febd321fde",
+        "eager_mean_ms": 22.775128612929574,
+        "lazy_mean_ms": 7.926676128133761,
+        "lazy_median_ms": 0.010750023648142815,
+        "lazy_p95_ms": 44.68258307315409,
+        "mean_time_reduction_fraction": 0.6519591057925469
+      },
+      "raw_pages_and_blocks": {
+        "byte_identical_predictions": true,
+        "sha256": "6a9f03012f63b89137fba135d4030f92890d4ef95883d17289737d7683db10ce",
+        "eager_mean_ms": 20.83786146162745,
+        "lazy_mean_ms": 7.731225045886706,
+        "lazy_median_ms": 0.0105204526335001,
+        "lazy_p95_ms": 44.66104111634195,
+        "mean_time_reduction_fraction": 0.6289818386534713
+      }
+    }
+  },
+  "full_C1_validation": {
+    "tasks": {
+      "A": {
+        "cases": 1488,
+        "macro_f1": 0.9440341569790694,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9740820734341252,
+            "recall": 0.9111111111111111,
+            "f1": 0.941544885177453,
+            "support": 495
+          },
+          "neutral": {
+            "precision": 0.9425287356321839,
+            "recall": 0.9879518072289156,
+            "f1": 0.9647058823529412,
+            "support": 498
+          },
+          "contradiction": {
+            "precision": 0.9184890656063618,
+            "recall": 0.9333333333333333,
+            "f1": 0.9258517034068137,
+            "support": 495
+          }
+        },
+        "evidence_hit5": 0.7555555555555555,
+        "gold_evidence_cases": 990,
+        "evidence_found": 748,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0,
+        "passes_acceptance_threshold": true,
+        "cross_language_macro_f1": 0.9457581157952742,
+        "fold_f1_mean": 0.9443480783250889,
+        "fold_f1_std": 0.0300597492395959,
+        "nonempty_fold_count": 5,
+        "input_tokens_reported": 8039081,
+        "output_tokens_reported": 104146,
+        "input_tokens_per_case_reported": {
+          "count": 1488,
+          "mean": 5402.608198924731,
+          "median": 5210.0,
+          "p95": 7349
+        },
+        "output_tokens_per_case_reported": {
+          "count": 1488,
+          "mean": 69.99059139784946,
+          "median": 54.0,
+          "p95": 67
+        },
+        "delta_macro_f1": -0.003665081011493432,
+        "delta_evidence_hit5": 0.28787878787878785,
+        "delta_input_tokens_reported": 5398,
+        "delta_output_tokens_reported": -2049,
+        "token_reduction_fraction_reported": -0.00041143122783893205
+      },
+      "B": {
+        "cases": 1488,
+        "macro_f1": 0.9824974405651722,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9879032258064516,
+            "recall": 0.98989898989899,
+            "f1": 0.9889001009081736,
+            "support": 495
+          },
+          "neutral": {
+            "precision": 0.9801192842942346,
+            "recall": 0.9899598393574297,
+            "f1": 0.985014985014985,
+            "support": 498
+          },
+          "contradiction": {
+            "precision": 0.9795501022494888,
+            "recall": 0.9676767676767677,
+            "f1": 0.9735772357723578,
+            "support": 495
+          }
+        },
+        "evidence_hit5": null,
+        "gold_evidence_cases": 0,
+        "evidence_found": 0,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0,
+        "passes_acceptance_threshold": true,
+        "cross_language_macro_f1": 0.9806832165581844,
+        "fold_f1_mean": 0.981951639877395,
+        "fold_f1_std": 0.004896868194688942,
+        "nonempty_fold_count": 5,
+        "input_tokens_reported": 3693015,
+        "output_tokens_reported": 87176,
+        "input_tokens_per_case_reported": {
+          "count": 1488,
+          "mean": 2481.8649193548385,
+          "median": 1627.0,
+          "p95": 5023
+        },
+        "output_tokens_per_case_reported": {
+          "count": 1488,
+          "mean": 58.586021505376344,
+          "median": 53.0,
+          "p95": 66
+        },
+        "delta_macro_f1": 0.0006670504621713036,
+        "delta_evidence_hit5": null,
+        "delta_input_tokens_reported": 0,
+        "delta_output_tokens_reported": -1838,
+        "token_reduction_fraction_reported": 0.0004859825241952942
+      }
+    },
+    "folds": {
+      "A:0": {
+        "cases": 208,
+        "macro_f1": 0.980673378241666,
+        "per_class": {
+          "entailment": {
+            "precision": 0.975,
+            "recall": 1.0,
+            "f1": 0.9873417721518988,
+            "support": 78
+          },
+          "neutral": {
+            "precision": 0.9655172413793104,
+            "recall": 1.0,
+            "f1": 0.9824561403508771,
+            "support": 56
+          },
+          "contradiction": {
+            "precision": 1.0,
+            "recall": 0.9459459459459459,
+            "f1": 0.9722222222222222,
+            "support": 74
+          }
+        },
+        "evidence_hit5": 0.8157894736842105,
+        "gold_evidence_cases": 152,
+        "evidence_found": 124,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "A:1": {
+        "cases": 279,
+        "macro_f1": 0.9613013253110866,
+        "per_class": {
+          "entailment": {
+            "precision": 1.0,
+            "recall": 0.9404761904761905,
+            "f1": 0.9693251533742331,
+            "support": 84
+          },
+          "neutral": {
+            "precision": 0.9361702127659575,
+            "recall": 0.9887640449438202,
+            "f1": 0.9617486338797814,
+            "support": 89
+          },
+          "contradiction": {
+            "precision": 0.9528301886792453,
+            "recall": 0.9528301886792453,
+            "f1": 0.9528301886792453,
+            "support": 106
+          }
+        },
+        "evidence_hit5": 0.8052631578947368,
+        "gold_evidence_cases": 190,
+        "evidence_found": 153,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "A:2": {
+        "cases": 415,
+        "macro_f1": 0.9624857921036266,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9844961240310077,
+            "recall": 0.9407407407407408,
+            "f1": 0.9621212121212122,
+            "support": 135
+          },
+          "neutral": {
+            "precision": 0.9625,
+            "recall": 1.0,
+            "f1": 0.9808917197452229,
+            "support": 154
+          },
+          "contradiction": {
+            "precision": 0.9444444444444444,
+            "recall": 0.9444444444444444,
+            "f1": 0.9444444444444444,
+            "support": 126
+          }
+        },
+        "evidence_hit5": 0.7739463601532567,
+        "gold_evidence_cases": 261,
+        "evidence_found": 202,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "A:3": {
+        "cases": 275,
+        "macro_f1": 0.904647153324713,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9411764705882353,
+            "recall": 0.8333333333333334,
+            "f1": 0.8839779005524862,
+            "support": 96
+          },
+          "neutral": {
+            "precision": 0.9479166666666666,
+            "recall": 0.9891304347826086,
+            "f1": 0.9680851063829787,
+            "support": 92
+          },
+          "contradiction": {
+            "precision": 0.8297872340425532,
+            "recall": 0.896551724137931,
+            "f1": 0.861878453038674,
+            "support": 87
+          }
+        },
+        "evidence_hit5": 0.644808743169399,
+        "gold_evidence_cases": 183,
+        "evidence_found": 118,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "A:4": {
+        "cases": 311,
+        "macro_f1": 0.9126327426443526,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9666666666666667,
+            "recall": 0.8529411764705882,
+            "f1": 0.90625,
+            "support": 102
+          },
+          "neutral": {
+            "precision": 0.9035087719298246,
+            "recall": 0.9626168224299065,
+            "f1": 0.9321266968325792,
+            "support": 107
+          },
+          "contradiction": {
+            "precision": 0.8785046728971962,
+            "recall": 0.9215686274509803,
+            "f1": 0.8995215311004785,
+            "support": 102
+          }
+        },
+        "evidence_hit5": 0.7401960784313726,
+        "gold_evidence_cases": 204,
+        "evidence_found": 151,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "B:0": {
+        "cases": 208,
+        "macro_f1": 0.9764502534423491,
+        "per_class": {
+          "entailment": {
+            "precision": 0.987012987012987,
+            "recall": 0.9743589743589743,
+            "f1": 0.9806451612903225,
+            "support": 78
+          },
+          "neutral": {
+            "precision": 1.0,
+            "recall": 0.9642857142857143,
+            "f1": 0.9818181818181818,
+            "support": 56
+          },
+          "contradiction": {
+            "precision": 0.948051948051948,
+            "recall": 0.9864864864864865,
+            "f1": 0.9668874172185431,
+            "support": 74
+          }
+        },
+        "evidence_hit5": null,
+        "gold_evidence_cases": 0,
+        "evidence_found": 0,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "B:1": {
+        "cases": 279,
+        "macro_f1": 0.9755888494275492,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9767441860465116,
+            "recall": 1.0,
+            "f1": 0.9882352941176471,
+            "support": 84
+          },
+          "neutral": {
+            "precision": 0.9468085106382979,
+            "recall": 1.0,
+            "f1": 0.9726775956284153,
+            "support": 89
+          },
+          "contradiction": {
+            "precision": 1.0,
+            "recall": 0.9339622641509434,
+            "f1": 0.9658536585365853,
+            "support": 106
+          }
+        },
+        "evidence_hit5": null,
+        "gold_evidence_cases": 0,
+        "evidence_found": 0,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "B:2": {
+        "cases": 415,
+        "macro_f1": 0.9852297889287137,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9925925925925926,
+            "recall": 0.9925925925925926,
+            "f1": 0.9925925925925926,
+            "support": 135
+          },
+          "neutral": {
+            "precision": 0.9807692307692307,
+            "recall": 0.9935064935064936,
+            "f1": 0.9870967741935484,
+            "support": 154
+          },
+          "contradiction": {
+            "precision": 0.9838709677419355,
+            "recall": 0.9682539682539683,
+            "f1": 0.976,
+            "support": 126
+          }
+        },
+        "evidence_hit5": null,
+        "gold_evidence_cases": 0,
+        "evidence_found": 0,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "B:3": {
+        "cases": 275,
+        "macro_f1": 0.9853671467052294,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9894736842105263,
+            "recall": 0.9791666666666666,
+            "f1": 0.9842931937172775,
+            "support": 96
+          },
+          "neutral": {
+            "precision": 1.0,
+            "recall": 0.9891304347826086,
+            "f1": 0.994535519125683,
+            "support": 92
+          },
+          "contradiction": {
+            "precision": 0.9662921348314607,
+            "recall": 0.9885057471264368,
+            "f1": 0.9772727272727273,
+            "support": 87
+          }
+        },
+        "evidence_hit5": null,
+        "gold_evidence_cases": 0,
+        "evidence_found": 0,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      },
+      "B:4": {
+        "cases": 311,
+        "macro_f1": 0.9871221608831332,
+        "per_class": {
+          "entailment": {
+            "precision": 0.9902912621359223,
+            "recall": 1.0,
+            "f1": 0.9951219512195122,
+            "support": 102
+          },
+          "neutral": {
+            "precision": 0.9814814814814815,
+            "recall": 0.9906542056074766,
+            "f1": 0.986046511627907,
+            "support": 107
+          },
+          "contradiction": {
+            "precision": 0.99,
+            "recall": 0.9705882352941176,
+            "f1": 0.9801980198019802,
+            "support": 102
+          }
+        },
+        "evidence_hit5": null,
+        "gold_evidence_cases": 0,
+        "evidence_found": 0,
+        "missing_gold_reference": 0,
+        "invalid_predictions": 0
+      }
+    },
+    "paired_changes": {
+      "fixed": [
+        "v1.1-row-615-A",
+        "v1.1-row-945-B",
+        "v1.1-row-992-B"
+      ],
+      "broken": [
+        "v1.1-row-55-B",
+        "v1.1-row-317-A",
+        "v1.1-row-547-A",
+        "v1.1-row-763-A",
+        "v1.1-row-1117-A",
+        "v1.1-row-1150-A",
+        "v1.1-row-1318-A"
+      ],
+      "evidence_fixed": [
+        "v1.1-row-0-A",
+        "v1.1-row-1-A",
+        "v1.1-row-5-A",
+        "v1.1-row-6-A",
+        "v1.1-row-8-A",
+        "v1.1-row-12-A",
+        "v1.1-row-18-A",
+        "v1.1-row-19-A",
+        "v1.1-row-20-A",
+        "v1.1-row-21-A",
+        "v1.1-row-22-A",
+        "v1.1-row-24-A",
+        "v1.1-row-30-A",
+        "v1.1-row-32-A",
+        "v1.1-row-37-A",
+        "v1.1-row-44-A",
+        "v1.1-row-49-A",
+        "v1.1-row-55-A",
+        "v1.1-row-63-A",
+        "v1.1-row-64-A",
+        "v1.1-row-68-A",
+        "v1.1-row-74-A",
+        "v1.1-row-82-A",
+        "v1.1-row-94-A",
+        "v1.1-row-96-A",
+        "v1.1-row-100-A",
+        "v1.1-row-104-A",
+        "v1.1-row-105-A",
+        "v1.1-row-110-A",
+        "v1.1-row-116-A",
+        "v1.1-row-127-A",
+        "v1.1-row-140-A",
+        "v1.1-row-145-A",
+        "v1.1-row-153-A",
+        "v1.1-row-154-A",
+        "v1.1-row-155-A",
+        "v1.1-row-157-A",
+        "v1.1-row-162-A",
+        "v1.1-row-164-A",
+        "v1.1-row-165-A",
+        "v1.1-row-167-A",
+        "v1.1-row-168-A",
+        "v1.1-row-173-A",
+        "v1.1-row-174-A",
+        "v1.1-row-175-A",
+        "v1.1-row-181-A",
+        "v1.1-row-186-A",
+        "v1.1-row-190-A",
+        "v1.1-row-193-A",
+        "v1.1-row-194-A",
+        "v1.1-row-196-A",
+        "v1.1-row-197-A",
+        "v1.1-row-198-A",
+        "v1.1-row-199-A",
+        "v1.1-row-205-A",
+        "v1.1-row-207-A",
+        "v1.1-row-209-A",
+        "v1.1-row-211-A",
+        "v1.1-row-219-A",
+        "v1.1-row-223-A",
+        "v1.1-row-229-A",
+        "v1.1-row-236-A",
+        "v1.1-row-247-A",
+        "v1.1-row-248-A",
+        "v1.1-row-249-A",
+        "v1.1-row-250-A",
+        "v1.1-row-251-A",
+        "v1.1-row-252-A",
+        "v1.1-row-256-A",
+        "v1.1-row-258-A",
+        "v1.1-row-260-A",
+        "v1.1-row-265-A",
+        "v1.1-row-266-A",
+        "v1.1-row-289-A",
+        "v1.1-row-290-A",
+        "v1.1-row-296-A",
+        "v1.1-row-299-A",
+        "v1.1-row-301-A",
+        "v1.1-row-302-A",
+        "v1.1-row-308-A",
+        "v1.1-row-310-A",
+        "v1.1-row-318-A",
+        "v1.1-row-319-A",
+        "v1.1-row-320-A",
+        "v1.1-row-327-A",
+        "v1.1-row-328-A",
+        "v1.1-row-329-A",
+        "v1.1-row-334-A",
+        "v1.1-row-336-A",
+        "v1.1-row-339-A",
+        "v1.1-row-343-A",
+        "v1.1-row-344-A",
+        "v1.1-row-345-A",
+        "v1.1-row-347-A",
+        "v1.1-row-349-A",
+        "v1.1-row-351-A",
+        "v1.1-row-355-A",
+        "v1.1-row-358-A",
+        "v1.1-row-359-A",
+        "v1.1-row-360-A",
+        "v1.1-row-361-A",
+        "v1.1-row-362-A",
+        "v1.1-row-363-A",
+        "v1.1-row-367-A",
+        "v1.1-row-375-A",
+        "v1.1-row-378-A",
+        "v1.1-row-380-A",
+        "v1.1-row-383-A",
+        "v1.1-row-387-A",
+        "v1.1-row-393-A",
+        "v1.1-row-395-A",
+        "v1.1-row-397-A",
+        "v1.1-row-398-A",
+        "v1.1-row-399-A",
+        "v1.1-row-401-A",
+        "v1.1-row-406-A",
+        "v1.1-row-407-A",
+        "v1.1-row-412-A",
+        "v1.1-row-414-A",
+        "v1.1-row-417-A",
+        "v1.1-row-421-A",
+        "v1.1-row-431-A",
+        "v1.1-row-432-A",
+        "v1.1-row-436-A",
+        "v1.1-row-438-A",
+        "v1.1-row-441-A",
+        "v1.1-row-448-A",
+        "v1.1-row-454-A",
+        "v1.1-row-455-A",
+        "v1.1-row-456-A",
+        "v1.1-row-460-A",
+        "v1.1-row-462-A",
+        "v1.1-row-463-A",
+        "v1.1-row-470-A",
+        "v1.1-row-472-A",
+        "v1.1-row-473-A",
+        "v1.1-row-476-A",
+        "v1.1-row-484-A",
+        "v1.1-row-487-A",
+        "v1.1-row-494-A",
+        "v1.1-row-1000-A",
+        "v1.1-row-1005-A",
+        "v1.1-row-1006-A",
+        "v1.1-row-1008-A",
+        "v1.1-row-1010-A",
+        "v1.1-row-1013-A",
+        "v1.1-row-1020-A",
+        "v1.1-row-1021-A",
+        "v1.1-row-1022-A",
+        "v1.1-row-1025-A",
+        "v1.1-row-1027-A",
+        "v1.1-row-1029-A",
+        "v1.1-row-1031-A",
+        "v1.1-row-1034-A",
+        "v1.1-row-1036-A",
+        "v1.1-row-1037-A",
+        "v1.1-row-1039-A",
+        "v1.1-row-1045-A",
+        "v1.1-row-1052-A",
+        "v1.1-row-1055-A",
+        "v1.1-row-1059-A",
+        "v1.1-row-1060-A",
+        "v1.1-row-1062-A",
+        "v1.1-row-1065-A",
+        "v1.1-row-1069-A",
+        "v1.1-row-1070-A",
+        "v1.1-row-1076-A",
+        "v1.1-row-1078-A",
+        "v1.1-row-1081-A",
+        "v1.1-row-1084-A",
+        "v1.1-row-1087-A",
+        "v1.1-row-1091-A",
+        "v1.1-row-1092-A",
+        "v1.1-row-1093-A",
+        "v1.1-row-1094-A",
+        "v1.1-row-1095-A",
+        "v1.1-row-1102-A",
+        "v1.1-row-1103-A",
+        "v1.1-row-1110-A",
+        "v1.1-row-1115-A",
+        "v1.1-row-1116-A",
+        "v1.1-row-1121-A",
+        "v1.1-row-1123-A",
+        "v1.1-row-1125-A",
+        "v1.1-row-1130-A",
+        "v1.1-row-1133-A",
+        "v1.1-row-1156-A",
+        "v1.1-row-1158-A",
+        "v1.1-row-1161-A",
+        "v1.1-row-1167-A",
+        "v1.1-row-1168-A",
+        "v1.1-row-1170-A",
+        "v1.1-row-1173-A",
+        "v1.1-row-1179-A",
+        "v1.1-row-1184-A",
+        "v1.1-row-1188-A",
+        "v1.1-row-1194-A",
+        "v1.1-row-1195-A",
+        "v1.1-row-1198-A",
+        "v1.1-row-1200-A",
+        "v1.1-row-1203-A",
+        "v1.1-row-1204-A",
+        "v1.1-row-1205-A",
+        "v1.1-row-1211-A",
+        "v1.1-row-1216-A",
+        "v1.1-row-1220-A",
+        "v1.1-row-1221-A",
+        "v1.1-row-1227-A",
+        "v1.1-row-1231-A",
+        "v1.1-row-1232-A",
+        "v1.1-row-1235-A",
+        "v1.1-row-1236-A",
+        "v1.1-row-1243-A",
+        "v1.1-row-1245-A",
+        "v1.1-row-1251-A",
+        "v1.1-row-1254-A",
+        "v1.1-row-1256-A",
+        "v1.1-row-1268-A",
+        "v1.1-row-1270-A",
+        "v1.1-row-1279-A",
+        "v1.1-row-1280-A",
+        "v1.1-row-1282-A",
+        "v1.1-row-1283-A",
+        "v1.1-row-1291-A",
+        "v1.1-row-1293-A",
+        "v1.1-row-1294-A",
+        "v1.1-row-1298-A",
+        "v1.1-row-1299-A",
+        "v1.1-row-1301-A",
+        "v1.1-row-1302-A",
+        "v1.1-row-1310-A",
+        "v1.1-row-1317-A",
+        "v1.1-row-1320-A",
+        "v1.1-row-1323-A",
+        "v1.1-row-1333-A",
+        "v1.1-row-1337-A",
+        "v1.1-row-1343-A",
+        "v1.1-row-1349-A",
+        "v1.1-row-1354-A",
+        "v1.1-row-1355-A",
+        "v1.1-row-1356-A",
+        "v1.1-row-1357-A",
+        "v1.1-row-1358-A",
+        "v1.1-row-1359-A",
+        "v1.1-row-1360-A",
+        "v1.1-row-1361-A",
+        "v1.1-row-1362-A",
+        "v1.1-row-1364-A",
+        "v1.1-row-1365-A",
+        "v1.1-row-1371-A",
+        "v1.1-row-1373-A",
+        "v1.1-row-1375-A",
+        "v1.1-row-1380-A",
+        "v1.1-row-1382-A",
+        "v1.1-row-1388-A",
+        "v1.1-row-1391-A",
+        "v1.1-row-1393-A",
+        "v1.1-row-1394-A",
+        "v1.1-row-1395-A",
+        "v1.1-row-1407-A",
+        "v1.1-row-1409-A",
+        "v1.1-row-1410-A",
+        "v1.1-row-1414-A",
+        "v1.1-row-1416-A",
+        "v1.1-row-1417-A",
+        "v1.1-row-1420-A",
+        "v1.1-row-1421-A",
+        "v1.1-row-1423-A",
+        "v1.1-row-1424-A",
+        "v1.1-row-1430-A",
+        "v1.1-row-1433-A",
+        "v1.1-row-1437-A",
+        "v1.1-row-1439-A",
+        "v1.1-row-1441-A",
+        "v1.1-row-1446-A",
+        "v1.1-row-1447-A",
+        "v1.1-row-1448-A",
+        "v1.1-row-1451-A",
+        "v1.1-row-1453-A",
+        "v1.1-row-1454-A",
+        "v1.1-row-1455-A",
+        "v1.1-row-1462-A",
+        "v1.1-row-1463-A",
+        "v1.1-row-1464-A",
+        "v1.1-row-1470-A",
+        "v1.1-row-1471-A",
+        "v1.1-row-1473-A",
+        "v1.1-row-1475-A",
+        "v1.1-row-1476-A",
+        "v1.1-row-1481-A",
+        "v1.1-row-1482-A",
+        "v1.1-row-1486-A"
+      ],
+      "evidence_broken": [
+        "v1.1-row-7-A",
+        "v1.1-row-304-A",
+        "v1.1-row-1041-A",
+        "v1.1-row-1150-A",
+        "v1.1-row-1214-A",
+        "v1.1-row-1399-A",
+        "v1.1-row-1477-A"
+      ]
+    },
+    "measurement": {
+      "cases": 2976,
+      "operational_errors": 0,
+      "api_attempts": 2995,
+      "usage_unknown_attempts": 19,
+      "input_tokens_known": 11732096,
+      "output_tokens_known": 191322,
+      "non_llm_seconds_all_sessions": 3.013436959590763,
+      "sessions": [
+        {
+          "session": "7d2cfbea0e5a4198ac131b5aba286dca",
+          "cases_executed": 2976,
+          "wall_seconds": 1999.7275821671356,
+          "non_llm_seconds": 3.013436959590763,
+          "cpu_seconds": 237.262146,
+          "peak_rss_bytes": 228245504,
+          "timing_scope": "local SDK intervals; includes startup and cold preprocessing"
+        }
+      ],
+      "gold_read_during_inference": false
+    },
+    "source_sha256": "ced9d5a2fbdc2bfcc356f88ce09d8c4b0cc97ecfb55c60a425c98ee352b660d3"
+  },
+  "full_2976_source_contract": {
+    "cases": 2976,
+    "source_quotes_verified": 4600,
+    "advanced_non_neutral_cases_with_source_evidence": 966,
+    "invalid_or_missing_outputs": 0,
+    "gold_read": false,
+    "case_order_preserved": true,
+    "validation_scope": "Every submitted C1 quote equals its actual physical source page or complete source block; no translation or invented page.",
+    "predictions_sha256": "f152638b95dd003850f5dacdc1f988c6b854a4ed011d247abed37a1fcaaefa90",
+    "cases_sha256": "0c9bfc3c8b657ee197def589884a04ea913c9ef2a326dcfd3a50e087b0ca730a"
+  },
+  "full_2976_cpu_profile_artifact": "processing_profile.json"
+}

@@ -4,7 +4,7 @@
 **/.env.*
 !**/.env.example
 
-# Local environments, caches and downloads (the build re-downloads data and re-parses booklets)
+# Local environments, caches and downloads (sources must be prepared before inference)
 **/.venv
 **/venv
 **/__pycache__
@@ -19,3 +19,8 @@ track_2a/results/*.raw.jsonl
 **/.vscode
 **/.idea
 **/.DS_Store
+
+# Experiment outputs and offline gold labels never enter a build context.
+**/results
+**/docs/evaluation
+**/expected-labels.jsonl
