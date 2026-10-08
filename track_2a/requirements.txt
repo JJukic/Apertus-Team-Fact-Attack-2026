@@ -1,5 +1,4 @@
 # Core dependencies for Hack Apertus - Track 2A (OST)
-openai>=1.30.0
 pydantic>=2.0.0
 python-dotenv>=1.0.0
 pypdf>=4.0.0

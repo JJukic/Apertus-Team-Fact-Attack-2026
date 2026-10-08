@@ -104,6 +104,23 @@ time with a request in flight): **~4 ms per case** on the test split with cached
 | A | **k=8, evidence split 2,2 + filled slots** | **0.930** | **0.727** | **3,877** / 56 | ~5 ms |
 | B | unchanged | 0.975 / 0.973 (rerun) | – | 2,532 / 56 | ~3 ms |
 
+**Start-up: standard-library HTTP client instead of the openai SDK (2026-10-08).** With 4 workers almost every case
+runs while another case's request is in flight, so the scored time is mostly the start-up until the first request.
+In the container (linux/amd64, booklets on a Linux volume) it took ~2.3 s: typer + rich ~260 ms, pydantic and our
+modules ~350 ms, **`import openai` ~1,150 ms** (thousands of pydantic types), first booklet + BM25 ~350 ms. We use one
+call of the SDK, so `src/http_chat.py` implements `chat.completions.create` on `http.client` (~85 ms to import, one
+kept-alive connection per thread, errors with `status_code` for the retry logic). Measured with a local fake Apertus
+(1.0–2.2 s latency per request, 401 test cases of task A, two runs each):
+
+| Client | Non-LLM time per case | Wall clock |
+|---|---:|---:|
+| openai SDK | 7.6 / 7.0 ms | 171.6 / 171.4 s |
+| **standard library** | **4.1 / 3.8 ms** | 169.4 / 169.3 s |
+
+On the real API (20 cases, 10 A + 10 B) labels, evidence and token counts are identical to the SDK run (20/20 each);
+logprobs are read as before. Note: Docker Desktop on Windows bind mounts make `stat` slow (~1–2 ms per call), which
+inflated our local real run to ~10 ms per case; the organisers run on Linux.
+
 ## Earlier result (own evaluator, k=12, before the Q&A): full test split (402 pairs)
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |

@@ -82,16 +82,10 @@ class ApertusClient:
         self.mock = mock if mock is not None else (config.MOCK_APERTUS or not bool(self.api_key))
 
         if not self.mock:
-            try:
-                from openai import OpenAI
-                self.client = OpenAI(
-                    base_url=self.base_url,
-                    api_key=self.api_key or "EMPTY",
-                    max_retries=0,  # retries are handled by _create_with_retry
-                )
-            except Exception as e:
-                logger.warning(f"Could not initialize OpenAI client: {e}. Falling back to mock mode.")
-                self.mock = True
+            # Standard-library client instead of the openai SDK: same call, ~1 s less start-up (scored processing time);
+            # retries are handled by _create_with_retry
+            from src.http_chat import HTTPChatClient
+            self.client = HTTPChatClient(base_url=self.base_url, api_key=self.api_key or "EMPTY")
         else:
             self.client = None
             if not self.api_key:
