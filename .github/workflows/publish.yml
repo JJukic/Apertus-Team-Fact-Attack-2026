@@ -1,0 +1,67 @@
+name: Publish submission container
+
+# Builds the submission image from the root Dockerfile (the one the organisers build), checks the official
+# contract offline with the mock model and publishes it to the GitHub Container Registry of this repository.
+on:
+  push:
+    branches: [ main ]
+    tags: [ "v*" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Build, contract check, push to ghcr.io
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Image name (ghcr.io needs lower case)
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - name: Build image for linux/amd64
+        run: |
+          docker build --platform linux/amd64 \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            -t "$IMAGE:latest" -t "$IMAGE:sha-${GITHUB_SHA::7}" .
+
+      - name: Official contract smoke test (read-only /data, --input/--output, mock model)
+        run: |
+          mkdir -p contract/booklets output
+          cp track_2a/tests/contract/cases.jsonl contract/cases.jsonl
+          cp track_2a/data/booklets/2026-06-14_de.pdf contract/booklets/2026_06_14_de.pdf
+          docker run --rm --platform linux/amd64 \
+            -e BASE_URL=https://api.inference.cscs.ch/v1 -e API_KEY=dummy -e MOCK_APERTUS=true \
+            -v "$PWD/contract/cases.jsonl:/data/cases.jsonl:ro" \
+            -v "$PWD/contract/booklets:/data/booklets:ro" \
+            -v "$PWD/output:/output" \
+            "$IMAGE:latest" --input /data/cases.jsonl --output /output/predictions.jsonl
+          python3 - <<'PY'
+          import json
+          rows = [json.loads(l) for l in open("output/predictions.jsonl", encoding="utf-8")]
+          assert [r["id"] for r in rows] == ["contract-A", "contract-B"], rows
+          names = ["entailment", "neutral", "contradiction"]
+          for r in rows:
+              assert r["label_name"] == names[r["label"]], r
+              assert all(1 <= len(e["text"]) <= 5000 for e in r["evidence"][:5]), r
+          print("contract ok:", rows)
+          PY
+
+      - name: No secrets in the image
+        run: |
+          docker run --rm --entrypoint sh "$IMAGE:latest" -c \
+            'test -z "$(find / -xdev -name .env -not -path "/proc/*" 2>/dev/null)" && ! env | grep -qiE "^(API_KEY|LLM_API_KEY)="'
+
+      - name: Log in to ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Push
+        run: |
+          docker push "$IMAGE:sha-${GITHUB_SHA::7}"
+          docker push "$IMAGE:latest"
