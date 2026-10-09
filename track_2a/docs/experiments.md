@@ -745,7 +745,20 @@ Merged image, jury-style, paired runs:
 On its own, 7 vs 4 is within noise (sign test p ≈ 0.5). Josip's independent R2 run on all 1,488 task-A cases points
 the same way (30 fixed / 16 broken, macro-F1 0.948 → 0.956); together 37 / 20 (p ≈ 0.03), so `union` is the default
 since the second merge, for ~3 % more tokens and one more request per cross-lingual case (a failed translation falls
-back to the original claim). The new booklet does not change. The `original` run also reproduces the pre-merge numbers
+back to the original claim). The new booklet does not change.
+
+Final control run of the merged image (jury-style, official `evaluate.py`), `original` → `union`:
+
+| | original | union |
+|---|---:|---:|
+| test 401, task A macro-F1 / Hit@5 | 0.930 / 0.813 | **0.945 / 0.839** |
+| changed labels | – | 19 (11 fixed, 5 broken) |
+| input / output tokens per case | 3,877 / 57 | 3,983 / 75 |
+| non-LLM time per case (cached booklets) | 8.4 ms | 6.4 ms |
+| test 401, task B macro-F1 | 0.975 | 0.975 |
+| Sep 2026 set (new booklets), task A / B | 0.804 / 0.970 | 0.774 / 0.970 (1 label changed, n = 36) |
+
+Over all three paired comparisons (dev 300, Josip's 1,488, test 401): 48 fixed / 25 broken (p ≈ 0.01). The `original` run also reproduces the pre-merge numbers
 (macro-F1 0.934, Hit@5 0.79, 3,721 input tokens, 11.6 ms non-LLM time per case): the merge itself changed nothing.
 
 ### Other merge decisions
