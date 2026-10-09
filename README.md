@@ -141,7 +141,7 @@ docker run --rm --platform linux/amd64 --read-only --tmpfs /tmp \
   -e CACHE_SINGLE_FLIGHT=true -e SOURCE_PAGES_LAZY=true \
   -e LLM_STREAMING=true -e LLM_JSON_REPAIR=true -e NLI_BATCH_WORKERS=4 \
   -v "$PWD/cases:/data:ro" -v "$PWD/output:/output" \
-  fact-attack:test --input /data/cases.jsonl --output /output/predictions.jsonl
+  fact-attack:test run --input /data/cases.jsonl --output /output/predictions.jsonl
 docker run --rm --network none --read-only --tmpfs /tmp fact-attack:test test
 ```
 
