@@ -69,9 +69,17 @@ class TestRetry(unittest.TestCase):
 
     def test_retries_stop_at_the_limit(self):
         client = _client([_ApiError(503)] * (config.LLM_MAX_RETRIES + 5))
-        out = client.infer(context="", claim="c", passages=["p"])
+        with mock.patch.object(config, "LLM_JSON_REPAIR", False):
+            out = client.infer(context="", claim="c", passages=["p"])
         self.assertIsNotNone(out.error)
         self.assertEqual(client.client.chat.completions.calls, config.LLM_MAX_RETRIES + 1)
+
+    def test_json_repair_adds_exactly_one_last_attempt(self):
+        client = _client([_ApiError(503)] * (config.LLM_MAX_RETRIES + 5))
+        with mock.patch.object(config, "LLM_JSON_REPAIR", True):
+            out = client.infer(context="", claim="c", passages=["p"])
+        self.assertIsNotNone(out.error)
+        self.assertEqual(client.client.chat.completions.calls, config.LLM_MAX_RETRIES + 2)
 
 
 class _Sequence:
@@ -88,7 +96,7 @@ class _Sequence:
 
 
 class TestThinkingBudget(unittest.TestCase):
-    def test_thinking_is_uncapped_even_with_a_legacy_budget_setting(self):
+    def test_thinking_is_capped_and_needs_no_forced_second_answer(self):
         client = ApertusClient(api_key="test", mock=True)
         client.mock = False
         seq = _Sequence(['Reasoning.<|inner_suffix|>{"label": 0, "p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "evidence_ids": [1]}'])
@@ -97,8 +105,7 @@ class TestThinkingBudget(unittest.TestCase):
             out = client.infer(context="", claim="c", passages=["p"])
         self.assertEqual(out.label, 0)
         self.assertEqual(len(seq.calls), 1)
-        self.assertNotIn("max_tokens", seq.calls[0])
-        self.assertNotIn("max_completion_tokens", seq.calls[0])
+        self.assertEqual(seq.calls[0]["max_tokens"], config.THINKING_MAX_TOKENS)  # output tokens are scored: capped
         self.assertEqual((out.tokens_prompt, out.tokens_completion), (100, 50))
 
     def test_finished_reasoning_needs_no_second_call(self):

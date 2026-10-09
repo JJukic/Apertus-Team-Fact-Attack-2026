@@ -5,6 +5,7 @@ Render technical_report.md to the submission PDF (max. 6 pages) with headless Ch
     python docs/build_report_pdf.py            # -> docs/FactAttack_Technical_Report.pdf
 """
 
+import re
 import shutil
 import subprocess
 import sys
@@ -29,6 +30,8 @@ ul, ol { padding-left: 18px; }
 li { margin: 1px 0; }
 hr { display: none; }
 table { border-collapse: collapse; margin: 4px 0 7px; font-size: 9.2pt; width: 100%; page-break-inside: avoid; }
+table.long { page-break-inside: auto; }
+tr { page-break-inside: avoid; }
 th, td { border: 1px solid #ccc; padding: 2px 5px; vertical-align: top; }
 th { background: #f0f0f0; }
 pre { font-size: 8.4pt; line-height: 1.2; background: #f6f6f6; padding: 5px 7px; margin: 4px 0 6px; page-break-inside: avoid; }
@@ -54,6 +57,9 @@ def find_browser() -> str:
 
 def main() -> None:
     body = markdown.markdown(SOURCE.read_text(encoding="utf-8"), extensions=["tables", "fenced_code", "sane_lists"])
+    # Long tables may break across pages (row by row); short ones stay together
+    body = re.sub(r"<table>(.*?)</table>", lambda m: ("<table class='long'>" if m.group(1).count("<tr>") > 10
+                                                      else "<table>") + m.group(1) + "</table>", body, flags=re.S)
     html = f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>{body}</body></html>"
     with tempfile.TemporaryDirectory() as tmp:
         page = Path(tmp) / "report.html"

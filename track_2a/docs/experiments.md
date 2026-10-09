@@ -17,7 +17,160 @@ All numbers below come from `python -m src benchmark` runs saved in [`results/`]
 - **Model:** `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS (the only model our key is authorised for).
 - Latency is measured client-side with 3–4 parallel requests; runs that overlapped with other runs are slower.
 
-## Final result: full test split (402 pairs, 5 unseen voting dates)
+## Official evaluation contract and scoring (OST Q&A, 2026-10-08)
+
+The Q&A fixed how submissions are run and scored: the container is called with `--input /data/cases.jsonl --output
+/output/predictions.jsonl`, the endpoint comes from `BASE_URL` / `API_KEY` (a token-counting proxy), and the score is
+`0.6 · S_A + 0.4 · S_B` with S_A = 50 % macro-F1 + 20 % evidence Hit@5 + 15 % processing time + 15 % tokens and
+S_B = 70 % macro-F1 + 15 % time + 15 % tokens. Time and tokens are scored relative to the best team (best ÷ own);
+time is the wall clock minus the time with an LLM request in flight. Final scoring uses a held-out private set.
+
+All numbers in this section come from the starter repo's `evaluate.py` on cases generated with its `prepare_cases.py`
+(dataset v1.1), restricted to our test split (401 pairs, 5 unseen voting dates) or to 300 random dev pairs ("dev300").
+Predictions and score reports are in [`results/official/`](../results/official/).
+
+**Contract fixes.** Our container only accepted `python -m src run …` and read `LLM_BASE_URL` / `LLM_API_KEY`, so
+the official call would have failed for every case. It now accepts the bare `--input/--output` call, reads `BASE_URL` /
+`API_KEY` first, writes its parse cache to `/tmp` (the image keeps a read-only cache of the 60 dataset booklets), and
+returns `"page": null` for task B evidence. A CI step runs the image exactly as the organisers do.
+
+**Evidence (Hit@5).** An evidence item counts if it lies inside the gold passage or contains it (`partial_ratio` ≥ 90,
+first five items, ≤ 5,000 chars), for every gold entailment/contradiction case. Our baseline scored only **0.34**: of
+the 267 cases, 130 cited a page that mostly lies inside the gold passage but also holds a header or the start of the
+next section (best ratio typically 80–89), 33 cited a page clipped to 3,000 chars, 13 predicted Neutral. Cutting the
+cited pages into pieces fixes this without touching the label or the tokens (offline replay on the real citations):
+
+| Evidence items (test, 267 cases) | Hit@5 |
+|---|---:|
+| Cited pages, clipped to 3,000 chars (baseline) | 0.341 |
+| Cited pages, full text | 0.371 |
+| First cited page in 2 / 3 / 4 / 5 pieces | 0.479 / 0.521 / 0.551 / 0.547 |
+| **First cited page in 3 pieces + second in 2** | **0.625** |
+| … and the top retrieved pages for Neutral predictions | 0.640 |
+
+On dev300 citations the split variants rank the same way (`3,2` 0.706, `4,1` 0.692, `4` 0.692, `3,1,1` 0.668,
+`2,2` 0.659, `5` 0.630, whole pages 0.483). Evidence for Neutral predictions (+0.015) is implemented but off
+(`EVIDENCE_ON_NEUTRAL`), since the contract only asks for evidence with labels 0/2.
+
+**Filling the free slots.** With `3,2` all five items come from at most two pages. Of the remaining misses on test
+(k=8), 83 of 106 cite another page than the annotated one (often the overview instead of the detailed section), 17 are
+Neutral predictions, 5 gold passages are not found in our PDF text, and only 1 cites the right page without a matching
+piece. So the free slots now go to further pages: the best-matching third (`clip_to_query`) of the other cited pages,
+then of the retrieved pages by rank. Offline replay (k=8 citations), chosen on dev300:
+
+| Evidence items | dev300 | test |
+|---|---:|---:|
+| `3,2` (previous default) | 0.763 | 0.603 |
+| `3,2` + free slots filled with retrieved thirds | 0.806 | 0.704 |
+| **`2,2` + further cited / retrieved thirds** | **0.810** | **0.749** |
+| `3` + 2 thirds | 0.787 | 0.708 |
+| `2,2` + start of the next page instead of the best third | 0.791 | 0.768 |
+| 5 pages, best third each | 0.592 | 0.524 |
+
+Real runs with `EVIDENCE_SPLIT=2,2`, `EVIDENCE_FILL=true`: **test Hit@5 0.727** (0.603 before), dev300 0.792
+(0.758 before); the replay overestimates by ~0.02–0.03 because Apertus cites slightly different pages from run to run.
+Excerpts are verbatim (no inserted `…`).
+
+**Fewer pages (tokens).** Tokens are scored relative to the most frugal team, so k was re-tuned on dev300 (task A,
+evidence split on):
+
+| k pages | Macro-F1 | Hit@5 | Input tokens |
+|---:|---:|---:|---:|
+| 12 | 0.937 | 0.701 | 5,370 |
+| 10 | 0.934 | 0.697 | 4,495 |
+| **8** | **0.934** | **0.758** | **3,721** |
+| 7 | 0.924 | 0.720 | 3,360 |
+| 6 | 0.904 | 0.716 | 3,023 |
+
+k=8 is the new default. On the test split it costs more F1 than on dev (below), but under the scoring formula 31 % fewer
+tokens outweigh −0.017 F1 unless the best team needs less than ~1/8 of our tokens.
+
+**Shorter prompt: rejected.** A condensed system prompt with the same rules (`PROMPT_SHORT=true`) saves 6–13 % input
+tokens, but Apertus then labels unrelated passages as Contradiction: dev300 B 0.980 → 0.850 (first version 0.550,
+every Neutral became Contradiction; schema written as `0-1` made all confidences 0), dev300 A 0.937 → 0.781.
+
+**Processing time.** Cases now run in parallel (`NLI_WORKERS=4`), booklets missing from the cache are parsed by a
+background thread while other cases wait for Apertus, and `pypdf` / `rank_bm25` are imported only when needed (CLI
+import ~17 s → ~1 s on the dev laptop under load). The CLI prints its own estimate of the scored time (wall clock minus
+time with a request in flight): **~4 ms per case** on the test split with cached booklets; with 22 uncached booklets in
+40 cases ~650 ms per case.
+
+**Result on the test split (401 pairs, official `evaluate.py`):**
+
+| Task | Configuration | Macro-F1 | Hit@5 | Input / output tokens | Non-LLM time |
+|---|---|---:|---:|---:|---:|
+| A | baseline (k=12, whole cited pages) | 0.945 | 0.341 | 5,598 / 59 | – |
+| A | k=8, evidence split 3,2 | 0.928 | 0.603 | 3,877 / 57 | ~4 ms |
+| A | **k=8, evidence split 2,2 + filled slots** | **0.930** | **0.727** | **3,877** / 56 | ~5 ms |
+| B | unchanged | 0.975 / 0.973 (rerun) | – | 2,532 / 56 | ~3 ms |
+
+**Start-up: standard-library HTTP client instead of the openai SDK (2026-10-08).** With 4 workers almost every case
+runs while another case's request is in flight, so the scored time is mostly the start-up until the first request.
+In the container (linux/amd64, booklets on a Linux volume) it took ~2.3 s: typer + rich ~260 ms, pydantic and our
+modules ~350 ms, **`import openai` ~1,150 ms** (thousands of pydantic types), first booklet + BM25 ~350 ms. We use one
+call of the SDK, so `src/http_chat.py` implements `chat.completions.create` on `http.client` (~85 ms to import, one
+kept-alive connection per thread, errors with `status_code` for the retry logic). Measured with a local fake Apertus
+(1.0–2.2 s latency per request, 401 test cases of task A, two runs each):
+
+| Client | Non-LLM time per case | Wall clock |
+|---|---:|---:|
+| openai SDK | 7.6 / 7.0 ms | 171.6 / 171.4 s |
+| **standard library** | **4.1 / 3.8 ms** | 169.4 / 169.3 s |
+
+On the real API (20 cases, 10 A + 10 B) labels, evidence and token counts are identical to the SDK run (20/20 each);
+logprobs are read as before. Note: Docker Desktop on Windows bind mounts make `stat` slow (~1–2 ms per call), which
+inflated our local real run to ~10 ms per case; the organisers run on Linux.
+
+**Booklets that are not in the image (2026-10-08).** The organisers confirmed that the evaluation set is a new
+dataset, so none of its booklets are pre-parsed. pypdf needs 1.5–4 s per booklet (~50 ms per page; passages and BM25
+are negligible). Without the cache the scored time rose from ~4 to **104 ms per case**: one background thread parsed
+booklet after booklet while the four workers, following the input order, waited for booklets that were not ready.
+Two changes, both without effect on any prediction:
+
+1. `src/page_pool.py`: a process pool, forked from the main thread before any other thread starts, extracts the
+   pages of all uncached booklets of the case file at once. The first booklet is split over all workers (ready after
+   ~0.9 s instead of ~2.7 s); the others run one task each in parallel. Up to 16 processes, limited to the CPUs the
+   container may use (affinity and cgroup quota, e.g. `--cpus=2`). The text is identical to the sequential parser
+   (60/60 booklets); without fork (Windows) or with one CPU extraction stays sequential.
+2. Cases are processed booklet by booklet, the booklet with the most cases first, so the workers stay on booklets
+   that are ready while the next ones are parsed; numpy (for BM25) is imported in the background meanwhile. The
+   output keeps the input order, and every case is still predicted independently.
+
+Local fake Apertus (1.0–2.2 s per request), 401 test cases of task A on 18 booklets:
+
+| Setting | Non-LLM time per case | Wall clock |
+|---|---:|---:|
+| booklets cached (image) | 3.2 ms | 168.6 s |
+| uncached, before | 103.8 ms | 224.5 s |
+| uncached, process pool | 14.4 ms | 177.2 s |
+| **uncached, process pool + booklet order** | **8.2 ms** | **170.7 s** |
+| uncached, process pool + booklet order, `--cpus=2` | 13.9 ms | 173.1 s |
+
+With booklet order there is no interval without a request in flight after the first request; what remains is the
+start-up until it (~3.3 s: imports, first booklet, its passages). Real API without cache (20 cases): labels,
+evidence and token counts identical (20/20), output in input order.
+
+**Robustness for an unseen evaluation set (2026-10-08).** Checked with a case file of broken inputs against a fake
+Apertus that answers 429 every 5th, 500 every 7th request and drops every 11th connection:
+
+| Input | Before | Now |
+|---|---|---|
+| UTF-8 byte order mark, or one line of invalid JSON | **whole run crashed, no output** | other cases unaffected; a broken line with a readable `id` is answered neutral |
+| JSON value that is not an object (`[1, 2, 3]`) | crash | skipped with a warning |
+| missing / truncated / non-PDF booklet, no source | neutral (per-case error handling) | unchanged |
+| 429 / 500 / dropped connection | retried | retried (all 14 cases answered, exit 0) |
+| process-pool worker killed while parsing | — | after `PARSE_TASK_TIMEOUT_S` the booklet is parsed sequentially |
+
+18 booklets outside the dataset (2014-02-09, 2016-06-05, 2018-03-04, 2018-09-23, 2019-02-10, 2019-05-19, DE/FR/IT,
+from bk.admin.ch): all parse. pypdf 6.19 rejects a font on 3 of 32 pages of the 2018-03-04 booklets ("More than one
+/FontFile found"), which used to fail the **whole booklet**; such pages are now read with pypdfium2. Section labels:
+booklets in the current layout (since 2018-09) get the same committee / Federal Council / voting text pattern as
+2020–2026 (one gap: the committee pages of the second 2019-05-19 proposal in German); in the old layout (2014,
+2016, 2018-03) speaker sections are found partly or not at all (2014 DE: none), so the speaker boost does not apply
+there; no swapped speakers were seen. Dependencies are pinned to the tested versions, and the image build fails on
+a code error in `warm-cache` instead of shipping an image without parse cache.
+
+## Earlier result (own evaluator, k=12, before the Q&A): full test split (402 pairs)
 
 | Task | Macro-F1 | Mono-lingual | Cross-lingual | Input tokens | Output tokens | Latency mean / p95 |
 |---|---:|---:|---:|---:|---:|---:|
@@ -382,6 +535,39 @@ original and the translation to the NLI prompt (tokens and latency of both calls
 \* measured while another run shared the endpoint. Over both splits 14 fixes against 11 breakages on
 cross-lingual pairs: within run-to-run noise, for +0.6 s and ~20 extra output tokens per claim. Kept off.
 
+### Dropping low-value pages from the context (rejected, 2026-10-08)
+
+On an own set of 36 claims × task A/B on the newest booklet (27 September 2026, all 9 language pairs; not part
+of the dataset) task A scored macro-F1 0.804 (task B 0.970). All 7 task-A errors are cross-lingual; in 5 the gold
+page was among the 8 retrieved pages and Apertus still answered a confident Neutral, with only the gold page in
+context it was right. An ablation with fewer pages fixed 3 of the 7, so we tried dropping low-value pages without
+refilling (`CONTEXT_FILTER`): `low` drops tables of contents, cover pages and pages under 700 characters,
+`low+legal1` additionally keeps at most one voting-text page.
+
+| Variant | dev 300: macro-F1 / Hit@5 / input tokens | Sep 2026: task-A macro-F1 |
+|---|---|---:|
+| off (baseline) | 0.927 / 0.791 / 3,721 | 0.804 |
+| low | 0.917 / 0.773 / 3,478 | 0.804 |
+| low+legal1 | 0.910 / 0.749 / 2,988 | 0.779 |
+
+Fewer pages save tokens but cost F1 and Hit@5 on dev and do not help on the new booklet; the code was removed.
+The two remaining misses on the new booklet are retrieval misses (cross-lingual claims whose wording does not
+match the booklet language) — the candidate fix is translating the retrieval query, still to be measured.
+
+### Schema-constrained answers (`response_format: json_schema`, rejected, 2026-10-08)
+
+Another team constrains the answer with a JSON schema to avoid unparseable answers. We have none to avoid: 0 parse
+errors in over 4,000 saved `ids`-mode answers. Paired on 150 dev task-A cases (50 per label, official evaluate.py,
+each variant run twice alternately, scores of the second runs):
+
+| Variant | Macro-F1 | Hit@5 | Input / output tokens | Inference time |
+|---|---:|---:|---:|---:|
+| free JSON (default) | **0.933** | **0.78** | 3,681 / 57 | 926 ms |
+| `json_schema` (strict) | 0.833 | 0.69 | 3,681 / 54 | 894 ms |
+
+25 labels changed: 4 fixed, 19 broken, mostly towards Contradiction (Neutral predictions 56 → 37). Constrained
+decoding shifts Apertus' answers; kept off.
+
 ### The 30 remaining test errors
 
 - They come from only ~19 distinct claims: the same claim is paired with the DE, FR and IT booklet
@@ -525,3 +711,63 @@ See [the optimization report](competition_optimization_report.md) and
 - Source observations are revalidated against identical claim/source, labels and supplied context for comparators: **67/109 C1**, **66/100 R1** reviewed. Remaining 42/34 semantic causes are documented, not treated as confirmed errors of a specific mechanism. All observed confusions/evidence failures are enumerated for every compared configuration.
 - R2 is the final measured recommendation: Advanced/Beginner Macro-F1 **0.956237226/0.982497441**, Advanced Hit@5 **0.773737374**, on 1,488 cases per task and identical date-grouped folds. Advanced reported tokens increase 1.39%; unknown failed usage and separate-task official efficiency prevent claiming the exact competition winner. Baseline/C1 remain selectable.
 - The user requested closure and GitHub upload. No further model experiments are started. Reports, six canonical result artifacts, README and reproducible commands are finalized on the experiment branch; caches, journals, credentials and individual prediction files remain ignored. CI also runs on pushes to this branch. Main is not merged and no container is published.
+
+## Merge of both lines (Felipe + Josip) — 2026-10-09
+
+Josip's competition work (main) merged into the official-contract branch (Felipe). Where both lines differ, the
+decision follows paired measurements with the official `evaluate.py` on the same cases.
+
+### Evidence: Josip's `raw_pages_and_blocks` becomes the default
+
+Replayed on the same saved predictions (labels unchanged, no API calls):
+
+| Hit@5 | Felipe (pypdf pages split `2,2` + fill) | raw pages (PyMuPDF) | **pages + blocks (PyMuPDF)** | blocks from pypdf text | blocks from pypdfium2 layout |
+|---|---:|---:|---:|---:|---:|
+| dev 300 | 0.792 | 0.763 | **0.872** | 0.801 | 0.725 |
+| test 401 | 0.727 | 0.753 | **0.813** | 0.727 | 0.648 |
+
+55 of the first 60 dev gold passages are a substring of (or contain) one PyMuPDF text block: the gold passages
+follow PyMuPDF's text, which is why the same idea on pypdf or pypdfium2 text does not reach the same score. PyMuPDF
+(AGPL-3.0) is therefore part of the image (license note in the README). Only the cited pages are read
+(`SOURCE_PAGES_LAZY`), and PyMuPDF is imported in the background prefetch thread.
+
+### Retrieval query translation (`RETRIEVAL_QUERY_MODE`): on (`union`)
+
+Merged image, jury-style, paired runs:
+
+| | original | union (claim + translation) |
+|---|---:|---:|
+| dev 300 task A macro-F1 | 0.934 | 0.944 |
+| changed labels | – | 13 (7 fixed, 4 broken) |
+| input / output tokens per case | 3,721 / 58 | 3,817 / 80 |
+| Sep 2026 set, task A macro-F1 | 0.804 | 0.802 |
+
+On its own, 7 vs 4 is within noise (sign test p ≈ 0.5). Josip's independent R2 run on all 1,488 task-A cases points
+the same way (30 fixed / 16 broken, macro-F1 0.948 → 0.956); together 37 / 20 (p ≈ 0.03), so `union` is the default
+since the second merge, for ~3 % more tokens and one more request per cross-lingual case (a failed translation falls
+back to the original claim). The new booklet does not change.
+
+Final control run of the merged image (jury-style, official `evaluate.py`), `original` → `union`:
+
+| | original | union |
+|---|---:|---:|
+| test 401, task A macro-F1 / Hit@5 | 0.930 / 0.813 | **0.945 / 0.839** |
+| changed labels | – | 19 (11 fixed, 5 broken) |
+| input / output tokens per case | 3,877 / 57 | 3,983 / 75 |
+| non-LLM time per case (cached booklets) | 8.4 ms | 6.4 ms |
+| test 401, task B macro-F1 | 0.975 | 0.975 |
+| Sep 2026 set (new booklets), task A / B | 0.804 / 0.970 | 0.774 / 0.970 (1 label changed, n = 36) |
+
+Over all three paired comparisons (dev 300, Josip's 1,488, test 401): 48 fixed / 25 broken (p ≈ 0.01). The `original` run also reproduces the pre-merge numbers
+(macro-F1 0.934, Hit@5 0.79, 3,721 input tokens, 11.6 ms non-LLM time per case): the merge itself changed nothing.
+
+### Other merge decisions
+
+- Kept from Josip: pinned base image and lockfile, explicit COPYs, runtime variables outrank `.env`, no download at
+  inference, JSON repair as one last attempt after failed retries (on by default), single-flight cache key that
+  re-reads a changed PDF, measurement and audit scripts.
+- Kept from Felipe: standard-library HTTP client, parallel batch in booklet order with the page pool, k=8 (F1 −0.003
+  vs k=12 for 31 % fewer tokens), robustness for broken input, prebuilt cache of the 60 dataset booklets.
+- Not taken: uncapped output and streaming (output tokens are scored; a capped answer is still parsed), exit code 2
+  and a diagnostics file in `/output` when a case fails (each failed case already has a valid neutral record), and
+  turning a non-neutral label without evidence into a neutral record (`evaluate.py` scores the label regardless).

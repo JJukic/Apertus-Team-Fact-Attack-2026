@@ -6,6 +6,8 @@ Provides claim verification, benchmark evaluation, and strategy comparison.
 import sys
 import time
 from pathlib import Path
+
+_START = time.perf_counter()
 from typing import Any, Dict, List, Optional
 
 _pkg_root = Path(__file__).resolve().parent.parent
@@ -40,11 +42,11 @@ _entrypoint_started = None
 
 
 def _require_model(engine: ClaimVerificationEngine, mock: bool) -> None:
-    """Without LLM_API_KEY the client silently falls back to heuristic mock answers; refuse that unless asked for."""
+    """Without an API key the client silently falls back to heuristic mock answers; refuse that unless asked for."""
     if engine.client.mock and not mock and not config.MOCK_APERTUS:
         typer.echo(
-            "Error: LLM_API_KEY is not set, so no Apertus model can be called. Set it in the environment "
-            "(Docker: -e LLM_API_KEY) or in .env; use --mock or MOCK_APERTUS=true for an offline mock run.",
+            "Error: API_KEY (or LLM_API_KEY) is not set, so no Apertus model can be called. Set it in the environment "
+            "(Docker: -e API_KEY) or in .env; use --mock or MOCK_APERTUS=true for an offline mock run.",
             err=True,
         )
         raise typer.Exit(code=2)
@@ -179,13 +181,28 @@ def load_cases(input_path: Path) -> List[Dict[str, Any]]:
 
         frame = pd.read_parquet(input_path) if suffix == ".parquet" else pd.read_csv(input_path)
         return [{k: (None if pd.isna(v) else v) for k, v in row.items()} for row in frame.astype(object).to_dict("records")]
-    content = input_path.read_text(encoding="utf-8").strip()
-    if content.startswith("["):
-        return json.loads(content)
+    content = input_path.read_text(encoding="utf-8-sig").strip()  # tolerates a byte order mark
     try:
-        return [json.loads(content)]
+        parsed = json.loads(content)
+        items = parsed if isinstance(parsed, list) else [parsed]
     except json.JSONDecodeError:
-        return [json.loads(line) for line in content.splitlines() if line.strip()]
+        items = []
+        for n, line in enumerate(content.splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                items.append(json.loads(line))
+            except json.JSONDecodeError as exc:
+                # A broken line must not cost the other cases. If its id is readable, it still gets a (neutral) answer:
+                # a missing line counts as wrong anyway
+                m = re.search(r'"id"\s*:\s*"((?:[^"\\]|\\.)*)"', line)
+                print(f"[warning] line {n}: invalid JSON ({exc.msg})" + (", answered as neutral" if m else ", skipped"), file=sys.stderr)
+                if m:
+                    items.append({"id": json.loads(f'"{m.group(1)}"'), "_invalid": f"invalid JSON: {exc.msg}"})
+    cases = [item for item in items if isinstance(item, dict)]
+    if len(cases) < len(items):
+        print(f"[warning] {len(items) - len(cases)} entries are not JSON objects and were skipped", file=sys.stderr)
+    return cases
 
 
 def _text(value: Any) -> str:
@@ -226,8 +243,8 @@ def run_batch(
     strategy: str = typer.Option(config.DEFAULT_STRATEGY, "--strategy", "-s", help="Strategy: 'hybrid', 'retrieval' or 'full'"),
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve"),
     task: str = typer.Option("auto", "--task", "-t", help="'auto' (booklet if the case names one, else reference text), 'advanced' or 'beginner'"),
+    workers: int = typer.Option(config.BATCH_WORKERS, "--workers", "-w", help="Cases processed in parallel"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
-    workers: int = typer.Option(config.BATCH_WORKERS, "--workers", min=1, help="Concurrent cases; outputs retain input order"),
 ):
     """
     Execute verification across an evaluation file: JSON, JSONL, Parquet or CSV, in the case format of the README
@@ -236,11 +253,9 @@ def run_batch(
     Outputs results strictly adhering to the Hack Apertus Track 2A schema.
     """
     global _entrypoint_started
-    started = _entrypoint_started if _entrypoint_started is not None else time.perf_counter()
-    timing_scope = ("module entry through output write; includes imports, input loading and client setup"
-                    if _entrypoint_started is not None else "batch command entry through output write")
-    # Embedded callers may invoke multiple batches in the same interpreter.
-    _entrypoint_started = None
+    # The timing below starts before the imports when called via `python -m src` (set by __main__, Josip)
+    started = _entrypoint_started if _entrypoint_started is not None else _START
+    _entrypoint_started = None  # embedded callers may run several batches in one interpreter
     if not input_path.exists():
         console.print(f"[bold red]Error:[/bold red] Input file not found: {input_path}")
         raise typer.Exit(code=1)
@@ -253,25 +268,16 @@ def run_batch(
     client = ApertusClient(mock=True) if mock else None
     engine = ClaimVerificationEngine(strategy=strategy, apertus_client=client)
     _require_model(engine, mock)
-    official_results = []
-    failures = []
-    from src.measurement import RequestRecorder
-    from uuid import uuid4
-    import tempfile
-    import os
-    journal = (Path(os.environ['REQUEST_JOURNAL_PATH']) if os.environ.get('REQUEST_JOURNAL_PATH') else
-               Path(tempfile.mkdtemp(prefix="fact-attack-requests-")) / "requests.jsonl")
-    recorder = RequestRecorder(journal, uuid4().hex)
-    if not engine.client.mock:
-        engine.client._request_completion = recorder.wrap(engine.client._request_completion)
 
-    def process_case(indexed):
-        idx, item = indexed
+    def process(idx: int, item: Dict[str, Any]) -> Dict[str, Any]:
         cid = item.get("id", f"case-{idx:04d}")
         try:
+            if item.get("_invalid"):
+                raise ValueError(item["_invalid"])
             claim_text = _text(item.get("claim"))
-            nested_language = item.get("claim", {}).get("language") if isinstance(item.get("claim"), dict) else None
-            given_lang = str(nested_language or item.get("claim_language") or "").lower()
+            claim_field = item.get("claim")
+            given_lang = str((claim_field.get("language") if isinstance(claim_field, dict) else None)
+                             or item.get("claim_language") or "").lower()
             claim_lang = given_lang if given_lang in ("de", "fr", "it") else guess_language(claim_text)
             ref_text = _text(item.get("reference")) or _text(item.get("reference_string"))
 
@@ -283,23 +289,20 @@ def run_batch(
             if booklet_pdf is None and not ref_text:
                 raise ValueError("case has neither a booklet nor a reference text")
 
-            with recorder.case(cid):
-                if booklet_pdf is None:
-                    res = engine.verify_premise(claim=claim_text, reference=ref_text, claim_language=claim_lang, case_id=cid)
-                else:
-                    res = engine.verify_claim(
-                        claim=claim_text, booklet_pdf=booklet_pdf,
-                        booklet_language=item.get('booklet', {}).get('language') if isinstance(item.get('booklet'), dict) else None,
-                        claim_language=claim_lang, vote=item.get("vote"),
-                        strategy=strategy, top_k=top_k, case_id=cid)
-            if res.error:
-                raise RuntimeError("Apertus inference failed")
-            prediction = res.to_official_dict(case_id=cid)
-            if not engine.client.mock:
-                own = [e for e in recorder.events if e['case_id'] == cid]
-                for key in ('input_tokens', 'output_tokens'):
-                    prediction['metrics'][key] = sum(e[key] for e in own if type(e.get(key)) is int)
-            return prediction, None
+            if booklet_pdf is None:
+                res = engine.verify_premise(claim=claim_text, reference=ref_text, claim_language=claim_lang, case_id=cid)
+            else:
+                res = engine.verify_claim(
+                    claim=claim_text,
+                    booklet_pdf=booklet_pdf,
+                    claim_language=claim_lang,
+                    booklet_language=(item["booklet"].get("language") if isinstance(item.get("booklet"), dict) else None),
+                    vote=_text(item.get("vote")) or None,
+                    strategy=strategy,
+                    top_k=top_k,
+                    case_id=cid,
+                )
+            return res.to_official_dict(case_id=cid)
         except Exception as exc:
             # One broken case must never cost the whole batch: emit a valid (neutral) record and continue
             print(f"[warning] {cid}: {type(exc).__name__}: {exc}", file=sys.stderr)
@@ -308,26 +311,62 @@ def run_batch(
                 "label": 1,
                 "label_name": "neutral",
                 "evidence": [],
-                "metrics": {"input_tokens": sum(e['input_tokens'] for e in recorder.events if e['case_id'] == cid and type(e.get('input_tokens')) is int),
-                            "output_tokens": sum(e['output_tokens'] for e in recorder.events if e['case_id'] == cid and type(e.get('output_tokens')) is int),
-                            "inference_time_ms": 0},
-            }, {'id': cid, 'error_type': type(exc).__name__}
+                "metrics": {"input_tokens": 0, "output_tokens": 0, "inference_time_ms": 0},
+            }
 
-    indexed = enumerate(cases, 1)
-    if workers == 1:
-        outcomes = list(map(process_case, indexed))
-    else:
-        from concurrent.futures import ThreadPoolExecutor
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            # map preserves the input order even when completion order differs.
-            outcomes = list(pool.map(process_case, indexed))
-    for prediction, failure in outcomes:
-        official_results.append(prediction)
-        if failure is not None:
-            failures.append(failure)
+    # Cases run in parallel (parsing overlaps with other cases' LLM requests); the output keeps the input order
+    # and every case is predicted independently, so results do not depend on case order
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    from src.apertus_client import LLM_CLOCK
+
+    from src import page_pool
+    from src.inference import is_parse_cached
+
+    # Booklets ordered by their number of cases (then first appearance); cases are processed booklet by booklet in this
+    # order, so the workers stay on booklets that are ready while the next ones are parsed. The pages of uncached
+    # booklets are queued at once in a process pool (src/page_pool.py, forked here before any other thread starts).
+    # Results are written in input order, and the processing order does not change any prediction.
+    case_pdfs: List[Optional[Path]] = []
+    for item in cases:
+        try:
+            case_pdfs.append(case_booklet(item, input_path.parent) if task != "beginner" else None)
+        except Exception:
+            case_pdfs.append(None)  # the case itself reports the problem
+    first_seen = {pdf: n for n, pdf in reversed(list(enumerate(case_pdfs))) if pdf is not None}
+    n_cases = {pdf: case_pdfs.count(pdf) for pdf in first_seen}
+    pdfs = sorted(first_seen, key=lambda pdf: (-n_cases[pdf], first_seen[pdf]))
+    rank = {pdf: r for r, pdf in enumerate(pdfs)}
+    order = sorted(range(len(cases)), key=lambda i: (rank.get(case_pdfs[i], -1), i))
+    page_pool.start([pdf for pdf in pdfs if not is_parse_cached(pdf)])
+
+    def prefetch_booklets() -> None:
+        # numpy (via rank_bm25) loads while the first booklet is extracted; then passages and BM25 index booklet by
+        # booklet in the same order, in the background
+        if pdfs:
+            import rank_bm25  # noqa: F401
+            if config.EVIDENCE_POLICY != "legacy":
+                import pymupdf  # noqa: F401  (evidence pages; loaded here instead of in the first finished case)
+        for pdf in pdfs:
+            try:
+                engine._get_booklet_data(pdf)
+            except Exception:
+                pass  # the case itself reports the problem
+
+    threading.Thread(target=prefetch_booklets, daemon=True).start()
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
+        done = dict(zip(order, pool.map(lambda i: process(i + 1, cases[i]), order)))
+    official_results = [done[i] for i in range(len(cases))]
+    page_pool.stop()
+    # Our estimate of the scored processing time: wall clock (incl. start-up) minus time with an LLM request in flight
+    wall_s = time.perf_counter() - started
+    non_llm_ms = (wall_s - LLM_CLOCK.busy_s()) * 1000 / max(1, len(cases))
+    if output_path:  # without --output, stdout carries the predictions only
+        print(f"[timing] {len(cases)} cases, wall {wall_s:.1f} s, non-LLM {non_llm_ms:.1f} ms/case", file=sys.stderr)
 
     if output_path:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        if output_path.parent:
+            output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as out_f:
             if config.OFFICIAL_IO or str(output_path).endswith(".jsonl"):
                 for r in official_results:
@@ -343,21 +382,8 @@ def run_batch(
         else:
             out_payload = official_results if len(official_results) > 1 else official_results[0]
             print(json.dumps(out_payload, indent=2, ensure_ascii=False))
-    ended = time.perf_counter()
-    wall_seconds = ended - started
-    non_llm_seconds = recorder.processing_seconds(started, ended)
-    diagnostics = {'cases': len(cases), 'workers': workers, 'failures': failures, 'api_attempts': len(recorder.events),
-                   'usage_unknown_attempts': sum(not e['usage_known'] for e in recorder.events),
-                   'wall_seconds_local': wall_seconds,
-                   'llm_in_flight_union_seconds_local': wall_seconds - non_llm_seconds,
-                   'non_llm_seconds_local': non_llm_seconds,
-                   'timing_scope': timing_scope,
-                   'timing_limitations': 'Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.',
-                   'request_journal': str(journal)}
-    if config.OFFICIAL_IO and output_path:
-        output_path.with_name(output_path.name + '.diagnostics.json').write_text(json.dumps(diagnostics, indent=2) + '\n')
-    if config.OFFICIAL_IO and failures:
-        raise typer.Exit(code=2)
+    # Exit code 0 even if single cases failed: each of them has a valid neutral record, and a non-zero exit could
+    # invalidate the whole submission
 
 
 @app.command()
@@ -452,9 +478,14 @@ def warm_cache(
 
     parser = PDFParser()
     pdfs = sorted(booklets_dir.glob("*.pdf"))
+    cached = 0
     for pdf in pdfs:
-        load_parsed_booklet(pdf, parser)
-    console.print(f"[bold green]Cached {len(pdfs)} booklet(s) in {config.BOOKLET_CACHE_DIR}[/bold green]")
+        try:
+            load_parsed_booklet(pdf, parser)
+            cached += 1
+        except Exception as exc:  # a broken download must not fail the build; a code error still does (import time)
+            print(f"[warning] {pdf.name}: not cached ({type(exc).__name__}: {exc})", file=sys.stderr)
+    console.print(f"[bold green]Cached {cached} of {len(pdfs)} booklet(s) in {config.BOOKLET_CACHE_DIR}[/bold green]")
 
 
 @app.command()

@@ -62,7 +62,7 @@ class TestSubmissionTransport(unittest.TestCase):
             self.assertEqual(recorder.events[1]['output_tokens'], 50)
             for call in calls:
                 self.assertNotIn('_json_output', call)
-                self.assertNotIn('max_tokens', call)
+                self.assertNotIn('max_tokens', call)  # removed by RequestRecorder (uncapped measurement runs only)
 
     def test_plain_text_translation_is_never_forced_to_json(self):
         calls = []
@@ -78,49 +78,38 @@ class TestSubmissionTransport(unittest.TestCase):
         self.assertEqual(len(calls), 1)
         self.assertNotIn('response_format', calls[0])
 
-    def test_all_token_caps_are_removed_and_complete_stream_usage_is_recorded(self):
-        usage = N(prompt_tokens=80, completion_tokens=20, total_tokens=100)
-        logprob = N(token='0', logprob=-0.1, top_logprobs=[])
-        stream = Stream([
-            N(choices=[N(index=0, delta=N(content='0|P1'), finish_reason='stop',
-                         logprobs=N(content=[logprob]))], usage=None),
-            N(choices=[], usage=usage)])
+    def test_token_cap_is_kept_and_nothing_is_streamed(self):
+        # Merged decision: output tokens are scored, so the caller's cap is sent; the submission client does not stream
         calls = []
 
         def create(**kwargs):
             calls.append(kwargs)
-            return stream
+            return N(choices=[N(message=N(content='0|P1'), finish_reason='stop')],
+                     usage=N(prompt_tokens=80, completion_tokens=20, total_tokens=100))
 
         client = ApertusClient(mock=True)
         client.mock = False
         client.client = N(chat=N(completions=N(create=create)))
-        with tempfile.TemporaryDirectory() as directory:
-            recorder = RequestRecorder(Path(directory) / 'attempts.jsonl', 'test')
-            client._request_completion = recorder.wrap(client._request_completion)
-            with patch.object(config, 'LLM_STREAMING', True), recorder.case('test-case'):
-                response, error = client._create_with_retry(model='Apertus-v1.5', messages=[],
-                                                            max_tokens=1, max_completion_tokens=1)
-            self.assertIsNone(error)
-            self.assertTrue(stream.closed)
-            self.assertEqual(response.choices[0].message.content, '0|P1')
-            self.assertEqual(response.choices[0].logprobs.content, [logprob])
-            self.assertNotIn('max_tokens', calls[0])
-            self.assertNotIn('max_completion_tokens', calls[0])
-            self.assertEqual(calls[0]['stream_options'], {'include_usage': True})
-            self.assertEqual(recorder.events[0]['input_tokens'], 80)
-            self.assertEqual(recorder.events[0]['output_tokens'], 20)
-            self.assertEqual(recorder.events[0]['case_id'], 'test-case')
+        with patch.object(config, 'LLM_STREAMING', True):
+            response, error = client._create_with_retry(model='Apertus-v1.5', messages=[], max_tokens=24)
+        self.assertIsNone(error)
+        self.assertEqual(response.choices[0].message.content, '0|P1')
+        self.assertEqual(calls[0]['max_tokens'], 24)
+        self.assertNotIn('stream', calls[0])
 
-    def test_incomplete_stream_is_a_failed_attempt_and_cannot_become_neutral_success(self):
-        stream = Stream([N(choices=[N(index=0, delta=N(content='{"label":1'), finish_reason=None)], usage=None)])
+    def test_capped_answer_is_used_but_a_filtered_one_is_a_failed_attempt(self):
+        def answer(finish_reason):
+            return lambda **kwargs: N(choices=[N(message=N(content='{"label":1'), finish_reason=finish_reason)], usage=None)
         client = ApertusClient(mock=True)
         client.mock = False
-        client.client = N(chat=N(completions=N(create=lambda **kwargs: stream)))
-        with patch.object(config, 'LLM_STREAMING', True), patch.object(config, 'LLM_MAX_RETRIES', 0):
+        with patch.object(config, 'LLM_MAX_RETRIES', 0):
+            client.client = N(chat=N(completions=N(create=answer('length'))))
+            response, error = client._create_with_retry(messages=[])
+            self.assertIsNone(error)  # the same request would return the same cut-off answer; the parser handles it
+            client.client = N(chat=N(completions=N(create=answer('content_filter'))))
             response, error = client._create_with_retry(messages=[])
         self.assertIsNone(response)
         self.assertIsInstance(error, ValueError)
-        self.assertTrue(stream.closed)
 
     def test_runtime_aliases_outrank_dotenv_values(self):
         source = Path(config.__file__).read_text()
@@ -135,7 +124,8 @@ class TestSubmissionTransport(unittest.TestCase):
                  ['https://runtime.invalid/v1', 'runtime-fixture']),
                 ({'LLM_BASE_URL': 'https://legacy-runtime.invalid/v1', 'LLM_API_KEY': 'legacy-runtime-fixture'},
                  ['https://legacy-runtime.invalid/v1', 'legacy-runtime-fixture']),
-                ({'BASE_URL': '', 'API_KEY': ''}, ['', ''])]:
+                # No endpoint anywhere: the public CSCS endpoint (without a key the client runs in mock mode)
+                ({'BASE_URL': '', 'API_KEY': ''}, ['https://api.inference.cscs.ch/v1', ''])]:
                 env = {k: v for k, v in os.environ.items() if k not in ('BASE_URL', 'API_KEY', 'LLM_BASE_URL', 'LLM_API_KEY')}
                 env.update(variables, PYTHONPATH=str(directory / 'src'))
                 process = subprocess.run([sys.executable, '-c', code], cwd=directory,

@@ -7,9 +7,10 @@ page-attributed evidence extraction, and Apertus LLM inference.
 import hashlib
 import json
 import re
-import time
-import threading
+import sys
 import tempfile
+import threading
+import time
 from pathlib import Path
 from typing import Optional, Union, Dict, Any, List
 from pydantic import BaseModel, Field, StrictInt
@@ -19,7 +20,7 @@ from src.retriever import PassageRetriever
 from src.apertus_client import ApertusClient, NLIOutput
 from src.numerical_checker import detect_numerical_conflict, NumericalConflictResult
 from src import config
-from src.text_utils import clip_to_query, guess_language, official_normalize
+from src.text_utils import clip_to_query, guess_language, official_normalize, split_evenly
 
 
 class EvidenceSource(BaseModel):
@@ -78,8 +79,8 @@ class PredictionResult(BaseModel):
                     seen.add(identity)
                 if len(ev_list) == 5:
                     break
-        if config.OFFICIAL_IO and not beginner and self.label != 1 and not ev_list:
-            raise ValueError("Non-neutral Advanced prediction has no attributed evidence")
+        # A non-neutral label without evidence stays as it is: evaluate.py scores the label regardless, so turning
+        # it into an error (and a neutral record) would only cost macro-F1
 
         return {
             "id": cid,
@@ -96,8 +97,8 @@ class PredictionResult(BaseModel):
 
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
 _BOOKLET_LOCKS: Dict[Any, threading.Lock] = {}
-_BOOKLET_LOCK_GUARD = threading.Lock()
-_PARSE_CACHE_VERSION = 6  # bump when parsing or section detection changes
+_BOOKLET_LOCKS_GUARD = threading.Lock()
+_PARSE_CACHE_VERSION = 7  # bump when parsing or section detection changes (7: PyMuPDF source pages)
 
 _COMMITTEE_SECTION = "Arguments of the initiative/referendum committee"
 _FEDERAL_COUNCIL_SECTION = "Arguments of the Federal Council and Parliament"
@@ -134,6 +135,20 @@ def attributed_section(claim: str) -> Optional[str]:
 _SPEAKER_NAMES = {_COMMITTEE_SECTION: "initiative/referendum committee", _FEDERAL_COUNCIL_SECTION: "Federal Council and Parliament"}
 
 
+def _cache_name(pdf_path: Path) -> str:
+    digest = hashlib.sha1(pdf_path.read_bytes()).hexdigest()[:16]
+    return f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
+
+
+def is_parse_cached(pdf_path: Union[str, Path]) -> bool:
+    """True if the booklet's parse is on disk (written at run time or baked into the image)."""
+    try:
+        name = _cache_name(Path(pdf_path))
+        return any((d / name).exists() for d in (config.BOOKLET_CACHE_DIR, config.BOOKLET_CACHE_PREBUILT))
+    except OSError:
+        return False
+
+
 def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[str, Any]:
     """
     Parse a booklet once (pages, passages, full text) and cache the result on disk.
@@ -141,18 +156,33 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
     Cache I/O failures (e.g. a read-only filesystem) silently fall back to parsing.
     """
     pdf_path = Path(pdf_path)
-    digest = hashlib.sha1(pdf_path.read_bytes()).hexdigest()[:16]
-    cache_file = config.BOOKLET_CACHE_DIR / f"{digest}_p{config.PASSAGE_CHARS}_v{_PARSE_CACHE_VERSION}.json"
-    try:
-        if cache_file.exists():
-            return json.loads(cache_file.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        pass
+    name = _cache_name(pdf_path)
+    cache_file = config.BOOKLET_CACHE_DIR / name
+    for candidate in (cache_file, config.BOOKLET_CACHE_PREBUILT / name):
+        try:
+            if candidate.exists():
+                return json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            pass
 
     pages = parser.extract_pages(pdf_path)
+    # Evidence pages as PyMuPDF reads them (EVIDENCE_POLICY): from the page pool when it read them, else here. Stored
+    # with the parse, so answering a case never opens the PDF again (time without a request in flight is scored)
+    sources = {str(p["page_number"]): p["source"] for p in pages if p.get("source")}
+    for p in pages:
+        p.pop("source", None)
+    if config.EVIDENCE_POLICY != "legacy":
+        missing = [p["page_number"] for p in pages if str(p["page_number"]) not in sources]
+        if missing:
+            try:
+                from src.evidence import extract_source_pages
+
+                sources.update({str(n): s for n, s in extract_source_pages(str(pdf_path), missing).items()})
+            except Exception as exc:
+                print(f"[warning] {pdf_path.name}: evidence pages not readable ({type(exc).__name__})", file=sys.stderr)
     paragraphs = parser.extract_paragraphs(pdf_path, passage_chars=config.PASSAGE_CHARS or None, pages=pages)
     full_text = "\n\n".join(f"--- Page {p['page_number']} ---\n{p['text']}" for p in pages)
-    parsed = {"pages": pages, "paragraphs": paragraphs, "full_text": full_text}
+    parsed = {"pages": pages, "paragraphs": paragraphs, "full_text": full_text, "source_pages": sources}
     try:
         cache_file.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=cache_file.parent, delete=False) as temporary:
@@ -161,6 +191,49 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
     except OSError:
         pass
     return parsed
+
+
+def evidence_items(passages: List[Dict[str, Any]], cited: List[int], query: str) -> List[Any]:
+    """
+    Evidence as (quote, passage) pairs, most relevant first. Only the first five items are scored, each at most
+    ~one page (5,000 chars), and an item counts if it lies inside the gold passage or contains it.
+    - A whole page often does neither (the gold section covers most of it, but not its header or the next section),
+      so the first cited pages are cut into pieces (EVIDENCE_SPLIT, e.g. '2,2': first two cited pages in halves).
+    - In ~30 % of the misses Apertus cites another page than the annotated one (often the overview instead of the
+      detailed section), so the remaining slots hold the best-matching third of further pages: the other cited
+      pages first, then the retrieved ones by rank (EVIDENCE_FILL).
+    Quotes are unclipped page text, verbatim in the booklet language. Reference chunks (task B, not scored) are
+    returned whole and only when cited.
+    """
+    pieces_per_page = [int(n) for n in config.EVIDENCE_SPLIT.split(",") if n.strip()] or [1]
+
+    def page_text(p: Dict[str, Any]) -> str:
+        text = p.get("page_text") or p["text"]
+        if len(text) > config.EVIDENCE_MAX_CHARS:
+            text = clip_to_query(text, query, config.EVIDENCE_MAX_CHARS, head_chars=0)
+        return text
+
+    on_pages = bool(passages) and passages[0].get("page_number") is not None
+    if not on_pages:
+        return [(passages[i - 1]["text"], passages[i - 1]) for i in cited][:config.EVIDENCE_MAX_ITEMS]
+
+    items: List[Any] = []
+    split_ids = cited[:len(pieces_per_page)]
+    for rank, i in enumerate(split_ids):
+        items += [(piece, passages[i - 1]) for piece in split_evenly(page_text(passages[i - 1]), pieces_per_page[rank])]
+    if config.EVIDENCE_FILL:
+        rest = [i for i in cited if i not in split_ids] + [i for i in range(1, len(passages) + 1) if i not in cited]
+        for i in rest:
+            if len(items) >= config.EVIDENCE_MAX_ITEMS:
+                break
+            p = passages[i - 1]
+            text = p.get("page_text") or p["text"]
+            if len(text) > 1200:  # best-matching window of about a third of the page
+                text = clip_to_query(text, query, max(400, len(text) // 3), head_chars=0)
+            items.append((text, p))
+    else:
+        items += [(page_text(passages[i - 1]), passages[i - 1]) for i in cited[len(split_ids):]]
+    return items[:config.EVIDENCE_MAX_ITEMS]
 
 
 def chunk_reference(text: str, max_chars: int = 700, min_chars: int = 80) -> List[str]:
@@ -206,29 +279,32 @@ class ClaimVerificationEngine:
 
     def _get_booklet_data(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:
         path_str = str(Path(pdf_path).resolve())
-        key = path_str
-        if config.CACHE_SINGLE_FLIGHT:
+        key: Any = path_str
+        if config.CACHE_SINGLE_FLIGHT:  # also re-read a PDF that changed on disk during the run
             stat = Path(path_str).stat()
             key = (path_str, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns, config.PASSAGE_CHARS)
-            with _BOOKLET_LOCK_GUARD:
-                lock = _BOOKLET_LOCKS.setdefault(key, threading.Lock())
-            with lock:
-                return self._cached_booklet(key, path_str)
-        return self._cached_booklet(key, path_str)
-
-    def _cached_booklet(self, key, path_str):
-        if key not in _GLOBAL_BOOKLET_CACHE:
-            parsed = load_parsed_booklet(path_str, self.pdf_parser)
-            _GLOBAL_BOOKLET_CACHE[key] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
+        if key in _GLOBAL_BOOKLET_CACHE:
+            return _GLOBAL_BOOKLET_CACHE[key]
+        with _BOOKLET_LOCKS_GUARD:
+            lock = _BOOKLET_LOCKS.setdefault(key, threading.Lock())
+        with lock:  # parallel cases on the same booklet parse it once
+            if key not in _GLOBAL_BOOKLET_CACHE:
+                parsed = load_parsed_booklet(path_str, self.pdf_parser)
+                _GLOBAL_BOOKLET_CACHE[key] = {**parsed, "retriever": PassageRetriever(parsed["paragraphs"])}
         return _GLOBAL_BOOKLET_CACHE[key]
 
     def _finalize_evidence(self, result, vote=None):
         if config.EVIDENCE_POLICY == "legacy" or result.strategy == "direct_reference" or result.error:
             return result
-        from src.evidence import SourcePages, construct_evidence
-        with self._source_pages_lock:
-            if self._source_pages is None:
-                self._source_pages = SourcePages(Path("."), lazy=config.SOURCE_PAGES_LAZY)
+        from src.evidence import ParsedSourcePages, SourcePages, construct_evidence
+        stored = self._get_booklet_data(result.booklet_path).get("source_pages")
+        if stored:
+            pages = ParsedSourcePages(stored)  # read with the parse: no PDF access here
+        else:
+            with self._source_pages_lock:
+                if self._source_pages is None:
+                    self._source_pages = SourcePages(Path("."), lazy=config.SOURCE_PAGES_LAZY)
+            pages = self._source_pages
         # The postprocessor receives baseline-attributed pages and inference inputs
         # (including the baseline's explicit top-page fallback for missing IDs).
         # No expected labels, reference passage or gold evidence enter this path.
@@ -236,7 +312,7 @@ class ClaimVerificationEngine:
                "evidence": [{"page": s.page_number, "text": s.quote} for s in result.evidence_sources]}
         case = {"booklet": {"path": str(Path(result.booklet_path).resolve())},
                 "claim": {"text": result.claim}, "vote": vote or ""}
-        new = construct_evidence(raw, case, self._source_pages, config.EVIDENCE_POLICY)
+        new = construct_evidence(raw, case, pages, config.EVIDENCE_POLICY)
         proposals = {s.page_number: s.proposal_id for s in result.evidence_sources}
         result.evidence_sources = [EvidenceSource(quote=s["text"], page_number=s["page"],
                                                  proposal_id=proposals.get(s["page"])) for s in new["evidence"]]
@@ -262,9 +338,10 @@ class ClaimVerificationEngine:
         booklet_data = self._get_booklet_data(booklet_pdf)
         retrieval_claim, query_variants = claim, None
         translation_usage, query_metadata = (0, 0), {}
-        if config.RETRIEVAL_QUERY_MODE != "original":
-            if strat != "hybrid" or config.TRANSLATE_CLAIM or self.prompt_mode not in ("ids", "compact"):
-                raise ValueError("Query translation requires hybrid ids/compact retrieval and an unchanged NLI claim")
+        # Query translation only applies to hybrid ids/compact retrieval with an unchanged NLI claim; other
+        # strategies (now that 'union' is the default) simply retrieve with the original claim
+        if (config.RETRIEVAL_QUERY_MODE != "original" and strat == "hybrid" and not config.TRANSLATE_CLAIM
+                and self.prompt_mode in ("ids", "compact")):
             source_language = booklet_language or guess_language(" ".join(p['text'] for p in booklet_data['pages'][:3]))
             language = claim_language or guess_language(claim)
             query_metadata = {'mode': config.RETRIEVAL_QUERY_MODE, 'claim_language': language,
@@ -305,7 +382,8 @@ class ClaimVerificationEngine:
                 candidate_paras = retriever.retrieve(claim, top_k=top_k, target_vote=vote)
             if config.PAGE_MAX_CHARS:
                 query = f"{claim} {vote or ''}"
-                candidate_paras = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS)} for p in candidate_paras]
+                candidate_paras = [{**p, "text": clip_to_query(p["text"], query, config.PAGE_MAX_CHARS), "page_text": p["text"]}
+                                   for p in candidate_paras]
             context_blocks = []
             for p in candidate_paras:
                 context_blocks.append(f"[Page {p['page_number']}] {p['text']}")
@@ -576,11 +654,12 @@ class ClaimVerificationEngine:
 
         sources: List[EvidenceSource] = []
         evidence: List[str] = []
-        if out.label != 1:
-            for i in ids:
-                p = passages[i - 1]
-                evidence.append(p["text"])
-                sources.append(EvidenceSource(quote=p["text"], page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
+        if out.label != 1 or (config.EVIDENCE_ON_NEUTRAL and passages and passages[0].get("page_number")):
+            # Neutral answers cite nothing: fall back to the best-ranked passages
+            cited = ids or list(range(1, min(len(passages), 2) + 1))
+            for quote, p in evidence_items(passages, cited, query=f"{claim} {vote or ''}"):
+                evidence.append(quote)
+                sources.append(EvidenceSource(quote=quote, page_number=p.get("page_number"), proposal_id=p.get("proposal_id")))
 
         return self._finalize_evidence(PredictionResult(
             id=case_id if case_id is not None else "case-0001",

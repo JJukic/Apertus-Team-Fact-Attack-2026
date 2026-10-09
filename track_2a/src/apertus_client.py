@@ -10,12 +10,45 @@ import logging
 import math
 import random
 import re
+import threading
 from typing import Dict, Any, Optional, List, Tuple
 from pydantic import BaseModel, Field
 
 from src import config
 
 logger = logging.getLogger(__name__)
+
+
+class InFlightClock:
+    """
+    Time with at least one LLM request in flight, across threads. The official processing time is the wall clock
+    minus exactly this, so wall clock minus `busy_s()` is our own estimate of the scored (non-LLM) time.
+    """
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._active = 0
+        self._since = 0.0
+        self._busy = 0.0
+
+    def __enter__(self):
+        with self._lock:
+            if self._active == 0:
+                self._since = time.perf_counter()
+            self._active += 1
+
+    def __exit__(self, *exc):
+        with self._lock:
+            self._active -= 1
+            if self._active == 0:
+                self._busy += time.perf_counter() - self._since
+
+    def busy_s(self) -> float:
+        with self._lock:
+            return self._busy + (time.perf_counter() - self._since if self._active else 0.0)
+
+
+LLM_CLOCK = InFlightClock()
 
 
 class NLIOutput(BaseModel):
@@ -53,16 +86,10 @@ class ApertusClient:
                 raise ValueError("BASE_URL and API_KEY are required for remote Apertus inference")
             if "Apertus-v1.5" not in self.model_name:
                 raise ValueError("Remote inference requires an Apertus v1.5 model")
-            try:
-                from openai import OpenAI
-                self.client = OpenAI(
-                    base_url=self.base_url,
-                    api_key=self.api_key or "EMPTY",
-                    max_retries=0,  # retries are handled by _create_with_retry
-                )
-            except Exception as e:
-                logger.warning(f"Could not initialize OpenAI client: {e}. Falling back to mock mode.")
-                self.mock = True
+            # Standard-library client instead of the openai SDK: same call, ~1 s less start-up (scored processing time);
+            # retries are handled by _create_with_retry
+            from src.http_chat import HTTPChatClient
+            self.client = HTTPChatClient(base_url=self.base_url, api_key=self.api_key)
         else:
             self.client = None
             if not self.api_key:
@@ -187,6 +214,20 @@ class ApertusClient:
         "(No passage says what the Federal Council expects for rents.)\n"
     )
 
+    SHORT_SYSTEM_PROMPT = (
+        "NLI over Swiss voting booklet passages [P1], [P2], ... and a CLAIM; languages may differ, compare meaning.\n"
+        "0 Entailment: the passages directly support the claim.\n"
+        "1 Neutral: the passages do NOT mention what the claim is about, or give too little information.\n"
+        "2 Contradiction: the passages directly state the opposite (a different number, date or percentage is 2).\n"
+        "- If the claim's topic is not mentioned in the passages, you MUST choose 1, never 2.\n"
+        "- Claim attributes a statement to one side (Federal Council/Parliament vs. committee): judge only that "
+        "side's text; the other side's arguments are no contradiction.\n"
+        "- 'Recommends rejecting X' is 0 if they recommend No on X, 2 only if they recommend Yes.\n"
+        "Give your confidence (0.0 to 1.0) for each relation, then the label. Respond ONLY with JSON:\n"
+        '{"p_entail": <0.0 - 1.0>, "p_neutral": <0.0 - 1.0>, "p_contra": <0.0 - 1.0>, "label": <0, 1, or 2>, '
+        '"evidence_ids": [<ids of the passages that justify the label, e.g. 2, 5; empty for 1>]}'
+    )
+
     LANGUAGE_NAMES = {"de": "German", "fr": "French", "it": "Italian"}
 
     def translate(self, text: str, target_lang: str) -> Tuple[Optional[str], int, int, float]:
@@ -224,15 +265,9 @@ class ApertusClient:
 
     def _create_with_retry(self, **kwargs) -> Tuple[Any, Optional[Exception]]:
         """chat.completions.create with exponential backoff (+ jitter) inside a per-request time budget."""
-        # User explicitly authorized uncapped output. Legacy callers can pass
-        # these arguments, but neither token-cap field is sent to the endpoint.
-        kwargs.pop("max_tokens", None)
-        kwargs.pop("max_completion_tokens", None)
+        # Output stays capped (max_tokens of the caller): output tokens are scored and a runaway answer would also
+        # cost time. Per-call timeouts come from the caller; streaming is not used (no scoring benefit)
         json_output = kwargs.pop("_json_output", False)
-        kwargs["timeout"] = config.LLM_REQUEST_TIMEOUT_S
-        if config.LLM_STREAMING:
-            kwargs["stream"] = True
-            kwargs["stream_options"] = {"include_usage": True}
         start = time.time()
         attempt = 0
         while True:
@@ -258,16 +293,12 @@ class ApertusClient:
                 time.sleep(delay)
 
     def _request_completion(self, **kwargs):
-        """One complete remote attempt, including consumption of streamed data.
-
-        Instrument this boundary so an API attempt stays in flight until its
-        final usage chunk has arrived. Backoff remains outside this interval.
-        """
-        response = self.client.chat.completions.create(**kwargs)
-        if kwargs.get("stream"):
-            from src.streaming import assemble_completion
-            response = assemble_completion(response)
-        if getattr(response.choices[0], "finish_reason", None) in ("length", "content_filter"):
+        """One remote attempt; LLM_CLOCK counts it as time with a request in flight (backoff stays outside)."""
+        with LLM_CLOCK:
+            response = self.client.chat.completions.create(**kwargs)
+        # 'length' is not an error here: a capped answer is still parsed (the label comes first), and repeating the
+        # identical request would only return the same cut-off answer
+        if getattr(response.choices[0], "finish_reason", None) == "content_filter":
             raise ValueError("Endpoint returned an incomplete completion")
         return response
 
@@ -350,6 +381,10 @@ class ApertusClient:
                 "language (German, French, Italian) than the claim: compare meaning, not wording.\n",
             )
 
+        if passages is not None and config.PROMPT_SHORT:
+            # Same rules in fewer words: input tokens are scored relative to the most frugal team
+            system_prompt = self.SHORT_SYSTEM_PROMPT
+
         thinking = passages is not None and config.THINKING
         if thinking:
             system_prompt = system_prompt.replace(
@@ -359,6 +394,7 @@ class ApertusClient:
                 "final answer as a valid JSON object matching this schema:\n",
             )
 
+        # Kept in the short prompt too: without the closing question Apertus labels unrelated passages as contradiction
         user_prompt = (
             f"=== DOCUMENT CONTEXT ===\n{context}\n\n"
             f"=== CLAIM ===\n{claim}\n\n"
@@ -377,7 +413,7 @@ class ApertusClient:
             messages.append({"role": "assistant", "content": "<|inner_prefix|>"})
             extra["extra_body"] = {"continue_final_message": True, "add_generation_prompt": False}
 
-        budget = 0  # No client-imposed thinking/output cap or forced second answer.
+        budget = 0  # no forced second answer: thinking is capped by THINKING_MAX_TOKENS only (and off by default)
         response, last_exception = self._create_with_retry(
             _json_output=True,
             model=self.model_name,

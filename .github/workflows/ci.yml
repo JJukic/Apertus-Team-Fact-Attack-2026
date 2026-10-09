@@ -51,3 +51,25 @@ jobs:
         run: |
           docker run --rm hackapertus-track2a test
           docker run --rm --network none --read-only --tmpfs /tmp hackapertus-track2a --help
+
+      - name: Official contract smoke test (read-only /data, --input/--output, mock model)
+        run: |
+          mkdir -p contract/booklets output
+          cp track_2a/tests/contract/cases.jsonl contract/cases.jsonl
+          cp track_2a/data/booklets/2026-06-14_de.pdf contract/booklets/2026_06_14_de.pdf
+          docker run --rm --platform linux/amd64 \
+            -e BASE_URL=https://api.inference.cscs.ch/v1 -e API_KEY=dummy -e MOCK_APERTUS=true \
+            -v "$PWD/contract/cases.jsonl:/data/cases.jsonl:ro" \
+            -v "$PWD/contract/booklets:/data/booklets:ro" \
+            -v "$PWD/output:/output" \
+            hackapertus-track2a --input /data/cases.jsonl --output /output/predictions.jsonl
+          python3 - <<'PY'
+          import json
+          rows = [json.loads(l) for l in open("output/predictions.jsonl", encoding="utf-8")]
+          assert [r["id"] for r in rows] == ["contract-A", "contract-B"], rows
+          names = ["entailment", "neutral", "contradiction"]
+          for r in rows:
+              assert r["label_name"] == names[r["label"]], r
+              assert all(1 <= len(e["text"]) <= 5000 for e in r["evidence"][:5]), r
+          print("contract ok:", rows)
+          PY

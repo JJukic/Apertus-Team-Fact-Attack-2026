@@ -126,20 +126,13 @@ class TestConcurrentBatch(unittest.TestCase):
             with patch('src.cli.ClaimVerificationEngine', Engine), patch.object(config, 'OFFICIAL_IO', True), \
                     patch.dict('os.environ', {'REQUEST_JOURNAL_PATH': str(journal)}):
                 result = CliRunner().invoke(app, ['run', '--input', str(inp), '--output', str(out), '--workers', '2'])
-            self.assertEqual(result.exit_code, 2)
-            outputs = [json.loads(line) for line in out.read_text().splitlines()]
-            self.assertEqual([row['id'] for row in outputs], ['', 'fast-ä', 'missing'])
-            self.assertEqual([row['metrics']['input_tokens'] for row in outputs], [3, 7, 0])
+            # Merged decision: exit code 0 and no diagnostics file in /output; the failed case has a neutral record
+            self.assertEqual(result.exit_code, 0, result.output)
+            outputs = [json.loads(line) for line in out.read_text(encoding='utf-8').splitlines()]
+            self.assertEqual([row['id'] for row in outputs], ['', 'fast-ä', 'missing'])  # input order kept
             self.assertEqual(outputs[-1]['label'], 1)
-            events = [json.loads(line) for line in journal.read_text().splitlines()]
-            self.assertEqual([event['case_id'] for event in events], ['fast-ä', ''])
-            self.assertEqual(sum(event['input_tokens'] for event in events), 10)
-            diagnostics = json.loads(out.with_name(out.name + '.diagnostics.json').read_text())
-            self.assertEqual(diagnostics['workers'], 2)
-            self.assertEqual(diagnostics['api_attempts'], 2)
-            self.assertEqual(diagnostics['failures'], [{'id': 'missing', 'error_type': 'FileNotFoundError'}])
-            self.assertLess(diagnostics['llm_in_flight_union_seconds_local'],
-                            sum(event['end'] - event['start'] for event in events))
+            self.assertTrue(fast_recorded.is_set())  # both requests were in flight at the same time (barrier)
+            self.assertFalse(out.with_name(out.name + '.diagnostics.json').exists())
 
 
 class TestHelpers(unittest.TestCase):
@@ -147,7 +140,9 @@ class TestHelpers(unittest.TestCase):
         if not BOOKLET.exists():
             self.skipTest(f"Booklet not found at {BOOKLET}")
         url = "https://www.bk.admin.ch/dam/de/sd-web/WeUrKyC0FyPc/2026-06-14_erlaeuterungen.pdf"
-        self.assertEqual(case_booklet({"booklet_url": url, "booklet_publish_date": "2026-05-28"}, Path(".")), BOOKLET)
+        # src.hf_dataset (Docker build) may also store this booklet under its publish date: same file content
+        found = case_booklet({"booklet_url": url, "booklet_publish_date": "2026-05-28"}, Path("."))
+        self.assertEqual(found.read_bytes(), BOOKLET.read_bytes())
         self.assertEqual(case_booklet({"booklet_file": "2026-06-14_de.pdf"}, Path(".")), BOOKLET)
         self.assertIsNone(case_booklet({"reference_string": "x"}, Path(".")))
 

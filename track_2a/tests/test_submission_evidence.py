@@ -3,6 +3,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -49,14 +50,15 @@ class TestSubmissionEvidence(unittest.TestCase):
         self.assertEqual(output['evidence'], [{'page': 43, 'text': quote}])
         self.assertEqual(prediction.to_official_dict(case_id='explicit')['id'], 'explicit')
 
-    def test_unknown_pages_do_not_export_and_strict_contract_rejects_empty_evidence(self):
+    def test_unknown_pages_do_not_export_and_the_label_is_kept_without_evidence(self):
         for page in (None, 0, -1):
             prediction = result(evidence=['Unattributed text'],
                                 evidence_sources=[EvidenceSource(quote='Original text', page_number=page)])
             with patch.object(config, 'OFFICIAL_IO', False):
                 self.assertEqual(prediction.to_official_dict()['evidence'], [])
-            with patch.object(config, 'OFFICIAL_IO', True), self.assertRaises(ValueError):
-                prediction.to_official_dict()
+            # evaluate.py scores the label regardless of evidence: no error (which would become a neutral record)
+            with patch.object(config, 'OFFICIAL_IO', True):
+                self.assertEqual(prediction.to_official_dict()['label'], 0)
 
     def test_beginner_does_not_invent_a_pdf_page(self):
         prediction = result(strategy='direct_reference', evidence_sources=[EvidenceSource(quote='Source text')])
@@ -83,6 +85,24 @@ class TestSubmissionEvidence(unittest.TestCase):
             self.assertEqual(updated.to_official_dict()['evidence'], [{'page': 2, 'text': text}])
             self.assertEqual(updated.model_dump(include=set(original_scores)), original_scores)
             self.assertIsNone(source.get(case, 99))
+
+    def test_evidence_comes_from_the_parse_cache_without_opening_the_pdf(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'source.pdf'
+            pdf(path, ['Summary unrelated to the claim.', '2050: Le Conseil federal recommande le rejet.'])
+            expected = SourcePages(Path(directory)).get({'booklet': {'path': 'source.pdf'}}, 2)['text']
+            engine = ClaimVerificationEngine(apertus_client=ApertusClient(mock=True))
+            with patch.object(config, 'BOOKLET_CACHE_DIR', Path(directory) / 'cache'), \
+                 patch.object(config, 'BOOKLET_CACHE_PREBUILT', Path(directory) / 'none'), \
+                 patch.object(config, 'EVIDENCE_POLICY', 'raw_pages_and_blocks'):
+                stored = engine._get_booklet_data(path)['source_pages']
+                self.assertEqual(stored['2']['text'], expected)
+                prediction = result(booklet_path=str(path), evidence_sources=[EvidenceSource(quote='x', page_number=2)])
+                with patch('src.evidence.SourcePages._extract_page') as lazy, patch('src.evidence.SourcePages._extract') as eager:
+                    updated = engine._finalize_evidence(prediction, vote='Vorlage')
+                lazy.assert_not_called()
+                eager.assert_not_called()
+            self.assertEqual(updated.to_official_dict()['evidence'], [{'page': 2, 'text': expected}])
 
     def test_lazy_extraction_is_identical_and_caches_only_requested_pages(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -169,12 +189,11 @@ class TestSubmissionEvidence(unittest.TestCase):
                                       '--output', str(output_path), '--mock'],
                                      cwd=directory, env=environment, capture_output=True, text=True)
             self.assertEqual(process.returncode, 0, process.stderr + process.stdout)
-            diagnostics = json.loads(output_path.with_name(output_path.name + '.diagnostics.json').read_text())
-            self.assertGreaterEqual(diagnostics['non_llm_seconds_local'], 0.2)
-            self.assertEqual(diagnostics['wall_seconds_local'], diagnostics['non_llm_seconds_local'])
-            self.assertEqual(diagnostics['llm_in_flight_union_seconds_local'], 0)
-            self.assertIn('module entry', diagnostics['timing_scope'])
-            self.assertEqual(diagnostics['api_attempts'], 0)
+            # The [timing] line on stderr counts from module entry, so the delayed import is included
+            timing = re.search(r"\[timing\] 1 cases, wall ([0-9.]+) s, non-LLM ([0-9.]+) ms/case", process.stderr)
+            self.assertIsNotNone(timing, process.stderr)
+            self.assertGreaterEqual(float(timing.group(1)), 0.2)
+            self.assertGreaterEqual(float(timing.group(2)), 200)
 
 
 if __name__ == '__main__':

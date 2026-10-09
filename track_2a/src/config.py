@@ -21,7 +21,8 @@ elif (REPO_ROOT / ".env").exists():
 else:
     load_dotenv()
 
-# Apertus / LLM Endpoint Config
+# Apertus / LLM Endpoint Config. The official evaluation injects BASE_URL (its token-counting proxy) and API_KEY;
+# they take precedence over the older LLM_* names, so no call can bypass the proxy
 LLM_NAME = os.getenv("LLM_NAME", "swiss-ai/Apertus-v1.5-70B-thinking")
 def _endpoint_setting(official, legacy):
     # Any runtime setting outranks a .env value, including across alias names.
@@ -31,11 +32,14 @@ def _endpoint_setting(official, legacy):
     return os.getenv(official) or os.getenv(legacy) or ""
 
 
-LLM_BASE_URL = _endpoint_setting("BASE_URL", "LLM_BASE_URL")
+LLM_BASE_URL = _endpoint_setting("BASE_URL", "LLM_BASE_URL") or "https://api.inference.cscs.ch/v1"
 LLM_API_KEY = _endpoint_setting("API_KEY", "LLM_API_KEY")
+# Kept for the measurement scripts; the submission does not stream (no scoring benefit) and uses per-call timeouts
 LLM_STREAMING = os.getenv("LLM_STREAMING", "false").lower() in ("true", "1", "yes")
 LLM_REQUEST_TIMEOUT_S = float(os.getenv("LLM_REQUEST_TIMEOUT_S", "600"))
-LLM_JSON_REPAIR = os.getenv("LLM_JSON_REPAIR", "false").lower() in ("true", "1", "yes")
+# After the retries of an NLI request failed: one last attempt with the JSON grammar constraint instead of a neutral
+# answer. Only on that failure path (free JSON stays the default: a schema on every call cost 0.10 macro-F1)
+LLM_JSON_REPAIR = os.getenv("LLM_JSON_REPAIR", "true").lower() in ("true", "1", "yes")
 OFFICIAL_IO = os.getenv("NLI_OFFICIAL_IO", "false").lower() in ("true", "1", "yes")
 
 # Retries on transient API errors (timeouts, 429, 5xx): exponential backoff within a time budget per request.
@@ -45,11 +49,10 @@ LLM_RETRY_BUDGET_S = float(os.getenv("LLM_RETRY_BUDGET_S", "120"))
 
 # Context strategy: 'hybrid' (booklet-wide BM25 claim + vote title), 'retrieval' (proposal filter + BM25) or 'full'
 DEFAULT_STRATEGY = os.getenv("NLI_STRATEGY", "hybrid")
-# 12 pages (with PAGE_MAX_CHARS clipping): all 1,495 OST pairs 0.912 -> 0.931 macro-F1 vs. 10 pages, +~890 input tokens
-DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "12"))
-# Keep sequential baseline behavior; the measured candidate can opt into the
-# same concurrency as the full evaluation runner.
-BATCH_WORKERS = int(os.getenv("NLI_BATCH_WORKERS", "1"))
+# 8 pages: on 300 dev cases (official evaluate.py) k=12 / 10 / 8 / 7 / 6 give macro-F1 0.937 / 0.934 / 0.934 / 0.924 / 0.904,
+# Hit@5 0.70 / 0.70 / 0.76 / 0.72 / 0.72 and 5,370 / 4,495 / 3,721 / 3,360 / 3,023 input tokens: tokens are scored
+# relative to the most frugal team, so k=8 trades -0.003 F1 for 31 % fewer tokens
+DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "8"))
 # Max characters per booklet passage; 0 = whole pages (default: on dev, n=450, pages scored 0.908 F1 vs 0.831 for 600-char passages)
 PASSAGE_CHARS = int(os.getenv("PASSAGE_CHARS", "0"))
 
@@ -66,6 +69,9 @@ PROMPT_MODE = os.getenv("PROMPT_MODE", "ids")
 
 # 'ids' mode: let the model write one short sentence before its confidences (a minimal reasoning step)
 IDS_REASON = os.getenv("IDS_REASON", "false").lower() in ("true", "1", "yes")
+
+# 'ids' mode: a condensed system/user prompt with the same rules (fewer input tokens per case)
+PROMPT_SHORT = os.getenv("PROMPT_SHORT", "false").lower() in ("true", "1", "yes")
 
 # 'ids' mode: add worked examples for claims attributed to one side of the booklet
 FEW_SHOT = os.getenv("FEW_SHOT", "false").lower() in ("true", "1", "yes")
@@ -95,13 +101,21 @@ SPEAKER_HINT = os.getenv("SPEAKER_HINT", "false").lower() in ("true", "1", "yes"
 # (claims citing a year the booklet never mentions are Neutral, not contradicted).
 NUMERIC_OVERRIDE = os.getenv("NUMERIC_OVERRIDE", "false").lower() in ("true", "1", "yes")
 
-# Independent evidence postprocessing; 'legacy' preserves the baseline policy.
-EVIDENCE_POLICY = os.getenv("EVIDENCE_POLICY", "legacy")
+# Evidence (task A, Hit@5) rebuilt from the cited pages as read by PyMuPDF: up to three whole pages plus the two
+# text blocks that best match claim and vote ('raw_pages_and_blocks', Josip). Replayed with the official evaluate.py
+# on the same predictions: dev 300 Hit@5 0.792 -> 0.872, test 401 0.727 -> 0.813 ('legacy' = the split pages below;
+# the same blocks from pypdf or pypdfium2 text reach only 0.80 / 0.73: the gold passages follow PyMuPDF's text)
+EVIDENCE_POLICY = os.getenv("EVIDENCE_POLICY", "raw_pages_and_blocks")
 if EVIDENCE_POLICY not in ("legacy", "raw_pages", "raw_pages_and_blocks"):
     raise ValueError("Unsupported EVIDENCE_POLICY")
 CACHE_SINGLE_FLIGHT = os.getenv("CACHE_SINGLE_FLIGHT", "false").lower() in ("true", "1", "yes")
-SOURCE_PAGES_LAZY = os.getenv("SOURCE_PAGES_LAZY", "false").lower() in ("true", "1", "yes")
-RETRIEVAL_QUERY_MODE = os.getenv("RETRIEVAL_QUERY_MODE", "original")
+# Read only the cited pages with PyMuPDF (not the whole booklet): processing time is scored
+SOURCE_PAGES_LAZY = os.getenv("SOURCE_PAGES_LAZY", "true").lower() in ("true", "1", "yes")
+# Cross-lingual claims: BM25 retrieves with the claim and its translation into the booklet language ('union', one
+# short extra request; the NLI prompt keeps the original claim). Paired against 'original': dev 300 (Felipe) 7 fixed /
+# 4 broken, macro-F1 0.934 -> 0.944; all 1,488 task-A cases (Josip, R2) 30 / 16, 0.948 -> 0.956; together 37 / 20
+# (sign test p ~ 0.03) for ~3 % more tokens
+RETRIEVAL_QUERY_MODE = os.getenv("RETRIEVAL_QUERY_MODE", "union")
 if RETRIEVAL_QUERY_MODE not in ("original", "translated", "union"):
     raise ValueError("Unsupported RETRIEVAL_QUERY_MODE")
 QUERY_TRANSLATION_CACHE_DIR = Path(os.getenv("QUERY_TRANSLATION_CACHE_DIR", str(Path(tempfile.gettempdir()) / "fact-attack" / "queries")))
@@ -122,8 +136,27 @@ LABEL_EXPLANATIONS = {
     2: "The booklet contradicts the statement.",
 }
 
-# Parsed booklets are cached on disk, keyed by file content (so a re-mounted PDF path still hits the cache)
+# Parsed booklets are cached on disk, keyed by file content (so a re-mounted PDF path still hits the cache).
+# New entries go to BOOKLET_CACHE_DIR (the Docker image sets it to /tmp, the only writable cache location at
+# evaluation); BOOKLET_CACHE_PREBUILT is a read-only cache baked into the image at build time
 BOOKLET_CACHE_DIR = Path(os.getenv("BOOKLET_CACHE_DIR", str(Path(tempfile.gettempdir()) / "fact-attack" / "booklets")))
+BOOKLET_CACHE_PREBUILT = Path(os.getenv("BOOKLET_CACHE_PREBUILT", str(BASE_DIR / ".cache" / "booklets")))
+
+# Evidence (task A, Hit@5): the first cited pages cut into pieces ('2,2' = first two cited pages in halves), the
+# remaining slots filled with the best-matching third of further pages (other cited pages, then retrieved ones).
+# Official evaluate.py, replayed on saved runs: dev 300 Hit@5 0.763 ('3,2', no fill) -> 0.810, test 0.603 -> 0.749.
+# At most EVIDENCE_MAX_ITEMS items (only five are scored) of at most EVIDENCE_MAX_CHARS each
+EVIDENCE_SPLIT = os.getenv("EVIDENCE_SPLIT", "2,2")
+EVIDENCE_FILL = os.getenv("EVIDENCE_FILL", "true").lower() in ("true", "1", "yes")
+EVIDENCE_MAX_ITEMS = int(os.getenv("EVIDENCE_MAX_ITEMS", "5"))
+EVIDENCE_MAX_CHARS = int(os.getenv("EVIDENCE_MAX_CHARS", "4800"))
+# Also give evidence (the top-ranked pages) for Neutral answers; it is scored for gold entailment/contradiction
+# cases whatever the predicted label, but the contract only asks for it with labels 0/2
+EVIDENCE_ON_NEUTRAL = os.getenv("EVIDENCE_ON_NEUTRAL", "false").lower() in ("true", "1", "yes")
+
+# Parallel cases in the batch CLI: parsing and retrieval of one case overlap with LLM requests of others, so
+# they do not count as processing time (wall clock minus time with an LLM request in flight)
+BATCH_WORKERS = int(os.getenv("NLI_BATCH_WORKERS") or os.getenv("NLI_WORKERS") or "4")  # both names accepted
 
 # Directories
 DATA_DIR = BASE_DIR / "data"

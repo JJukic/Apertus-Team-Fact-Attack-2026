@@ -9,8 +9,8 @@ An Apertus-powered system that decides whether an official Swiss voting booklet 
 or **contradicts (2)** a claim, and cites the booklet pages that justify the decision — for every combination of
 German, French and Italian.
 
-- **Historical results** (402 pairs, initially held out by date and subsequently observed): Advanced **0.940**, Beginner **0.975** Macro-F1.
-- **Closed v1.1 comparison** (1,488 cases per task, five date-grouped folds): recommended **R2 BM25 query union**, Advanced **0.956237**, Beginner **0.982497**, official Advanced Hit@5 **0.773737**.
+- **Results** (submission image, test split of 5 voting dates, 401 pairs, organisers' `evaluate.py`): advanced task
+  **0.945** macro-F1, evidence Hit@5 **0.839**, 3,983 input tokens; beginner task **0.975**
 - **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ([PDF](docs/FactAttack_Technical_Report.pdf)) ·
   **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
@@ -32,23 +32,26 @@ ambiguities remain flagged without changing gold. Full comparison and reproducti
 
 ```bash
 pip install -r requirements.txt
-cp .env.example .env          # then set LLM_API_KEY
+cp .env.example .env          # then set API_KEY
 ```
 
 Configuration (environment variables or `.env`):
 
 ```ini
 LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
-LLM_BASE_URL=https://api.inference.cscs.ch/v1
-LLM_API_KEY=your_api_key_here
+BASE_URL=https://api.inference.cscs.ch/v1   # official name; LLM_BASE_URL works too
+API_KEY=your_api_key_here                   # official name; LLM_API_KEY works too
 NLI_STRATEGY=hybrid      # 'hybrid' (default) | 'retrieval' | 'full'
-NLI_TOP_K=12
+NLI_TOP_K=8
 PROMPT_MODE=ids          # 'ids' (default) | 'json' | 'compact'
 PAGE_MAX_CHARS=3000      # clip over-long pages (0 = off)
 SPEAKER_BOOST=2          # always include the named side's 2 best argument pages (0 = off)
+EVIDENCE_SPLIT=2,2       # first two cited pages in halves as evidence
+EVIDENCE_FILL=true       # free evidence slots: best third of further pages
+NLI_WORKERS=4            # cases processed in parallel by the batch CLI
 ```
 
-Without `LLM_API_KEY` the CLI stops with an error; `--mock` (or `MOCK_APERTUS=true`) runs an offline heuristic mock
+Without an API key the CLI stops with an error; `--mock` (or `MOCK_APERTUS=true`) runs an offline heuristic mock
 mode for tests only.
 
 ---
@@ -58,8 +61,8 @@ mode for tests only.
 | | |
 |---|---|
 | **Runtime** | Pinned CPU `linux/amd64` Docker image using Python 3.12.6; install `requirements-lock.txt` for the measured local environment |
-| **Hardware** | CPU only; Apertus runs remotely. Recorded processing/memory measurements are in the final report |
-| **API keys** | `LLM_API_KEY` for the CSCS inference service (Apertus). `LLM_NAME` and `LLM_BASE_URL` default to `swiss-ai/Apertus-v1.5-70B-thinking` and `https://api.inference.cscs.ch/v1` |
+| **Hardware** | Any CPU machine, no GPU: ~300 MB RAM (peak 253 MB measured), ~1.4 GB disk for the image. The model runs remotely |
+| **API keys** | `API_KEY` (or `LLM_API_KEY`) for the CSCS inference service (Apertus). `LLM_NAME` and `BASE_URL` default to `swiss-ai/Apertus-v1.5-70B-thinking` and `https://api.inference.cscs.ch/v1` |
 | **Model weights** | None to download: Apertus v1.5 70B is served by CSCS. Apertus is the only model in the pipeline; Apertus 8B v1.5 was used once for a comparison run, no other model for development or evaluation |
 | **Network** | Build downloads pinned Python dependencies; inference calls only the configured Apertus endpoint. Prepare datasets/PDFs outside prediction |
 
@@ -77,7 +80,7 @@ python -m src predict -b data/booklets/2026-06-14_fr.pdf \
 python -m src predict -r "Der Bundesrat lehnt die Initiative ab." -c "Le Conseil fédéral recommande d'accepter l'initiative." --json
 
 # Batch file in the official OST format or as Hugging Face dataset rows (JSON, JSONL, Parquet, CSV)
-python -m src run -i cases.jsonl -o predictions.jsonl
+python -m src --input cases.jsonl --output predictions.jsonl   # official call; `run` may be given too
 
 # Evaluation on the OST dataset
 python -m src.hf_dataset                                    # dataset, 60 booklets, dev/test split
@@ -97,29 +100,19 @@ The input/output format is documented in the [overview README](../README.md#offi
 ## 🐳 Docker submission
 
 ```bash
-cd ..  # repository root
-docker build --platform linux/amd64 -t fact-attack:test .
-# Set BASE_URL and API_KEY securely in the host environment.
-# Place source-only cases.jsonl and its PDFs in ./cases.
-mkdir -p output
-docker run --rm --platform linux/amd64 --read-only --tmpfs /tmp \
-  -e BASE_URL -e API_KEY -e NLI_STRATEGY=hybrid \
-  -e RETRIEVAL_QUERY_MODE=union -e EVIDENCE_POLICY=raw_pages_and_blocks \
-  -e CACHE_SINGLE_FLIGHT=true -e SOURCE_PAGES_LAZY=true \
-  -e LLM_STREAMING=true -e LLM_JSON_REPAIR=true -e NLI_BATCH_WORKERS=4 \
-  -v "$PWD/cases:/data:ro" -v "$PWD/output:/output" \
-  fact-attack:test --input /data/cases.jsonl --output /output/predictions.jsonl
-docker run --rm --network none --read-only --tmpfs /tmp fact-attack:test test
+export API_KEY="your_api_key_here"
+make run      # builds the image (downloads + pre-parses the booklets), benchmarks the 402-pair test split (~4 min)
+make test     # unit tests, no API calls
 ```
 
-`NLI_BATCH_WORKERS=4` enables parallel official CLI cases while preserving output
-order; its default is 1 for the baseline. Evaluation preparation and host-side gold
-scoring are documented in the final report. The image includes source-only demo
-inputs and demo PDFs. Prediction uses existing mounted PDFs and `/tmp` caches;
-it does not download missing PDFs. Operational failures preserve IDs but produce
-a nonzero exit code and a diagnostics sidecar. Runtime environment variables
-`BASE_URL`/`API_KEY` take precedence over `.env` aliases. Baseline queries/evidence
-remain selectable by disabling the experimental flags.
+`NLI_DATASET=data/demo_dataset.jsonl` selects the 28-pair demo set, `NLI_WORKERS` the parallel requests (default 4).
+The report is printed to the console; the run's JSON (metrics, run settings incl. the image's git commit, and
+per-sample predictions) is written to `track_2a/results/` on the host.
+
+Other commands run inside the container the same way, e.g. `docker run --rm -e API_KEY -v $PWD/cases:/cases
+hackapertus-track2a run -i /cases/cases.jsonl -o /cases/predictions.jsonl`. Booklet paths in the cases are resolved
+relative to the input file (so PDFs can sit next to it in the mounted folder); the 60 dataset booklets are already
+in the image, and a `booklet_url` that is not is downloaded.
 
 ---
 

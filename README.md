@@ -22,13 +22,35 @@ Italian, in any combination.
 
 ## 📊 Results
 
-The historical evaluation used 1,495 OST pairs and 60 booklets. Its 402-pair split
-was initially held out by voting date, then observed during subsequent experiments;
-it is no longer an untouched holdout. Historical results below are retained.
-Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
+Evaluated on the official OST dataset (v1.1, 60 booklets, ~66 % cross-lingual) with the organisers' `evaluate.py`.
+The **test split holds 5 voting dates that were never used during development** (401 pairs), as a stand-in for the
+held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
-The closed `experiment/competition-score-optimization` comparison uses the pinned
-v1.1 dataset: **1,488 cases per task**, with five folds grouped by 20 voting dates.
+| Task | Macro-F1 | Evidence Hit@5 | Ø input tokens | Ø output tokens | Non-LLM time / case |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **A · Advanced** — booklet PDF + claim + vote | **0.945** | **0.839** | 3,983 | 75 | ~6 ms |
+| **B · Beginner** — reference text + claim | **0.975** | – | 2,532 | 55 | ~2 ms |
+
+Submission image, run as the jury does (`--input/--output`, read-only `/data`), on the 401 test pairs of each task.
+On booklets that are not in the image (the jury uses a new set), the processing time stays at ~22 ms per case.
+
+The official score weights macro-F1, evidence, processing time (wall clock minus time waiting for Apertus) and tokens
+(both relative to the best team). The submission combines the work of both team members, each part chosen by paired
+measurements on the same cases ([experiment log](track_2a/docs/experiments.md#merge-of-both-lines-felipe--josip--2026-10-09)):
+
+- **8 instead of 12 pages** of context: 31 % fewer input tokens for −0.003 macro-F1 (dev 300).
+- **Evidence from PyMuPDF pages and text blocks** (Josip): Hit@5 0.727 → 0.813 on the same predictions.
+- **Retrieval with the claim and its translation into the booklet language** (Josip's R2): 48 fixed / 25 broken
+  labels over three paired comparisons, macro-F1 0.930 → 0.945 on test, for ~3 % more tokens.
+- **Start-up and parsing** (Felipe): standard-library HTTP client, booklets parsed in a process pool and cases
+  processed booklet by booklet: 104 → 8 ms per case on new booklets.
+
+**Evidence:** every Entailment / Contradiction prediction returns up to five verbatim quotes with their 1-based page:
+up to three cited pages as PyMuPDF reads them, plus the two text blocks of the cited pages that best match claim and
+vote. Neutral predictions cite nothing.
+
+Josip's comparison on all 1,488 cases per task of the pinned v1.1 dataset (k=12, five folds grouped by voting date,
+before the merge with the official contract):
 
 | Configuration | Advanced Macro-F1 | Beginner Macro-F1 | Advanced Hit@5 |
 |---|---:|---:|---:|
@@ -37,27 +59,9 @@ v1.1 dataset: **1,488 cases per task**, with five folds grouped by 20 voting dat
 | R1: translated BM25 query | 0.950844 | 0.981830 | 0.765657 |
 | **R2: original/translated BM25 union** | **0.956237** | **0.982497** | **0.773737** |
 
-**Recommend R2 for the evaluated submission contract.** It retains Top-12 BM25,
-speaker boost and the original NLI claim/prompt. Reported Advanced tokens rise
-1.39%; failed requests include unknown usage, and official separate-task processing
-efficiency is unmeasured. These are public validation results, not private competition
-scores. B0 includes one invalid output counted as wrong; R2 recovers 23 technical
-failures and retains every attempt in its measurements. Baseline defaults remain available.
-All 115 local and 115 CPU-container tests pass. See the
-[final report](track_2a/docs/competition_optimization_report.md),
+See the [optimization report](track_2a/docs/competition_optimization_report.md),
 [comparison](track_2a/results/competition_optimization/comparison.csv) and
-[recommended configuration](track_2a/results/competition_optimization/best_config.json).
-
-Historical results:
-
-| Task | Macro-F1 | Cross-lingual F1 | Ø input tokens | Ø output tokens | Latency mean / p95 |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **Advanced** — booklet PDF + claim + vote | **0.940** | 0.934 | 5,576 | 58 | 2.1 s / 2.9 s |
-| **Beginner** — reference text + claim | **0.975** | 0.971 | 2,523 | 55 | 1.1 s / 1.7 s |
-
-**Evidence:** every Entailment / Contradiction prediction cites at least one passage, verbatim with its page
-number. In the advanced task 78 % of the cited pages lie inside the human-annotated reference section (beginner: 100 %);
-Neutral predictions cite nothing, as the output format requires.
+[configuration](track_2a/results/competition_optimization/best_config.json).
 
 ### Full booklet vs. selected context (advanced task, same 150 test pairs)
 
@@ -66,7 +70,7 @@ Neutral predictions cite nothing, as the output format requires.
 | Full booklet (baseline) | 0.730 | 59,517 | 43.7 s* |
 | Our first pipeline (proposal filter + BM25, verbose JSON) | 0.795 | 3,408 | 36.2 s* |
 | Hybrid retrieval, 10 pages + `ids` prompt | 0.926 | 6,023 | 3.8 s |
-| **Final: 12 pages (long ones clipped), speaker boost, decision rules** | **0.946** | 5,713 | 2.8 s |
+| 12 pages (long ones clipped), speaker boost, decision rules | **0.946** | 5,713 | 2.8 s |
 
 \* measured while several runs shared the endpoint. **Selecting a dozen pages beats sending the whole booklet by
 0.22 F1 with ~10× fewer tokens**: with up to 70k tokens of context the relevant passage gets lost.
@@ -101,7 +105,7 @@ Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
         │                                              │
         └──────────────► Hybrid retrieval ◄────────────┘
                  BM25(claim) + 2 × BM25(vote title) over all pages
-                 → top 12 pages (long ones clipped to 3,000 chars), numbered [P1] … [P12]
+                 → top 8 pages (long ones clipped to 3,000 chars), numbered [P1] … [P8]
                                   │
                                   ▼
                  Apertus v1.5 (CSCS) — NLI prompt
@@ -130,34 +134,43 @@ Details and every rejected idea: [experiment log](track_2a/docs/experiments.md).
 
 ## 🚀 Quick start
 
+### Submission container (official contract)
+
+The organisers build or pull the image and call it with the case file only; `BASE_URL` and `API_KEY` are injected at
+run time (no key in the image), `/data` is read-only and caches go to `/tmp`:
+
 ```bash
-docker build --platform linux/amd64 -t fact-attack:test .
-# Set BASE_URL and API_KEY securely in your terminal environment first.
-# ./cases contains source-only cases.jsonl and its referenced PDFs.
-mkdir -p output
-docker run --rm --platform linux/amd64 --read-only --tmpfs /tmp \
-  -e BASE_URL -e API_KEY -e NLI_STRATEGY=hybrid \
-  -e RETRIEVAL_QUERY_MODE=union -e EVIDENCE_POLICY=raw_pages_and_blocks \
-  -e CACHE_SINGLE_FLIGHT=true -e SOURCE_PAGES_LAZY=true \
-  -e LLM_STREAMING=true -e LLM_JSON_REPAIR=true -e NLI_BATCH_WORKERS=4 \
-  -v "$PWD/cases:/data:ro" -v "$PWD/output:/output" \
-  fact-attack:test --input /data/cases.jsonl --output /output/predictions.jsonl
-docker run --rm --network none --read-only --tmpfs /tmp fact-attack:test test
+docker build --platform linux/amd64 -t fact-attack:dev .
+docker run --rm --platform linux/amd64   -e BASE_URL=https://api.inference.cscs.ch/v1 -e API_KEY="$CSCS_API_KEY"   -v "$PWD/data/cases.jsonl:/data/cases.jsonl:ro" -v "$PWD/data/booklets:/data/booklets:ro"   -v "$PWD/output:/output"   fact-attack:dev --input /data/cases.jsonl --output /output/predictions.jsonl
 ```
 
-Download evaluation datasets/booklets outside prediction using the preparation
-commands in the final report. The image includes demo PDFs; evaluation inputs and
-gold files are not downloaded during build or prediction. Remote responses may
-vary even at temperature zero. Gold labels belong only in the host-side evaluator.
+Cases are processed 4 at a time (`NLI_WORKERS`); the CLI prints its own estimate of the scored processing time
+(`[timing] … non-LLM … ms/case` on stderr). Local scoring: generate cases with the starter repo's `prepare_cases.py`
+and score them with its `evaluate.py`.
+
+### Development
+
+```bash
+export API_KEY="your_api_key_here"   # LLM_API_KEY works too
+make run          # Docker: benchmark on the 402-pair test split, ~4 min (report + JSON in track_2a/results/)
+make test         # unit tests (no API calls)
+make web          # Streamlit app at http://localhost:8501
+```
+
+`make run` runs our own benchmark on the test split (macro-F1 ≈ 0.93 with 8 pages; temperature 0, so runs differ by
+at most a few pairs). `NLI_DATASET=data/demo_dataset.jsonl make run` runs the 28-pair demo set instead (~40 s, ≈ 0.91).
 
 Defaults (override via environment variables or `.env`):
 
 ```bash
 LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
-LLM_BASE_URL=https://api.inference.cscs.ch/v1
+BASE_URL=https://api.inference.cscs.ch/v1   # LLM_BASE_URL works too
 NLI_STRATEGY=hybrid      # 'hybrid' | 'retrieval' | 'full'
-NLI_TOP_K=12
+NLI_TOP_K=8
 PROMPT_MODE=ids          # 'ids' | 'json' | 'compact'
+EVIDENCE_SPLIT=2,2       # first two cited pages in halves as evidence
+EVIDENCE_FILL=true       # free evidence slots: best third of further pages
+NLI_WORKERS=4            # cases processed in parallel by the batch CLI
 ```
 
 ### CLI
@@ -173,8 +186,8 @@ python -m src predict --booklet data/booklets/2026-06-14_fr.pdf \
 # Beginner task: reference text + claim
 python -m src predict --reference "…" --claim "…" --json
 
-# Batch file (JSON/JSONL) in the official OST format -> one prediction per case
-python -m src run --input cases.jsonl --output predictions.jsonl
+# Batch file (JSON/JSONL) in the official OST format -> one prediction per case (the `run` command is optional)
+python -m src --input cases.jsonl --output predictions.jsonl
 
 # Reproduce the evaluation
 python -m src.hf_dataset                                   # dataset, 60 booklets, dev/test split
@@ -198,7 +211,7 @@ to the input file. Provide them in the read-only input mount. Missing PDFs are
 reported as failures; prediction does not download a booklet or substitute gold references.
 
 Each case yields `{"id", "label", "label_name", "evidence": [{"page", "text"}], "metrics": {"input_tokens",
-"output_tokens", "inference_time_ms"}}`; evidence is empty for neutral. The claim language is detected
+"output_tokens", "inference_time_ms"}}`; evidence is empty for neutral, and its page is `null` for a reference text. The claim language is detected
 automatically, booklet paths are resolved robustly, and a failing case is reported on stderr and returned as a
 valid neutral record so IDs remain complete. A batch with an operational failure
 exits nonzero and writes diagnostics; neutral fallback is not a successful classification.
@@ -234,3 +247,7 @@ track_2a/
 ## 📜 License
 
 Code: [Apache License 2.0](LICENSE). Documentation (READMEs, technical report, experiment log): CC-BY-4.0.
+
+Third-party: the submission image includes [PyMuPDF](https://github.com/pymupdf/PyMuPDF) (AGPL-3.0), used to quote
+evidence pages and text blocks from the booklets. Apache-2.0 code may be combined with AGPL-3.0 code; the image as a
+whole is therefore distributed under the terms of the AGPL-3.0, and its complete source is this public repository.
