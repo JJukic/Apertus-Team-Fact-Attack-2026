@@ -13,7 +13,7 @@ claim, and cites the booklet pages that justify the decision. Claims and booklet
 Italian, in any combination.
 
 - **Challenge:** [Hack Apertus Track 2A (OST)](https://hackapertus.ch/)
-- **Team:** Josip Jukic, Felipe Wüthrich
+- **Team:** Josip Jukic, Felipe Wüthrich, Sheyla Sampietro, Andrea Petretta
 - **Technical Report:** [track_2a/technical_report.md](track_2a/technical_report.md) ([PDF](track_2a/docs/FactAttack_Technical_Report.pdf)) · **Experiment log:** [track_2a/docs/experiments.md](track_2a/docs/experiments.md)
 
 > Predictions describe the relationship between a claim and the official booklet. They are not political advice.
