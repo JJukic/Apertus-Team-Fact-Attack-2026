@@ -1,0 +1,3261 @@
+{
+  "v1.1-row-426-A": {
+    "categories": [
+      "F"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The same decisive Italian hydropower clause on page 45 is omitted for an Italian claim too. This is a ranking/context omission, not a cross-language failure.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-426-A",
+      "pdf_path": "booklets/2024-06-09_it.pdf",
+      "page": 45,
+      "pdf_sha256": "691ad90ad95cb4983dfc0bf1f7b43750af34ccc7d3f737ad19a48c263ee54676",
+      "verbatim_text_block": "La legge prevede infine la costituzione di riserve di ener­\ngia per l’inverno che contribuiscono a scongiurare il rischio di \npenurie di elettricità. Prima fra tutte la riserva idroelettrica nei \nbacini di accumulazione: i gestori delle grandi centrali idroelet­\ntriche avranno l’obbligo, contro indennizzo, di mantenere nel \nproprio impianto una quantità sufficiente di acqua per la \nproduzione di elettricità durante i mesi freddi. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-428-A",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        10,
+        42,
+        50,
+        49,
+        52,
+        88,
+        65,
+        11,
+        1,
+        66,
+        53,
+        84
+      ]
+    }
+  },
+  "v1.1-row-17-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The import ban is explicit in the supplied Advanced summary and complete Beginner reference, yet the model predicts contradiction. Detailed private-import/feed exceptions make the breadth of the claim a scope caveat. Do not classify this as retrieval failure or alter gold.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-17-A",
+      "pdf_path": "booklets/2021-06-13_it.pdf",
+      "page": 6,
+      "pdf_sha256": "89443719a1e8c0ea4d954754d50e81253bb2f4d2f6ce4d2ad1c19cf0edd570de",
+      "verbatim_text_block": "L’iniziativa si prefigge di vietare i pesticidi sintetici in \nSvizzera. Il divieto concernerebbe l’agricoltura, la produzione e \nla trasformazione di derrate alimentari, la cura di aree verdi \npubbliche e di giardini privati, nonché la protezione di infra\nstrutture quali i binari ferroviari. Non sarebbe inoltre consenti\nta l’importazione dall’estero di derrate alimentari contenenti \npesticidi sintetici o per la cui produzione sono stati utilizzati \ntali pesticidi. Il divieto dovrebbe essere integralmente in vigore \nentro dieci anni dall’accettazione dell’iniziativa. Fino a quel \nmomento il Consiglio federale avrebbe la facoltà di autorizzare \neccezioni per far fronte a una grave minaccia per l’agricoltura, \nla popolazione o la natura, ad esempio in una situazione di \npenuria straordinaria.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "a1f981792f77a4c054df75894d329f0d480edeb9dd730968027c67e574fcffae",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-17-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-31-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The French import-ban summary is supplied in Advanced and the complete Beginner reference, yet the model predicts contradiction. Detailed exceptions remain a scope caveat; no retrieval failure or gold correction is asserted.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-31-A",
+      "pdf_path": "booklets/2021-06-13_fr.pdf",
+      "page": 6,
+      "pdf_sha256": "65c54df2537b8ab9d6e155c0e602d6bc2379e47741004bc66565064d0aee4ab4",
+      "verbatim_text_block": "L’initiative veut interdire les pesticides de synthèse en Suisse. \nL’interdiction concernerait l’agriculture, la production et la \ntransformation des denrées alimentaires, l’entretien des espaces \nverts publics et des jardins privés et la protection d’infrastruc\ntures telles que les voies de chemin de fer. L’importation de \ndenrées alimentaires produites à l’étranger à l’aide de pesti\ncides de synthèse ou contenant de tels pesticides serait elle \naussi interdite. L’interdiction devrait être totalement mise en \nœuvre dans un délai de dix ans. Durant ce délai, le Conseil \nfédéral pourrait autoriser des exceptions si l’agriculture, la \npopulation ou la nature étaient gravement menacées, par \nexemple en cas de pénurie extraordinaire.\n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-31-A",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        14,
+        21,
+        36,
+        144,
+        28,
+        2,
+        1,
+        6,
+        7,
+        35,
+        15,
+        31
+      ]
+    }
+  },
+  "v1.1-row-31-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The French import-ban summary is supplied in Advanced and the complete Beginner reference, yet the model predicts contradiction. Detailed exceptions remain a scope caveat; no retrieval failure or gold correction is asserted.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-31-A",
+      "pdf_path": "booklets/2021-06-13_fr.pdf",
+      "page": 6,
+      "pdf_sha256": "65c54df2537b8ab9d6e155c0e602d6bc2379e47741004bc66565064d0aee4ab4",
+      "verbatim_text_block": "L’initiative veut interdire les pesticides de synthèse en Suisse. \nL’interdiction concernerait l’agriculture, la production et la \ntransformation des denrées alimentaires, l’entretien des espaces \nverts publics et des jardins privés et la protection d’infrastruc\ntures telles que les voies de chemin de fer. L’importation de \ndenrées alimentaires produites à l’étranger à l’aide de pesti\ncides de synthèse ou contenant de tels pesticides serait elle \naussi interdite. L’interdiction devrait être totalement mise en \nœuvre dans un délai de dix ans. Durant ce délai, le Conseil \nfédéral pourrait autoriser des exceptions si l’agriculture, la \npopulation ou la nature étaient gravement menacées, par \nexemple en cas de pénurie extraordinaire.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "f2d40e3b1dc83964c0811281f4377987f48a2beca4ed98dee02facdb97feeef3",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-31-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-185-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The model cites the correct committee page, which explicitly says ordinary legislation suffices without this law, yet returns contradiction. This is interpretation of available attributed text, not evidence from the opposing speaker.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-185-A",
+      "pdf_path": "booklets/2021-06-13_fr.pdf",
+      "page": 43,
+      "pdf_sha256": "65c54df2537b8ab9d6e155c0e602d6bc2379e47741004bc66565064d0aee4ab4",
+      "verbatim_text_block": "Pour aider ceux qui sont lésés par les mesures de lutte \ncontre la pandémie, le Conseil fédéral peut très bien utiliser la \nvoie législative ordinaire. Il n’a pas besoin de cette loi. Il doit \nêtre au service du peuple souverain, et non lui donner des \n ordres. Cela vaudra tout particulièrement pour les crises à venir : \nchômage, faillites, surendettement, voire pire.\n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-186-A",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        45,
+        9,
+        8,
+        46,
+        40,
+        38,
+        44,
+        41,
+        42,
+        43,
+        39,
+        144
+      ]
+    }
+  },
+  "v1.1-row-589-A": {
+    "categories": [],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied COVID law/reference regulates pandemic assistance and procurement financing. It does not state a two-percentage-point VAT increase or an explicit alternative VAT rate. The model returns contradiction without evidence IDs. Only the observed neutral-to-contradiction confusion is confirmed; absence is not affirmative contrary evidence.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-589-A",
+      "pdf_path": "booklets/2021-06-13_de.pdf",
+      "page": 47,
+      "pdf_sha256": "521e39af06717d2adeb2f787a08b533164921a952c59b7ad3e5b114fcadec744",
+      "verbatim_text_block": "e. \nwichtige medizinische Güter selber beschaffen; er regelt in diesem Fall die \nFinanzierung der Beschaffung sowie die Rückvergütung der Kosten durch \ndie Kantone und Einrichtungen, denen die Güter abgegeben werden; \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-592-A",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": [
+        45,
+        40,
+        8,
+        38,
+        39,
+        9,
+        46,
+        41,
+        43,
+        44,
+        42,
+        51
+      ]
+    }
+  },
+  "v1.1-row-589-B": {
+    "categories": [],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied COVID law/reference regulates pandemic assistance and procurement financing. It does not state a two-percentage-point VAT increase or an explicit alternative VAT rate. The model returns contradiction without evidence IDs. Only the observed neutral-to-contradiction confusion is confirmed; absence is not affirmative contrary evidence.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-589-A",
+      "pdf_path": "booklets/2021-06-13_de.pdf",
+      "page": 47,
+      "pdf_sha256": "521e39af06717d2adeb2f787a08b533164921a952c59b7ad3e5b114fcadec744",
+      "verbatim_text_block": "e. \nwichtige medizinische Güter selber beschaffen; er regelt in diesem Fall die \nFinanzierung der Beschaffung sowie die Rückvergütung der Kosten durch \ndie Kantone und Einrichtungen, denen die Güter abgegeben werden; \n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "0fc2f303106bc8d84614e16f201d45bbc1b14badbf3aca4364106cab693e047d",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-592-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-757-A": {
+    "categories": [],
+    "review_status": "scope_adjudication_pending",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied AVS summary explicitly raises women’s retirement age to 65. The claim calls it a pension-fund reform. Page 26 also applies the reference age to occupational pensions. Official gold is neutral; this wording/scope tension requires independent adjudication. Preserve gold. The regex-fallback note alone does not prove parsing caused the error.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-757-A",
+      "pdf_path": "booklets/2022-09-25_fr.pdf",
+      "page": 9,
+      "pdf_sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "verbatim_text_block": "Pour stabiliser les finances de l’AVS, le Conseil fédéral \net le Parlement pensent qu’il ne suffit pas d’augmenter les \nrecettes, mais qu’il faut aussi faire des économies. L’âge de \nla retraite des femmes sera donc harmonisé avec celui des \nhommes. Son relèvement de 64 à 65 ans s’accompagnera \nde mesures de compensation financière. \n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-760-A",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 0,
+      "context_pages": [
+        68,
+        47,
+        46,
+        10,
+        38,
+        77,
+        9,
+        80,
+        1,
+        3,
+        11,
+        35
+      ]
+    }
+  },
+  "v1.1-row-940-B": {
+    "categories": [],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied reference concerns biodiversity and government rejection of that initiative. The claim concerns acceptance of a minimum-wage initiative, absent from the reference. Transferring a biodiversity rejection to minimum wage would be a topic error. Confirm the observed neutral-to-contradiction confusion without inventing hidden reasoning.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-940-A",
+      "pdf_path": "booklets/2024-09-22_de.pdf",
+      "page": 5,
+      "pdf_sha256": "d8e0047ae589df3bdaa91c93fcb0f6dd0cbb5e36f7aab00fe293ad996a9bfed4",
+      "verbatim_text_block": "Für Bundesrat und Parlament geht die Initiative zu weit. \nSchon heute werden wertvolle Biotope, Landschaften und \nOrtsbilder geschützt, und die Biodiversität wird gefördert. \nBei einer Annahme würden wichtige Anliegen wie die Energie­\nversorgung, die Landwirtschaft oder die Siedlungsentwicklung \nzu stark eingeschränkt.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "a072ef3c8427a730b54de90ac585c0f367499f97d56f2f6b4f4cfb342165b27b",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-943-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1151-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied summary says the largest redistribution share is through social benefits, contrary to income taxes. The Advanced model acknowledges the contrary fact before choosing neutral; Beginner entails income taxes despite the complete reference.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1151-A",
+      "pdf_path": "booklets/2021-09-26_de.pdf",
+      "page": 4,
+      "pdf_sha256": "ebb4288817f5f5fdbde3aa24bf67688220e6c8e2f9fcf82f947a44aec046f341",
+      "verbatim_text_block": "Heute werden im Grundsatz sämtliche Einkünfte wie Löhne, \nRenten und Kapitaleinkommen (z.B. Zinsen, Dividenden und \nErträge aus Vermietung) in vollem Umfang versteuert. Diese \nEinkommenssteuern tragen dazu bei, Ungleichheiten bei der \nVerteilung der Einkommen innerhalb der Bevölkerung abzu\nschwächen. So zahlen einkommensstarke Personen prozentual \nmehr als einkommensschwache. Nebst den Steuern gibt es \nnoch weitere Instrumente zur Umverteilung. Der grösste Teil \nder Umverteilung erfolgt über Sozialleistungen wie Renten \noder Sozialhilfe.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "2617de6e0b5bd5e66dad7cbbcd68358445349272c0f5cffa4c63b3bedb570f83",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-1155-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1309-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied summary explicitly identifies social benefits as the largest redistribution share, contrary to the tax claim. Advanced reasoning recognizes this but calls the claim missing. Beginner has the complete source reference; no retrieval is involved there.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1309-A",
+      "pdf_path": "booklets/2021-09-26_de.pdf",
+      "page": 4,
+      "pdf_sha256": "ebb4288817f5f5fdbde3aa24bf67688220e6c8e2f9fcf82f947a44aec046f341",
+      "verbatim_text_block": "Heute werden im Grundsatz sämtliche Einkünfte wie Löhne, \nRenten und Kapitaleinkommen (z.B. Zinsen, Dividenden und \nErträge aus Vermietung) in vollem Umfang versteuert. Diese \nEinkommenssteuern tragen dazu bei, Ungleichheiten bei der \nVerteilung der Einkommen innerhalb der Bevölkerung abzu\nschwächen. So zahlen einkommensstarke Personen prozentual \nmehr als einkommensschwache. Nebst den Steuern gibt es \nnoch weitere Instrumente zur Umverteilung. Der grösste Teil \nder Umverteilung erfolgt über Sozialleistungen wie Renten \noder Sozialhilfe.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "2617de6e0b5bd5e66dad7cbbcd68358445349272c0f5cffa4c63b3bedb570f83",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-1315-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1228-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied summary explicitly says the initiative does not specify how wages/economic development are measured; Parliament must do so. Both saved reasons acknowledge this negated proposition yet choose neutral. Explicit opposite information is misclassified as an absent subject.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1228-A",
+      "pdf_path": "booklets/2024-06-09_de.pdf",
+      "page": 6,
+      "pdf_sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+      "verbatim_text_block": "Die Initiative will eine Kostenbremse einführen. Künftig \nsollen die Lohnentwicklung und das Wirtschaftswachstum \nvorgeben, wie stark die Kosten der obligatorischen Krankenver­\nsicherung maximal steigen dürfen. Der Bund muss zusammen \nmit den Kantonen, den Krankenversicherern und den Leistungs­\nerbringern Massnahmen ergreifen, damit das Kostenwachstum \nim zulässigen Rahmen bleibt. Wie die Löhne und die Wirt­\nschaftsentwicklung konkret gemessen und welche Massnahmen \nergriffen würden, gibt die Initiative nicht vor. Dies müsste das \nParlament im Gesetz festlegen.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "6fcfed8387e705819df20d894b3b48829a8fc6d4eec5cc45f42dd86aa3286486",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-1234-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1452-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The supplied summary explicitly says the initiative text does not mention vaccinations, contrary to the claim that it explicitly does. Both tasks receive the negated proposition. The regex-fallback note alone does not prove a parser defect.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1452-A",
+      "pdf_path": "booklets/2024-06-09_de.pdf",
+      "page": 8,
+      "pdf_sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+      "verbatim_text_block": "Die Initiative fordert, dass für Eingriffe in die körperliche \noder geistige Unversehrtheit die Zustimmung der betroffenen \nPerson vorliegen muss. Die körperliche und geistige Unver­\nsehrtheit ist schon heute in der Verfassung verankert. Dieses \nGrundrecht schützt den Körper gegen Einwirkungen durch \nden Staat. Gemäss Initiative darf zudem eine Person, die die \nZustimmung verweigert, weder bestraft noch benachteiligt \nwerden. Der Initiativtext spricht nicht von «Impfungen», \nsondern allgemein von «Eingriffen in die körperliche und \ngeistige Unversehrtheit». Er erfasst damit grundsätzlich jedes \nHandeln von Bund, Kantonen und Gemeinden, das auf den \nKörper einwirkt, etwa die Polizeiarbeit und den Strafvollzug. \nWelche konkreten Folgen ein Ja zur Initiative hätte, würde \nvon Umsetzung und Rechtsprechung abhängen.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "6cdf7772893aaecc42805a481a627214578ae83fed5c4296febb0a4ee9136312",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-1458-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1175-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Historical physical-source observation revalidated for identical claim, source, labels and supplied context; the new model reasoning is not assumed identical. The actual full legal reference sets tax on capital income at 35 percent of the taxable benefit. The model entails the French 30-percent claim despite the concrete value mismatch. No retrieval is involved.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1175-A",
+      "pdf_path": "booklets/2022-09-25_de.pdf",
+      "page": 72,
+      "pdf_sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+      "verbatim_text_block": "a. \nauf Kapitalerträgen nach Artikel 4 Absatz 1 und Artikel 4a \nund auf Gewinnen aus Geldspielen sowie aus Lotterien und \nGeschicklichkeitsspielen zur Verkaufsförderung nach Artikel \n6: 35 Prozent der steuerbaren Leistung; \n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "b3762a1b3989b8fabc60e895b2f0eac7b7644476340591988f498d2dedfede35",
+    "revalidated_from": {
+      "historical_case_id": "v1.0-row-1181-B",
+      "historical_annotation_sha256": "5c4e9673bad715358e4ecf534c60f06cfd31727ca477ba5de3ab845a91f91682",
+      "current_run": "R2",
+      "matches": [
+        "claim",
+        "vote",
+        "languages",
+        "gold_reference",
+        "gold_label",
+        "predicted_label",
+        "actual_context_pages"
+      ],
+      "raw_reasoning_identical_assumed": false
+    },
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-14-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The initiative explicitly bans adult-directed advertising accessible to minors. That exact source paragraph is present in the provided clipped page 25; contradiction is wrong relative to the claim and benchmark. The counterproposal table on cited page 28 is a different legislative option. No internal speaker or conditional cause is asserted.",
+    "reviewer": "Codex direct physical-source and actual clipped-context inspection; not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-14-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 25,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "Die Initiantinnen und Initianten möchten jede Art von \nWerbung verbieten, die Kinder und Jugendliche erreicht. Damit \nwürde auch Werbung verboten, die sich zwar hauptsächlich  \nan Erwachsene richtet, aber auch für Kinder und Jugendliche \nzugänglich ist. Es wäre nur noch Werbung zulässig, die auf \nErwachsene abzielt und Minderjährige nicht erreicht, etwa \nWerbemails, Prospekte und gezielte Werbung im Internet oder \nin den sozialen Medien.\n",
+      "physical_page_in_recorded_context": true,
+      "normalized_source_block_in_actual_clipped_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        7,
+        34,
+        6,
+        24,
+        64,
+        25,
+        30,
+        28,
+        33,
+        31,
+        27,
+        1
+      ]
+    }
+  },
+  "v1.1-row-17-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The Italian summary explicitly states that importing foods containing synthetic pesticides or produced using them would not be permitted. This paragraph is present in the provided clipped page 6, so the headline import-ban claim has supporting information. The ten-year implementation period and transitional exceptions are recorded; commercial scope and timing do not establish an additional J cause, and gold remains unchanged.",
+    "reviewer": "Codex direct physical-source and actual clipped-context inspection; not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-17-A",
+      "pdf_path": "booklets/2021-06-13_it.pdf",
+      "page": 6,
+      "pdf_sha256": "89443719a1e8c0ea4d954754d50e81253bb2f4d2f6ce4d2ad1c19cf0edd570de",
+      "verbatim_text_block": "L’iniziativa si prefigge di vietare i pesticidi sintetici in \nSvizzera. Il divieto concernerebbe l’agricoltura, la produzione e \nla trasformazione di derrate alimentari, la cura di aree verdi \npubbliche e di giardini privati, nonché la protezione di infra\nstrutture quali i binari ferroviari. Non sarebbe inoltre consenti\nta l’importazione dall’estero di derrate alimentari contenenti \npesticidi sintetici o per la cui produzione sono stati utilizzati \ntali pesticidi. Il divieto dovrebbe essere integralmente in vigore \nentro dieci anni dall’accettazione dell’iniziativa. Fino a quel \nmomento il Consiglio federale avrebbe la facoltà di autorizzare \neccezioni per far fronte a una grave minaccia per l’agricoltura, \nla popolazione o la natura, ad esempio in una situazione di \npenuria straordinaria.\n",
+      "physical_page_in_recorded_context": true,
+      "normalized_source_block_in_actual_clipped_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        36,
+        6,
+        15,
+        14,
+        1,
+        31,
+        35,
+        144,
+        28,
+        7,
+        16,
+        30
+      ]
+    }
+  },
+  "v1.1-row-53-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The referendum committee states that existing criminal-law bases already protect against insults, threats, defamation and related injury to honour, and calls a new law unnecessary. This exact block is present in clipped committee page 22; the claim reports that committee position. The model predicts contradiction and cites this page alongside other pages. Incorrect NLI interpretation is observed; no unproved wrong-speaker cause is added.",
+    "reviewer": "Codex direct physical-source and actual clipped-context inspection; not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-53-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "Le code pénal (art. 173 ss CP) contient des bases légales \nsolides qui permettent déjà de se défendre en cas d’atteinte à \nl’honneur, d’injure, de menace, de diffamation ou de calomnie. \nIl est parfaitement inutile et contre-productif de faire une \nnouvelle loi anti-discrimination qui ne protège qu’en apparence. \nCar il n’existe pas de droit à être protégé contre ce que l’on \nressent comme blessant !\n",
+      "physical_page_in_recorded_context": true,
+      "normalized_source_block_in_actual_clipped_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        22,
+        24,
+        19,
+        20,
+        6,
+        26,
+        27,
+        18,
+        4,
+        16,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-20-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The committee explicitly calls direct media subsidies unconstitutional and says Article 93 permits only radio/TV support. The attributed statement is in supplied page 53; the cited passage is the committee statement itself. Available attributed evidence is classified as contradiction. This records interpretation failure, not a proven opposing-speaker cause.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-20-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 53,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "Die Wettbewerbskommission empfiehlt nicht umsonst, \ndie Subventionen «vollumfänglich zu streichen», da sie auch \n«verfassungswidrig» sind. Art. 93 der Bundesverfassung \nerlaubt nur die Förderung von Radio und TV. Die neuen \ndirekten Subventionen sind ein Verfassungsbruch.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Art. 93 der Bundesverfassung",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        46,
+        11,
+        1,
+        64,
+        53,
+        56,
+        3,
+        10,
+        55,
+        61,
+        60,
+        52
+      ]
+    }
+  },
+  "v1.1-row-36-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The referendum committee says deductions benefit almost only the richest families, six percent of Swiss households. The decisive words and committee heading are in the supplied page 52. The model cites that page but predicts contradiction; neither absent retrieval nor numerical arithmetic is asserted.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-36-A",
+      "pdf_path": "booklets/2020-09-27_fr.pdf",
+      "page": 52,
+      "pdf_sha256": "8e3c67fd515a7438d1ec687be65001c01a0ece56eb952fdd23f9ca23c8393355",
+      "verbatim_text_block": " \n– \n Les pseudo-déductions ﬁscales pour enfants bénéﬁcie\nraient presque uniquement aux familles les plus aisées, \nsoit à 6 % seulement des ménages en Suisse. Qui paiera \ncette facture ? La classe moyenne, qui sera en première \nligne lorsqu’un recul des rentrées ﬁscales imposera de \nsupprimer certaines réductions de primes d’assurance\nmaladie ou d’augmenter les tarifs des crèches. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "6 % seulement des ménages en Suisse",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        8,
+        49,
+        9,
+        52,
+        48,
+        88,
+        56,
+        51,
+        47,
+        55,
+        1,
+        20
+      ]
+    }
+  },
+  "v1.1-row-45-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The explicit normal VAT change 7.7 to 8.1 appears on French pages 7 and 28, both absent from the recorded cross-language context. Supplied page 36 gives a relative +0.4 point legal adjustment, without the absolute rates. Missing absolute-rate evidence supports a cross-language ranking/context omission; no gold change.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-45-A",
+      "pdf_path": "booklets/2022-09-25_fr.pdf",
+      "page": 28,
+      "pdf_sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "verbatim_text_block": "Ces économies ne seront cependant pas suffisantes pour \nstabiliser les finances de l’AVS et garantir les rentes. AVS 21 \nprévoit donc également d’augmenter les recettes grâce à la \nhausse de la TVA. Le taux normal de TVA passera ainsi de 7,7 à \n8,1 %. Le taux réduit, qui s’applique à des biens tels que les \ndenrées alimentaires, les médicaments, les journaux, les maga­\nzines ou encore les livres, passera quant à lui de 2,5 à 2,6 %. \nEnfin, le taux spécial pour l’hébergement passera de 3,7 à \n3,8 %. Pour un panier d’achats de 100 francs, le surcoût lié au \nfinancement de l’AVS sera de 40 centimes au maximum ; s’il \ns’agit de denrées alimentaires, le surcoût sera de 10 centimes \nau maximum. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 1,
+      "context_pages": [
+        46,
+        47,
+        36,
+        55,
+        54,
+        38,
+        68,
+        52,
+        53,
+        9,
+        3,
+        56
+      ]
+    }
+  },
+  "v1.1-row-55-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference explicitly disallows civil-service placements requiring human, dental or veterinary medical studies, while permitting other occupations for conscientious objectors. The claim restricts the prohibited occupations too; predicting contradiction misreads this available scope qualification. No retrieval stage applies.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-55-A",
+      "pdf_path": "booklets/2026-06-14_de.pdf",
+      "page": 27,
+      "pdf_sha256": "13c434202d63d32ca57f03311fb9de5fc7477d5c49ea14b06984f5d3a8591115",
+      "verbatim_text_block": "Der Armee fehlt medizinisches Personal. Mediziner und \nMedizinstudenten können heute den Zivildienst als berufliche \nErfahrung nutzen, indem sie einen Einsatz in ihrem Fachgebiet \nabsolvieren. Dies macht es für sie attraktiv, Zivildienst zu leis­\nten. Darum sollen Zivildiensteinsätze, die ein Studium der \nHuman-, Zahn- oder Veterinärmedizin erfordern, künftig nicht \nmehr erlaubt sein. Mediziner und Medizinstudenten können \nbei einem Gewissenskonflikt aber weiterhin Zivildienst in \neinem anderen Tätigkeitsbereich leisten.\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "Darum sollen Zivildiensteinsätze",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "7ac5022e1c0f23d4724036c64b252bf765e28e5b4ba5940d78924ac6f4aed9e9",
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-155-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The independently checked supplied reference includes the occupational restriction and continued eligibility in other occupations. The claim matches that restricted scope, but the model returns contradiction. Same source observation as 55-B is revalidated for this actual reference hash.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-155-A",
+      "pdf_path": "booklets/2026-06-14_de.pdf",
+      "page": 27,
+      "pdf_sha256": "13c434202d63d32ca57f03311fb9de5fc7477d5c49ea14b06984f5d3a8591115",
+      "verbatim_text_block": "Der Armee fehlt medizinisches Personal. Mediziner und \nMedizinstudenten können heute den Zivildienst als berufliche \nErfahrung nutzen, indem sie einen Einsatz in ihrem Fachgebiet \nabsolvieren. Dies macht es für sie attraktiv, Zivildienst zu leis­\nten. Darum sollen Zivildiensteinsätze, die ein Studium der \nHuman-, Zahn- oder Veterinärmedizin erfordern, künftig nicht \nmehr erlaubt sein. Mediziner und Medizinstudenten können \nbei einem Gewissenskonflikt aber weiterhin Zivildienst in \neinem anderen Tätigkeitsbereich leisten.\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "Darum sollen Zivildiensteinsätze",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "7ac5022e1c0f23d4724036c64b252bf765e28e5b4ba5940d78924ac6f4aed9e9",
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-63-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Italian page 45 explicitly requires large hydropower operators to retain sufficient winter water against compensation. It and detailed compensation pages 63/64 are absent from the supplied cross-language context. Inspection of all supplied clipped pages finds only general production/hydropower targets, not the decisive obligation. This is missing contextual evidence, not proof of faulty numerical reasoning.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-63-A",
+      "pdf_path": "booklets/2024-06-09_it.pdf",
+      "page": 45,
+      "pdf_sha256": "691ad90ad95cb4983dfc0bf1f7b43750af34ccc7d3f737ad19a48c263ee54676",
+      "verbatim_text_block": "La legge prevede infine la costituzione di riserve di ener­\ngia per l’inverno che contribuiscono a scongiurare il rischio di \npenurie di elettricità. Prima fra tutte la riserva idroelettrica nei \nbacini di accumulazione: i gestori delle grandi centrali idroelet­\ntriche avranno l’obbligo, contro indennizzo, di mantenere nel \nproprio impianto una quantità sufficiente di acqua per la \nproduzione di elettricità durante i mesi freddi. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        10,
+        42,
+        50,
+        49,
+        52,
+        1,
+        65,
+        66,
+        84,
+        83,
+        11,
+        88
+      ]
+    }
+  },
+  "v1.1-row-85-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Supplied page 10 states that the initiative requires federal regulation of hospital, care-home and Spitex working conditions, wages and schedules. The model instead cites page 16, where the Federal Council opposes that requirement. Both are available: opposition to the initiative does not contradict what acceptance would require. No speaker-attributed claim is involved.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-85-A",
+      "pdf_path": "booklets/2021-11-28_de.pdf",
+      "page": 10,
+      "pdf_sha256": "f463fb7ea4b7f663d5e2af0f67bc8e364778ee3c0a19f56caadc655bc2670a7b",
+      "verbatim_text_block": "Die Initiative verlangt vom Bund, die Arbeitsbedingungen \nin den Spitälern, Heimen und Spitexorganisationen verbindlich \nzu regeln. Er müsste zum Beispiel Vorgaben machen zur Höhe \nder Löhne oder für eine bessere Vereinbarkeit von Familie und \nBeruf sorgen, etwa durch Vorschriften in Bezug auf die Dienst\npläne. Damit würde der Bund in die Zuständigkeiten der Kan\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "verbindlich zu regeln",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        5,
+        17,
+        10,
+        18,
+        15,
+        14,
+        12,
+        16,
+        4,
+        33,
+        39,
+        21
+      ]
+    }
+  },
+  "v1.1-row-91-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied committee page 22 says existing criminal-law provisions already protect against insults and make a new law unnecessary. The German claim matches that attributed position. Actual context and physical source are checked for this separate duplicate row; opposition pages cited alongside it do not prove an internal speaker confusion.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-91-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "Le code pénal (art. 173 ss CP) contient des bases légales \nsolides qui permettent déjà de se défendre en cas d’atteinte à \nl’honneur, d’injure, de menace, de diffamation ou de calomnie. \nIl est parfaitement inutile et contre-productif de faire une \nnouvelle loi anti-discrimination qui ne protège qu’en apparence. \nCar il n’existe pas de droit à être protégé contre ce que l’on \nressent comme blessant !\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "bases légales solides",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        22,
+        24,
+        19,
+        20,
+        6,
+        26,
+        27,
+        18,
+        4,
+        16,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-195-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The French committee claim is supported by supplied page 22: existing criminal law protects against insults and a new anti-discrimination law is unnecessary. The actual output is contradiction. Regex parsing is recorded, but does not establish whether the underlying cause is parsing rather than NLI; only available-evidence misclassification is confirmed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-195-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "Le code pénal (art. 173 ss CP) contient des bases légales \nsolides qui permettent déjà de se défendre en cas d’atteinte à \nl’honneur, d’injure, de menace, de diffamation ou de calomnie. \nIl est parfaitement inutile et contre-productif de faire une \nnouvelle loi anti-discrimination qui ne protège qu’en apparence. \nCar il n’existe pas de droit à être protégé contre ce que l’on \nressent comme blessant !\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "bases légales solides",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        22,
+        20,
+        24,
+        19,
+        6,
+        26,
+        25,
+        27,
+        18,
+        21,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-206-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "This separately checked French duplicate has the same available committee statement on page 22. The final contradiction conflicts with that statement; a regex-fallback note alone is insufficient to attribute the error to the parser.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-206-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "Le code pénal (art. 173 ss CP) contient des bases légales \nsolides qui permettent déjà de se défendre en cas d’atteinte à \nl’honneur, d’injure, de menace, de diffamation ou de calomnie. \nIl est parfaitement inutile et contre-productif de faire une \nnouvelle loi anti-discrimination qui ne protège qu’en apparence. \nCar il n’existe pas de droit à être protégé contre ce que l’on \nressent comme blessant !\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "bases légales solides",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        22,
+        20,
+        24,
+        19,
+        6,
+        26,
+        25,
+        27,
+        18,
+        21,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-326-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied committee statement on page 22 supports this French claim too. This row is reviewed using its actual context and label binding; model-parser internals are not inferred from a fallback note.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-326-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "Le code pénal (art. 173 ss CP) contient des bases légales \nsolides qui permettent déjà de se défendre en cas d’atteinte à \nl’honneur, d’injure, de menace, de diffamation ou de calomnie. \nIl est parfaitement inutile et contre-productif de faire une \nnouvelle loi anti-discrimination qui ne protège qu’en apparence. \nCar il n’existe pas de droit à être protégé contre ce que l’on \nressent comme blessant !\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "bases légales solides",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        22,
+        20,
+        24,
+        19,
+        6,
+        26,
+        25,
+        27,
+        18,
+        21,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-232-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The initiative explanation in supplied page 10 explicitly requires federal regulation of working conditions, wage levels and service schedules. Page 16 gives the Federal Council objection to that proposal, not a denial of the proposal content. The model cites both and returns contradiction; evidence is available.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-232-A",
+      "pdf_path": "booklets/2021-11-28_fr.pdf",
+      "page": 10,
+      "pdf_sha256": "340fecfcdcdf292824addf73002c60e91a86744648355665035a5356a38d2225",
+      "verbatim_text_block": "L’initiative demande à la Confédération de réglementer \nles conditions de travail dans les hôpitaux, les homes et les \norganisations d’aide et de soins à domicile. La Confédération \ndevra notamment définir le montant des salaires et veiller à \nune meilleure conciliation entre vie familiale et vie profession-\nnelle, en édictant par exemple des directives sur les plans de \nservice. En réglementant les conditions de travail, la Confédé-\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "définir le montant des salaires",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        10,
+        16,
+        19,
+        18,
+        11,
+        4,
+        12,
+        15,
+        13,
+        14,
+        5,
+        17
+      ]
+    }
+  },
+  "v1.1-row-246-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied initiative explanation on page 10 states federal wage and work-schedule regulation. This duplicate French claim is checked against its own context/output. The opposing recommendation on page 16 does not negate the effect of accepting the initiative.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-246-A",
+      "pdf_path": "booklets/2021-11-28_fr.pdf",
+      "page": 10,
+      "pdf_sha256": "340fecfcdcdf292824addf73002c60e91a86744648355665035a5356a38d2225",
+      "verbatim_text_block": "L’initiative demande à la Confédération de réglementer \nles conditions de travail dans les hôpitaux, les homes et les \norganisations d’aide et de soins à domicile. La Confédération \ndevra notamment définir le montant des salaires et veiller à \nune meilleure conciliation entre vie familiale et vie profession-\nnelle, en édictant par exemple des directives sur les plans de \nservice. En réglementant les conditions de travail, la Confédé-\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "définir le montant des salaires",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        10,
+        16,
+        19,
+        18,
+        11,
+        4,
+        12,
+        15,
+        13,
+        14,
+        5,
+        17
+      ]
+    }
+  },
+  "v1.1-row-314-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Supplied page 10 supports the initiative working-condition claim; the same physical block is checked for this separate row. The model returns contradiction despite available proposal content; no retrieval failure.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-314-A",
+      "pdf_path": "booklets/2021-11-28_fr.pdf",
+      "page": 10,
+      "pdf_sha256": "340fecfcdcdf292824addf73002c60e91a86744648355665035a5356a38d2225",
+      "verbatim_text_block": "L’initiative demande à la Confédération de réglementer \nles conditions de travail dans les hôpitaux, les homes et les \norganisations d’aide et de soins à domicile. La Confédération \ndevra notamment définir le montant des salaires et veiller à \nune meilleure conciliation entre vie familiale et vie profession-\nnelle, en édictant par exemple des directives sur les plans de \nservice. En réglementant les conditions de travail, la Confédé-\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "définir le montant des salaires",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        10,
+        16,
+        19,
+        18,
+        11,
+        4,
+        12,
+        15,
+        13,
+        14,
+        5,
+        17
+      ]
+    }
+  },
+  "v1.1-row-209-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Supplied French page 25 explicitly says advertising primarily targeting adults but accessible to minors would be banned by the initiative. Its explanation distinguishes this from the indirect counterproposal. The final contradiction conflicts with the available initiative provision.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-209-A",
+      "pdf_path": "booklets/2022-02-13_fr.pdf",
+      "page": 25,
+      "pdf_sha256": "2d8cb9710acf095b5bdb2f5cf431f1bdd93e21b5e250b168170a1e249b0b7a22",
+      "verbatim_text_block": "Les auteurs de l’initiative souhaitent interdire tout type \nde publicité pour le tabac qui peut atteindre les enfants et les \nadolescents. Cela reviendrait à interdire la réclame qui s’adresse \nprincipalement aux adultes mais à laquelle les mineurs pour\nraient avoir accès. Serait donc seule autorisée la publicité qui \ns’adresse aux adultes et n’est pas accessible aux mineurs, par \nexemple les courriels promotionnels, les prospectus ainsi que \nles contenus sur Internet et les réseaux sociaux.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "principalement aux adultes",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        7,
+        6,
+        33,
+        34,
+        28,
+        25,
+        24,
+        30,
+        64,
+        27,
+        32,
+        31
+      ]
+    }
+  },
+  "v1.1-row-289-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Supplied page 25 explicitly supports the adult-targeted-but-minor-accessible tobacco advertising claim. Raw reasoning instead treats the initiative/counterproposal distinction as insufficient information, while the exported label is contradiction. Available-evidence interpretation is confirmed; parsing responsibility is not assumed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-289-A",
+      "pdf_path": "booklets/2022-02-13_fr.pdf",
+      "page": 25,
+      "pdf_sha256": "2d8cb9710acf095b5bdb2f5cf431f1bdd93e21b5e250b168170a1e249b0b7a22",
+      "verbatim_text_block": "Les auteurs de l’initiative souhaitent interdire tout type \nde publicité pour le tabac qui peut atteindre les enfants et les \nadolescents. Cela reviendrait à interdire la réclame qui s’adresse \nprincipalement aux adultes mais à laquelle les mineurs pour\nraient avoir accès. Serait donc seule autorisée la publicité qui \ns’adresse aux adultes et n’est pas accessible aux mineurs, par \nexemple les courriels promotionnels, les prospectus ainsi que \nles contenus sur Internet et les réseaux sociaux.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "principalement aux adultes",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        7,
+        6,
+        33,
+        34,
+        28,
+        25,
+        24,
+        30,
+        64,
+        27,
+        32,
+        31
+      ]
+    }
+  },
+  "v1.1-row-333-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Supplied page 6, visibly headed In Kürze, states that Switzerland imports about three quarters of its energy. The Italian claim paraphrases this as 75 percent in the summary. Raw reasoning recognizes the underlying value yet demands an explicit summary framing and returns neutral. The relevant summary fact is available.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-333-A",
+      "pdf_path": "booklets/2023-06-18_de.pdf",
+      "page": 6,
+      "pdf_sha256": "d496622d23589e2c9379d2172e0d8c60eca4bbd119588c656c39d49170862881",
+      "verbatim_text_block": "Die Schweiz importiert rund drei Viertel ihrer Energie. \nErdöl und Erdgas, die in der Schweiz verbraucht werden, stam­\nmen vollständig aus dem Ausland. Diese fossilen Energieträger \nsind nicht unendlich verfügbar und belasten das Klima stark. \nUm die Abhängigkeit vom Ausland und die Umweltbelastung \nzu verringern, wollen Bundesrat und Parlament den Verbrauch \nvon Öl und Gas senken. Gleichzeitig soll mehr Energie in der \nSchweiz produziert werden.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Die Schweiz importiert rund drei Viertel ihrer Energie.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 1,
+      "context_pages": [
+        56,
+        6,
+        24,
+        34,
+        3,
+        29,
+        33,
+        35,
+        1,
+        26,
+        38,
+        14
+      ]
+    }
+  },
+  "v1.1-row-358-A": {
+    "categories": [
+      "F"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Italian page 45 explicitly states the winter-water-retention obligation against compensation. It is absent from this Italian-to-Italian context as are compensation pages 63/64. The omission is a same-language ranking/context failure, not a multilingual failure.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-358-A",
+      "pdf_path": "booklets/2024-06-09_it.pdf",
+      "page": 45,
+      "pdf_sha256": "691ad90ad95cb4983dfc0bf1f7b43750af34ccc7d3f737ad19a48c263ee54676",
+      "verbatim_text_block": "La legge prevede infine la costituzione di riserve di ener­\ngia per l’inverno che contribuiscono a scongiurare il rischio di \npenurie di elettricità. Prima fra tutte la riserva idroelettrica nei \nbacini di accumulazione: i gestori delle grandi centrali idroelet­\ntriche avranno l’obbligo, contro indennizzo, di mantenere nel \nproprio impianto una quantità sufficiente di acqua per la \nproduzione di elettricità durante i mesi freddi. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        10,
+        42,
+        50,
+        49,
+        52,
+        88,
+        65,
+        11,
+        1,
+        66,
+        53,
+        84
+      ]
+    }
+  },
+  "v1.1-row-1117-A": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied voting text limits deductible third-party care to children who have not reached age 14, whereas the claim says age 16. The explicit different threshold establishes contradiction, not missing information; neutral is a numerical-boundary interpretation error.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1117-A",
+      "pdf_path": "booklets/2020-09-27_de.pdf",
+      "page": 56,
+      "pdf_sha256": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "verbatim_text_block": "3 Von den Einkünften werden abgezogen die nachgewiesenen Kosten, jedoch höchs\ntens \n \nfür die Drittbetreuung jedes Kindes, das das 14. Altersjahr \nnoch nicht vollendet hat und mit der steuerpflichtigen Person, die für seinen Unter-\nhalt \nim gleichen Haushalt lebt, soweit diese Kosten in direktem kausalem \nZusammenhang mit der Erwerbstätigkeit, Ausbildung oder Erwerbsunfähigkeit der \nsteuerpflichtigen Person stehen. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "das 14. Altersjahr",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        49,
+        1,
+        56,
+        88,
+        46,
+        2,
+        8,
+        48,
+        9,
+        55,
+        50,
+        47
+      ]
+    }
+  },
+  "v1.1-row-1117-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference states the age-14 threshold. The claim extends eligibility to age 16, but the model returns neutral despite the explicit opposing threshold.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1117-A",
+      "pdf_path": "booklets/2020-09-27_de.pdf",
+      "page": 56,
+      "pdf_sha256": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "verbatim_text_block": "3 Von den Einkünften werden abgezogen die nachgewiesenen Kosten, jedoch höchs\ntens \n \nfür die Drittbetreuung jedes Kindes, das das 14. Altersjahr \nnoch nicht vollendet hat und mit der steuerpflichtigen Person, die für seinen Unter-\nhalt \nim gleichen Haushalt lebt, soweit diese Kosten in direktem kausalem \nZusammenhang mit der Erwerbstätigkeit, Ausbildung oder Erwerbsunfähigkeit der \nsteuerpflichtigen Person stehen. \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "das 14. Altersjahr",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "e536b3108aba3e347747f9a4c1299c34880fdb57622f343778869316e8862ba7",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1175-A": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied legal provision sets withholding tax on capital income at 35 percent of the taxable benefit, not the claimed 30 percent. The model returns entailment despite the available different rate.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1175-A",
+      "pdf_path": "booklets/2022-09-25_de.pdf",
+      "page": 72,
+      "pdf_sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+      "verbatim_text_block": "a. \nauf Kapitalerträgen nach Artikel 4 Absatz 1 und Artikel 4a \nund auf Gewinnen aus Geldspielen sowie aus Lotterien und \nGeschicklichkeitsspielen zur Verkaufsförderung nach Artikel \n6: 35 Prozent der steuerbaren Leistung; \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "35 Prozent",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        3,
+        68,
+        10,
+        1,
+        67,
+        80,
+        11,
+        58,
+        73,
+        72,
+        53,
+        52
+      ]
+    }
+  },
+  "v1.1-row-1180-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The actual supplied committee statement calls the law apparent protection/censorship and says it threatens freedom of expression, conscience and commerce. The claim attributes the opposite position to that committee. Neutral ignores a direct opposing attributed statement; no internal speaker-confusion mechanism is assumed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1180-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "« Jamais encore une trop grande liberté d’opinion n’a mis en \npéril une société ». Nous devrions toujours avoir cette pensée \nà l’esprit quand les politiques veulent brider la liberté de \nparole. Car c’est de cela qu’il s’agit avec l’élargissement de la \nnorme pénale antiracisme : on nous vend une norme anti\ndiscrimination, mais en réalité c’est une censure qu’on veut \nnous imposer, une loi qui menace la liberté d’opinion et  \nde conscience et la liberté de commerce sans résoudre aucun \nproblème.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "menace la liberté",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        22,
+        24,
+        20,
+        19,
+        6,
+        7,
+        26,
+        27,
+        18,
+        25,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-1186-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The actual supplied committee statement calls the law apparent protection/censorship and says it threatens freedom of expression, conscience and commerce. The claim attributes the opposite position to that committee. Neutral ignores a direct opposing attributed statement; no internal speaker-confusion mechanism is assumed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1186-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "« Jamais encore une trop grande liberté d’opinion n’a mis en \npéril une société ». Nous devrions toujours avoir cette pensée \nà l’esprit quand les politiques veulent brider la liberté de \nparole. Car c’est de cela qu’il s’agit avec l’élargissement de la \nnorme pénale antiracisme : on nous vend une norme anti\ndiscrimination, mais en réalité c’est une censure qu’on veut \nnous imposer, une loi qui menace la liberté d’opinion et  \nde conscience et la liberté de commerce sans résoudre aucun \nproblème.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "menace la liberté",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        22,
+        24,
+        20,
+        19,
+        6,
+        7,
+        26,
+        27,
+        18,
+        25,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-1315-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The actual supplied committee statement calls the law apparent protection/censorship and says it threatens freedom of expression, conscience and commerce. The claim attributes the opposite position to that committee. Neutral ignores a direct opposing attributed statement; no internal speaker-confusion mechanism is assumed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1315-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 22,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "« Jamais encore une trop grande liberté d’opinion n’a mis en \npéril une société ». Nous devrions toujours avoir cette pensée \nà l’esprit quand les politiques veulent brider la liberté de \nparole. Car c’est de cela qu’il s’agit avec l’élargissement de la \nnorme pénale antiracisme : on nous vend une norme anti\ndiscrimination, mais en réalité c’est une censure qu’on veut \nnous imposer, une loi qui menace la liberté d’opinion et  \nde conscience et la liberté de commerce sans résoudre aucun \nproblème.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "menace la liberté",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        22,
+        24,
+        20,
+        19,
+        6,
+        7,
+        26,
+        27,
+        18,
+        25,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-1228-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary explicitly says the initiative does not prescribe how wages and economic development are measured and that Parliament must define this in legislation. The claim says the initiative defines those measures. This explicit denial establishes contradiction, not absence of information.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1228-A",
+      "pdf_path": "booklets/2024-06-09_de.pdf",
+      "page": 6,
+      "pdf_sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+      "verbatim_text_block": "Die Initiative will eine Kostenbremse einführen. Künftig \nsollen die Lohnentwicklung und das Wirtschaftswachstum \nvorgeben, wie stark die Kosten der obligatorischen Krankenver­\nsicherung maximal steigen dürfen. Der Bund muss zusammen \nmit den Kantonen, den Krankenversicherern und den Leistungs­\nerbringern Massnahmen ergreifen, damit das Kostenwachstum \nim zulässigen Rahmen bleibt. Wie die Löhne und die Wirt­\nschaftsentwicklung konkret gemessen und welche Massnahmen \nergriffen würden, gibt die Initiative nicht vor. Dies müsste das \nParlament im Gesetz festlegen.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "gibt die Initiative nicht vor.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        30,
+        6,
+        29,
+        88,
+        7,
+        3,
+        22,
+        24,
+        26,
+        16,
+        28,
+        27
+      ]
+    }
+  },
+  "v1.1-row-1250-A": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary gives 30 days after an unsuccessful warning, whereas the claim says 90 days. The wrong neutral output ignores the explicit differing notice period.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1250-A",
+      "pdf_path": "booklets/2024-11-24_de.pdf",
+      "page": 6,
+      "pdf_sha256": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+      "verbatim_text_block": "Künftig müssen Mieterinnen und Mieter, die Räume \nuntervermieten wollen, das entsprechende Gesuch an \ndie Vermieterin oder den Vermieter schriftlich stellen. Zudem \nmüssen sie für die Untervermietung über eine schriftliche \nZustimmung der Vermieterin oder des Vermieters verfügen. \nNeu darf die Vermieterin oder der Vermieter eine Unterver­\nmietung insbesondere dann ablehnen, wenn sie mehr als zwei \nJahre dauern soll. Verletzt die Mieterin oder der Mieter die \nPflichten im Zusammenhang mit der Untermiete, so kann \ndie Vermieterin oder der Vermieter schriftlich mahnen. Bleibt \ndie Mahnung erfolglos, so kann die Vermieterin oder der \nVermieter den Mietvertrag mit einer Frist von 30 Tagen kündi­\ngen. Gegen die Vorlage wurde das Referendum ergriffen, \ndarum kommt es zur Abstimmung.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Frist von 30 Tagen",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        72,
+        3,
+        31,
+        6,
+        33,
+        41,
+        32,
+        26,
+        8,
+        1,
+        7,
+        42
+      ]
+    }
+  },
+  "v1.1-row-1258-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied voting text explicitly recommends that people and cantons reject the initiative. The French claim says the Federal Assembly asks them to approve it. This is an available opposing recommendation, not an unmentioned topic.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1258-A",
+      "pdf_path": "booklets/2021-09-26_de.pdf",
+      "page": 20,
+      "pdf_sha256": "ebb4288817f5f5fdbde3aa24bf67688220e6c8e2f9fcf82f947a44aec046f341",
+      "verbatim_text_block": "Die Bundesversammlung empfiehlt Volk und Ständen, die Initiative abzulehnen. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "die Initiative abzulehnen.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        20,
+        8,
+        40,
+        1,
+        3,
+        4,
+        5,
+        19,
+        12,
+        18,
+        14,
+        10
+      ]
+    }
+  },
+  "v1.1-row-1259-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The actual committee statement says the initiative does not demand termination of the bilateral agreements. The claim attributes the opposite position to the committee. Entailment conflicts with that supplied committee denial; statements by other actors do not establish an internal speaker cause.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1259-A",
+      "pdf_path": "booklets/2020-09-27_de.pdf",
+      "page": 21,
+      "pdf_sha256": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "verbatim_text_block": "Die heute unbegrenzte Zuwanderung (jährlich mehr \nPersonen als die Stadt St. Gallen oder der Kanton Jura Einwoh\nner hat) schadet unserer Wirtschaft, der Sicherheit und der \nUmwelt. Sie gefährdet auch Arbeitsplätze, die Freiheit und \nunseren über Generationen hart erarbeiteten Wohlstand. Die \nInitiative will keinen generellen Stopp der Zuwanderung und \nverlangt keine Kündigung der bilateralen Abkommen mit der \nEU. Der Bundesrat wird beauftragt, auf dem Verhandlungsweg \ndas Personenfreizügigkeitsabkommen mit der EU spätestens \n12 Monate nach Annahme der Begrenzungsinitiative ausser \nKraft zu setzen. Eine vernünftige und massvolle Initiative. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "verlangt keine Kündigung",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        21,
+        5,
+        24,
+        4,
+        1,
+        14,
+        23,
+        88,
+        2,
+        16,
+        22,
+        20
+      ]
+    }
+  },
+  "v1.1-row-1284-B": {
+    "categories": [
+      "G",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied legal reference explicitly excludes SRG from the section on independent Swiss film. The claim includes SRG. The neutral output fails to apply an express legal applicability exception.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1284-A",
+      "pdf_path": "booklets/2022-05-15_de.pdf",
+      "page": 22,
+      "pdf_sha256": "c12ea935b73d98790649c3bb8f3f3c5ff967a999a0a4ddc969121b9dd5d47335",
+      "verbatim_text_block": "3 Der vorliegende Abschnitt ist nicht auf die Schweizerische Radio- und Fernsehge\nsellschaft (SRG) anwendbar. \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "SRG) anwendbar.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "1e41be29c25817e19c3f83cb4f25a70e0fc090002e81592b14891346c72afd98",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1295-A": {
+    "categories": [
+      "G",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied Italian legal text explicitly exempts places of worship from the face-covering prohibition. The French claim says the prohibition also applies there. Entailment conflicts with this express exception.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1295-A",
+      "pdf_path": "booklets/2021-03-07_it.pdf",
+      "page": 18,
+      "pdf_sha256": "e6ffd768c3c65b9ca19566bc6bc6fda6f1f9e4324cce7898475e02bfec526e21",
+      "verbatim_text_block": "1 Nessuno può dissimulare il proprio viso negli spazi pubblici né nei luoghi accessi\nbili al pubblico o nei quali sono fornite prestazioni in linea di massima accessibili a \nognuno; il divieto non si applica ai luoghi di culto. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "il divieto non si applica ai luoghi di culto.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        4,
+        18,
+        17,
+        10,
+        5,
+        1,
+        56,
+        16,
+        12,
+        14,
+        3,
+        13
+      ]
+    }
+  },
+  "v1.1-row-1306-A": {
+    "categories": [
+      "G",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied French legal text explicitly exempts places of worship. The claim says they are included. Available exception scope is interpreted in the opposite direction.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1306-A",
+      "pdf_path": "booklets/2021-03-07_fr.pdf",
+      "page": 18,
+      "pdf_sha256": "127fe5bf35487ae5327cf27553838123974263f140d924fc5c1e73c0fca0bfcf",
+      "verbatim_text_block": "1 Nul ne peut se dissimuler le visage dans l’espace public, ni dans les lieux acces\nsibles au public ou dans lesquels sont fournies des prestations ordinairement acces\nsibles par tout un chacun; l’interdiction n’est pas applicable dans les lieux de culte. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "l’interdiction n’est pas applicable dans les lieux de culte.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        18,
+        4,
+        5,
+        10,
+        17,
+        56,
+        14,
+        3,
+        12,
+        1,
+        15,
+        16
+      ]
+    }
+  },
+  "v1.1-row-1310-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied Federal Council argument says abolishing imputed-rental-value taxation reduces incentives for private borrowing. The claim attributes increased borrowing incentives to that Council. Entailment reverses the direction of the available argument.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1310-A",
+      "pdf_path": "booklets/2025-09-28_it.pdf",
+      "page": 18,
+      "pdf_sha256": "7b8d069bb8d207a1a8ec9a7af49a765d4c19153dee249b3818261d45bf2d5ed8",
+      "verbatim_text_block": "Con la soppressione dell’imposizione del valore locativo \nanche la deduzione degli interessi su debiti sarà fortemente \nlimitata. In tal modo si riduce l’incentivo per i proprietari di \nabitazioni a uso proprio a indebitarsi molto sul lungo termine. \nPertanto, la riforma può fornire un importante contributo alla \nriduzione dell’indebitamento privato e quindi promuovere \na lungo termine la stabilità del sistema finanziario.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "si riduce l’incentivo",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        20,
+        21,
+        4,
+        8,
+        5,
+        19,
+        10,
+        3,
+        48,
+        1,
+        18,
+        12
+      ]
+    }
+  },
+  "v1.1-row-1312-A": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary allocates two thirds of inheritance/gift-tax revenue to the Confederation and one third to cantons. The claim swaps the recipients. Entailment is a reversed allocation error despite available fractions.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1312-A",
+      "pdf_path": "booklets/2025-11-30_fr.pdf",
+      "page": 6,
+      "pdf_sha256": "137ed9d255ab729265d7cfb765e9befc8a51e3fe5723e88772717ebb59504f8f",
+      "verbatim_text_block": "L’initiative demande que davantage de moyens soient \nconsacrés à la politique climatique, et qu’ils proviennent d’un \nimpôt fédéral sur les successions et les donations. Aujourd’hui, \nseuls les cantons et les communes prévoient un tel impôt. \nLa Confédération prélèverait en plus un impôt de 50 % sur les \nsuccessions et les donations d’une personne, les 50 premiers \nmillions de francs n’étant pas imposés. Deux tiers des recettes \nreviendraient à la Confédération, un tiers aux cantons. Selon \nle texte de l’initiative, les recettes dégagées par ce nouvel \nimpôt devront être utilisées « pour lutter contre la crise \nclimatique de manière socialement juste et pour permettre \nla transformation de l’ensemble de l’économie nécessaire \nà cet objectif ».\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Deux tiers des recettes",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        30,
+        31,
+        6,
+        7,
+        20,
+        23,
+        32,
+        29,
+        22,
+        3,
+        28,
+        1
+      ]
+    }
+  },
+  "v1.1-row-1312-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The same explicit two-thirds Confederation/one-third cantons allocation is present in the complete supplied reference. The claim swaps it, but the model returns entailment.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1312-A",
+      "pdf_path": "booklets/2025-11-30_fr.pdf",
+      "page": 6,
+      "pdf_sha256": "137ed9d255ab729265d7cfb765e9befc8a51e3fe5723e88772717ebb59504f8f",
+      "verbatim_text_block": "L’initiative demande que davantage de moyens soient \nconsacrés à la politique climatique, et qu’ils proviennent d’un \nimpôt fédéral sur les successions et les donations. Aujourd’hui, \nseuls les cantons et les communes prévoient un tel impôt. \nLa Confédération prélèverait en plus un impôt de 50 % sur les \nsuccessions et les donations d’une personne, les 50 premiers \nmillions de francs n’étant pas imposés. Deux tiers des recettes \nreviendraient à la Confédération, un tiers aux cantons. Selon \nle texte de l’initiative, les recettes dégagées par ce nouvel \nimpôt devront être utilisées « pour lutter contre la crise \nclimatique de manière socialement juste et pour permettre \nla transformation de l’ensemble de l’économie nécessaire \nà cet objectif ».\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "Deux tiers des recettes",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": "dc45655d8306025702ac40ae11e6b4c00d73bc3c911ba85a4fd35869ebb59ffe",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1318-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary says the referendum was launched against the extension, whereas the French claim says in favour. The opposing polarity is stated, so neutral is an interpretation error rather than an absent fact.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1318-A",
+      "pdf_path": "booklets/2023-06-18_de.pdf",
+      "page": 8,
+      "pdf_sha256": "d496622d23589e2c9379d2172e0d8c60eca4bbd119588c656c39d49170862881",
+      "verbatim_text_block": "Das Coronavirus bleibt unberechenbar. Wie es sich weiter \nentwickeln wird, lässt sich nicht mit Sicherheit voraussagen. Es \nist nicht ausgeschlossen, dass wieder gefährliche Virusvarian­\nten entstehen. Das Parlament hat deshalb die rechtliche Grund­\nlage für bestimmte Massnahmen im Covid-19-Gesetz bis Mitte \n2024 verlängert. So können die Behörden im Notfall rasch \nhandeln, um besonders gefährdete Personen und das Gesund­\nheitssystem zu schützen. Gegen die Verlängerung wurde das \nReferendum ergriffen.\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "Gegen die Verlängerung",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "3339e3e35ee84766a85bc1594ba9e58f1d97164f95d279d36ccb817caad5b324",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1347-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied initiative-committee statement says the 25-year transition gives all affected producers enough time to reorient production. The Italian claim says the committee considers it insufficient. The opposing assessment is explicit in actual page 19; neutral ignores this attributed sufficiency statement.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1347-A",
+      "pdf_path": "booklets/2022-09-25_de.pdf",
+      "page": 19,
+      "pdf_sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+      "verbatim_text_block": "Das Verfassungsprinzip der Tierwürde muss endlich auch \nin der Landwirtschaft respektiert werden. Die Übergangsfrist \nvon 25 Jahren gibt allen betroffenen Betrieben genug Zeit für \neine Neuausrichtung hin zu einer tierfreundlichen Produktion. \nMit dem Ja zur Initiative sichern wir eine Landwirtschaft, die \ndas Wohl von Tier, Mensch und Umwelt ins Zentrum rückt.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "genug Zeit",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        22,
+        21,
+        3,
+        5,
+        4,
+        18,
+        66,
+        12,
+        25,
+        60,
+        16,
+        19
+      ]
+    }
+  },
+  "v1.1-row-1370-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied initiative-committee statement says the 25-year transition gives all affected producers enough time to reorient production. The Italian claim says the committee considers it insufficient. The opposing assessment is explicit in actual page 19; neutral ignores this attributed sufficiency statement.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1370-A",
+      "pdf_path": "booklets/2022-09-25_de.pdf",
+      "page": 19,
+      "pdf_sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+      "verbatim_text_block": "Das Verfassungsprinzip der Tierwürde muss endlich auch \nin der Landwirtschaft respektiert werden. Die Übergangsfrist \nvon 25 Jahren gibt allen betroffenen Betrieben genug Zeit für \neine Neuausrichtung hin zu einer tierfreundlichen Produktion. \nMit dem Ja zur Initiative sichern wir eine Landwirtschaft, die \ndas Wohl von Tier, Mensch und Umwelt ins Zentrum rückt.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "genug Zeit",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        22,
+        21,
+        3,
+        5,
+        4,
+        18,
+        66,
+        12,
+        25,
+        60,
+        16,
+        19
+      ]
+    }
+  },
+  "v1.1-row-1386-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied initiative-committee statement says the 25-year transition gives all affected producers enough time to reorient production. The Italian claim says the committee considers it insufficient. The opposing assessment is explicit in actual page 19; neutral ignores this attributed sufficiency statement.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1386-A",
+      "pdf_path": "booklets/2022-09-25_de.pdf",
+      "page": 19,
+      "pdf_sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+      "verbatim_text_block": "Das Verfassungsprinzip der Tierwürde muss endlich auch \nin der Landwirtschaft respektiert werden. Die Übergangsfrist \nvon 25 Jahren gibt allen betroffenen Betrieben genug Zeit für \neine Neuausrichtung hin zu einer tierfreundlichen Produktion. \nMit dem Ja zur Initiative sichern wir eine Landwirtschaft, die \ndas Wohl von Tier, Mensch und Umwelt ins Zentrum rückt.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "genug Zeit",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        22,
+        21,
+        3,
+        5,
+        4,
+        18,
+        66,
+        12,
+        25,
+        60,
+        16,
+        19
+      ]
+    }
+  },
+  "v1.1-row-1348-A": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied online-media funding provision caps the share of eligible turnover at 60 percent, whereas the claim says 80 percent. Print funding has a different basis and cannot replace the online-media clause. Neutral fails to recognize the explicit different cap.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1348-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 62,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "2 Der Bundesrat legt die Höhe des Beitrags als Anteil des anrechenbaren Umsatzes \nfest; der Anteil beträgt höchstens 60 Prozent. Der Bundesrat berücksichtigt dabei die \nGrösse und Struktur des Markts in der jeweiligen Sprachregion. \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "höchstens 60 Prozent.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        46,
+        11,
+        64,
+        1,
+        60,
+        56,
+        3,
+        48,
+        62,
+        10,
+        58,
+        61
+      ]
+    }
+  },
+  "v1.1-row-1348-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference explicitly caps online-media funding at 60 percent of eligible turnover. The claim says 80 percent. A separate print-cost cap does not make the online turnover claim neutral; the available online clause gives the opposing cap.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1348-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 62,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "2 Der Bundesrat legt die Höhe des Beitrags als Anteil des anrechenbaren Umsatzes \nfest; der Anteil beträgt höchstens 60 Prozent. Der Bundesrat berücksichtigt dabei die \nGrösse und Struktur des Markts in der jeweiligen Sprachregion. \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "höchstens 60 Prozent.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": "4690a0181c977a9d8556592277e3e16f5f1d70d32bac9afe210325ce4e409b94",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1415-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference explicitly caps online-media funding at 60 percent of eligible turnover. The claim says 80 percent. A separate print-cost cap does not make the online turnover claim neutral; the available online clause gives the opposing cap.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1415-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 62,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "2 Der Bundesrat legt die Höhe des Beitrags als Anteil des anrechenbaren Umsatzes \nfest; der Anteil beträgt höchstens 60 Prozent. Der Bundesrat berücksichtigt dabei die \nGrösse und Struktur des Markts in der jeweiligen Sprachregion. \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "höchstens 60 Prozent.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": "4690a0181c977a9d8556592277e3e16f5f1d70d32bac9afe210325ce4e409b94",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1452-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary explicitly states the initiative text does not mention vaccinations, using general physical/mental-integrity language instead. The claim says vaccinations against coronavirus are explicitly mentioned. The denial is available, so neutral is an interpretation error.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1452-A",
+      "pdf_path": "booklets/2024-06-09_de.pdf",
+      "page": 8,
+      "pdf_sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+      "verbatim_text_block": "Die Initiative fordert, dass für Eingriffe in die körperliche \noder geistige Unversehrtheit die Zustimmung der betroffenen \nPerson vorliegen muss. Die körperliche und geistige Unver­\nsehrtheit ist schon heute in der Verfassung verankert. Dieses \nGrundrecht schützt den Körper gegen Einwirkungen durch \nden Staat. Gemäss Initiative darf zudem eine Person, die die \nZustimmung verweigert, weder bestraft noch benachteiligt \nwerden. Der Initiativtext spricht nicht von «Impfungen», \nsondern allgemein von «Eingriffen in die körperliche und \ngeistige Unversehrtheit». Er erfasst damit grundsätzlich jedes \nHandeln von Bund, Kantonen und Gemeinden, das auf den \nKörper einwirkt, etwa die Polizeiarbeit und den Strafvollzug. \nWelche konkreten Folgen ein Ja zur Initiative hätte, würde \nvon Umsetzung und Rechtsprechung abhängen.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Der Initiativtext spricht nicht",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        8,
+        40,
+        9,
+        37,
+        38,
+        39,
+        88,
+        41,
+        32,
+        3,
+        36,
+        34
+      ]
+    }
+  },
+  "v1.1-row-1457-A": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary gives three months for dwellings and six for commercial premises. The Italian claim swaps these categories. Entailment conflicts with the available category-to-duration mapping.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1457-A",
+      "pdf_path": "booklets/2024-11-24_fr.pdf",
+      "page": 8,
+      "pdf_sha256": "39d395833d051d950d37c75003b4ecbea917e221db17eed55e3cb5ffdcd364b1",
+      "verbatim_text_block": "Le code des obligations prévoit que les propriétaires de \nlogements ou de locaux commerciaux occupés par des locataires \npuissent les utiliser eux-mêmes rapidement. Le « besoin propre » \ndu propriétaire joue un rôle notamment dans trois cas. Première­\nment, le propriétaire qui vient d’acheter un bien immobilier \na le droit de résilier le bail des locataires dans les délais légaux \n(3 mois pour les logements et 6 mois pour les locaux commer­\nciaux), même si le contrat de bail prévoit un délai plus long. \nDeuxièmement, le propriétaire peut, en cas de besoin propre, \nrésilier le bail même durant la période de protection de 3 ans \nqui peut s’appliquer après un litige avec le locataire. Troisième­\nment, le besoin propre est pris en compte dans le cadre de \nla prolongation de bail que le locataire peut demander dans \nles cas de rigueur et qui lui permet de rester encore un certain \ntemps dans le logement ou les locaux commerciaux après une \nrésiliation.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "3 mois pour les logements",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        8,
+        42,
+        43,
+        36,
+        9,
+        72,
+        40,
+        41,
+        1,
+        34,
+        3,
+        35
+      ]
+    }
+  },
+  "v1.1-row-1457-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference states three months for dwellings and six for commercial premises. The claim reverses them; neutral ignores the explicit contrary mapping.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1457-A",
+      "pdf_path": "booklets/2024-11-24_fr.pdf",
+      "page": 8,
+      "pdf_sha256": "39d395833d051d950d37c75003b4ecbea917e221db17eed55e3cb5ffdcd364b1",
+      "verbatim_text_block": "Le code des obligations prévoit que les propriétaires de \nlogements ou de locaux commerciaux occupés par des locataires \npuissent les utiliser eux-mêmes rapidement. Le « besoin propre » \ndu propriétaire joue un rôle notamment dans trois cas. Première­\nment, le propriétaire qui vient d’acheter un bien immobilier \na le droit de résilier le bail des locataires dans les délais légaux \n(3 mois pour les logements et 6 mois pour les locaux commer­\nciaux), même si le contrat de bail prévoit un délai plus long. \nDeuxièmement, le propriétaire peut, en cas de besoin propre, \nrésilier le bail même durant la période de protection de 3 ans \nqui peut s’appliquer après un litige avec le locataire. Troisième­\nment, le besoin propre est pris en compte dans le cadre de \nla prolongation de bail que le locataire peut demander dans \nles cas de rigueur et qui lui permet de rester encore un certain \ntemps dans le logement ou les locaux commerciaux après une \nrésiliation.\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "3 mois pour les logements",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "469012da764be2f628c698d5284886132897900c956323e788fd05dd5b547feb",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1461-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary explicitly allows advertising in kiosks, press and Internet under the indirect counterproposal unless it targets minors. The claim says the counterproposal bans press/Internet advertising. The opposing provision is available; neutral is an interpretation error.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1461-A",
+      "pdf_path": "booklets/2022-02-13_fr.pdf",
+      "page": 6,
+      "pdf_sha256": "2d8cb9710acf095b5bdb2f5cf431f1bdd93e21b5e250b168170a1e249b0b7a22",
+      "verbatim_text_block": "Le Conseil fédéral et le Parlement estiment que l’initiative \nva trop loin. Ils lui opposent la nouvelle loi sur les produits du \ntabac en tant que contre-projet indirect. Ces dispositions inter\ndiraient la publicité pour les produits du tabac et la cigarette \nélectronique sur les affiches et au cinéma. De même, elles \ninterdiraient aux multinationales du tabac de distribuer des \ncigarettes gratuites et de parrainer des manifestations inter\nnationales en Suisse. La publicité dans les kiosques et la presse \net sur Internet resterait autorisée (sauf si elle devait cibler les \nmineurs), de même que le parrainage de manifestations natio\nnales. La loi sur les produits du tabac peut entrer en vigueur \nquel que soit le résultat de la votation sur l’initiative.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "La publicité dans les kiosques",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        6,
+        28,
+        34,
+        7,
+        24,
+        64,
+        33,
+        30,
+        31,
+        32,
+        25,
+        27
+      ]
+    }
+  },
+  "v1.1-row-1468-A": {
+    "categories": [
+      "G",
+      "I",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied law distinguishes 70-percent federal support for annual turnover up to five million francs from 100-percent support above five million. The claim says full support up to five million. Entailment misapplies the amount attached to the turnover condition.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1468-A",
+      "pdf_path": "booklets/2021-11-28_de.pdf",
+      "page": 42,
+      "pdf_sha256": "f463fb7ea4b7f663d5e2af0f67bc8e364778ee3c0a19f56caadc655bc2670a7b",
+      "verbatim_text_block": "a. \n70 Prozent an ihre Härtefallmassnahmen nach Absatz 1 zugunsten von Un\nternehmen mit einem Jahresumsatz bis 5 Millionen Franken;  \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "70 Prozent",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        8,
+        37,
+        33,
+        48,
+        30,
+        1,
+        32,
+        3,
+        9,
+        38,
+        42,
+        36
+      ]
+    }
+  },
+  "v1.1-row-1468-B": {
+    "categories": [
+      "G",
+      "I",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference contains both turnover brackets and their 70/100-percent support levels. The claim assigns full coverage to the lower bracket. Entailment conflicts with the available conditional numerical mapping.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1468-A",
+      "pdf_path": "booklets/2021-11-28_de.pdf",
+      "page": 42,
+      "pdf_sha256": "f463fb7ea4b7f663d5e2af0f67bc8e364778ee3c0a19f56caadc655bc2670a7b",
+      "verbatim_text_block": "a. \n70 Prozent an ihre Härtefallmassnahmen nach Absatz 1 zugunsten von Un\nternehmen mit einem Jahresumsatz bis 5 Millionen Franken;  \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "70 Prozent",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "46566ab21d1657eaacd83d32c9c5236eae043185e7460c26ea67292fd61098e4",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1474-A": {
+    "categories": [
+      "G",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied summary states the indirect counterproposal takes effect if the initiative is rejected and no referendum is requested. The claim instead conditions it on acceptance. Entailment reverses the explicitly stated triggering condition.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1474-A",
+      "pdf_path": "booklets/2021-11-28_it.pdf",
+      "page": 4,
+      "pdf_sha256": "72bc2e78fd62f8452a8fe9aebd31c5740e77d30e298ed940dcbf788b4ab8cba2",
+      "verbatim_text_block": "Il Consiglio federale e il Parlamento ritengono eccessive  \nle richieste dell’iniziativa, alla quale contrappongono un contro\nprogetto indiretto. Per promuovere la formazione e la forma\nzione continua, il controprogetto prevede di stanziare ﬁno  \na un miliardo di franchi nell’arco di otto anni. Stabilisce inoltre \nche gli infermieri possano fatturare direttamente determinate \nprestazioni, ma introduce un meccanismo di controllo volto  \na impedire un aumento dei costi della salute e dei premi delle \ncasse malati. Il controprogetto entra in vigore se l’iniziativa  \nè respinta e sempre che non sia chiesto il referendum.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "è respinta",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": [
+        4,
+        10,
+        18,
+        5,
+        17,
+        12,
+        16,
+        14,
+        13,
+        15,
+        48,
+        3
+      ]
+    }
+  },
+  "v1.1-row-1242-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The original voting text on page 57 specifies forty million francs annually for morning newspaper delivery. The claim says sixty million. Page 57 is absent from the cross-language context; the recorded neutral reasoning reports that the relevant delivery budget is unavailable. This review records the omitted decisive clause, not a confirmed arithmetic error.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1242-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 57,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "5 Der Bund leistet zur Gewährung der Frühzustellermässigungen jährlich einen \nBeitrag von 40 Millionen Franken. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": [
+        46,
+        3,
+        11,
+        56,
+        64,
+        1,
+        10,
+        50,
+        48,
+        60,
+        52,
+        55
+      ]
+    }
+  },
+  "v1.1-row-1242-B": {
+    "categories": [
+      "G",
+      "I"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied voting-text reference explicitly provides forty million francs annually for morning delivery. The claim says sixty million. Neutral fails to use the available different budget amount.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1242-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 57,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "5 Der Bund leistet zur Gewährung der Frühzustellermässigungen jährlich einen \nBeitrag von 40 Millionen Franken. \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "40 Millionen Franken",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": "4690a0181c977a9d8556592277e3e16f5f1d70d32bac9afe210325ce4e409b94",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 1,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-186-B": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference states companies would no longer pay any broadcasting fee under the initiative. The counterproposal only partly exempts companies, but that is a different proposal. The claim concerns acceptance of the initiative, so contradiction misreads available proposal scope.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-186-A",
+      "pdf_path": "booklets/2026-03-08_it.pdf",
+      "page": 31,
+      "pdf_sha256": "a6ff4964b4cfc0a9d82936cb1e1200396201d66ea29331c5c94d312b35b64a1b",
+      "verbatim_text_block": "Riducendo i fondi provenienti dal canone l’iniziativa \nintende ridimensionare la SSR e circoscriverne l’offerta a quella \ndi base indispensabile per la collettività. Essa chiede di limitare \nil canone delle economie domestiche a 200 franchi all’anno; \ninoltre, le imprese non dovranno versare più alcun canone. Con \nil ridimensionamento della SSR e l’eliminazione delle prestazio­\nni pubblicistiche l’iniziativa mira a rafforzare la libertà impren­\nditoriale degli offerenti privati.\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "le imprese non dovranno versare più alcun canone.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "13e36aa3ddacb388ecf6db9de8acaa2b78ef4135cecaceacf97695a953d4f909",
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-188-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The referendum-submission clause begins on supplied page 46 but its decisive continuation on page 47 says submissions may be made without voting-right certification within the referendum deadline. Page 47 is absent. The cross-language context therefore lacks the condition needed to support the claim; this is a page-boundary retrieval omission.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-188-A",
+      "pdf_path": "booklets/2021-06-13_de.pdf",
+      "page": 47,
+      "pdf_sha256": "521e39af06717d2adeb2f787a08b533164921a952c59b7ad3e5b114fcadec744",
+      "verbatim_text_block": "auch ohne Stimmrechtsbescheinigung innerhalb der Referendumsfrist bei der Bun\ndeskanzlei einzureichen sind. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        46,
+        45,
+        9,
+        39,
+        40,
+        51,
+        38,
+        43,
+        8,
+        41,
+        144,
+        44
+      ]
+    }
+  },
+  "v1.1-row-235-A": {
+    "categories": [],
+    "review_status": "scope_adjudication_pending",
+    "source_reason": "Gold is entailment, but the claim attributes to the committee the view that the direct counterproposal avoids unnecessary legal complexity by reusing existing formulations. Exact support on page 22 is explicitly attributed to both parliamentary chambers, not the initiative committee. Supplied page 20 instead contains the committee objection that the counterproposal remains unclear. The contradiction prediction may therefore be defensible under the stated committee attribution. This is a gold/speaker-scope adjudication question; no gold label is changed and no model cause E/G is confirmed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-235-A",
+      "pdf_path": "booklets/2026-03-08_de.pdf",
+      "page": 22,
+      "pdf_sha256": "d0c794f37d6d2cb25e9969ed058e2a7d7c3e2508f7f03e2b5e90415d364f6170",
+      "verbatim_text_block": "Beide Räte unterstützten mit grosser Mehrheit den direk­\nten Gegenentwurf. Die Initiative beurteilten sie als ungeeig­\nnet. Ihrer Ansicht nach nimmt der Gegenentwurf die Anliegen \nder Initiative auf. Er vermeidet aber eine unnötige Verkompli­\nzierung der Rechtsordnung, weil er bestehende Formulierun­\ngen übernimmt.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Beide Räte",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        27,
+        72,
+        26,
+        4,
+        16,
+        22,
+        2,
+        6,
+        18,
+        17,
+        20,
+        21
+      ]
+    },
+    "gold_label_changed": false,
+    "requires_independent_speaker_scope_adjudication": true
+  },
+  "v1.1-row-317-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied voting text permits wolf regulation from September 1 to January 31; the preceding clause on the same page requires consultation of OFEV. The claim matches these available provisions. Contradiction misinterprets available statutory scope.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-317-A",
+      "pdf_path": "booklets/2020-09-27_fr.pdf",
+      "page": 40,
+      "pdf_sha256": "8e3c67fd515a7438d1ec687be65001c01a0ece56eb952fdd23f9ca23c8393355",
+      "verbatim_text_block": "b. \nde loups: durant la période allant du 1er septembre au 31 janvier; \n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "du 1er septembre au 31 janvier",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        44,
+        40,
+        32,
+        6,
+        38,
+        29,
+        37,
+        7,
+        68,
+        34,
+        41,
+        88
+      ]
+    }
+  },
+  "v1.1-row-342-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The detailed explanation on page 10 explicitly covers controlled subsidiaries/economically dependent suppliers even when legally independent. The supplied summary on page 4 states controlled-company liability more briefly; supplied page 18 states economic control, while detailed liability continues on omitted page 19. Page 10 is absent. The omitted explicit qualification supports a contextual-detail omission, with partial related evidence acknowledged rather than claiming zero relevant retrieval.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-342-A",
+      "pdf_path": "booklets/2020-11-29_fr.pdf",
+      "page": 10,
+      "pdf_sha256": "62870b79f34f5d9af48ca53709090140403133edc23ef393bf7b17bcdd35c48f",
+      "verbatim_text_block": "L’initiative demande par ailleurs que les entreprises \nsuisses ne répondent plus uniquement de leurs propres fautes, \nmais aussi de celles des entreprises qu’elles contrôlent (en \nparticulier les filiales et les fournisseurs en situation de dépen\ndance économique), même si ces dernières sont juridiquement \nindépendantes. Une action en justice pourra donc être inten\ntée contre une entreprise suisse pour des dommages qui ont \nété causés à l’étranger par une entreprise qu’elle contrôle. Si \nune plainte est déposée, l’initiative prévoit que l’affaire soit \njugée par un tribunal suisse en droit suisse. L’entreprise ne \nrépondra pas du dommage si elle prouve qu’elle a fait preuve \nde toute la diligence à laquelle elle était tenue. Actuellement, \nles entreprises ne répondent que des dommages qu’elles ont \ncausés elles-mêmes et, en général, conformément au droit du \npays concerné.\n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        18,
+        9,
+        32,
+        5,
+        17,
+        1,
+        8,
+        3,
+        4,
+        16,
+        14,
+        12
+      ]
+    }
+  },
+  "v1.1-row-351-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Supplied page 25 explicitly includes mainly adult-targeted tobacco advertising accessible to minors. Supplied legal page 34 also requires promotion of children/youth health and bans advertising that reaches them. The Italian claim combines these available initiative provisions; contradiction does not reflect a missing source.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-351-A",
+      "pdf_path": "booklets/2022-02-13_de.pdf",
+      "page": 25,
+      "pdf_sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "verbatim_text_block": "Die Initiantinnen und Initianten möchten jede Art von \nWerbung verbieten, die Kinder und Jugendliche erreicht. Damit \nwürde auch Werbung verboten, die sich zwar hauptsächlich  \nan Erwachsene richtet, aber auch für Kinder und Jugendliche \nzugänglich ist. Es wäre nur noch Werbung zulässig, die auf \nErwachsene abzielt und Minderjährige nicht erreicht, etwa \nWerbemails, Prospekte und gezielte Werbung im Internet oder \nin den sozialen Medien.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Erwachsene",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        34,
+        7,
+        64,
+        24,
+        6,
+        25,
+        28,
+        30,
+        33,
+        31,
+        32,
+        1
+      ]
+    }
+  },
+  "v1.1-row-374-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied housing-initiative summary explicitly says the Federal Council and Parliament rejected the initiative. The Italian claim paraphrases that statement. A recommendation to vote against it does not make the summary statement contradictory; exact support is available on page 4.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-374-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 4,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "L’initiative demande à la Confédération et aux cantons  \nde soutenir davantage l’offre de logements à loyer modéré. \nElle impose qu’au moins 10 % des nouveaux logements con- \nstruits dans l’ensemble du pays appartiennent à des maîtres \nd’ouvrage d’utilité publique, lesquels sont le plus souvent des \ncoopératives d’habitation. Pour favoriser la construction de  \nce type de logements, les cantons et les communes devraient \npouvoir introduire un droit de préemption en leur faveur. Ils \nrecevraient en outre un tel droit pour les biens-fonds apparte\nnant à la Confédération ou aux entreprises qui lui sont liées. \nEnfin, l’initiative entend empêcher que des subventions visant \nles assainissements énergétiques n’aboutissent à des projets \nluxueux et à une augmentation disproportionnée des loyers. \nLe Conseil fédéral et le Parlement ont rejeté l’initiative. Le \nParlement a cependant décidé d’allouer un nouveau crédit au \nfonds de roulement qui octroie des prêts en faveur de la \nconstruction de logements d’utilité publique. Le fonds ne sera \ntoutefois réalimenté que  \nsi l’initiative est rejetée.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "ont rejeté l’initiative.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        11,
+        15,
+        16,
+        4,
+        32,
+        17,
+        5,
+        1,
+        8,
+        3,
+        19,
+        12
+      ]
+    }
+  },
+  "v1.1-row-382-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied housing-initiative summary explicitly says the Federal Council and Parliament rejected the initiative. The Italian claim paraphrases that statement. A recommendation to vote against it does not make the summary statement contradictory; exact support is available on page 4.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-382-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 4,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "L’initiative demande à la Confédération et aux cantons  \nde soutenir davantage l’offre de logements à loyer modéré. \nElle impose qu’au moins 10 % des nouveaux logements con- \nstruits dans l’ensemble du pays appartiennent à des maîtres \nd’ouvrage d’utilité publique, lesquels sont le plus souvent des \ncoopératives d’habitation. Pour favoriser la construction de  \nce type de logements, les cantons et les communes devraient \npouvoir introduire un droit de préemption en leur faveur. Ils \nrecevraient en outre un tel droit pour les biens-fonds apparte\nnant à la Confédération ou aux entreprises qui lui sont liées. \nEnfin, l’initiative entend empêcher que des subventions visant \nles assainissements énergétiques n’aboutissent à des projets \nluxueux et à une augmentation disproportionnée des loyers. \nLe Conseil fédéral et le Parlement ont rejeté l’initiative. Le \nParlement a cependant décidé d’allouer un nouveau crédit au \nfonds de roulement qui octroie des prêts en faveur de la \nconstruction de logements d’utilité publique. Le fonds ne sera \ntoutefois réalimenté que  \nsi l’initiative est rejetée.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "ont rejeté l’initiative.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        11,
+        15,
+        16,
+        4,
+        32,
+        17,
+        5,
+        1,
+        8,
+        3,
+        19,
+        12
+      ]
+    }
+  },
+  "v1.1-row-389-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied housing-initiative summary explicitly says the Federal Council and Parliament rejected the initiative. The Italian claim paraphrases that statement. A recommendation to vote against it does not make the summary statement contradictory; exact support is available on page 4.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-389-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 4,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "L’initiative demande à la Confédération et aux cantons  \nde soutenir davantage l’offre de logements à loyer modéré. \nElle impose qu’au moins 10 % des nouveaux logements con- \nstruits dans l’ensemble du pays appartiennent à des maîtres \nd’ouvrage d’utilité publique, lesquels sont le plus souvent des \ncoopératives d’habitation. Pour favoriser la construction de  \nce type de logements, les cantons et les communes devraient \npouvoir introduire un droit de préemption en leur faveur. Ils \nrecevraient en outre un tel droit pour les biens-fonds apparte\nnant à la Confédération ou aux entreprises qui lui sont liées. \nEnfin, l’initiative entend empêcher que des subventions visant \nles assainissements énergétiques n’aboutissent à des projets \nluxueux et à une augmentation disproportionnée des loyers. \nLe Conseil fédéral et le Parlement ont rejeté l’initiative. Le \nParlement a cependant décidé d’allouer un nouveau crédit au \nfonds de roulement qui octroie des prêts en faveur de la \nconstruction de logements d’utilité publique. Le fonds ne sera \ntoutefois réalimenté que  \nsi l’initiative est rejetée.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "ont rejeté l’initiative.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        11,
+        15,
+        16,
+        4,
+        32,
+        17,
+        5,
+        1,
+        8,
+        3,
+        19,
+        12
+      ]
+    }
+  },
+  "v1.1-row-453-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied housing-initiative summary explicitly says the Federal Council and Parliament rejected the initiative. The Italian claim paraphrases that statement. A recommendation to vote against it does not make the summary statement contradictory; exact support is available on page 4.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-453-A",
+      "pdf_path": "booklets/2020-02-09_fr.pdf",
+      "page": 4,
+      "pdf_sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "verbatim_text_block": "L’initiative demande à la Confédération et aux cantons  \nde soutenir davantage l’offre de logements à loyer modéré. \nElle impose qu’au moins 10 % des nouveaux logements con- \nstruits dans l’ensemble du pays appartiennent à des maîtres \nd’ouvrage d’utilité publique, lesquels sont le plus souvent des \ncoopératives d’habitation. Pour favoriser la construction de  \nce type de logements, les cantons et les communes devraient \npouvoir introduire un droit de préemption en leur faveur. Ils \nrecevraient en outre un tel droit pour les biens-fonds apparte\nnant à la Confédération ou aux entreprises qui lui sont liées. \nEnfin, l’initiative entend empêcher que des subventions visant \nles assainissements énergétiques n’aboutissent à des projets \nluxueux et à une augmentation disproportionnée des loyers. \nLe Conseil fédéral et le Parlement ont rejeté l’initiative. Le \nParlement a cependant décidé d’allouer un nouveau crédit au \nfonds de roulement qui octroie des prêts en faveur de la \nconstruction de logements d’utilité publique. Le fonds ne sera \ntoutefois réalimenté que  \nsi l’initiative est rejetée.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "ont rejeté l’initiative.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        11,
+        15,
+        16,
+        4,
+        32,
+        17,
+        5,
+        1,
+        8,
+        3,
+        19,
+        12
+      ]
+    }
+  },
+  "v1.1-row-385-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "French pages 7 and 28 explicitly give the normal VAT increase from 7.7 to 8.1 percent. Neither page is supplied. The available voting text gives a relative 0.4-point rise, without the absolute starting/ending rates. This cross-language context omits the decisive absolute-rate explanation; neutral is not assigned a confirmed arithmetic cause.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-385-A",
+      "pdf_path": "booklets/2022-09-25_fr.pdf",
+      "page": 28,
+      "pdf_sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "verbatim_text_block": "Ces économies ne seront cependant pas suffisantes pour \nstabiliser les finances de l’AVS et garantir les rentes. AVS 21 \nprévoit donc également d’augmenter les recettes grâce à la \nhausse de la TVA. Le taux normal de TVA passera ainsi de 7,7 à \n8,1 %. Le taux réduit, qui s’applique à des biens tels que les \ndenrées alimentaires, les médicaments, les journaux, les maga­\nzines ou encore les livres, passera quant à lui de 2,5 à 2,6 %. \nEnfin, le taux spécial pour l’hébergement passera de 3,7 à \n3,8 %. Pour un panier d’achats de 100 francs, le surcoût lié au \nfinancement de l’AVS sera de 40 centimes au maximum ; s’il \ns’agit de denrées alimentaires, le surcoût sera de 10 centimes \nau maximum. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 1,
+      "context_pages": [
+        46,
+        47,
+        55,
+        54,
+        36,
+        68,
+        38,
+        52,
+        53,
+        9,
+        3,
+        50
+      ]
+    }
+  },
+  "v1.1-row-452-A": {
+    "categories": [
+      "F",
+      "H"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "French pages 7 and 28 explicitly give the normal VAT increase from 7.7 to 8.1 percent. Neither page is supplied. The available voting text gives a relative 0.4-point rise, without the absolute starting/ending rates. This cross-language context omits the decisive absolute-rate explanation; neutral is not assigned a confirmed arithmetic cause.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-452-A",
+      "pdf_path": "booklets/2022-09-25_fr.pdf",
+      "page": 28,
+      "pdf_sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "verbatim_text_block": "Ces économies ne seront cependant pas suffisantes pour \nstabiliser les finances de l’AVS et garantir les rentes. AVS 21 \nprévoit donc également d’augmenter les recettes grâce à la \nhausse de la TVA. Le taux normal de TVA passera ainsi de 7,7 à \n8,1 %. Le taux réduit, qui s’applique à des biens tels que les \ndenrées alimentaires, les médicaments, les journaux, les maga­\nzines ou encore les livres, passera quant à lui de 2,5 à 2,6 %. \nEnfin, le taux spécial pour l’hébergement passera de 3,7 à \n3,8 %. Pour un panier d’achats de 100 francs, le surcoût lié au \nfinancement de l’AVS sera de 40 centimes au maximum ; s’il \ns’agit de denrées alimentaires, le surcoût sera de 10 centimes \nau maximum. \n",
+      "physical_page_in_recorded_context": false
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 1,
+      "context_pages": [
+        46,
+        47,
+        55,
+        54,
+        36,
+        68,
+        38,
+        52,
+        53,
+        9,
+        3,
+        50
+      ]
+    }
+  },
+  "v1.1-row-394-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Actual supplied pages 10 and 11 describe all four initiative requirements: binding workplace rules, appropriate compensation, professional development and direct billing of certain services. Page 11 contains the latter three, while page 10 specifies workplace regulation. The long Italian claim combines these available requirements; contradiction is not explained by absent retrieval.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-394-A",
+      "pdf_path": "booklets/2021-11-28_de.pdf",
+      "page": 11,
+      "pdf_sha256": "f463fb7ea4b7f663d5e2af0f67bc8e364778ee3c0a19f56caadc655bc2670a7b",
+      "verbatim_text_block": "Der Bund müsste auch eine angemessene Abgeltung der \nPflegeleistungen sicherstellen. Würden diese mit einem \nhöheren Tarif abgegolten, könnten die Betriebe nach Ansicht \nder Initiantinnen und Initianten etwa die Arbeit auf mehr \nPflegefachkräfte verteilen. Dies würde den Beruf attraktiver \nmachen und die Pflege verbessern.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "angemessene Abgeltung",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        5,
+        17,
+        18,
+        4,
+        10,
+        15,
+        12,
+        14,
+        16,
+        42,
+        39,
+        11
+      ]
+    }
+  },
+  "v1.1-row-451-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "Actual supplied pages 10 and 11 describe all four initiative requirements: binding workplace rules, appropriate compensation, professional development and direct billing of certain services. Page 11 contains the latter three, while page 10 specifies workplace regulation. The long Italian claim combines these available requirements; contradiction is not explained by absent retrieval.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-451-A",
+      "pdf_path": "booklets/2021-11-28_de.pdf",
+      "page": 11,
+      "pdf_sha256": "f463fb7ea4b7f663d5e2af0f67bc8e364778ee3c0a19f56caadc655bc2670a7b",
+      "verbatim_text_block": "Der Bund müsste auch eine angemessene Abgeltung der \nPflegeleistungen sicherstellen. Würden diese mit einem \nhöheren Tarif abgegolten, könnten die Betriebe nach Ansicht \nder Initiantinnen und Initianten etwa die Arbeit auf mehr \nPflegefachkräfte verteilen. Dies würde den Beruf attraktiver \nmachen und die Pflege verbessern.\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "angemessene Abgeltung",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        5,
+        17,
+        18,
+        4,
+        10,
+        15,
+        12,
+        14,
+        16,
+        42,
+        39,
+        11
+      ]
+    }
+  },
+  "v1.1-row-476-A": {
+    "categories": [
+      "G"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied referendum committee page 35 explicitly says existing laws suffice to protect against pandemics and the COVID-law revision is unnecessary. The Italian claim attributes this sufficiency position to the committee. Contradiction conflicts with available attributed support.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-476-A",
+      "pdf_path": "booklets/2021-11-28_fr.pdf",
+      "page": 35,
+      "pdf_sha256": "340fecfcdcdf292824addf73002c60e91a86744648355665035a5356a38d2225",
+      "verbatim_text_block": "Les lois existantes suffisent pour nous protéger contre les \npandémies. De plus, les voyages à l’étranger restent possibles \nsans cette révision inutile et excessive. Ne soyez donc pas dupes ! \nFaites en sorte que notre pays, la Suisse, reste un lieu où \nchacun jouit des mêmes droits et où personne n’est surveillé. \nPar conséquent, dites non à la révision de la loi COVID-19 !\n",
+      "physical_page_in_recorded_context": true,
+      "decisive_source_excerpt": "Les lois existantes suffisent",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 0,
+      "predicted_label": 2,
+      "context_pages": [
+        9,
+        30,
+        33,
+        8,
+        46,
+        37,
+        36,
+        45,
+        39,
+        38,
+        34,
+        35
+      ]
+    }
+  },
+  "v1.1-row-1167-B": {
+    "categories": [
+      "G",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied reference states that accepting the climate counterproposal withdraws the Glacier Initiative; only rejection leaves the committee to decide whether the initiative is put to a vote. The claim says acceptance also puts that initiative to a popular vote. Entailment reverses the available conditional outcome.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1167-A",
+      "pdf_path": "booklets/2023-06-18_de.pdf",
+      "page": 29,
+      "pdf_sha256": "d496622d23589e2c9379d2172e0d8c60eca4bbd119588c656c39d49170862881",
+      "verbatim_text_block": "Die Vorlage ist ein indirekter Gegenvorschlag zur Glet­\nscher-Initiative. Das Initiativkomitee hat die Initiative zuguns­\nten des Gegenvorschlags bedingt zurückgezogen. Das heisst: \nWenn das Volk die Vorlage annimmt, ist die Initiative vom \nTisch. Bei einem Nein zur Vorlage entscheidet das Initiativ­\nkomitee, ob die Gletscher-Initiative vors Volk kommt.\n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "ist die Initiative vom Tisch.",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": false
+    },
+    "reference_sha256": "c94a6444029fa19cd868b4a9fc7e7bde87e51cbb85d9f048c2d2409aec655fb4",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-1174-B": {
+    "categories": [
+      "G",
+      "J"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The complete supplied legal reference sets entry into force on January 1 of the sixth year after referendum expiry/approval, with an option for the Federal Council to act earlier. The claim says immediate entry into force after referendum expiry/approval. Entailment overlooks an explicit deferred statutory commencement date.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-1174-A",
+      "pdf_path": "booklets/2026-03-08_it.pdf",
+      "page": 70,
+      "pdf_sha256": "a6ff4964b4cfc0a9d82936cb1e1200396201d66ea29331c5c94d312b35b64a1b",
+      "verbatim_text_block": "3 La presente legge entra in vigore il 1° gennaio del sesto anno successivo alla decor-\nrenza infruttuosa del termine di referendum o alla sua accettazione in votazione \npopolare. Il Consiglio federale può porla in vigore prima di tale data. \n",
+      "physical_page_in_recorded_context": null,
+      "decisive_source_excerpt": "del sesto anno",
+      "normalized_decisive_excerpt_in_actual_supplied_context": true,
+      "normalized_entire_source_block_in_actual_supplied_context": true
+    },
+    "reference_sha256": "d4acd34ad3647c9e681820cefc7f28d15bf9fbda7e34bdc1727c8f9c0e8109de",
+    "applies_to": {
+      "gold_label": 2,
+      "predicted_label": 0,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-576-A": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The named vote is the nursing initiative; the claim that acceptance means Swiss EU accession is outside its stated nursing measures. Other booklet passages about travel/certificates do not assert EU membership. Gold neutral remains unchanged; the contradiction is category C, without inferring an internal speaker or retrieval cause.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-576-A",
+      "pdf_path": "booklets/2021-11-28_fr.pdf",
+      "page": 4,
+      "pdf_sha256": "340fecfcdcdf292824addf73002c60e91a86744648355665035a5356a38d2225",
+      "verbatim_text_block": "L’initiative demande que la Confédération et les cantons \nsoutiennent les soins infirmiers et veillent à ce que ceux-ci \nsoient suffisants, accessibles à tous et de qualité. Suffisamment \nd’infirmiers diplômés devront être formés et les soignants \ndevront effectuer des tâches qui correspondent à leur forma-\ntion et à leurs compétences. L’initiative demande aussi à la \nConfédération de réglementer les conditions de travail et de \ngarantir une rémunération appropriée des prestations de soin. \nPar ailleurs, les infirmiers devront pouvoir facturer certaines \nprestations directement aux caisses-maladie.\n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": [
+        18,
+        5,
+        48,
+        4,
+        16,
+        19,
+        10,
+        14,
+        11,
+        17,
+        12,
+        13
+      ]
+    }
+  },
+  "v1.1-row-763-B": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied reference concerns the economic partnership with Indonesia. It does not establish the claimed Swiss free-trade agreement with Japan in 2019. A different partner/agreement does not disprove an independent Japan claim. Record the neutral-to-contradiction error only; no numerical cause is inferred.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-763-A",
+      "pdf_path": "booklets/2021-03-07_fr.pdf",
+      "page": 8,
+      "pdf_sha256": "127fe5bf35487ae5327cf27553838123974263f140d924fc5c1e73c0fca0bfcf",
+      "verbatim_text_block": "Il est important pour les entreprises suisses d’exporter et \nd’avoir des relations économiques fiables. Pour garantir et \naméliorer leur accès aux marchés étrangers, la Suisse entretient \nun vaste réseau d’accords avec des pays partenaires. Aujourd’hui, \ndes droits de douane élevés et d’autres barrières entravent le \ncommerce avec l’Indonésie, le quatrième pays le plus peuplé du \nmonde. C’est pourquoi la Suisse a également négocié un accord \navec ce pays. L’accord fait l’objet d’un référendum, notamment \nau motif qu’il réduit, à certaines conditions, les droits de \ndouane sur les importations d’huile de palme.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "920fa29fff127454effe3bfb59424f2fa880b0dc071ea3cb0358be9c4028e0af",
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-854-A": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The named vote concerns a thirteenth AHV pension payment. The separate retirement-age initiative proposes 66, but that does not establish a Federal Council recommendation to lower men’s retirement age to 63. The specific attributed recommendation is unsupported; gold neutral is preserved and only C is confirmed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-854-A",
+      "pdf_path": "booklets/2024-03-03_de.pdf",
+      "page": 4,
+      "pdf_sha256": "53c7cc72c28f80969ed56d7813ad8c05e505b1817923418d0dfa45368a6bd07e",
+      "verbatim_text_block": "Die Initiative will die Altersrenten der AHV um eine \nMonatsrente erhöhen. Zu den 12 Monatsrenten käme jedes \nJahr eine 13. Rente dazu. Die Initiative bestimmt auch, dass \ndie Ergänzungsleistungen wegen der 13. Rente nicht gekürzt \nwerden dürfen. Die maximale jährliche Altersrente würde \nfür Einzelpersonen um 2450 Franken auf 31 850 Franken und \nfür Ehepaare um 3675 Franken auf 47 775 Franken steigen. \nDurch diese Erhöhung würden die Kosten für die 13. AHV-\nRente bei der Einführung voraussichtlich etwa 4,1 Milliarden \nFranken betragen; davon müsste der Bund rund 800 Millionen \nFranken bezahlen. Danach würden die Kosten schnell weiter \nzunehmen. Die Initiative lässt die Frage der Finanzierung offen. \nDank verschiedenen Reformen sind die Leistungen der AHV \nheute gut finanziert; nach 2030 ist jedoch mit Defiziten \nzu rechnen – auch ohne 13. AHV-Rente. Würde die 13. Rente \neingeführt, bräuchte die AHV noch zusätzliche Einnahmen \noder sie müsste Leistungen kürzen.  \n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": [
+        3,
+        18,
+        1,
+        32,
+        5,
+        4,
+        8,
+        17,
+        11,
+        21,
+        31,
+        16
+      ]
+    }
+  },
+  "v1.1-row-859-B": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied reference records Federal Council opposition to the biodiversity initiative. The claim instead concerns its recommendation on a statutory minimum-wage initiative, a different topic. Opposition to biodiversity does not contradict approval of an unspecified minimum-wage proposal. Only C is confirmed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-859-A",
+      "pdf_path": "booklets/2024-09-22_de.pdf",
+      "page": 5,
+      "pdf_sha256": "d8e0047ae589df3bdaa91c93fcb0f6dd0cbb5e36f7aab00fe293ad996a9bfed4",
+      "verbatim_text_block": "Für Bundesrat und Parlament geht die Initiative zu weit. \nSchon heute werden wertvolle Biotope, Landschaften und \nOrtsbilder geschützt, und die Biodiversität wird gefördert. \nBei einer Annahme würden wichtige Anliegen wie die Energie­\nversorgung, die Landwirtschaft oder die Siedlungsentwicklung \nzu stark eingeschränkt.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "a072ef3c8427a730b54de90ac585c0f367499f97d56f2f6b4f4cfb342165b27b",
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-924-A": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The 2021 booklet explains face-covering, e-ID and the Indonesia agreement, not a 2022 public approval of a growth-hormone meat-import ban. The claimed later vote outcome is outside the supplied source. Gold neutral remains unchanged; unsupported outcome is not treated as evidence of contradiction.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-924-A",
+      "pdf_path": "booklets/2021-03-07_it.pdf",
+      "page": 4,
+      "pdf_sha256": "e6ffd768c3c65b9ca19566bc6bc6fda6f1f9e4324cce7898475e02bfec526e21",
+      "verbatim_text_block": "L’iniziativa popolare «Sì al divieto di dissimulare il proprio \nviso» chiede che in Svizzera nessuno possa dissimulare il proprio \nvolto. Tale norma sarebbe applicabile in tutti i luoghi accessibili \nal pubblico come ad esempio per strada, negli uffici ammini\nstrativi e nei trasporti pubblici, negli stadi di calcio, nei risto\nranti, nei negozi o all’aperto nella natura. Sono previste eccezio\nni unicamente per i luoghi di culto e per motivi inerenti alla \nsalute, alla sicurezza, alle condizioni climatiche e alle usanze \nlocali. Sono escluse ulteriori eccezioni ad esempio per le turiste \nche indossano il velo integrale.\n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": [
+        18,
+        4,
+        10,
+        5,
+        1,
+        17,
+        56,
+        3,
+        12,
+        16,
+        14,
+        15
+      ]
+    }
+  },
+  "v1.1-row-950-B": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The supplied reference concerns the hunting law and wolf regulation. Its recommendation to approve that law does not establish the Federal Council position on a nuclear-energy-law revision. Gold neutral is retained; only the off-topic neutral-to-contradiction confusion is confirmed.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-950-A",
+      "pdf_path": "booklets/2020-09-27_fr.pdf",
+      "page": 6,
+      "pdf_sha256": "8e3c67fd515a7438d1ec687be65001c01a0ece56eb952fdd23f9ca23c8393355",
+      "verbatim_text_block": "La loi révisée sur la chasse tient compte de l’augmentation \ndu nombre de loups en Suisse. Les cantons pourront désormais \nréguler les populations de loups à titre préventif. Le loup reste \ntoutefois une espèce protégée. L’objectif est que les loups \nconservent leur crainte de l’homme et des zones habitées, que \nles dommages causés aux moutons et aux chèvres diminuent et \nqu’il y ait ainsi moins de conﬂits. La loi révisée améliore égale\nment la protection de diverses espèces sauvages, par exemple \ncelle des oiseaux d’eau. Les biotopes de la faune sauvage seront \npar ailleurs mieux reliés entre eux.\n",
+      "physical_page_in_recorded_context": null
+    },
+    "reference_sha256": "94099b0a9a86e88a15b52ec167d89c8977e5b5a27624b619a0b05ada6dd4bdaf",
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": []
+    }
+  },
+  "v1.1-row-992-A": {
+    "categories": [
+      "C"
+    ],
+    "review_status": "source_reviewed",
+    "source_reason": "The named vote concerns health-insurance premium relief; the booklet does not state approval of a twenty-franc minimum-wage initiative with over half the votes. The model returns contradiction for an unestablished vote outcome. Only C is confirmed, without asserting an arithmetic or speaker mechanism.",
+    "reviewer": "Codex source inspection; observed-data diagnostic, not independent human adjudication",
+    "source_proof": {
+      "audit_source_case_id": "v1.1-row-992-A",
+      "pdf_path": "booklets/2024-06-09_fr.pdf",
+      "page": 4,
+      "pdf_sha256": "8cedb2df05d10299734c86d6d37d80fbd4bb4a6685044455792c77fc73f2d7f6",
+      "verbatim_text_block": "L’initiative veut que les assurés ne consacrent pas plus \nde 10 % de leur revenu disponible aux primes. Elle prévoit que \nla Confédération et les cantons accordent davantage de réduc­\ntions de primes et que la Confédération assume au moins \ndeux tiers du financement de ces réductions. Les surcoûts \nse monteront à plusieurs milliards de francs par année.\n",
+      "physical_page_in_recorded_context": true
+    },
+    "reference_sha256": null,
+    "applies_to": {
+      "gold_label": 1,
+      "predicted_label": 2,
+      "context_pages": [
+        20,
+        88,
+        4,
+        5,
+        12,
+        3,
+        13,
+        16,
+        15,
+        19,
+        30,
+        14
+      ]
+    }
+  }
+}

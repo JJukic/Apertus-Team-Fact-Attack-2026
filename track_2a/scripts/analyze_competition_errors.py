@@ -115,18 +115,37 @@ def audit(cases, gold, predictions, directory, records=None, annotations=None):
         retrieval_hit = None
         side = attributed_section(case['claim']['text'])
         raw = records.get(cid, {}).get('raw_result', {}) if records else {}
+        context_provenance = 'direct_reference' if task == 'B' else 'baseline_reconstruction'
         if task == 'A':
             filename = case['booklet']['path']
             if filename not in booklets:
                 parsed = load_parsed_booklet(directory / filename, parser)
                 booklets[filename] = PassageRetriever(parsed['paragraphs'])
-            context = booklets[filename].retrieve_hybrid(
-                case['claim']['text'], top_k=12, target_vote=case.get('vote'),
-                ensure_sections={side: 2} if side else None)
+            mode = raw.get('retrieval_query_metadata', {}).get('mode', 'original')
+            if mode in ('translated', 'union'):
+                # Never substitute R0 retrieval for a translated-query run.
+                # These frozen page-level runs clip using the ORIGINAL claim,
+                # so source text can be reconstructed without another API call.
+                recorded = raw.get('context_pages')
+                source_passages = booklets[filename].paragraphs
+                by_page = {p['page_number']: p for p in source_passages}
+                if (not isinstance(recorded, list) or not recorded or len(recorded) > 12
+                        or len(recorded) != len(set(recorded))
+                        or any(type(page) is not int or page not in by_page for page in recorded)
+                        or len(by_page) != len(source_passages)):
+                    raise ValueError('Recorded translated context needs unique source pages: ' + cid)
+                context = [by_page[page] for page in recorded]
+                context_provenance = 'recorded_' + mode + '_pages_original_claim_clipping'
+            elif mode == 'original':
+                context = booklets[filename].retrieve_hybrid(
+                    case['claim']['text'], top_k=12, target_vote=case.get('vote'),
+                    ensure_sections={side: 2} if side else None)
+            else:
+                raise ValueError('Unknown recorded retrieval mode: ' + cid)
             context = [{**p, 'text': clip_to_query(p['text'], case['claim']['text'] + ' ' + case.get('vote', ''), 3000)} for p in context]
             reconstructed = list(dict.fromkeys(p['page_number'] for p in context))
             if raw.get('context_pages') is not None and raw['context_pages'] != reconstructed:
-                raise ValueError('Reconstructed baseline context differs from recorded pages: ' + cid)
+                raise ValueError('Reconstructed context differs from recorded pages: ' + cid)
             if truth != 1:
                 retrieval_hit = any(quote_matches(p['text'], gold[cid]['reference'], 90, 5000) for p in context)
                 if wrong:
@@ -146,6 +165,15 @@ def audit(cases, gold, predictions, directory, records=None, annotations=None):
                 review_flags.append('J')
         annotation = annotations.get(cid)
         if annotation:
+            binding = annotation.get('applies_to')
+            if binding is not None:
+                current = {'gold_label': truth, 'predicted_label': label,
+                           'context_pages': list(dict.fromkeys(p['page_number'] for p in context)),
+                           'evidence_pages': sorted(set(e.get('page') for e in predictions[cid].get('evidence', [])
+                                                        if isinstance(e, dict) and type(e.get('page')) is int))}
+                if (not {'gold_label', 'predicted_label', 'context_pages'} <= set(binding)
+                        or any(key not in current or current[key] != value for key, value in binding.items())):
+                    raise ValueError('Source review no longer matches labels or supplied context: ' + cid)
             if annotation['review_status'] == 'source_reviewed':
                 categories.extend(annotation.get('categories', []))
         rows.append({'id': cid, 'task': task, 'gold_label': truth, 'predicted_label': label,
@@ -154,6 +182,7 @@ def audit(cases, gold, predictions, directory, records=None, annotations=None):
                      'language_pair': f'{source_language}->{claim_language}',
                      'cross_language': cross, 'speaker_attribution': side or 'unattributed_or_ambiguous',
                      'retrieval_fuzzy_passage_hit': retrieval_hit, 'evidence_hit5': hit,
+                     'context_provenance': context_provenance,
                      'context_pages': list(dict.fromkeys(p['page_number'] for p in context)),
                      'evidence_pages': [e.get('page') for e in predictions[cid].get('evidence', []) if isinstance(e, dict)],
                      'claim': case['claim']['text'], 'gold_reference': gold[cid].get('reference'),

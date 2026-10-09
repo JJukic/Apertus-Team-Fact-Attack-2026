@@ -38,6 +38,7 @@ from src.hf_dataset import _download
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
 console = Console(legacy_windows=False)
+_entrypoint_started = None
 
 
 def _require_model(engine: ClaimVerificationEngine, mock: bool) -> None:
@@ -251,6 +252,10 @@ def run_batch(
     Supports both Beginner Task (direct reference) and Advanced Task (booklet + vote).
     Outputs results strictly adhering to the Hack Apertus Track 2A schema.
     """
+    global _entrypoint_started
+    # The timing below starts before the imports when called via `python -m src` (set by __main__, Josip)
+    started = _entrypoint_started if _entrypoint_started is not None else _START
+    _entrypoint_started = None  # embedded callers may run several batches in one interpreter
     if not input_path.exists():
         console.print(f"[bold red]Error:[/bold red] Input file not found: {input_path}")
         raise typer.Exit(code=1)
@@ -354,7 +359,7 @@ def run_batch(
     official_results = [done[i] for i in range(len(cases))]
     page_pool.stop()
     # Our estimate of the scored processing time: wall clock (incl. start-up) minus time with an LLM request in flight
-    wall_s = time.perf_counter() - _START
+    wall_s = time.perf_counter() - started
     non_llm_ms = (wall_s - LLM_CLOCK.busy_s()) * 1000 / max(1, len(cases))
     if output_path:  # without --output, stdout carries the predictions only
         print(f"[timing] {len(cases)} cases, wall {wall_s:.1f} s, non-LLM {non_llm_ms:.1f} ms/case", file=sys.stderr)

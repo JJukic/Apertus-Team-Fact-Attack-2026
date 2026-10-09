@@ -111,7 +111,11 @@ if EVIDENCE_POLICY not in ("legacy", "raw_pages", "raw_pages_and_blocks"):
 CACHE_SINGLE_FLIGHT = os.getenv("CACHE_SINGLE_FLIGHT", "false").lower() in ("true", "1", "yes")
 # Read only the cited pages with PyMuPDF (not the whole booklet): processing time is scored
 SOURCE_PAGES_LAZY = os.getenv("SOURCE_PAGES_LAZY", "true").lower() in ("true", "1", "yes")
-RETRIEVAL_QUERY_MODE = os.getenv("RETRIEVAL_QUERY_MODE", "original")
+# Cross-lingual claims: BM25 retrieves with the claim and its translation into the booklet language ('union', one
+# short extra request; the NLI prompt keeps the original claim). Paired against 'original': dev 300 (Felipe) 7 fixed /
+# 4 broken, macro-F1 0.934 -> 0.944; all 1,488 task-A cases (Josip, R2) 30 / 16, 0.948 -> 0.956; together 37 / 20
+# (sign test p ~ 0.03) for ~3 % more tokens
+RETRIEVAL_QUERY_MODE = os.getenv("RETRIEVAL_QUERY_MODE", "union")
 if RETRIEVAL_QUERY_MODE not in ("original", "translated", "union"):
     raise ValueError("Unsupported RETRIEVAL_QUERY_MODE")
 QUERY_TRANSLATION_CACHE_DIR = Path(os.getenv("QUERY_TRANSLATION_CACHE_DIR", str(Path(tempfile.gettempdir()) / "fact-attack" / "queries")))
@@ -152,7 +156,7 @@ EVIDENCE_ON_NEUTRAL = os.getenv("EVIDENCE_ON_NEUTRAL", "false").lower() in ("tru
 
 # Parallel cases in the batch CLI: parsing and retrieval of one case overlap with LLM requests of others, so
 # they do not count as processing time (wall clock minus time with an LLM request in flight)
-BATCH_WORKERS = int(os.getenv("NLI_WORKERS", "4"))
+BATCH_WORKERS = int(os.getenv("NLI_BATCH_WORKERS") or os.getenv("NLI_WORKERS") or "4")  # both names accepted
 
 # Directories
 DATA_DIR = BASE_DIR / "data"

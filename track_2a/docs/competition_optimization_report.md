@@ -1,23 +1,28 @@
-# Competition optimization — audit, 8 October 2026
+# Competition optimization — final experiment report, 9 October 2026
 
 ## 1. Executive summary
 
-Work is isolated on `experiment/competition-score-optimization`, starting from
-latest `origin/main`, commit `a0e9e772dd388bdff4b8635ef0e09872ef705af6`.
-The adaptive branch and its uncommitted work remain separate.
+Work is isolated on `experiment/competition-score-optimization`, from main
+`a0e9e772dd388bdff4b8635ef0e09872ef705af6`. Adaptive WIP remains untouched.
+Historical 402-case archives verify Advanced/Beginner F1 0.940236/0.974948;
+fresh historical reproduction gives 0.945152/0.974948. They are observed data,
+not private competition results or untouched holdouts.
 
-The strongest documented production baseline has Advanced Macro-F1 **0.940236**
-and Beginner **0.974948** on 402 historical cases per task. Recalculation from the
-saved case predictions confirms these numbers; **this is not a fresh API run**.
-A fresh reproduction now covers all 804 historical task cases: Advanced **0.945152**,
-Beginner **0.974948**, baseline official Hit@5 **0.361940**. Source-only evidence
-postprocessing raises Hit@5 to **0.720149** on those same predictions without
-changing labels or adding model calls. The independently executed C1 candidate
-now covers all 2,976 mixed v1.1 cases: Advanced **0.944034**, Beginner **0.982497**,
-Hit@5 **0.755556**, zero invalid answers. Compared with the broader B0 run,
-Advanced F1 decreases by 0.003665 while Hit@5 increases by 0.287879. This is a
-competition-relevant trade-off, not an F1 improvement. R1/R2 retrieval experiments
-and final selection remain in progress; submission readiness is not established.
+Full identical-population validation now covers 1,488 cases per task, five folds
+grouped by 20 voting dates. R2 leads measured quality: **Advanced F1 0.956237,
+Beginner F1 0.982497, Hit@5 0.773737**. It preserves weighted BM25 Top-12,
+speaker boost and the original NLI claim/prompt while adding translated-query
+ranking union and source-grounded evidence. The initial R2 execution required
+23 technical recoveries; every previous request remains in its costs.
+
+R2 increases reported Advanced tokens 1.39%, regresses on two Advanced folds and
+three language pairs, and has 148 attempts with unknown billed usage. Local mixed
+timing does not establish separate official task efficiency. All source quotes
+and CPU Docker contracts pass. All 91 R2 label discrepancies have source reviews;
+two retain an explicit annotation/scope ambiguity without changing gold. R2 is
+the recommended measured configuration, with the efficiency limitations below.
+No official total score is claimed. The experiment is closed; further model
+optimization requires a separate experiment rather than extending this run.
 
 ## 2. Official evaluation criteria
 
@@ -33,8 +38,9 @@ The inspected starter uses qualifying thresholds A=0.60, B=0.70. The user's goal
 requires B=0.75; retain the stricter threshold for acceptance. The supplied goal
 weights A/B at 60/40, with A components 50/20/15/15 and B components 70/15/15.
 The efficiency references from other teams are unknown; no official total score
-can be derived from local results. These weights still require verification
-against the full competition instructions.
+can be derived from local results. Projections use the user's supplied weights;
+the pinned starter proves the metric/CLI contract, not the relative team-cost
+references or an independently measured final leaderboard score.
 
 ## 3. Starting repository architecture
 
@@ -84,7 +90,22 @@ preserves exact original text blocks, physical pages and PDF/reference hashes.
 The audit verifies those proofs. One neutral pension-reform claim has a wording
 and scope ambiguity requiring independent adjudication; its gold is unchanged
 and no semantic cause is asserted. This review concerns the historical 804-case
-reproduction; broader v1.1 source-cause review remains open.
+reproduction. Full v1.1 confusions/evidence failures are also classified, with
+source proofs are revalidated for the comparison candidates. All 91 R2 label
+discrepancies are inspected: confirmed overlapping causes F=9, G=70, H=7,
+I=15 and J=8; no E or K cause is confirmed. There are 185 category-L cases.
+Counts are observations under unchanged gold and must not be added together.
+Two reviews remain ambiguous: `v1.1-row-235-A` attributes a parliamentary
+counterproposal argument to the committee, and `v1.1-row-757-A` has a pension
+reform scope ambiguity. No gold labels are changed to improve reported F1.
+Source review is Codex inspection, not independent human adjudication.
+Remaining unreviewed C1/R1 semantic causes are explicitly recorded rather than
+treated as absent. Every candidate's observed A–D/K/L confusions is classified.
+Comparator source inspection covers **67/109 C1** and **66/100 R1** label
+discrepancies, with 42/34 remaining cause reviews retained as future diagnostic
+work. Closing this experiment does not turn those unknown causes into confirmed
+retrieval or speaker failures. R2's confirmed quality-impact priority is
+L/G/A/D/B/I/C/F/J/H; the reported counterfactual bounds assume no new errors.
 See `results/competition_optimization/error_analysis.json` and the reproducible
 `analyze_competition_errors.py` utility.
 Do not relabel gold cases simply to increase F1.
@@ -149,7 +170,7 @@ changed numeric values or negation presence fall back to the original query.
 The guard is conservative, not proof of semantic equivalence. All translation
 attempts, rejected translations and cache acquisition tokens are journaled.
 Both fresh full-population runs use separate cold source/translation caches on
-the same five date-grouped folds. R1 is running; R2 follows sequentially.
+the same five date-grouped folds. Both complete independently, with R2 recovery counted in cumulative costs. R2 improves overall Advanced F1 and evidence most, but regresses in two folds and some language pairs.
 
 ## 9. NLI experiments
 
@@ -162,9 +183,10 @@ failed at about 61 s, then JSON-constrained generation completed in 1.15 s with
 51 output tokens. Its valid label is not asserted to be correct. An assembled
 full-population replay is diagnostic only; C1 executed independently with full
 coverage. This N1 name denotes transport reliability, not structured speaker
-attribution. First reproduce the production prompt on the
-same cases as the candidate. Then use date-grouped validation folds for selection
-and freeze every configuration before any further test evaluation.
+attribution. The full candidate runs preserve the production semantic prompt.
+Additional prompt refinements and heavyweight NLI reranking are deferred: the
+current improvement is independently measured, earlier related changes regressed,
+and no new controlled benefit is established. They are not required to operate R2.
 
 ## 10. Token optimization
 
@@ -222,6 +244,8 @@ historical prediction archives unchanged.
 | B0, original baseline | 0.947699 | 0.981830 | 0.467677 | 1 |
 | N1 + E2, assembled diagnostic | 0.947389 | 0.981830 | 0.758586 | 0 |
 | C1, independent fresh execution | 0.944034 | 0.982497 | 0.755556 | 0 |
+| R1, translated-query ranking | 0.950844 | 0.981830 | 0.765657 | 0 |
+| R2, original/translated ranking union | **0.956237** | **0.982497** | **0.773737** | 0 |
 
 The diagnostic cannot select a final configuration. C1 fixes three labels and
 breaks seven relative to B0; evidence fixes/breaks are 292/7. Its five-fold
@@ -231,39 +255,90 @@ not fully repeatable and the small F1 regressions are explicitly retained.
 
 ## 13. Per-language results
 
-Historical language-pair and class metrics are recalculated in `baseline.json`.
-Pair direction is claim→reference, whereas the official starter reports
-source→claim. State the direction whenever presenting results.
+Pair direction below is **source→claim**. Each task has 1,488 cases.
+
+| Advanced source→claim | B0 F1 | R2 F1 | Difference |
+|---|---:|---:|---:|
+| fr->de | 0.962095 | 0.967547 | +0.005452 |
+| de->de | 0.947035 | 0.966544 | +0.019509 |
+| it->de | 0.946790 | 0.987128 | +0.040338 |
+| it->fr | 0.986111 | 0.986111 | +0.000000 |
+| fr->fr | 0.924969 | 0.917468 | -0.007500 |
+| de->fr | 0.886882 | 0.947210 | +0.060328 |
+| de->it | 0.931615 | 0.924721 | -0.006894 |
+| fr->it | 0.962824 | 0.941651 | -0.021173 |
+| it->it | 0.973648 | 0.973648 | +0.000000 |
+
+R2 Advanced fold mean/std is **0.955664/0.033242**; cross-language F1 is
+**0.959217**. F1 regresses in folds 1 and 3, while Hit@5 improves in all five.
+The largest Advanced language-pair decline is fr→it, **−0.021173**. Beginner
+de→de decreases 0.006710. Beginner prompts/rules are unchanged; small Beginner
+score changes are not credited to retrieval. All class/pair/fold metrics and
+paired case IDs are retained in `experiments.json`.
 
 ## 14. Official score component comparison
 
-Historical and fresh label F1, exact official Hit@5, paired evidence differences,
-request attempts and local union-of-interval timing are now measured. Failed
-requests lack proxy usage, so complete billable token totals remain unknown.
-C1's full grouped comparison is complete; final selection waits for R1/R2 and
-the submission checks. Advanced source→claim regressions are de→de −0.006689,
-it→de −0.006273, fr→fr −0.012409 and de→fr −0.006671. Beginner de→de decreases
-by 0.006710. Class-level changes, paired IDs and all folds are in `experiments.json`.
-The C1 journal counts 2,995 attempts, 19 with unknown usage; known input/output
-totals are 11,732,096/191,322. These are lower bounds, not complete proxy costs.
+All candidates use identical inputs and date-grouped folds. B0 retains its one
+invalid output and is excluded by the complete-output acceptance gate.
+
+| Configuration | Advanced F1 | Beginner F1 | Hit@5 | Invalid outputs |
+|---|---:|---:|---:|---:|
+| B0 | 0.947699 | 0.981830 | 0.467677 | 1 |
+| C1 | 0.944034 | 0.982497 | 0.755556 | 0 |
+| R1 | 0.950844 | 0.981830 | 0.765657 | 0 |
+| R2 | 0.956237 | 0.982497 | 0.773737 | 0 |
+
+| Configuration | API attempts | Unknown usage | Known input tokens | Known output tokens | Local mixed non-LLM seconds |
+|---|---:|---:|---:|---:|---:|
+| B0 | 3,001 | 26 | 11,726,698 | 195,209 | 21.065644 |
+| C1 | 2,995 | 19 | 11,732,096 | 191,322 | 3.013437 |
+| R1 | 3,749 | 24 | 11,788,990 | 228,397 | 4.365191 |
+| R2 | 3,873 | 148 | 11,818,740 | 214,805 | 15.250753 |
+
+Token totals are lower bounds. R2 initially has 23 failures, preserved before
+repeating only those cases under identical frozen settings/sources. All previous
+failed/rejected translation and NLI attempts remain counted. R2 fixes/breaks
+30/16 labels and 349/46 evidence hits versus B0. Full label errors are B0 105,
+C1 109, R1 100 and R2 91 (invalid B0 included).
+The runs have different recovery, cache and host conditions. Mixed timers are
+not official separate-task efficiencies or a controlled processing-time comparison.
 
 ## 15. Estimated competition-score scenarios
 
-Under user-supplied weights, the historical E2 evidence gain alone contributes
-`0.60 * 0.20 * (0.720149 - 0.361940) = 0.042985` to the simulated total at unchanged
-other components. Actual time-efficiency costs must still be measured. This is
-an isolated quality contribution, not an official final competition score.
-For the independently executed C1 comparison, the measured quality-component
-gain is `0.30*delta_F1_A + 0.12*delta_Hit5 + 0.28*delta_F1_B = 0.033633`.
-The scenario utility uses explicitly assumed separate-task time factors; it
-never assigns the mixed concurrent timer to Task A/B official efficiency.
+The user-supplied quality weights yield contributions of 0.615343 for B0,
+0.648976 for C1, 0.652044 for R1 and **0.654819 for R2**. R2 increases this
+quality contribution by **0.039475** versus B0, before unknown efficiency.
+
+At equal assumed task processing times and competitor cost references of
+0.1/0.25/0.5/1.0 times B0, simulated R2 totals are
+0.684698/0.729516/0.804214/0.953585. These are **not official scores**, use
+known-token lower bounds and do not assign mixed timing to separate tasks.
+C1/R1/R2 all remain on the known quality/token Pareto frontier. Unknown failed
+usage and actual proxy timing can change the overall ranking. A measured quality
+leader is not proof of the private competition total-score winner.
 
 ## 16. Recommended configuration
 
-Retain production weighted BM25 Top-12 + speaker boost + `ids` NLI as the
-provisional architecture. C1 is the strongest complete fresh competition-quality
-candidate so far; it remains provisional until R1/R2 and final submission checks.
-Adaptive E7 is not promoted from its single-date, validation-calibrated measurement.
+Recommend R2 as the measured quality leader. Keep production weighted BM25 Top-12,
+two-page speaker boost, original NLI claim and `ids` prompt. Its flags are:
+
+```text
+RETRIEVAL_QUERY_MODE=union
+EVIDENCE_POLICY=raw_pages_and_blocks
+CACHE_SINGLE_FLIGHT=true
+SOURCE_PAGES_LAZY=true
+LLM_STREAMING=true
+LLM_JSON_REPAIR=true
+NLI_BATCH_WORKERS=4
+```
+
+The original baseline remains selectable with original queries, legacy evidence
+and the added reliability/cache flags disabled. Thinking, forced second answers,
+semantic prompt changes, speaker filtering and calibration are not promoted.
+C1 is the simpler alternative if proxy-measured translation costs outweigh R2's
+quality gain. The default remains the selectable baseline; apply the flags above
+explicitly for R2. Four CLI workers preserve input order and use the same
+concurrency as the native full evaluation. They do not change the NLI prompt.
 
 ## 17. Reproduction instructions
 
@@ -279,27 +354,121 @@ The audit does not call the API. This session used Python 3.12.6, openai 3.24.0,
 pydantic 2.13.5, pypdf 6.19.0, scikit-learn 1.9.1, rank-bm25 0.2.2,
 python-dotenv 1.2.4 and typer 0.27.2. The initial 70 existing tests passed. The evidence/contract implementation
 passed 95 tests and six subtests; 98 passed after the first transport tests.
-The current source suite passes **111 tests and six subtests**, including
+The final source suite passes **115 tests**, including
 translation invariants and rejection of invented/changed manual source proofs.
 Fresh runs use openai 3.26.1, typer 0.27.3 and PyMuPDF 1.28.2; initial audit
 versions above describe the earlier environment. Exact fresh dependencies are
-in `requirements-lock.txt`. Final image verification remains pending.
+in `requirements-lock.txt`. The source-only CPU image passes all 115 tests.
+
+For a new full reproduction, set `BASE_URL` and `API_KEY` securely in the host
+environment. Commands below run from `track_2a`; use fresh output directories
+and install `requirements-lock.txt`. The preparation step downloads pinned
+sources **outside** prediction; inference itself never downloads them.
+
+```bash
+REPRO_DIR=.cache/competition/reproduction-2026-10-09
+test ! -e "$REPRO_DIR" || exit 1
+python scripts/prepare_competition_cases.py --version v1.1 --scope all \
+  --download-booklets --output "$REPRO_DIR/data"
+
+export NLI_STRATEGY=hybrid NLI_TOP_K=12 PROMPT_MODE=ids
+export PASSAGE_CHARS=0 PAGE_MAX_CHARS=3000 SPEAKER_BOOST=2
+export THINKING=false THINKING_BUDGET=0 IDS_REASON=false TRANSLATE_CLAIM=false
+export SPEAKER_AWARE=false SPEAKER_HINT=false FEW_SHOT=false NUMERIC_OVERRIDE=false
+export LLM_NAME=swiss-ai/Apertus-v1.5-70B-thinking
+
+EVIDENCE_POLICY=legacy CACHE_SINGLE_FLIGHT=false SOURCE_PAGES_LAZY=false \
+LLM_STREAMING=false LLM_JSON_REPAIR=false RETRIEVAL_QUERY_MODE=original \
+BOOKLET_CACHE_DIR="$REPRO_DIR/B0/parsed" QUERY_TRANSLATION_CACHE_DIR="$REPRO_DIR/B0/queries" \
+python scripts/run_competition_baseline.py --cases "$REPRO_DIR/data/cases.jsonl" \
+  --output "$REPRO_DIR/B0" --workers 4
+
+export EVIDENCE_POLICY=raw_pages_and_blocks CACHE_SINGLE_FLIGHT=true SOURCE_PAGES_LAZY=true
+export LLM_STREAMING=true LLM_JSON_REPAIR=true
+export NLI_BATCH_WORKERS=4
+for candidate in C1 R1 R2; do
+  case "$candidate" in
+    C1) query_mode=original ;;
+    R1) query_mode=translated ;;
+    R2) query_mode=union ;;
+  esac
+  RETRIEVAL_QUERY_MODE="$query_mode" BOOKLET_CACHE_DIR="$REPRO_DIR/$candidate/parsed" \
+  QUERY_TRANSLATION_CACHE_DIR="$REPRO_DIR/$candidate/queries" \
+  python scripts/run_competition_baseline.py --cases "$REPRO_DIR/data/cases.jsonl" \
+    --output "$REPRO_DIR/$candidate" --workers 4
+done
+
+python scripts/compare_competition_runs.py --cases-dir "$REPRO_DIR/data" \
+  --run B0="$REPRO_DIR/B0/predictions.jsonl" --measurement B0="$REPRO_DIR/B0/measurement.json" \
+  --run C1="$REPRO_DIR/C1/predictions.jsonl" --measurement C1="$REPRO_DIR/C1/measurement.json" \
+  --run R1="$REPRO_DIR/R1/predictions.jsonl" --measurement R1="$REPRO_DIR/R1/measurement.json" \
+  --run R2="$REPRO_DIR/R2/predictions.jsonl" --measurement R2="$REPRO_DIR/R2/measurement.json" \
+  --time-factor C1=1,1 --time-factor R1=1,1 --time-factor R2=1,1 \
+  --output "$REPRO_DIR/comparison"
+
+python scripts/validate_submission_sources.py --cases "$REPRO_DIR/data/cases.jsonl" \
+  --predictions "$REPRO_DIR/R2/predictions.jsonl" --output "$REPRO_DIR/R2/source_validation.json"
+python scripts/analyze_competition_errors.py --cases-dir "$REPRO_DIR/data" \
+  --predictions "$REPRO_DIR/R2/predictions.jsonl" --records-dir "$REPRO_DIR/R2/predictions" \
+  --output "$REPRO_DIR/R2/error_audit"
+```
+
+Different remote answers can produce different F1 even with unchanged requests.
+If retrying technical errors, first preserve the terminal run/measurement/journal
+and failed records, then rerun the **identical** command with `--retry-errors`.
+Keep all sessions and unknown usage. A run's signature must match; editing
+sources/settings requires a new run, not bypassing identity checks. The B0
+command reproduces the selectable baseline configuration; exact historical
+sources, response hashes, recovery overlays and counters remain in the recorded
+original run manifests. No new run is claimed to reproduce gateway failures or
+remote text byte for byte. Scenario time factors above are assumptions.
+Saved source annotations are bound to the reviewed gold/predicted labels and
+context pages; do not transfer them blindly to a new API run. Use `--annotations`
+only after verifying those conditions or conducting a fresh source review.
+
+For the small Docker contract check, copy only the committed source-only fixture
+next to the prepared booklet directory. The helper copies only case inputs and
+their PDFs into `/data`; it never mounts `expected-labels.jsonl`.
+
+```bash
+docker build --platform linux/amd64 -t fact-attack:test ..
+docker run --rm --platform linux/amd64 --network none --read-only --tmpfs /tmp fact-attack:test test
+cp tests/fixtures/competition_contract_cases.jsonl "$REPRO_DIR/data/contract_fixture.jsonl"
+python scripts/check_competition_docker.py --cases "$REPRO_DIR/data/contract_fixture.jsonl" \
+  --output "$REPRO_DIR/docker-contract" --image fact-attack:test \
+  --api-mode translated --api-mode union
+```
+
+Omit both `--api-mode` flags for the offline container contract check. Do not
+copy host credentials, development labels or experiment journals into the image.
 
 ## 18. Docker compliance results
 
-Bare `--input/--output` now routes to official JSONL mode regardless of output
-extension. Official `BASE_URL/API_KEY` and legacy aliases work; runtime values
-outrank dotenv values even across aliases. Inference source resolution never
-downloads missing PDFs or falls back from a missing booklet to a reference.
-Root and track Dockerfiles build CPU `linux/amd64`, copy only explicit code/demo
-assets, omit experiment gold/private journals/secrets, and use `/tmp` caches.
+The pinned CPU linux/amd64 image
+`sha256:87f8111a6ac4ed0a8ae980005749b533e93c8bcef7835ea7dec2d96837b300be`
+passes **115 tests** in a read-only, network-disabled container. A 12-case fixture
+covers both tasks, six language directions, an empty ID and Unicode IDs. Offline
+forward/reverse predictions agree, excluding timing fields. Both R1/R2 real-API
+modes pass bare `--input/--output`, `/data:ro`, writable `/output`, `/tmp` caches,
+physical source quotation checks and complete valid JSONL regardless of suffix.
+The earlier R1/R2 check journals **30 successful API attempts**, zero unknown usage.
+The final image is checked directly in R2 mode with **four CLI workers**:
+**15 successful requests**, zero unknown usage, 44,201 input / 839 output tokens.
+Only `src/cli.py` and `src/config.py` differ from the earlier image's inference
+sources, adding configurable batch concurrency and preserving the baseline's
+single-worker default. Retrieval, prompt, evidence and client sources are unchanged.
+The small mixed fixture measures local wall/SDK-union/non-LLM times of
+30.398/19.385/11.012 seconds. These are contract-check timings, not full-dataset
+processing efficiency or evidence of a separate-task speedup.
+API repeatability itself is not assumed. Input hashes are unchanged.
 
-The first image build passed; 95 tests / six subtests passed inside a read-only,
-network-disabled container. Mixed offline inference passed with `/data:ro` and
-`/output` writable. Two genuine Apertus calls through runtime `BASE_URL/API_KEY`
-passed the same bare-argument contract with zero failures, and hashes prove input
-files were unchanged. The image predates the JSON repair/lazy additions, so final
-container verification remains required. No image has been published.
+All calls use runtime `BASE_URL/API_KEY`, Apertus v1.5 and no client output cap.
+Image inspection verifies inference-source hashes, no `.env`, expected-label
+files, local model weights or embedded runtime endpoint/key. Source-only demos
+replace labeled development demos only in Docker COPY. Original development
+data remain unchanged. All container inference checks load no gold.
+`docker_validation.json` retains the full report; earlier failed verifier/test
+attempts are preserved separately. No image is published.
 
 ## 19. Known limitations
 
@@ -317,8 +486,46 @@ No private competition score or genuinely untouched holdout is available.
 
 ## 20. Final recommendation
 
-The best complete adaptive validation profile is E7; the stronger historical
-production baseline remains the recommended starting architecture. Next verify
-dataset versions, reproduce both tasks with the official contract, measure exact
-evidence and cost components, then compare isolated candidates on identical
-date-grouped folds. Optimization and submission acceptance remain in progress.
+R2 currently has the strongest measured quality: Advanced F1 increases
+**0.008538**, Beginner **0.000667**, Hit@5 **0.306061** versus full B0.
+Reported Advanced tokens increase 1.39%; neither complete billed-token reduction
+nor controlled official processing-time reduction is established. C1 supplies
+most evidence improvement without translation; R1/R2 add multilingual ranking
+at extra API cost. Historical compact contexts, speaker filtering and adaptive
+calibration are not selected from incomparable or regressing results.
+
+Recommend **R2 with the explicit flags in section 16** for the evaluated CPU/CLI
+submission contract. All outputs and physical source quotes are validated;
+115 host tests and 115 CPU-container tests pass. All **91 R2 label discrepancies**
+have source reviews. Two gold/speaker-scope ambiguities remain flagged without
+relabeling; the review is not independent human adjudication. Comparator semantic
+review coverage and remaining IDs are retained in `error_analysis.json`.
+
+The experiment closes here. In a new experiment, the highest source-backed
+counterfactual opportunities are category L (evidence mismatch with correct label,
+quality contribution at most +0.022424 if every case is fixed without regressions)
+and G (available evidence misinterpreted, at most +0.013865). These bounds overlap
+with other categories and are not measured improvements. Further prompt/reranker
+work is deferred; no speculative change is included in the recommendation.
+
+The solution passes the tested local submission contract. Private-set quality,
+the true overall competition winner and official proxy efficiency remain
+unmeasured external outcomes. Baseline and C1 remain selectable alternatives.
+The branch can be uploaded to GitHub as requested; main is not merged and the
+container is not published.
+
+
+The closure checks are traceable to these artifacts:
+
+| Acceptance item | Verified evidence |
+|---|---|
+| Baseline reproduction and unchanged historical archives | `baseline.json`, pinned dataset/commit/source hashes |
+| Identical populations and five grouped folds | `experiments.json`, `comparison.csv`; all four runs recomputed from saved predictions |
+| Official Macro-F1 and exact Hit@5 rules | Vendored official evaluator plus normalization/first-five/denominator tests |
+| Source quotations, IDs, labels and pages | Full candidate source-contract reports embedded in `evidence_analysis.json` |
+| CPU processing profile and honest request accounting | `processing_profile.json`, cumulative attempt/unknown-usage measurements |
+| Configurable selection and documented tradeoffs | `best_config.json`, sections 12–16; R2 selected, baseline retained |
+| Automated tests and mixed official container contract | `docker_validation.json`: 115 host + 115 CPU tests, source-only fixture, four workers |
+| Error categories and remaining diagnostic limits | `error_analysis.json`, source-review JSONs; no gold relabeling |
+| Reproduction and deployment instructions | Section 17 and both READMEs; runtime keys, existing PDFs, `/data:ro`, `/tmp` |
+| Isolated branch and GitHub upload | Commit/push on `experiment/competition-score-optimization`; no merge or image publication |

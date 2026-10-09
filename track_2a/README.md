@@ -16,6 +16,16 @@ German, French and Italian.
 
 > Predictions describe the relationship between a claim and the official booklet. They are not political advice.
 
+R2 combines the original/translated BM25 queries with existing speaker boost and
+source-grounded page/block evidence. It preserves the original claim and NLI
+prompt. Reported Advanced tokens increase 1.39%; official separate-task efficiency
+and private competition scores are unavailable. **115 local and 115 CPU-container
+tests pass.** All 91 R2 label discrepancies have source reviews; two annotation/scope
+ambiguities remain flagged without changing gold. Full comparison and reproduction:
+[final report](docs/competition_optimization_report.md),
+[comparison.csv](results/competition_optimization/comparison.csv),
+[best_config.json](results/competition_optimization/best_config.json).
+
 ---
 
 ## 🚀 Quick start
@@ -50,11 +60,11 @@ mode for tests only.
 
 | | |
 |---|---|
-| **Runtime** | Docker (`make run` builds and runs everything in a `python:3.11-slim` container); locally Python 3.9+ with `requirements.txt` |
+| **Runtime** | Pinned CPU `linux/amd64` Docker image using Python 3.12.6; install `requirements-lock.txt` for the measured local environment |
 | **Hardware** | Any CPU machine, no GPU: ~300 MB RAM (peak 253 MB measured), ~1.4 GB disk for the image. The model runs remotely |
 | **API keys** | `API_KEY` (or `LLM_API_KEY`) for the CSCS inference service (Apertus). `LLM_NAME` and `BASE_URL` default to `swiss-ai/Apertus-v1.5-70B-thinking` and `https://api.inference.cscs.ch/v1` |
 | **Model weights** | None to download: Apertus v1.5 70B is served by CSCS. Apertus is the only model in the pipeline; Apertus 8B v1.5 was used once for a comparison run, no other model for development or evaluation |
-| **Network** | At build time: Hugging Face (OST dataset) and admin.ch (booklet PDFs). At run time: the CSCS endpoint |
+| **Network** | Build downloads pinned Python dependencies; inference calls only the configured Apertus endpoint. Prepare datasets/PDFs outside prediction |
 
 ---
 
@@ -87,7 +97,7 @@ The input/output format is documented in the [overview README](../README.md#offi
 
 ---
 
-## 🐳 Docker (`make run`)
+## 🐳 Docker submission
 
 ```bash
 export API_KEY="your_api_key_here"

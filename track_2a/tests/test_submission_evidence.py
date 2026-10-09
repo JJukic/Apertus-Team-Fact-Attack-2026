@@ -3,6 +3,7 @@
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -149,7 +150,7 @@ class TestSubmissionEvidence(unittest.TestCase):
                 {'id': 'beginner', 'reference': {'text': 'Der Bundesrat empfiehlt Nein.'},
                  'claim': {'text': 'Der Bundesrat empfiehlt die Ablehnung.', 'language': 'de'}}]
             env = {**os.environ, 'EVIDENCE_POLICY': 'raw_pages_and_blocks', 'CACHE_SINGLE_FLIGHT': 'true',
-                   'BOOKLET_CACHE_DIR': str(directory / 'cache'), 'PYTHONPATH': str(ROOT)}
+                   'BOOKLET_CACHE_DIR': str(directory / 'cache'), 'PYTHONPATH': str(ROOT), 'NLI_BATCH_WORKERS': '4'}
             predictions = []
             for ordering in (cases, list(reversed(cases))):
                 (directory / 'input.jsonl').write_text(''.join(json.dumps(c) + '\n' for c in ordering))
@@ -161,6 +162,38 @@ class TestSubmissionEvidence(unittest.TestCase):
                 self.assertEqual([r['id'] for r in output], [c['id'] for c in ordering])
                 predictions.append({r['id']: {k: r[k] for k in ('id', 'label', 'label_name', 'evidence')} for r in output})
             self.assertEqual(predictions[0], predictions[1])
+
+    def test_official_cli_timing_includes_cold_dependency_import(self):
+        # Delay the actual dependency import in a fresh interpreter. The old
+        # batch-only timer excluded this work even though the proxy charges it.
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            (directory / 'sitecustomize.py').write_text(
+                "import builtins, time\n"
+                "original = builtins.__import__\n"
+                "delayed = False\n"
+                "def importing(name, *args, **kwargs):\n"
+                "    global delayed\n"
+                "    if name == 'src.cli' and not delayed:\n"
+                "        delayed = True\n"
+                "        time.sleep(0.2)\n"
+                "    return original(name, *args, **kwargs)\n"
+                "builtins.__import__ = importing\n")
+            input_path = directory / 'input.jsonl'
+            output_path = directory / 'output.data'
+            input_path.write_text(json.dumps({'id': 'timing', 'claim': 'Der Bundesrat empfiehlt Nein.',
+                                             'reference': 'Der Bundesrat empfiehlt Nein.'}) + '\n')
+            environment = {**os.environ, 'PYTHONPATH': os.pathsep.join((str(directory), str(ROOT))),
+                           'MOCK_APERTUS': 'true'}
+            process = subprocess.run([sys.executable, '-m', 'src', '--input', str(input_path),
+                                      '--output', str(output_path), '--mock'],
+                                     cwd=directory, env=environment, capture_output=True, text=True)
+            self.assertEqual(process.returncode, 0, process.stderr + process.stdout)
+            # The [timing] line on stderr counts from module entry, so the delayed import is included
+            timing = re.search(r"\[timing\] 1 cases, wall ([0-9.]+) s, non-LLM ([0-9.]+) ms/case", process.stderr)
+            self.assertIsNotNone(timing, process.stderr)
+            self.assertGreaterEqual(float(timing.group(1)), 0.2)
+            self.assertGreaterEqual(float(timing.group(2)), 200)
 
 
 if __name__ == '__main__':

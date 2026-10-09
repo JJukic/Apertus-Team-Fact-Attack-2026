@@ -2,7 +2,7 @@
 ## Multilingual Natural Language Inference over Swiss Official Voting Booklets
 
 [![CI](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/JJukic/Apertus-Team-Fact-Attack-2026/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/Python-3.9%20%7C%203.11-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.12.6-blue.svg)](https://www.python.org/)
 [![Model](https://img.shields.io/badge/Model-Apertus%20v1.5--70B-orange.svg)](https://huggingface.co/swiss-ai)
 [![Dataset](https://img.shields.io/badge/HuggingFace-OSTswiss%2FMNLIoverSwissVotingBooklets-yellow.svg)](https://huggingface.co/datasets/OSTswiss/MNLIoverSwissVotingBooklets)
 [![License](https://img.shields.io/badge/License-Apache--2.0%20(code)%20%2F%20CC--BY--4.0%20(docs)-green.svg)](LICENSE)
@@ -25,6 +25,28 @@ Italian, in any combination.
 Evaluated on the official OST dataset (v1.1, 60 booklets, ~66 % cross-lingual) with the organisers' `evaluate.py`.
 The **test split holds 5 voting dates that were never used during development** (401 pairs), as a stand-in for the
 held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
+
+The closed `experiment/competition-score-optimization` comparison uses the pinned
+v1.1 dataset: **1,488 cases per task**, with five folds grouped by 20 voting dates.
+
+| Configuration | Advanced Macro-F1 | Beginner Macro-F1 | Advanced Hit@5 |
+|---|---:|---:|---:|
+| B0 baseline | 0.947699 | 0.981830 | 0.467677 |
+| C1: grounded evidence and caching | 0.944034 | 0.982497 | 0.755556 |
+| R1: translated BM25 query | 0.950844 | 0.981830 | 0.765657 |
+| **R2: original/translated BM25 union** | **0.956237** | **0.982497** | **0.773737** |
+
+Josip's comparison on all cases (k=12, before the merge with the official contract): It retains Top-12 BM25,
+speaker boost and the original NLI claim/prompt. Reported Advanced tokens rise
+1.39%; failed requests include unknown usage, and official separate-task processing
+efficiency is unmeasured. These are public validation results, not private competition
+scores. B0 includes one invalid output counted as wrong; R2 recovers 23 technical
+failures and retains every attempt in its measurements. Baseline defaults remain available.
+All 115 local and 115 CPU-container tests pass. See the
+[final report](track_2a/docs/competition_optimization_report.md),
+[comparison](track_2a/results/competition_optimization/comparison.csv) and
+[recommended configuration](track_2a/results/competition_optimization/best_config.json).
+
 
 | Task | Macro-F1 | Evidence Hit@5 | Ø input tokens | Ø output tokens | Non-LLM time / case |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -176,26 +198,24 @@ python -m src.results_summary                              # results/summary.jso
 
 ### Official input / output format
 
-```jsonc
-// advanced task                                   // beginner task
-{"id": "case-0042",                                {"id": "case-0043",
- "booklet": {"path": "booklets/2024_11_24_de.pdf"},  "reference": {"text": "Der Bundesrat ... lehnen die Volksinitiative ab."},
- "vote": "Étape d'aménagement 2023 des routes nationales",
- "claim": {"text": "La proposition entraînera une augmentation de la TVA."}}
-                                                    "claim": {"text": "Le Conseil fédéral recommande d'accepter l'initiative."}}
+```jsonl
+{"id":"case-0042","booklet":{"path":"booklets/2024-11-24_de.pdf","language":"de"},"vote":"Ausbauschritt 2023 für die Nationalstrassen","claim":{"text":"La proposition entraînera une augmentation de la TVA.","language":"fr"}}
+{"id":"case-0043","reference":{"text":"Der Bundesrat empfiehlt, die Initiative abzulehnen.","language":"de"},"vote":"Beispielvorlage","claim":{"text":"Le Conseil fédéral recommande d'accepter l'initiative.","language":"fr"}}
 ```
 
 `run` also reads rows as published in the OST dataset on Hugging Face (`claim`, `reference_string`, `booklet_url`,
 `booklet_publish_date`, `vote`, optionally `claim_language`), as JSONL, JSON, Parquet or CSV. `--task auto` (default)
 uses the booklet when a case names one and the reference text otherwise; `--task advanced` / `beginner` forces one.
-Booklets are found as given, relative to the input file, by file name among the 60 dataset booklets in the image,
-or downloaded from `booklet_url`.
+In official mode, booklet paths must name existing input PDFs, resolved relative
+to the input file. Provide them in the read-only input mount. Missing PDFs are
+reported as failures; prediction does not download a booklet or substitute gold references.
 
 Each case yields `{"id", "label", "label_name", "evidence": [{"page", "text"}], "metrics": {"input_tokens",
 "output_tokens", "inference_time_ms"}}`; evidence is empty for neutral, and its page is `null` for a reference text. The claim language is detected
 automatically, booklet paths are resolved robustly, and a failing case is reported on stderr and returned as a
-valid neutral record instead of aborting the batch. The Docker build downloads and pre-parses all 60 known
-booklets (disk cache keyed by file hash), so PDF parsing does not slow down the first claim per booklet.
+valid neutral record so IDs remain complete. A batch with an operational failure
+exits nonzero and writes diagnostics; neutral fallback is not a successful classification.
+Source-derived caches are created in `/tmp`; the input mount remains unchanged.
 
 ---
 

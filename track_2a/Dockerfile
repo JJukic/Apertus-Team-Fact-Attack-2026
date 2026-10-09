@@ -9,7 +9,7 @@ COPY vendor /app/vendor
 COPY tests /app/tests
 COPY scripts /app/scripts
 COPY data/booklets /app/data/booklets
-COPY data/demo_dataset.jsonl /app/data/demo_dataset.jsonl
+COPY data/demo_cases.jsonl /app/data/demo_dataset.jsonl
 COPY app.py entrypoint.sh /app/
 RUN chmod +x /app/entrypoint.sh
 # Build time only (network allowed): fetch the 60 booklets of the OST dataset and pre-parse them, so a known booklet

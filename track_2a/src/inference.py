@@ -338,9 +338,10 @@ class ClaimVerificationEngine:
         booklet_data = self._get_booklet_data(booklet_pdf)
         retrieval_claim, query_variants = claim, None
         translation_usage, query_metadata = (0, 0), {}
-        if config.RETRIEVAL_QUERY_MODE != "original":
-            if strat != "hybrid" or config.TRANSLATE_CLAIM or self.prompt_mode not in ("ids", "compact"):
-                raise ValueError("Query translation requires hybrid ids/compact retrieval and an unchanged NLI claim")
+        # Query translation only applies to hybrid ids/compact retrieval with an unchanged NLI claim; other
+        # strategies (now that 'union' is the default) simply retrieve with the original claim
+        if (config.RETRIEVAL_QUERY_MODE != "original" and strat == "hybrid" and not config.TRANSLATE_CLAIM
+                and self.prompt_mode in ("ids", "compact")):
             source_language = booklet_language or guess_language(" ".join(p['text'] for p in booklet_data['pages'][:3]))
             language = claim_language or guess_language(claim)
             query_metadata = {'mode': config.RETRIEVAL_QUERY_MODE, 'claim_language': language,
