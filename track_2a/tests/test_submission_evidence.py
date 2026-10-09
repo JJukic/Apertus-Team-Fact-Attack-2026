@@ -143,6 +143,39 @@ class TestSubmissionEvidence(unittest.TestCase):
                 predictions.append({r['id']: {k: r[k] for k in ('id', 'label', 'label_name', 'evidence')} for r in output})
             self.assertEqual(predictions[0], predictions[1])
 
+    def test_official_cli_timing_includes_cold_dependency_import(self):
+        # Delay the actual dependency import in a fresh interpreter. The old
+        # batch-only timer excluded this work even though the proxy charges it.
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            (directory / 'sitecustomize.py').write_text(
+                "import builtins, time\n"
+                "original = builtins.__import__\n"
+                "delayed = False\n"
+                "def importing(name, *args, **kwargs):\n"
+                "    global delayed\n"
+                "    if name == 'src.cli' and not delayed:\n"
+                "        delayed = True\n"
+                "        time.sleep(0.2)\n"
+                "    return original(name, *args, **kwargs)\n"
+                "builtins.__import__ = importing\n")
+            input_path = directory / 'input.jsonl'
+            output_path = directory / 'output.data'
+            input_path.write_text(json.dumps({'id': 'timing', 'claim': 'Der Bundesrat empfiehlt Nein.',
+                                             'reference': 'Der Bundesrat empfiehlt Nein.'}) + '\n')
+            environment = {**os.environ, 'PYTHONPATH': os.pathsep.join((str(directory), str(ROOT))),
+                           'MOCK_APERTUS': 'true'}
+            process = subprocess.run([sys.executable, '-m', 'src', '--input', str(input_path),
+                                      '--output', str(output_path), '--mock'],
+                                     cwd=directory, env=environment, capture_output=True, text=True)
+            self.assertEqual(process.returncode, 0, process.stderr + process.stdout)
+            diagnostics = json.loads(output_path.with_name(output_path.name + '.diagnostics.json').read_text())
+            self.assertGreaterEqual(diagnostics['non_llm_seconds_local'], 0.2)
+            self.assertEqual(diagnostics['wall_seconds_local'], diagnostics['non_llm_seconds_local'])
+            self.assertEqual(diagnostics['llm_in_flight_union_seconds_local'], 0)
+            self.assertIn('module entry', diagnostics['timing_scope'])
+            self.assertEqual(diagnostics['api_attempts'], 0)
+
 
 if __name__ == '__main__':
     unittest.main()

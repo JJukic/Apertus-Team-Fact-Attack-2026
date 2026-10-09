@@ -8,7 +8,9 @@ COPY track_2a/vendor /app/vendor
 COPY track_2a/tests /app/tests
 COPY track_2a/scripts /app/scripts
 COPY track_2a/data/booklets /app/data/booklets
-COPY track_2a/data/demo_dataset.jsonl /app/data/demo_dataset.jsonl
+# Source-only demo inputs: the development dataset's gold labels stay outside
+# every image layer while the dashboard's existing demo path remains usable.
+COPY track_2a/data/demo_cases.jsonl /app/data/demo_dataset.jsonl
 COPY track_2a/app.py track_2a/entrypoint.sh /app/
 RUN chmod +x /app/entrypoint.sh
 ARG GIT_COMMIT=unknown

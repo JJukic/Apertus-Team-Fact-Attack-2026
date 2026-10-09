@@ -1,3 +1,9 @@
+import time
+
+# Begin before importing the CLI and its inference dependencies. The official
+# proxy remains authoritative for interpreter/container startup and shutdown.
+_invocation_started = time.perf_counter()
+
 import os
 import sys
 
@@ -8,7 +14,8 @@ if len(sys.argv) > 1 and sys.argv[1].startswith("-") and any(
     sys.argv.insert(1, "run")
     os.environ["NLI_OFFICIAL_IO"] = "true"
 
-from src.cli import app
+import src.cli as cli
 
 if __name__ == "__main__":
-    app()
+    cli._entrypoint_started = _invocation_started
+    cli.app()

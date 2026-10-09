@@ -3,6 +3,7 @@ Unit tests for compact prompt mode, reference chunking, evaluator helpers and th
 No network access: the OpenAI client is replaced by a stub.
 """
 
+import json
 import os
 import unittest
 from unittest import mock
@@ -123,10 +124,13 @@ class TestEvaluatorHelpers(unittest.TestCase):
 
 
     def test_demo_dataset_booklets_resolve(self):
-        # `make run` benchmarks the demo set; its publish date (2026-05-28) differs from the booklet file date
-        records = load_records(config.BENCHMARK_PATH)
+        # Input source resolution does not require gold labels. The submission
+        # image deliberately ships the source-only version of these 28 rows.
+        from src.cli import case_booklet
+        records = [json.loads(line) for line in config.BENCHMARK_PATH.read_text().splitlines() if line.strip()]
         self.assertEqual(len(records), 28)
-        self.assertTrue(all(r["booklet_pdf"].exists() for r in records), {r["booklet_pdf"].name for r in records})
+        paths = [case_booklet(row, config.BENCHMARK_PATH.parent) for row in records]
+        self.assertTrue(all(path.exists() for path in paths), {path.name for path in paths})
 
     def test_headline_orders_utc_and_local_timestamps(self):
         # A Docker run stamps UTC with offset, older local runs carry no offset

@@ -4,6 +4,7 @@ Provides claim verification, benchmark evaluation, and strategy comparison.
 """
 
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -35,6 +36,7 @@ from src.hf_dataset import _download
 
 app = typer.Typer(help="Hack Apertus Track 2A (OST) - Voting Booklet NLI & Claim Verification")
 console = Console(legacy_windows=False)
+_entrypoint_started = None
 
 
 def _require_model(engine: ClaimVerificationEngine, mock: bool) -> None:
@@ -232,6 +234,12 @@ def run_batch(
     Supports both Beginner Task (direct reference) and Advanced Task (booklet + vote).
     Outputs results strictly adhering to the Hack Apertus Track 2A schema.
     """
+    global _entrypoint_started
+    started = _entrypoint_started if _entrypoint_started is not None else time.perf_counter()
+    timing_scope = ("module entry through output write; includes imports, input loading and client setup"
+                    if _entrypoint_started is not None else "batch command entry through output write")
+    # Embedded callers may invoke multiple batches in the same interpreter.
+    _entrypoint_started = None
     if not input_path.exists():
         console.print(f"[bold red]Error:[/bold red] Input file not found: {input_path}")
         raise typer.Exit(code=1)
@@ -249,14 +257,12 @@ def run_batch(
     from src.measurement import RequestRecorder
     from uuid import uuid4
     import tempfile
-    import time
     import os
     journal = (Path(os.environ['REQUEST_JOURNAL_PATH']) if os.environ.get('REQUEST_JOURNAL_PATH') else
                Path(tempfile.mkdtemp(prefix="fact-attack-requests-")) / "requests.jsonl")
     recorder = RequestRecorder(journal, uuid4().hex)
     if not engine.client.mock:
         engine.client._request_completion = recorder.wrap(engine.client._request_completion)
-    started = time.perf_counter()
 
     for idx, item in enumerate(cases, 1):
         cid = item.get("id", f"case-{idx:04d}")
@@ -323,9 +329,16 @@ def run_batch(
         else:
             out_payload = official_results if len(official_results) > 1 else official_results[0]
             print(json.dumps(out_payload, indent=2, ensure_ascii=False))
+    ended = time.perf_counter()
+    wall_seconds = ended - started
+    non_llm_seconds = recorder.processing_seconds(started, ended)
     diagnostics = {'cases': len(cases), 'failures': failures, 'api_attempts': len(recorder.events),
                    'usage_unknown_attempts': sum(not e['usage_known'] for e in recorder.events),
-                   'non_llm_seconds_local': recorder.processing_seconds(started, time.perf_counter()),
+                   'wall_seconds_local': wall_seconds,
+                   'llm_in_flight_union_seconds_local': wall_seconds - non_llm_seconds,
+                   'non_llm_seconds_local': non_llm_seconds,
+                   'timing_scope': timing_scope,
+                   'timing_limitations': 'Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.',
                    'request_journal': str(journal)}
     if config.OFFICIAL_IO and output_path:
         output_path.with_name(output_path.name + '.diagnostics.json').write_text(json.dumps(diagnostics, indent=2) + '\n')
