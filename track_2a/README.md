@@ -9,11 +9,22 @@ An Apertus-powered system that decides whether an official Swiss voting booklet 
 or **contradicts (2)** a claim, and cites the booklet pages that justify the decision — for every combination of
 German, French and Italian.
 
-- **Results** (test split of 5 unseen voting dates, 402 pairs): advanced task **0.940** macro-F1 (**0.946** over all 1,495 pairs), beginner task **0.975**
+- **Historical results** (402 pairs, initially held out by date and subsequently observed): Advanced **0.940**, Beginner **0.975** Macro-F1.
+- **Closed v1.1 comparison** (1,488 cases per task, five date-grouped folds): recommended **R2 BM25 query union**, Advanced **0.956237**, Beginner **0.982497**, official Advanced Hit@5 **0.773737**.
 - **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ([PDF](docs/FactAttack_Technical_Report.pdf)) ·
   **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
 > Predictions describe the relationship between a claim and the official booklet. They are not political advice.
+
+R2 combines the original/translated BM25 queries with existing speaker boost and
+source-grounded page/block evidence. It preserves the original claim and NLI
+prompt. Reported Advanced tokens increase 1.39%; official separate-task efficiency
+and private competition scores are unavailable. **115 local and 115 CPU-container
+tests pass.** All 91 R2 label discrepancies have source reviews; two annotation/scope
+ambiguities remain flagged without changing gold. Full comparison and reproduction:
+[final report](docs/competition_optimization_report.md),
+[comparison.csv](results/competition_optimization/comparison.csv),
+[best_config.json](results/competition_optimization/best_config.json).
 
 ---
 
@@ -46,11 +57,11 @@ mode for tests only.
 
 | | |
 |---|---|
-| **Runtime** | Docker (`make run` builds and runs everything in a `python:3.11-slim` container); locally Python 3.9+ with `requirements.txt` |
-| **Hardware** | Any CPU machine, no GPU: ~300 MB RAM (peak 253 MB measured), ~1.4 GB disk for the image. The model runs remotely |
+| **Runtime** | Pinned CPU `linux/amd64` Docker image using Python 3.12.6; install `requirements-lock.txt` for the measured local environment |
+| **Hardware** | CPU only; Apertus runs remotely. Recorded processing/memory measurements are in the final report |
 | **API keys** | `LLM_API_KEY` for the CSCS inference service (Apertus). `LLM_NAME` and `LLM_BASE_URL` default to `swiss-ai/Apertus-v1.5-70B-thinking` and `https://api.inference.cscs.ch/v1` |
 | **Model weights** | None to download: Apertus v1.5 70B is served by CSCS. Apertus is the only model in the pipeline; Apertus 8B v1.5 was used once for a comparison run, no other model for development or evaluation |
-| **Network** | At build time: Hugging Face (OST dataset) and admin.ch (booklet PDFs). At run time: the CSCS endpoint |
+| **Network** | Build downloads pinned Python dependencies; inference calls only the configured Apertus endpoint. Prepare datasets/PDFs outside prediction |
 
 ---
 
@@ -83,22 +94,32 @@ The input/output format is documented in the [overview README](../README.md#offi
 
 ---
 
-## 🐳 Docker (`make run`)
+## 🐳 Docker submission
 
 ```bash
-export LLM_API_KEY="your_api_key_here"
-make run      # builds the image (downloads + pre-parses the booklets), benchmarks the 402-pair test split (~4 min)
-make test     # unit tests, no API calls
+cd ..  # repository root
+docker build --platform linux/amd64 -t fact-attack:test .
+# Set BASE_URL and API_KEY securely in the host environment.
+# Place source-only cases.jsonl and its PDFs in ./cases.
+mkdir -p output
+docker run --rm --platform linux/amd64 --read-only --tmpfs /tmp \
+  -e BASE_URL -e API_KEY -e NLI_STRATEGY=hybrid \
+  -e RETRIEVAL_QUERY_MODE=union -e EVIDENCE_POLICY=raw_pages_and_blocks \
+  -e CACHE_SINGLE_FLIGHT=true -e SOURCE_PAGES_LAZY=true \
+  -e LLM_STREAMING=true -e LLM_JSON_REPAIR=true -e NLI_BATCH_WORKERS=4 \
+  -v "$PWD/cases:/data:ro" -v "$PWD/output:/output" \
+  fact-attack:test --input /data/cases.jsonl --output /output/predictions.jsonl
+docker run --rm --network none --read-only --tmpfs /tmp fact-attack:test test
 ```
 
-`NLI_DATASET=data/demo_dataset.jsonl` selects the 28-pair demo set, `NLI_WORKERS` the parallel requests (default 4).
-The report is printed to the console; the run's JSON (metrics, run settings incl. the image's git commit, and
-per-sample predictions) is written to `track_2a/results/` on the host.
-
-Other commands run inside the container the same way, e.g. `docker run --rm -e LLM_API_KEY -v $PWD/cases:/cases
-hackapertus-track2a run -i /cases/cases.jsonl -o /cases/predictions.jsonl`. Booklet paths in the cases are resolved
-relative to the input file (so PDFs can sit next to it in the mounted folder); the 60 dataset booklets are already
-in the image, and a `booklet_url` that is not is downloaded.
+`NLI_BATCH_WORKERS=4` enables parallel official CLI cases while preserving output
+order; its default is 1 for the baseline. Evaluation preparation and host-side gold
+scoring are documented in the final report. The image includes source-only demo
+inputs and demo PDFs. Prediction uses existing mounted PDFs and `/tmp` caches;
+it does not download missing PDFs. Operational failures preserve IDs but produce
+a nonzero exit code and a diagnostics sidecar. Runtime environment variables
+`BASE_URL`/`API_KEY` take precedence over `.env` aliases. Baseline queries/evidence
+remain selectable by disabling the experimental flags.
 
 ---
 

@@ -227,6 +227,7 @@ def run_batch(
     top_k: int = typer.Option(config.DEFAULT_TOP_K, "--top-k", "-k", help="Passages to retrieve"),
     task: str = typer.Option("auto", "--task", "-t", help="'auto' (booklet if the case names one, else reference text), 'advanced' or 'beginner'"),
     mock: bool = typer.Option(False, "--mock", help="Force mock offline model mode"),
+    workers: int = typer.Option(config.BATCH_WORKERS, "--workers", min=1, help="Concurrent cases; outputs retain input order"),
 ):
     """
     Execute verification across an evaluation file: JSON, JSONL, Parquet or CSV, in the case format of the README
@@ -264,7 +265,8 @@ def run_batch(
     if not engine.client.mock:
         engine.client._request_completion = recorder.wrap(engine.client._request_completion)
 
-    for idx, item in enumerate(cases, 1):
+    def process_case(indexed):
+        idx, item = indexed
         cid = item.get("id", f"case-{idx:04d}")
         try:
             claim_text = _text(item.get("claim"))
@@ -297,12 +299,11 @@ def run_batch(
                 own = [e for e in recorder.events if e['case_id'] == cid]
                 for key in ('input_tokens', 'output_tokens'):
                     prediction['metrics'][key] = sum(e[key] for e in own if type(e.get(key)) is int)
-            official_results.append(prediction)
+            return prediction, None
         except Exception as exc:
             # One broken case must never cost the whole batch: emit a valid (neutral) record and continue
             print(f"[warning] {cid}: {type(exc).__name__}: {exc}", file=sys.stderr)
-            failures.append({'id': cid, 'error_type': type(exc).__name__})
-            official_results.append({
+            return {
                 "id": cid,
                 "label": 1,
                 "label_name": "neutral",
@@ -310,7 +311,20 @@ def run_batch(
                 "metrics": {"input_tokens": sum(e['input_tokens'] for e in recorder.events if e['case_id'] == cid and type(e.get('input_tokens')) is int),
                             "output_tokens": sum(e['output_tokens'] for e in recorder.events if e['case_id'] == cid and type(e.get('output_tokens')) is int),
                             "inference_time_ms": 0},
-            })
+            }, {'id': cid, 'error_type': type(exc).__name__}
+
+    indexed = enumerate(cases, 1)
+    if workers == 1:
+        outcomes = list(map(process_case, indexed))
+    else:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            # map preserves the input order even when completion order differs.
+            outcomes = list(pool.map(process_case, indexed))
+    for prediction, failure in outcomes:
+        official_results.append(prediction)
+        if failure is not None:
+            failures.append(failure)
 
     if output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -332,7 +346,7 @@ def run_batch(
     ended = time.perf_counter()
     wall_seconds = ended - started
     non_llm_seconds = recorder.processing_seconds(started, ended)
-    diagnostics = {'cases': len(cases), 'failures': failures, 'api_attempts': len(recorder.events),
+    diagnostics = {'cases': len(cases), 'workers': workers, 'failures': failures, 'api_attempts': len(recorder.events),
                    'usage_unknown_attempts': sum(not e['usage_known'] for e in recorder.events),
                    'wall_seconds_local': wall_seconds,
                    'llm_in_flight_union_seconds_local': wall_seconds - non_llm_seconds,

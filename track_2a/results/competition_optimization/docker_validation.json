@@ -1,0 +1,542 @@
+{
+  "final_image_union_contract": {
+    "image": "sha256:87f8111a6ac4ed0a8ae980005749b533e93c8bcef7835ea7dec2d96837b300be",
+    "platform": "linux/amd64",
+    "image_check": {
+      "source_sha256": {
+        "src/evaluator.py": "92a15715007b219ffa41f04d71e8cb27e75f6a0c075d927a76433d32316d4a94",
+        "src/__main__.py": "fe94e861306dea4c1adebfd58ed2772fdb1052925b03f4c925e2c602664d6e29",
+        "src/evidence.py": "cfab1ce896efb14de68541871cc569a120b00fbb4f3873fb34b8f4598977172f",
+        "src/__init__.py": "da301bc5232064d63cb178879759b8de2c25f4483909795f3d53d4207b1b9e4f",
+        "src/cli.py": "0ad6d9e5cf9f9e70a68f4ace2ef3cf9d10f6e3315a36eb5c6398eb46ef3aa293",
+        "src/download_data.py": "fe60f1bdc898d9e33ff3aeaf96728eb27e71f8a0f33fe3ebf4f11f376cbccf18",
+        "src/streaming.py": "3a52d9c139691c97e1b38a079c6b35e4a6d84a611971abcb9117cdf702828142",
+        "src/query_translation.py": "388d6e280fbc38db0d3ac107499bc7cd82aa992dfcf05b88cba16196db5d6d39",
+        "src/text_utils.py": "32497b054948a8604e0eac4710308d9627a4fbd4eee075eb5565f23545117cab",
+        "src/results_summary.py": "98193f2b29125bc0920b51a35d0cff485eac6a79c6f6ce1f337c22467c3cdeac",
+        "src/pdf_parser.py": "2814ffe05c4416ba5005c9d2c35175c554b9f3d1aedb75d1b554abe1af1596e5",
+        "src/inference.py": "0cf2f8a4e3641979fc8c96f487efaa9fc62165ae040324e3c7f453e8c3c008d0",
+        "src/retriever.py": "efbec5d62f14924b90bf1d5aa354dd4b29c42af581f06c2fe1538c01f7aacf0d",
+        "src/official_evaluation.py": "3cca7a7872bdd1864bbcb64739f6ed991674ac123280486242ae3e1726d39ceb",
+        "src/numerical_checker.py": "90c7b2fd6a23f0cd3cc8b45d34b6a790456cf5348cf7cb4f4db3cee70fb8eb26",
+        "src/config.py": "913fd113b41d4456074b2c7547e546954d47758749edbb1cda3da550185c3bd0",
+        "src/competition_selection.py": "a2db790420bc9852dc8d84d0f87355156702b9f413af693638cbf5f88aa05a08",
+        "src/hf_dataset.py": "1ae3b5a11313363eaf524339dda5ee9fc58700cfb1a5b0fcd5abff86f39eca83",
+        "src/apertus_client.py": "90ce899ac548a74de250cc184d12dc94f95c8f5266bf7b3c8b40afcc3d580792",
+        "src/measurement.py": "ab50d0467555e6a2eb9d0367d50196e100d1d96bb4fc587046cb35a7c82be5bb"
+      },
+      "demo_rows_without_gold": 28,
+      "forbidden_artifacts": 0
+    },
+    "cases": 12,
+    "gold_read": false,
+    "runs": {
+      "offline-forward": {
+        "exit_code": 0,
+        "host_wall_seconds": 20.529394666897133,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 18,
+          "advanced_non_neutral_cases_with_source_evidence": 4,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "1f7e5d582e479629e2c437f2d3087662b5e727902d97eba9a8db9417774328eb",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "workers": 4,
+          "failures": [],
+          "api_attempts": 0,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 17.38736900803633,
+          "llm_in_flight_union_seconds_local": 0.0,
+          "non_llm_seconds_local": 17.38736900803633,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "offline-reverse": {
+        "exit_code": 0,
+        "host_wall_seconds": 20.69373104092665,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 18,
+          "advanced_non_neutral_cases_with_source_evidence": 4,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "3d23b7dd7bfbdba52df19e9c5f093e66ffdc35d47d1bb97ba70fc33457a9d1c3",
+          "cases_sha256": "b3dec5375c8cb7f1c00d7d773d42b7c9df9ed44e578ab3d359af509bb5b31d7f",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "workers": 4,
+          "failures": [],
+          "api_attempts": 0,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 18.98614717600867,
+          "llm_in_flight_union_seconds_local": 0.0,
+          "non_llm_seconds_local": 18.98614717600867,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "real-union": {
+        "exit_code": 0,
+        "host_wall_seconds": 37.983156708069146,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 30,
+          "advanced_non_neutral_cases_with_source_evidence": 6,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "45fb1c8e74d89859899787203991337553c1927d95e4251cd64f8fd501bf2843",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "workers": 4,
+          "failures": [],
+          "api_attempts": 15,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 30.397607180988416,
+          "llm_in_flight_union_seconds_local": 19.38515350734815,
+          "non_llm_seconds_local": 11.012453673640266,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      }
+    },
+    "input_sha256": {
+      "cases.reverse.jsonl": "b3dec5375c8cb7f1c00d7d773d42b7c9df9ed44e578ab3d359af509bb5b31d7f",
+      "cases.jsonl": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+      "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+      "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+      "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+      "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+    },
+    "read_only_inputs_unchanged": true,
+    "input_order_independent_with_deterministic_mock": true,
+    "real_api_order_repeatability_not_assumed": true,
+    "api_attempts": 15,
+    "usage_unknown_attempts": 0,
+    "input_tokens_known": 44201,
+    "output_tokens_known": 839,
+    "request_journal_sha256": "a328e90eb7bdaacbf319fecbb546568fd94bee3ef916ab66d3ab8301ae4ed39e",
+    "validator_sha256": "784ed70bcdb98c1ad7507d5ae5a6c591fd64db5f849cad8318b0f1120498e3fe"
+  },
+  "earlier_sequential_cli_union_contract": {
+    "image": "sha256:db1de9f6f45818d22d861b0a7c473964222ddb0b01adaf829c1c8a303f403468",
+    "platform": "linux/amd64",
+    "image_check": {
+      "source_sha256": {
+        "src/evaluator.py": "92a15715007b219ffa41f04d71e8cb27e75f6a0c075d927a76433d32316d4a94",
+        "src/__main__.py": "fe94e861306dea4c1adebfd58ed2772fdb1052925b03f4c925e2c602664d6e29",
+        "src/evidence.py": "cfab1ce896efb14de68541871cc569a120b00fbb4f3873fb34b8f4598977172f",
+        "src/__init__.py": "da301bc5232064d63cb178879759b8de2c25f4483909795f3d53d4207b1b9e4f",
+        "src/cli.py": "ce18c8be6a06aa6e3a720b44c6c6bdbcc5b8714738a101e4c0b30c0173638738",
+        "src/download_data.py": "fe60f1bdc898d9e33ff3aeaf96728eb27e71f8a0f33fe3ebf4f11f376cbccf18",
+        "src/streaming.py": "3a52d9c139691c97e1b38a079c6b35e4a6d84a611971abcb9117cdf702828142",
+        "src/query_translation.py": "388d6e280fbc38db0d3ac107499bc7cd82aa992dfcf05b88cba16196db5d6d39",
+        "src/text_utils.py": "32497b054948a8604e0eac4710308d9627a4fbd4eee075eb5565f23545117cab",
+        "src/results_summary.py": "98193f2b29125bc0920b51a35d0cff485eac6a79c6f6ce1f337c22467c3cdeac",
+        "src/pdf_parser.py": "2814ffe05c4416ba5005c9d2c35175c554b9f3d1aedb75d1b554abe1af1596e5",
+        "src/inference.py": "0cf2f8a4e3641979fc8c96f487efaa9fc62165ae040324e3c7f453e8c3c008d0",
+        "src/retriever.py": "efbec5d62f14924b90bf1d5aa354dd4b29c42af581f06c2fe1538c01f7aacf0d",
+        "src/official_evaluation.py": "3cca7a7872bdd1864bbcb64739f6ed991674ac123280486242ae3e1726d39ceb",
+        "src/numerical_checker.py": "90c7b2fd6a23f0cd3cc8b45d34b6a790456cf5348cf7cb4f4db3cee70fb8eb26",
+        "src/config.py": "bd3fbc25f91d6b6369a69bc1851e8474e6031bb82a1955722acff741231cfa6c",
+        "src/competition_selection.py": "a2db790420bc9852dc8d84d0f87355156702b9f413af693638cbf5f88aa05a08",
+        "src/hf_dataset.py": "1ae3b5a11313363eaf524339dda5ee9fc58700cfb1a5b0fcd5abff86f39eca83",
+        "src/apertus_client.py": "90ce899ac548a74de250cc184d12dc94f95c8f5266bf7b3c8b40afcc3d580792",
+        "src/measurement.py": "ab50d0467555e6a2eb9d0367d50196e100d1d96bb4fc587046cb35a7c82be5bb"
+      },
+      "demo_rows_without_gold": 28,
+      "forbidden_artifacts": 0
+    },
+    "cases": 12,
+    "gold_read": false,
+    "runs": {
+      "offline-forward": {
+        "exit_code": 0,
+        "host_wall_seconds": 15.5490950839594,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 18,
+          "advanced_non_neutral_cases_with_source_evidence": 4,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "bf5fad564fb5910da52c9a350c31ca3128d783a24c6b629dc20a0f0f2a6ae41d",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 0,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 14.232140131061897,
+          "llm_in_flight_union_seconds_local": 0.0,
+          "non_llm_seconds_local": 14.232140131061897,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "offline-reverse": {
+        "exit_code": 0,
+        "host_wall_seconds": 13.710352834081277,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 18,
+          "advanced_non_neutral_cases_with_source_evidence": 4,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "3d23b7dd7bfbdba52df19e9c5f093e66ffdc35d47d1bb97ba70fc33457a9d1c3",
+          "cases_sha256": "b3dec5375c8cb7f1c00d7d773d42b7c9df9ed44e578ab3d359af509bb5b31d7f",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 0,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 12.7922930479981,
+          "llm_in_flight_union_seconds_local": 0.0,
+          "non_llm_seconds_local": 12.7922930479981,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "real-union": {
+        "exit_code": 0,
+        "host_wall_seconds": 34.98261812492274,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 30,
+          "advanced_non_neutral_cases_with_source_evidence": 6,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "c14f2765b5104f82e2f0d7aa8acaff2573aa8c5bd3923cd90af247f70c5f405c",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 15,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 33.715299556963146,
+          "llm_in_flight_union_seconds_local": 18.115141049493104,
+          "non_llm_seconds_local": 15.600158507470042,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      }
+    },
+    "input_sha256": {
+      "cases.reverse.jsonl": "b3dec5375c8cb7f1c00d7d773d42b7c9df9ed44e578ab3d359af509bb5b31d7f",
+      "cases.jsonl": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+      "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+      "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+      "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+      "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+    },
+    "read_only_inputs_unchanged": true,
+    "input_order_independent_with_deterministic_mock": true,
+    "real_api_order_repeatability_not_assumed": true,
+    "api_attempts": 15,
+    "usage_unknown_attempts": 0,
+    "input_tokens_known": 44201,
+    "output_tokens_known": 842,
+    "request_journal_sha256": "b13d4202c6f2acad06186b7507671ba8642adfe980c2aed2f1acc6d90df863ee",
+    "validator_sha256": "cb23c22d99e73d5a2376f95974d0eebe89e41c2b09fa49c5e43be30c0a8c0bdc"
+  },
+  "earlier_both_query_modes_contract": {
+    "image": "sha256:58ad99ee0482fb565b38595f456605269233de8b40621f67db19c5d3ebc4c33c",
+    "platform": "linux/amd64",
+    "image_check": {
+      "source_sha256": {
+        "src/evaluator.py": "92a15715007b219ffa41f04d71e8cb27e75f6a0c075d927a76433d32316d4a94",
+        "src/__main__.py": "fe94e861306dea4c1adebfd58ed2772fdb1052925b03f4c925e2c602664d6e29",
+        "src/evidence.py": "cfab1ce896efb14de68541871cc569a120b00fbb4f3873fb34b8f4598977172f",
+        "src/__init__.py": "da301bc5232064d63cb178879759b8de2c25f4483909795f3d53d4207b1b9e4f",
+        "src/cli.py": "ce18c8be6a06aa6e3a720b44c6c6bdbcc5b8714738a101e4c0b30c0173638738",
+        "src/download_data.py": "fe60f1bdc898d9e33ff3aeaf96728eb27e71f8a0f33fe3ebf4f11f376cbccf18",
+        "src/streaming.py": "3a52d9c139691c97e1b38a079c6b35e4a6d84a611971abcb9117cdf702828142",
+        "src/query_translation.py": "388d6e280fbc38db0d3ac107499bc7cd82aa992dfcf05b88cba16196db5d6d39",
+        "src/text_utils.py": "32497b054948a8604e0eac4710308d9627a4fbd4eee075eb5565f23545117cab",
+        "src/results_summary.py": "98193f2b29125bc0920b51a35d0cff485eac6a79c6f6ce1f337c22467c3cdeac",
+        "src/pdf_parser.py": "2814ffe05c4416ba5005c9d2c35175c554b9f3d1aedb75d1b554abe1af1596e5",
+        "src/inference.py": "0cf2f8a4e3641979fc8c96f487efaa9fc62165ae040324e3c7f453e8c3c008d0",
+        "src/retriever.py": "efbec5d62f14924b90bf1d5aa354dd4b29c42af581f06c2fe1538c01f7aacf0d",
+        "src/official_evaluation.py": "3cca7a7872bdd1864bbcb64739f6ed991674ac123280486242ae3e1726d39ceb",
+        "src/numerical_checker.py": "90c7b2fd6a23f0cd3cc8b45d34b6a790456cf5348cf7cb4f4db3cee70fb8eb26",
+        "src/config.py": "bd3fbc25f91d6b6369a69bc1851e8474e6031bb82a1955722acff741231cfa6c",
+        "src/competition_selection.py": "a2db790420bc9852dc8d84d0f87355156702b9f413af693638cbf5f88aa05a08",
+        "src/hf_dataset.py": "1ae3b5a11313363eaf524339dda5ee9fc58700cfb1a5b0fcd5abff86f39eca83",
+        "src/apertus_client.py": "90ce899ac548a74de250cc184d12dc94f95c8f5266bf7b3c8b40afcc3d580792",
+        "src/measurement.py": "ab50d0467555e6a2eb9d0367d50196e100d1d96bb4fc587046cb35a7c82be5bb"
+      },
+      "demo_rows_without_gold": 28,
+      "forbidden_artifacts": 0
+    },
+    "cases": 12,
+    "gold_read": false,
+    "runs": {
+      "offline-forward": {
+        "exit_code": 0,
+        "host_wall_seconds": 37.255839167162776,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 18,
+          "advanced_non_neutral_cases_with_source_evidence": 4,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "bf5fad564fb5910da52c9a350c31ca3128d783a24c6b629dc20a0f0f2a6ae41d",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 0,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 30.76478234794922,
+          "llm_in_flight_union_seconds_local": 0.0,
+          "non_llm_seconds_local": 30.76478234794922,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "offline-reverse": {
+        "exit_code": 0,
+        "host_wall_seconds": 25.599398374790326,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 18,
+          "advanced_non_neutral_cases_with_source_evidence": 4,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "3d23b7dd7bfbdba52df19e9c5f093e66ffdc35d47d1bb97ba70fc33457a9d1c3",
+          "cases_sha256": "b3dec5375c8cb7f1c00d7d773d42b7c9df9ed44e578ab3d359af509bb5b31d7f",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 0,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 22.358125053113326,
+          "llm_in_flight_union_seconds_local": 0.0,
+          "non_llm_seconds_local": 22.358125053113326,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "real-translated": {
+        "exit_code": 0,
+        "host_wall_seconds": 51.18310399982147,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 30,
+          "advanced_non_neutral_cases_with_source_evidence": 6,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "6f29bc298e93d75a2a53fbb4a2be24eb8c7abb07ab9511923ee2210e1cc10a90",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 15,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 46.31671456201002,
+          "llm_in_flight_union_seconds_local": 18.322688218206167,
+          "non_llm_seconds_local": 27.994026343803853,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      },
+      "real-union": {
+        "exit_code": 0,
+        "host_wall_seconds": 43.78827470890246,
+        "source_validation": {
+          "cases": 12,
+          "source_quotes_verified": 30,
+          "advanced_non_neutral_cases_with_source_evidence": 6,
+          "invalid_or_missing_outputs": 0,
+          "gold_read": false,
+          "case_order_preserved": true,
+          "source_pdf_sha256": {
+            "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+            "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+            "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+            "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+            "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+            "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+          },
+          "validation_scope": "Every Advanced quote equals its physical PDF page or complete source block; all output IDs, labels and metrics are valid. Semantic entailment is not proved.",
+          "predictions_sha256": "30922361c5978a277a8a6c69fbe855cecf64ae70534faf0ee6c2066899e443ef",
+          "cases_sha256": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+          "validator_sha256": "63a412d74624b96126a8eb18a76c7f46130b8a97d4fb376d557f327fe105947a"
+        },
+        "diagnostics": {
+          "cases": 12,
+          "failures": [],
+          "api_attempts": 15,
+          "usage_unknown_attempts": 0,
+          "wall_seconds_local": 40.84527085185982,
+          "llm_in_flight_union_seconds_local": 17.91889504669234,
+          "non_llm_seconds_local": 22.92637580516748,
+          "timing_scope": "module entry through output write; includes imports, input loading and client setup",
+          "timing_limitations": "Local SDK intervals; excludes interpreter/container startup, diagnostics write and shutdown; official proxy is authoritative.",
+          "request_journal": "/output/requests.api.jsonl"
+        }
+      }
+    },
+    "input_sha256": {
+      "cases.reverse.jsonl": "b3dec5375c8cb7f1c00d7d773d42b7c9df9ed44e578ab3d359af509bb5b31d7f",
+      "cases.jsonl": "50b493286a3daaa62cd8d9dd8d2313e42aca27e7741e767b807ea3935f943f63",
+      "booklets/2022-09-25_it.pdf": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+      "booklets/2022-09-25_fr.pdf": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "booklets/2020-09-27_de.pdf": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "booklets/2025-11-30_de.pdf": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+      "booklets/2024-03-03_fr.pdf": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+      "booklets/2020-11-29_it.pdf": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e"
+    },
+    "read_only_inputs_unchanged": true,
+    "input_order_independent_with_deterministic_mock": true,
+    "real_api_order_repeatability_not_assumed": true,
+    "api_attempts": 30,
+    "usage_unknown_attempts": 0,
+    "input_tokens_known": 88374,
+    "output_tokens_known": 1681,
+    "request_journal_sha256": "84185608954e76a36744eaab0fadf7904343ceec3b935d4cfae3a60b19909126",
+    "validator_sha256": "cb23c22d99e73d5a2376f95974d0eebe89e41c2b09fa49c5e43be30c0a8c0bdc"
+  },
+  "inference_algorithm_sources_unchanged": true,
+  "source_files_changed_for_optional_cli_concurrency": [
+    "src/cli.py",
+    "src/config.py"
+  ],
+  "final_image_cpu_tests": {
+    "tests": 115,
+    "passed": true,
+    "log_sha256": "d5f3e2c714fa3647fdb0d02ebcec9bb7fbe3405ded3d2c0a8d4371e310568b67"
+  },
+  "host_tests": {
+    "tests": 115,
+    "passed": true,
+    "log_sha256": "90203b8126504587b17bb4955351a687598f33054b9cfaf84e405672759c66e0"
+  },
+  "prior_code_checkpoint": "b83aaa1",
+  "real_api_repeatability_assumed": false,
+  "fixture_scope": "Twelve mixed source-only cases: six source/claim-language pairs; no full-dataset timing or stochastic F1 claim."
+}

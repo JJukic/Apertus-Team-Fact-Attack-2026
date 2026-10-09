@@ -47,6 +47,9 @@ LLM_RETRY_BUDGET_S = float(os.getenv("LLM_RETRY_BUDGET_S", "120"))
 DEFAULT_STRATEGY = os.getenv("NLI_STRATEGY", "hybrid")
 # 12 pages (with PAGE_MAX_CHARS clipping): all 1,495 OST pairs 0.912 -> 0.931 macro-F1 vs. 10 pages, +~890 input tokens
 DEFAULT_TOP_K = int(os.getenv("NLI_TOP_K", "12"))
+# Keep sequential baseline behavior; the measured candidate can opt into the
+# same concurrency as the full evaluation runner.
+BATCH_WORKERS = int(os.getenv("NLI_BATCH_WORKERS", "1"))
 # Max characters per booklet passage; 0 = whole pages (default: on dev, n=450, pages scored 0.908 F1 vs 0.831 for 600-char passages)
 PASSAGE_CHARS = int(os.getenv("PASSAGE_CHARS", "0"))
 

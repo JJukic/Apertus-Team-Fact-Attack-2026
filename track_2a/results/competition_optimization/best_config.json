@@ -1,24 +1,92 @@
 {
-  "status": "C1_full_validation_complete_final_selection_pending_retrieval_and_Docker",
-  "provisional_starting_architecture": "weighted BM25 Top-12 + two-page speaker boost + Apertus ids NLI",
-  "candidate_under_validation": {
+  "status": "closed_R2_recommended_for_validated_submission_contract",
+  "baseline_remains_selectable": true,
+  "recommended_as_final": true,
+  "submission_ready": true,
+  "reason": "R2 leads measured quality across the identical public validation population and passes the source-output/CPU Docker contract. Its quality contribution under supplied weights exceeds B0 by 0.039475. Reported Advanced tokens increase 1.39%, 148 attempts have unknown billed usage, two folds and three language pairs regress, and separate-task official proxy efficiencies are unmeasured. Recommend this measured tradeoff; retain B0/C1 as alternatives.",
+  "strongest_complete_fresh_candidate": "R2",
+  "candidate_validation": {
+    "Advanced_macro_f1": 0.9562372258971753,
+    "Beginner_macro_f1": 0.9824974405651722,
+    "Advanced_evidence_hit5": 0.7737373737373737,
+    "cases": 2976,
+    "invalid_predictions": 0,
+    "grouped_folds": 5,
+    "A_fold_mean": 0.9556641559878073,
+    "A_fold_std": 0.03324170715401034
+  },
+  "Docker_validation_artifact": "docker_validation.json",
+  "submission_readiness_scope": "Validated local CPU linux/amd64 CLI/JSONL/source-evidence contract; not a private leaderboard result or externally confirmed final score.",
+  "recommended_configuration": {
+    "LLM_NAME": "swiss-ai/Apertus-v1.5-70B-thinking",
+    "NLI_STRATEGY": "hybrid",
+    "NLI_TOP_K": 12,
+    "PROMPT_MODE": "ids",
+    "PASSAGE_CHARS": 0,
+    "PAGE_MAX_CHARS": 3000,
+    "SPEAKER_BOOST": 2,
+    "RETRIEVAL_QUERY_MODE": "union",
     "EVIDENCE_POLICY": "raw_pages_and_blocks",
     "CACHE_SINGLE_FLIGHT": true,
     "SOURCE_PAGES_LAZY": true,
     "LLM_STREAMING": true,
-    "LLM_JSON_REPAIR": true
+    "LLM_JSON_REPAIR": true,
+    "NLI_BATCH_WORKERS": 4,
+    "THINKING": false,
+    "IDS_REASON": false,
+    "FEW_SHOT": false,
+    "SPEAKER_HINT": false,
+    "SPEAKER_AWARE": false,
+    "NUMERIC_OVERRIDE": false,
+    "TRANSLATE_CLAIM": false
   },
-  "baseline_remains_selectable": true,
-  "recommended_as_final": false,
-  "submission_ready": false,
-  "reason": "Full C1 improves evidence and coverage, with a small Advanced F1 regression. R1/R2, broader source-cause audit, CPU profile and final Docker checks remain.",
-  "strongest_complete_fresh_candidate": "C1",
-  "candidate_validation": {
-    "Advanced_macro_f1": 0.9440341569790694,
-    "Beginner_macro_f1": 0.9824974405651722,
-    "Advanced_evidence_hit5": 0.7555555555555555,
-    "cases": 2976,
-    "invalid_predictions": 0,
-    "grouped_folds": 5
+  "baseline_disable_flags": {
+    "RETRIEVAL_QUERY_MODE": "original",
+    "EVIDENCE_POLICY": "legacy",
+    "CACHE_SINGLE_FLIGHT": false,
+    "SOURCE_PAGES_LAZY": false,
+    "LLM_STREAMING": false,
+    "LLM_JSON_REPAIR": false,
+    "NLI_BATCH_WORKERS": 1
+  },
+  "known_limitations": [
+    "Public validation is observed data, not an untouched holdout.",
+    "Two reviewed R2 gold/scope ambiguities remain; gold is unchanged.",
+    "Comparator source-cause review is partial with exact remaining IDs in error_analysis.json.",
+    "Full R2 run required technical recovery; all previous attempts remain in its measurements.",
+    "Local mixed timing does not establish official task-wise processing efficiency."
+  ],
+  "runtime_credentials": [
+    "BASE_URL",
+    "API_KEY"
+  ],
+  "client_output_token_cap": null,
+  "selected_optimization_flags": {
+    "EVIDENCE_POLICY": "raw_pages_and_blocks",
+    "CACHE_SINGLE_FLIGHT": true,
+    "SOURCE_PAGES_LAZY": true,
+    "LLM_STREAMING": true,
+    "LLM_JSON_REPAIR": true,
+    "RETRIEVAL_QUERY_MODE": "union",
+    "NLI_BATCH_WORKERS": 4
+  },
+  "starting_architecture": "weighted BM25 Top-12 + two-page speaker boost + Apertus ids NLI",
+  "acceptance": {
+    "official_metrics_recomputed_from_all_predictions": true,
+    "same_case_population_all_four_runs": 2976,
+    "date_groups": 20,
+    "folds": 5,
+    "date_leakage_detected": false,
+    "host_tests_passed": 115,
+    "CPU_linux_amd64_tests_passed": 115,
+    "all_candidate_physical_source_quotes_validated": true,
+    "mixed_source_only_Docker_fixture_passed": 12,
+    "R2_label_discrepancies_reviewed": 91,
+    "R2_annotation_scope_ambiguities_without_relabeling": 2,
+    "baseline_selectable": true,
+    "all_optimizations_configurable": true,
+    "remote_only_Apertus_v1_5_uncapped": true,
+    "runtime_BASE_URL_API_KEY_only": true,
+    "official_total_score_claimed": false
   }
 }

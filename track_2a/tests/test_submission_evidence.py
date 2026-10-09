@@ -130,7 +130,7 @@ class TestSubmissionEvidence(unittest.TestCase):
                 {'id': 'beginner', 'reference': {'text': 'Der Bundesrat empfiehlt Nein.'},
                  'claim': {'text': 'Der Bundesrat empfiehlt die Ablehnung.', 'language': 'de'}}]
             env = {**os.environ, 'EVIDENCE_POLICY': 'raw_pages_and_blocks', 'CACHE_SINGLE_FLIGHT': 'true',
-                   'BOOKLET_CACHE_DIR': str(directory / 'cache'), 'PYTHONPATH': str(ROOT)}
+                   'BOOKLET_CACHE_DIR': str(directory / 'cache'), 'PYTHONPATH': str(ROOT), 'NLI_BATCH_WORKERS': '4'}
             predictions = []
             for ordering in (cases, list(reversed(cases))):
                 (directory / 'input.jsonl').write_text(''.join(json.dumps(c) + '\n' for c in ordering))

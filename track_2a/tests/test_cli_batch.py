@@ -5,8 +5,12 @@ offline (mock model).
 
 import json
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from typer.testing import CliRunner
 
@@ -75,6 +79,67 @@ class TestBatchCli(unittest.TestCase):
         result = CliRunner().invoke(app, ["run", "-i", str(inp), "--mock", "--task", "advanced"])
         self.assertEqual(result.exit_code, 0, result.output)
         self.assertIn("has no booklet", result.output)
+
+
+class TestConcurrentBatch(unittest.TestCase):
+    def test_overlapping_calls_preserve_ids_costs_and_a_complete_failed_case(self):
+        barrier = threading.Barrier(2)
+        fast_recorded = threading.Event()
+
+        class Client:
+            mock = False
+
+            def _request_completion(self, **body):
+                claim = body['messages'][0]['content']
+                barrier.wait(timeout=5)
+                if claim == 'slow':
+                    if not fast_recorded.wait(timeout=5):
+                        raise TimeoutError('Fast request was not recorded')
+                else:
+                    time.sleep(0.01)
+                return SimpleNamespace(
+                    usage=SimpleNamespace(prompt_tokens=3 if claim == 'slow' else 7, completion_tokens=2),
+                    choices=[SimpleNamespace(message=SimpleNamespace(content='{}'), finish_reason='stop')])
+
+        client = Client()
+
+        class Engine:
+            def __init__(self, **kwargs):
+                self.client = client
+
+            def verify_premise(self, **kwargs):
+                self.client._request_completion(model='swiss-ai/Apertus-v1.5-70B-thinking',
+                                                messages=[{'role': 'user', 'content': kwargs['claim']}])
+                if kwargs['claim'] == 'fast':
+                    fast_recorded.set()
+                prediction = {'id': kwargs['case_id'], 'label': 0, 'label_name': 'entailment',
+                              'evidence': [], 'metrics': {'input_tokens': 0, 'output_tokens': 0, 'inference_time_ms': 1}}
+                return SimpleNamespace(error=None, to_official_dict=lambda **unused: prediction)
+
+        with tempfile.TemporaryDirectory() as directory:
+            directory = Path(directory)
+            inp, out, journal = directory / 'cases.jsonl', directory / 'results.data', directory / 'requests.jsonl'
+            cases = [{'id': '', 'claim': 'slow', 'reference': 'Source'},
+                     {'id': 'fast-ä', 'claim': 'fast', 'reference': 'Source'},
+                     {'id': 'missing', 'claim': 'Unknown', 'booklet': {'path': 'missing.pdf'}}]
+            inp.write_text(''.join(json.dumps(case) + '\n' for case in cases))
+            with patch('src.cli.ClaimVerificationEngine', Engine), patch.object(config, 'OFFICIAL_IO', True), \
+                    patch.dict('os.environ', {'REQUEST_JOURNAL_PATH': str(journal)}):
+                result = CliRunner().invoke(app, ['run', '--input', str(inp), '--output', str(out), '--workers', '2'])
+            self.assertEqual(result.exit_code, 2)
+            outputs = [json.loads(line) for line in out.read_text().splitlines()]
+            self.assertEqual([row['id'] for row in outputs], ['', 'fast-ä', 'missing'])
+            self.assertEqual([row['metrics']['input_tokens'] for row in outputs], [3, 7, 0])
+            self.assertEqual(outputs[-1]['label'], 1)
+            events = [json.loads(line) for line in journal.read_text().splitlines()]
+            self.assertEqual([event['case_id'] for event in events], ['fast-ä', ''])
+            self.assertEqual(sum(event['input_tokens'] for event in events), 10)
+            diagnostics = json.loads(out.with_name(out.name + '.diagnostics.json').read_text())
+            self.assertEqual(diagnostics['workers'], 2)
+            self.assertEqual(diagnostics['api_attempts'], 2)
+            self.assertEqual(diagnostics['failures'], [{'id': 'missing', 'error_type': 'FileNotFoundError'}])
+            self.assertLess(diagnostics['llm_in_flight_union_seconds_local'],
+                            sum(event['end'] - event['start'] for event in events))
 
 
 class TestHelpers(unittest.TestCase):

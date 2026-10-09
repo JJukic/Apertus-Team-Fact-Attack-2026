@@ -85,7 +85,7 @@ print(json.dumps({'source_sha256':{str(p.relative_to(root)):hashlib.sha256(p.rea
             environment[official] = values.get(official) or values.get(legacy) or environment.get(official, '')
     if args.api_mode and not all(environment.get(key) for key in ('BASE_URL', 'API_KEY')):
         raise ValueError('Real checks require host BASE_URL and API_KEY')
-    flags = {'NLI_STRATEGY': 'hybrid', 'NLI_TOP_K': '12', 'PROMPT_MODE': 'ids', 'PASSAGE_CHARS': '0',
+    flags = {'NLI_STRATEGY': 'hybrid', 'NLI_TOP_K': '12', 'NLI_BATCH_WORKERS': '4', 'PROMPT_MODE': 'ids', 'PASSAGE_CHARS': '0',
              'PAGE_MAX_CHARS': '3000', 'SPEAKER_BOOST': '2', 'LLM_STREAMING': 'true', 'LLM_JSON_REPAIR': 'true',
              'EVIDENCE_POLICY': 'raw_pages_and_blocks', 'CACHE_SINGLE_FLIGHT': 'true', 'SOURCE_PAGES_LAZY': 'true',
              'THINKING': 'false', 'IDS_REASON': 'false', 'FEW_SHOT': 'false', 'SPEAKER_HINT': 'false',
