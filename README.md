@@ -227,3 +227,7 @@ track_2a/
 ## 📜 License
 
 Code: [Apache License 2.0](LICENSE). Documentation (READMEs, technical report, experiment log): CC-BY-4.0.
+
+Third-party: the submission image includes [PyMuPDF](https://github.com/pymupdf/PyMuPDF) (AGPL-3.0), used to quote
+evidence pages and text blocks from the booklets. Apache-2.0 code may be combined with AGPL-3.0 code; the image as a
+whole is therefore distributed under the terms of the AGPL-3.0, and its complete source is this public repository.

@@ -37,8 +37,15 @@ class TestPagePool(unittest.TestCase):
             parallel = [page_pool.extract_pages(BOOKLET), page_pool.extract_pages(BOOKLET.with_name("2026-06-14_fr.pdf"))]
         page_pool.stop()
         sequential = [PDFParser().extract_pages(BOOKLET), PDFParser().extract_pages(BOOKLET.with_name("2026-06-14_fr.pdf"))]
+        # The same pypdf text; with the default evidence policy the same tasks also read the PyMuPDF evidence pages
+        sources = [{p["page_number"]: p.pop("source", None) for p in pages} for pages in parallel]
         self.assertEqual(parallel, sequential)
         self.assertGreater(len(parallel[0]), 10)
+        from src import config
+        if config.EVIDENCE_POLICY != "legacy":
+            from src.evidence import extract_source_pages
+
+            self.assertEqual(sources[0], extract_source_pages(str(BOOKLET), list(sources[0])))
 
 
 if __name__ == "__main__":

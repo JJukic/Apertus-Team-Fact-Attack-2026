@@ -42,19 +42,37 @@ class SourcePages:
         with pymupdf.open(filename) as document:
             if number > len(document):
                 return None
-            page = document[number - 1]
-            return {'text': page.get_text(sort=True),
-                    'blocks': [b[4] for b in page.get_text('blocks', sort=True) if b[6] == 0]}
+            return source_page(document[number - 1])
 
     @staticmethod
     def _extract(filename):
-        import pymupdf
-        with pymupdf.open(filename) as document:
-            return {
-                i + 1: {'text': p.get_text(sort=True),
-                        'blocks': [b[4] for b in p.get_text('blocks', sort=True) if b[6] == 0]}
-                for i, p in enumerate(document)
-            }
+        return extract_source_pages(filename)
+
+
+def source_page(page):
+    """Text and text blocks of one PyMuPDF page (the form the gold passages follow)."""
+    return {'text': page.get_text(sort=True),
+            'blocks': [b[4] for b in page.get_text('blocks', sort=True) if b[6] == 0]}
+
+
+def extract_source_pages(filename, numbers=None):
+    """{page number: source page} for all pages (or the given 1-based numbers) of a PDF."""
+    import pymupdf
+    with pymupdf.open(filename) as document:
+        wanted = range(1, len(document) + 1) if numbers is None else [n for n in numbers if 1 <= n <= len(document)]
+        return {n: source_page(document[n - 1]) for n in wanted}
+
+
+class ParsedSourcePages:
+    """Source pages stored with the parsed booklet (parse cache): no PDF access, no lock, while cases are answered."""
+
+    def __init__(self, pages):
+        self.pages = pages
+
+    def get(self, case, page):
+        if type(page) is not int or page < 1:
+            return None
+        return self.pages.get(str(page)) or self.pages.get(page)
 
 
 def terms(text):

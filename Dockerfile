@@ -1,6 +1,6 @@
 FROM python:3.12.6-slim@sha256:ad48727987b259854d52241fac3bc633574364867b8e20aec305e6e7f4028b26
 WORKDIR /app
-# Exact, tested dependency versions (no PyMuPDF: AGPL, and not needed by the submission)
+# Exact, tested dependency versions (includes PyMuPDF, AGPL-3.0: see the license section of the README)
 COPY track_2a/requirements-lock.txt /app/requirements-lock.txt
 RUN pip install --no-cache-dir -r /app/requirements-lock.txt
 # Explicit copies exclude evaluation gold, private journals, local caches and secrets.

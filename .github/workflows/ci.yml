@@ -26,8 +26,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r track_2a/requirements-lock.txt
-          # Optional, measurement and evidence-experiment tests only; not in the submission image (AGPL)
-          pip install -r track_2a/requirements-evidence.txt
 
       - name: Run unit test suite
         run: |

@@ -340,6 +340,8 @@ def run_batch(
         # booklet in the same order, in the background
         if pdfs:
             import rank_bm25  # noqa: F401
+            if config.EVIDENCE_POLICY != "legacy":
+                import pymupdf  # noqa: F401  (evidence pages; loaded here instead of in the first finished case)
         for pdf in pdfs:
             try:
                 engine._get_booklet_data(pdf)

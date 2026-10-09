@@ -7,6 +7,7 @@ page-attributed evidence extraction, and Apertus LLM inference.
 import hashlib
 import json
 import re
+import sys
 import tempfile
 import threading
 import time
@@ -97,7 +98,7 @@ class PredictionResult(BaseModel):
 _GLOBAL_BOOKLET_CACHE: Dict[str, Dict[str, Any]] = {}
 _BOOKLET_LOCKS: Dict[Any, threading.Lock] = {}
 _BOOKLET_LOCKS_GUARD = threading.Lock()
-_PARSE_CACHE_VERSION = 6  # bump when parsing or section detection changes
+_PARSE_CACHE_VERSION = 7  # bump when parsing or section detection changes (7: PyMuPDF source pages)
 
 _COMMITTEE_SECTION = "Arguments of the initiative/referendum committee"
 _FEDERAL_COUNCIL_SECTION = "Arguments of the Federal Council and Parliament"
@@ -165,9 +166,23 @@ def load_parsed_booklet(pdf_path: Union[str, Path], parser: PDFParser) -> Dict[s
             pass
 
     pages = parser.extract_pages(pdf_path)
+    # Evidence pages as PyMuPDF reads them (EVIDENCE_POLICY): from the page pool when it read them, else here. Stored
+    # with the parse, so answering a case never opens the PDF again (time without a request in flight is scored)
+    sources = {str(p["page_number"]): p["source"] for p in pages if p.get("source")}
+    for p in pages:
+        p.pop("source", None)
+    if config.EVIDENCE_POLICY != "legacy":
+        missing = [p["page_number"] for p in pages if str(p["page_number"]) not in sources]
+        if missing:
+            try:
+                from src.evidence import extract_source_pages
+
+                sources.update({str(n): s for n, s in extract_source_pages(str(pdf_path), missing).items()})
+            except Exception as exc:
+                print(f"[warning] {pdf_path.name}: evidence pages not readable ({type(exc).__name__})", file=sys.stderr)
     paragraphs = parser.extract_paragraphs(pdf_path, passage_chars=config.PASSAGE_CHARS or None, pages=pages)
     full_text = "\n\n".join(f"--- Page {p['page_number']} ---\n{p['text']}" for p in pages)
-    parsed = {"pages": pages, "paragraphs": paragraphs, "full_text": full_text}
+    parsed = {"pages": pages, "paragraphs": paragraphs, "full_text": full_text, "source_pages": sources}
     try:
         cache_file.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=cache_file.parent, delete=False) as temporary:
@@ -281,10 +296,15 @@ class ClaimVerificationEngine:
     def _finalize_evidence(self, result, vote=None):
         if config.EVIDENCE_POLICY == "legacy" or result.strategy == "direct_reference" or result.error:
             return result
-        from src.evidence import SourcePages, construct_evidence
-        with self._source_pages_lock:
-            if self._source_pages is None:
-                self._source_pages = SourcePages(Path("."), lazy=config.SOURCE_PAGES_LAZY)
+        from src.evidence import ParsedSourcePages, SourcePages, construct_evidence
+        stored = self._get_booklet_data(result.booklet_path).get("source_pages")
+        if stored:
+            pages = ParsedSourcePages(stored)  # read with the parse: no PDF access here
+        else:
+            with self._source_pages_lock:
+                if self._source_pages is None:
+                    self._source_pages = SourcePages(Path("."), lazy=config.SOURCE_PAGES_LAZY)
+            pages = self._source_pages
         # The postprocessor receives baseline-attributed pages and inference inputs
         # (including the baseline's explicit top-page fallback for missing IDs).
         # No expected labels, reference passage or gold evidence enter this path.
@@ -292,7 +312,7 @@ class ClaimVerificationEngine:
                "evidence": [{"page": s.page_number, "text": s.quote} for s in result.evidence_sources]}
         case = {"booklet": {"path": str(Path(result.booklet_path).resolve())},
                 "claim": {"text": result.claim}, "vote": vote or ""}
-        new = construct_evidence(raw, case, self._source_pages, config.EVIDENCE_POLICY)
+        new = construct_evidence(raw, case, pages, config.EVIDENCE_POLICY)
         proposals = {s.page_number: s.proposal_id for s in result.evidence_sources}
         result.evidence_sources = [EvidenceSource(quote=s["text"], page_number=s["page"],
                                                  proposal_id=proposals.get(s["page"])) for s in new["evidence"]]

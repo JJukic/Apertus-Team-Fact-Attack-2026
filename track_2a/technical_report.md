@@ -299,3 +299,6 @@ Configuration is read from environment variables: `LLM_NAME`, `BASE_URL` / `API_
 
 Code: Apache License 2.0 ([LICENSE](../LICENSE)). Documentation, including this report: Creative Commons
 Attribution 4.0 (CC-BY-4.0), as required by the Hack Apertus terms (section 6).
+
+The submission image includes PyMuPDF (AGPL-3.0) for the evidence quotes; the image as a whole is distributed under the
+AGPL-3.0, with this public repository as its complete source.

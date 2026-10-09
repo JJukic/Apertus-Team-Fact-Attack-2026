@@ -4,10 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-try:
-    import pymupdf  # optional (requirements-evidence.txt): AGPL, so not in the submission image
-except ImportError:
-    raise unittest.SkipTest("pymupdf not installed")
+import pymupdf
 
 from scripts.analyze_competition_errors import audit, validate_annotations
 from src.evidence import SourcePages

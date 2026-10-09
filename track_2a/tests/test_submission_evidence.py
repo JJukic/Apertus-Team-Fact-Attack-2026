@@ -10,10 +10,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-try:
-    import pymupdf  # optional (requirements-evidence.txt): AGPL, so not in the submission image
-except ImportError:
-    raise unittest.SkipTest("pymupdf not installed")
+import pymupdf
 
 from src import config
 from src.apertus_client import ApertusClient
@@ -87,6 +84,24 @@ class TestSubmissionEvidence(unittest.TestCase):
             self.assertEqual(updated.to_official_dict()['evidence'], [{'page': 2, 'text': text}])
             self.assertEqual(updated.model_dump(include=set(original_scores)), original_scores)
             self.assertIsNone(source.get(case, 99))
+
+    def test_evidence_comes_from_the_parse_cache_without_opening_the_pdf(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'source.pdf'
+            pdf(path, ['Summary unrelated to the claim.', '2050: Le Conseil federal recommande le rejet.'])
+            expected = SourcePages(Path(directory)).get({'booklet': {'path': 'source.pdf'}}, 2)['text']
+            engine = ClaimVerificationEngine(apertus_client=ApertusClient(mock=True))
+            with patch.object(config, 'BOOKLET_CACHE_DIR', Path(directory) / 'cache'), \
+                 patch.object(config, 'BOOKLET_CACHE_PREBUILT', Path(directory) / 'none'), \
+                 patch.object(config, 'EVIDENCE_POLICY', 'raw_pages_and_blocks'):
+                stored = engine._get_booklet_data(path)['source_pages']
+                self.assertEqual(stored['2']['text'], expected)
+                prediction = result(booklet_path=str(path), evidence_sources=[EvidenceSource(quote='x', page_number=2)])
+                with patch('src.evidence.SourcePages._extract_page') as lazy, patch('src.evidence.SourcePages._extract') as eager:
+                    updated = engine._finalize_evidence(prediction, vote='Vorlage')
+                lazy.assert_not_called()
+                eager.assert_not_called()
+            self.assertEqual(updated.to_official_dict()['evidence'], [{'page': 2, 'text': expected}])
 
     def test_lazy_extraction_is_identical_and_caches_only_requested_pages(self):
         with tempfile.TemporaryDirectory() as directory:

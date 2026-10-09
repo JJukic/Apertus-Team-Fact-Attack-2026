@@ -679,3 +679,48 @@ See [the optimization report](competition_optimization_report.md) and
 - Lazy extraction preserves every replay prediction byte for byte; E2 mean component time decreases from 20.838 to 7.731 ms, while p95 increases. This is offline component profiling, not proxy time.
 - R1/R2 now execute independently and sequentially over the full identical v1.1 population. Translations change only ranking, preserve the original NLI claim, and all acquisition/rejection costs count. Private cold caches prevent warm-cache cost borrowing between methods.
 - 111 tests and six subtests pass. Final source selection, broader source-cause audit, final image, README and final acceptance remain open.
+
+## Merge of both lines (Felipe + Josip) — 2026-10-09
+
+Josip's competition work (main) merged into the official-contract branch (Felipe). Where both lines differ, the
+decision follows paired measurements with the official `evaluate.py` on the same cases.
+
+### Evidence: Josip's `raw_pages_and_blocks` becomes the default
+
+Replayed on the same saved predictions (labels unchanged, no API calls):
+
+| Hit@5 | Felipe (pypdf pages split `2,2` + fill) | raw pages (PyMuPDF) | **pages + blocks (PyMuPDF)** | blocks from pypdf text | blocks from pypdfium2 layout |
+|---|---:|---:|---:|---:|---:|
+| dev 300 | 0.792 | 0.763 | **0.872** | 0.801 | 0.725 |
+| test 401 | 0.727 | 0.753 | **0.813** | 0.727 | 0.648 |
+
+55 of the first 60 dev gold passages are a substring of (or contain) one PyMuPDF text block: the gold passages
+follow PyMuPDF's text, which is why the same idea on pypdf or pypdfium2 text does not reach the same score. PyMuPDF
+(AGPL-3.0) is therefore part of the image (license note in the README). Only the cited pages are read
+(`SOURCE_PAGES_LAZY`), and PyMuPDF is imported in the background prefetch thread.
+
+### Retrieval query translation (`RETRIEVAL_QUERY_MODE`): kept as an option, off
+
+Merged image, jury-style, paired runs:
+
+| | original | union (claim + translation) |
+|---|---:|---:|
+| dev 300 task A macro-F1 | 0.934 | 0.944 |
+| changed labels | – | 13 (7 fixed, 4 broken) |
+| input / output tokens per case | 3,721 / 58 | 3,817 / 80 |
+| Sep 2026 set, task A macro-F1 | 0.804 | 0.802 |
+
+7 vs 4 is within noise (sign test p ≈ 0.5), the new booklet does not change, and every cross-lingual case pays one
+more request (+3 % tokens, one more call that can fail). The `original` run also reproduces the pre-merge numbers
+(macro-F1 0.934, Hit@5 0.79, 3,721 input tokens, 11.6 ms non-LLM time per case): the merge itself changed nothing.
+
+### Other merge decisions
+
+- Kept from Josip: pinned base image and lockfile, explicit COPYs, runtime variables outrank `.env`, no download at
+  inference, JSON repair as one last attempt after failed retries (on by default), single-flight cache key that
+  re-reads a changed PDF, measurement and audit scripts.
+- Kept from Felipe: standard-library HTTP client, parallel batch in booklet order with the page pool, k=8 (F1 −0.003
+  vs k=12 for 31 % fewer tokens), robustness for broken input, prebuilt cache of the 60 dataset booklets.
+- Not taken: uncapped output and streaming (output tokens are scored; a capped answer is still parsed), exit code 2
+  and a diagnostics file in `/output` when a case fails (each failed case already has a valid neutral record), and
+  turning a non-neutral label without evidence into a neutral record (`evaluate.py` scores the label regardless).

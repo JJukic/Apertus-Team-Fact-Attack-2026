@@ -101,12 +101,16 @@ SPEAKER_HINT = os.getenv("SPEAKER_HINT", "false").lower() in ("true", "1", "yes"
 # (claims citing a year the booklet never mentions are Neutral, not contradicted).
 NUMERIC_OVERRIDE = os.getenv("NUMERIC_OVERRIDE", "false").lower() in ("true", "1", "yes")
 
-# Independent evidence postprocessing; 'legacy' preserves the baseline policy.
-EVIDENCE_POLICY = os.getenv("EVIDENCE_POLICY", "legacy")
+# Evidence (task A, Hit@5) rebuilt from the cited pages as read by PyMuPDF: up to three whole pages plus the two
+# text blocks that best match claim and vote ('raw_pages_and_blocks', Josip). Replayed with the official evaluate.py
+# on the same predictions: dev 300 Hit@5 0.792 -> 0.872, test 401 0.727 -> 0.813 ('legacy' = the split pages below;
+# the same blocks from pypdf or pypdfium2 text reach only 0.80 / 0.73: the gold passages follow PyMuPDF's text)
+EVIDENCE_POLICY = os.getenv("EVIDENCE_POLICY", "raw_pages_and_blocks")
 if EVIDENCE_POLICY not in ("legacy", "raw_pages", "raw_pages_and_blocks"):
     raise ValueError("Unsupported EVIDENCE_POLICY")
 CACHE_SINGLE_FLIGHT = os.getenv("CACHE_SINGLE_FLIGHT", "false").lower() in ("true", "1", "yes")
-SOURCE_PAGES_LAZY = os.getenv("SOURCE_PAGES_LAZY", "false").lower() in ("true", "1", "yes")
+# Read only the cited pages with PyMuPDF (not the whole booklet): processing time is scored
+SOURCE_PAGES_LAZY = os.getenv("SOURCE_PAGES_LAZY", "true").lower() in ("true", "1", "yes")
 RETRIEVAL_QUERY_MODE = os.getenv("RETRIEVAL_QUERY_MODE", "original")
 if RETRIEVAL_QUERY_MODE not in ("original", "translated", "union"):
     raise ValueError("Unsupported RETRIEVAL_QUERY_MODE")

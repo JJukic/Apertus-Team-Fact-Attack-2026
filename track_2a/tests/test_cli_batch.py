@@ -82,7 +82,9 @@ class TestHelpers(unittest.TestCase):
         if not BOOKLET.exists():
             self.skipTest(f"Booklet not found at {BOOKLET}")
         url = "https://www.bk.admin.ch/dam/de/sd-web/WeUrKyC0FyPc/2026-06-14_erlaeuterungen.pdf"
-        self.assertEqual(case_booklet({"booklet_url": url, "booklet_publish_date": "2026-05-28"}, Path(".")), BOOKLET)
+        # src.hf_dataset (Docker build) may also store this booklet under its publish date: same file content
+        found = case_booklet({"booklet_url": url, "booklet_publish_date": "2026-05-28"}, Path("."))
+        self.assertEqual(found.read_bytes(), BOOKLET.read_bytes())
         self.assertEqual(case_booklet({"booklet_file": "2026-06-14_de.pdf"}, Path(".")), BOOKLET)
         self.assertIsNone(case_booklet({"reference_string": "x"}, Path(".")))
 

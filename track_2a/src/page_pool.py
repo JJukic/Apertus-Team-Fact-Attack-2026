@@ -50,13 +50,22 @@ def processes() -> int:
     return max(1, min(MAX_PROCESSES, cpus, _cpu_quota() or cpus))
 
 
-def _extract_stride(path: str, j: int, k: int) -> List[Tuple[int, str]]:
+def _extract_stride(path: str, j: int, k: int, source: bool = False) -> List[Tuple[int, str, Any]]:
     import pypdf
 
     from src.pdf_parser import extract_page_text
 
     reader = pypdf.PdfReader(path)
-    return [(i, extract_page_text(reader, i, path)) for i in range(j, len(reader.pages), k)]
+    numbers = range(j, len(reader.pages), k)
+    sources: Dict[int, Any] = {}
+    if source:  # evidence pages as PyMuPDF reads them (src/evidence.py), in the same task
+        try:
+            from src.evidence import extract_source_pages
+
+            sources = extract_source_pages(path, [i + 1 for i in numbers])
+        except Exception:
+            sources = {}  # the caller reads them sequentially
+    return [(i, extract_page_text(reader, i, path), sources.get(i + 1)) for i in numbers]
 
 
 def _key(pdf_path: Union[str, Path]) -> str:
@@ -76,6 +85,15 @@ def start(pdf_paths: Sequence[Union[str, Path]]) -> bool:
 
         import pypdf  # noqa: F401  imported before forking, so the workers do not import it again
 
+        from src import config
+
+        source = config.EVIDENCE_POLICY != "legacy"
+        if source:
+            try:
+                import pymupdf  # noqa: F401
+            except ImportError:
+                source = False
+
         ctx = multiprocessing.get_context("fork")  # ValueError where fork does not exist
         _pool = ctx.Pool(processes())
     except Exception:
@@ -84,7 +102,7 @@ def start(pdf_paths: Sequence[Union[str, Path]]) -> bool:
         for n, pdf in enumerate(pdf_paths):
             key = _key(pdf)
             k = processes() if n == 0 else max(1, min(TASKS_PER_BOOKLET, processes()))
-            _jobs[key] = [_pool.apply_async(_extract_stride, (key, j, k)) for j in range(k)]
+            _jobs[key] = [_pool.apply_async(_extract_stride, (key, j, k, source)) for j in range(k)]
     return True
 
 
@@ -106,4 +124,5 @@ def extract_pages(pdf_path: Union[str, Path]) -> Optional[List[Dict[str, Any]]]:
         pages = sorted(page for job in jobs for page in job.get(timeout=TASK_TIMEOUT_S))
     except Exception:  # also multiprocessing.TimeoutError
         return None  # the caller extracts sequentially
-    return [{"page_number": i + 1, "text": text} for i, text in pages if text]
+    # "source": the PyMuPDF page for the evidence (None if not read); load_parsed_booklet moves it out of the pages
+    return [{"page_number": i + 1, "text": text, "source": source} for i, text, source in pages if text]
