@@ -26,8 +26,31 @@ Evaluated on the official OST dataset (v1.1, 60 booklets, ~66 % cross-lingual) w
 The **test split holds 5 voting dates that were never used during development** (401 pairs), as a stand-in for the
 held-out benchmark. Model: `swiss-ai/Apertus-v1.5-70B-thinking` on CSCS.
 
-The closed `experiment/competition-score-optimization` comparison uses the pinned
-v1.1 dataset: **1,488 cases per task**, with five folds grouped by 20 voting dates.
+| Task | Macro-F1 | Evidence Hit@5 | Ø input tokens | Ø output tokens | Non-LLM time / case |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **A · Advanced** — booklet PDF + claim + vote | **0.945** | **0.839** | 3,983 | 75 | ~6 ms |
+| **B · Beginner** — reference text + claim | **0.975** | – | 2,532 | 55 | ~2 ms |
+
+Submission image, run as the jury does (`--input/--output`, read-only `/data`), on the 401 test pairs of each task.
+On booklets that are not in the image (the jury uses a new set), the processing time stays at ~22 ms per case.
+
+The official score weights macro-F1, evidence, processing time (wall clock minus time waiting for Apertus) and tokens
+(both relative to the best team). The submission combines the work of both team members, each part chosen by paired
+measurements on the same cases ([experiment log](track_2a/docs/experiments.md#merge-of-both-lines-felipe--josip--2026-10-09)):
+
+- **8 instead of 12 pages** of context: 31 % fewer input tokens for −0.003 macro-F1 (dev 300).
+- **Evidence from PyMuPDF pages and text blocks** (Josip): Hit@5 0.727 → 0.813 on the same predictions.
+- **Retrieval with the claim and its translation into the booklet language** (Josip's R2): 48 fixed / 25 broken
+  labels over three paired comparisons, macro-F1 0.930 → 0.945 on test, for ~3 % more tokens.
+- **Start-up and parsing** (Felipe): standard-library HTTP client, booklets parsed in a process pool and cases
+  processed booklet by booklet: 104 → 8 ms per case on new booklets.
+
+**Evidence:** every Entailment / Contradiction prediction returns up to five verbatim quotes with their 1-based page:
+up to three cited pages as PyMuPDF reads them, plus the two text blocks of the cited pages that best match claim and
+vote. Neutral predictions cite nothing.
+
+Josip's comparison on all 1,488 cases per task of the pinned v1.1 dataset (k=12, five folds grouped by voting date,
+before the merge with the official contract):
 
 | Configuration | Advanced Macro-F1 | Beginner Macro-F1 | Advanced Hit@5 |
 |---|---:|---:|---:|
@@ -36,32 +59,9 @@ v1.1 dataset: **1,488 cases per task**, with five folds grouped by 20 voting dat
 | R1: translated BM25 query | 0.950844 | 0.981830 | 0.765657 |
 | **R2: original/translated BM25 union** | **0.956237** | **0.982497** | **0.773737** |
 
-Josip's comparison on all cases (k=12, before the merge with the official contract): It retains Top-12 BM25,
-speaker boost and the original NLI claim/prompt. Reported Advanced tokens rise
-1.39%; failed requests include unknown usage, and official separate-task processing
-efficiency is unmeasured. These are public validation results, not private competition
-scores. B0 includes one invalid output counted as wrong; R2 recovers 23 technical
-failures and retains every attempt in its measurements. Baseline defaults remain available.
-All 115 local and 115 CPU-container tests pass. See the
-[final report](track_2a/docs/competition_optimization_report.md),
+See the [optimization report](track_2a/docs/competition_optimization_report.md),
 [comparison](track_2a/results/competition_optimization/comparison.csv) and
-[recommended configuration](track_2a/results/competition_optimization/best_config.json).
-
-
-| Task | Macro-F1 | Evidence Hit@5 | Ø input tokens | Ø output tokens | Non-LLM time / case |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **A · Advanced** — booklet PDF + claim + vote | **0.930** | **0.727** | 3,877 | 56 | ~5 ms |
-| **B · Beginner** — reference text + claim | **0.973** | – | 2,532 | 56 | ~3 ms |
-
-The official score weights macro-F1, evidence, processing time (wall clock minus time waiting for Apertus) and tokens
-(both relative to the best team). After the organisers' Q&A (2026-10-08) we traded a little F1 for efficiency and
-evidence: 8 instead of 12 pages cut the input tokens by 31 % (test F1 0.945 → 0.930, dev 0.937 → 0.934), and
-evidence made of page pieces raised Hit@5 from 0.34 to 0.73, see the [experiment log](track_2a/docs/experiments.md#official-evaluation-contract-and-scoring-ost-qa-2026-10-08).
-
-**Evidence:** every Entailment / Contradiction prediction returns five verbatim excerpts with their 1-based page: the
-two cited pages in halves, then the best-matching third of further pages (other cited pages, then retrieved ones). An
-item counts if it lies inside the gold passage or contains it; whole pages usually do neither. Neutral predictions
-cite nothing.
+[configuration](track_2a/results/competition_optimization/best_config.json).
 
 ### Full booklet vs. selected context (advanced task, same 150 test pairs)
 

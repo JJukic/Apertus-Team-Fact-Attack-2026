@@ -9,8 +9,8 @@ An Apertus-powered system that decides whether an official Swiss voting booklet 
 or **contradicts (2)** a claim, and cites the booklet pages that justify the decision — for every combination of
 German, French and Italian.
 
-- **Results** (test split of 5 unseen voting dates, 401 pairs, organisers' `evaluate.py`): advanced task **0.930** macro-F1,
-  evidence Hit@5 **0.727**, 3,877 input tokens; beginner task **0.973**
+- **Results** (submission image, test split of 5 voting dates, 401 pairs, organisers' `evaluate.py`): advanced task
+  **0.945** macro-F1, evidence Hit@5 **0.839**, 3,983 input tokens; beginner task **0.975**
 - **Overview:** [../README.md](../README.md) · **Technical report:** [technical_report.md](technical_report.md) ([PDF](docs/FactAttack_Technical_Report.pdf)) ·
   **Experiment log:** [docs/experiments.md](docs/experiments.md)
 
