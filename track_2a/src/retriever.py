@@ -125,6 +125,7 @@ class PassageRetriever:
         vote_weight: float = 2.0,
         exclude_sections: Optional[set] = None,
         ensure_sections: Optional[Dict[str, int]] = None,
+        query_variants: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Booklet-wide ranking: normalised BM25(claim) + vote_weight * normalised BM25(vote title).
@@ -146,6 +147,11 @@ class PassageRetriever:
             return [float(s) / top if top > 0 else 0.0 for s in scores]
 
         combined = normalised(claim)
+        # Candidate union retains each original BM25 claim contribution, while
+        # a translated query can promote source-language matches. The vote title
+        # and speaker guarantees stay unchanged; context size remains top_k.
+        for variant in query_variants or []:
+            combined = [max(a, b) for a, b in zip(combined, normalised(variant))]
         if target_vote:
             combined = [c + vote_weight * v for c, v in zip(combined, normalised(target_vote))]
 

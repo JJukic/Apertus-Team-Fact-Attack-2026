@@ -165,7 +165,7 @@ def resolve_booklet_path(path_str: str, input_dir: Path) -> Path:
     given = Path(path_str)
     name = given.name
     names = [name, name.replace("_", "-", 2), re.sub(r"^(\d{4})-(\d{2})-(\d{2})", r"\1_\2_\3", name)]
-    candidates = [given, input_dir / given] + [config.BOOKLETS_DIR / n for n in names]
+    candidates = ([given] if given.is_absolute() else [input_dir / given, given]) + [config.BOOKLETS_DIR / n for n in names]
     for candidate in candidates:
         if candidate.exists():
             return candidate
@@ -214,8 +214,8 @@ def _text(value: Any) -> str:
 def case_booklet(item: Dict[str, Any], input_dir: Path) -> Optional[Path]:
     """
     The booklet PDF a case refers to, or None if it names none. Accepts {"booklet": {"path": ...}}, "booklet_file",
-    and the Hugging Face fields "booklet_url" + "booklet_publish_date": the 60 dataset booklets are in the Docker
-    image, an unknown one is downloaded from its URL.
+    and the Hugging Face fields "booklet_url" + "booklet_publish_date".
+    Booklets must already exist locally; inference never downloads sources.
     """
     booklet = item.get("booklet")
     path_str = (booklet.get("path") or booklet.get("file")) if isinstance(booklet, dict) else booklet
@@ -232,10 +232,7 @@ def case_booklet(item: Dict[str, Any], input_dir: Path) -> Optional[Path]:
     for name in names:
         if (config.BOOKLETS_DIR / name).exists():
             return config.BOOKLETS_DIR / name
-    target = config.BOOKLETS_DIR / (names[0] if names else Path(url).name)
-    if _download(url, target):
-        return target
-    raise FileNotFoundError(f"booklet could not be downloaded: {url}")
+    raise FileNotFoundError("booklet is unavailable locally; prepare sources before inference")
 
 
 @app.command(name="run")
@@ -281,12 +278,7 @@ def run_batch(
 
             booklet_pdf = None
             if task != "beginner":
-                try:
-                    booklet_pdf = case_booklet(item, input_path.parent)
-                except FileNotFoundError:
-                    if task == "advanced" or not ref_text:
-                        raise
-                    print(f"[warning] {cid}: booklet not found, using the reference text", file=sys.stderr)
+                booklet_pdf = case_booklet(item, input_path.parent)
             if booklet_pdf is None and task == "advanced":
                 raise FileNotFoundError("case has no booklet (booklet.path, booklet_file or booklet_url)")
             if booklet_pdf is None and not ref_text:
@@ -299,6 +291,7 @@ def run_batch(
                     claim=claim_text,
                     booklet_pdf=booklet_pdf,
                     claim_language=claim_lang,
+                    booklet_language=(item["booklet"].get("language") if isinstance(item.get("booklet"), dict) else None),
                     vote=_text(item.get("vote")) or None,
                     strategy=strategy,
                     top_k=top_k,
@@ -368,7 +361,7 @@ def run_batch(
         if output_path.parent:
             output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as out_f:
-            if str(output_path).endswith(".jsonl"):
+            if config.OFFICIAL_IO or str(output_path).endswith(".jsonl"):
                 for r in official_results:
                     out_f.write(json.dumps(r, ensure_ascii=False) + "\n")
             else:
@@ -376,8 +369,14 @@ def run_batch(
                 out_f.write(json.dumps(out_payload, indent=2, ensure_ascii=False) + "\n")
         console.print(f"[bold green]Successfully processed {len(official_results)} case(s) -> {output_path}[/bold green]")
     else:
-        out_payload = official_results if len(official_results) > 1 else official_results[0]
-        print(json.dumps(out_payload, indent=2, ensure_ascii=False))
+        if config.OFFICIAL_IO:
+            for prediction in official_results:
+                print(json.dumps(prediction, ensure_ascii=False))
+        else:
+            out_payload = official_results if len(official_results) > 1 else official_results[0]
+            print(json.dumps(out_payload, indent=2, ensure_ascii=False))
+    # Exit code 0 even if single cases failed: each of them has a valid neutral record, and a non-zero exit could
+    # invalidate the whole submission
 
 
 @app.command()

@@ -17,3 +17,4 @@ streamlit==1.65.0
 pytest==9.1.1
 pandas==3.0.6
 pyarrow==25.0.1
+rapidfuzz==3.14.6

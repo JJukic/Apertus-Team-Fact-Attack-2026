@@ -1,0 +1,698 @@
+{
+  "measurement_scope": "isolated source-only CPU components, sequential, local; not official proxy efficiency",
+  "remote_api_calls": 0,
+  "gold_read": false,
+  "python": "3.12.6",
+  "cases": 2976,
+  "advanced_cases": 1488,
+  "booklets": 60,
+  "cases_sha256": "0c9bfc3c8b657ee197def589884a04ea913c9ef2a326dcfd3a50e087b0ca730a",
+  "predictions_sha256": "f152638b95dd003850f5dacdc1f988c6b854a4ed011d247abed37a1fcaaefa90",
+  "script_sha256": "febc22bfe690cb4877f0538f761a3f9fcc5f2f1ab8b73bb15b099f1d90a528a4",
+  "source_hashes": {
+    "results_summary.py": "98193f2b29125bc0920b51a35d0cff485eac6a79c6f6ce1f337c22467c3cdeac",
+    "pdf_parser.py": "2814ffe05c4416ba5005c9d2c35175c554b9f3d1aedb75d1b554abe1af1596e5",
+    "official_evaluation.py": "3cca7a7872bdd1864bbcb64739f6ed991674ac123280486242ae3e1726d39ceb",
+    "config.py": "bd3fbc25f91d6b6369a69bc1851e8474e6031bb82a1955722acff741231cfa6c",
+    "text_utils.py": "32497b054948a8604e0eac4710308d9627a4fbd4eee075eb5565f23545117cab",
+    "query_translation.py": "388d6e280fbc38db0d3ac107499bc7cd82aa992dfcf05b88cba16196db5d6d39",
+    "apertus_client.py": "90ce899ac548a74de250cc184d12dc94f95c8f5266bf7b3c8b40afcc3d580792",
+    "competition_selection.py": "a2db790420bc9852dc8d84d0f87355156702b9f413af693638cbf5f88aa05a08",
+    "retriever.py": "efbec5d62f14924b90bf1d5aa354dd4b29c42af581f06c2fe1538c01f7aacf0d",
+    "measurement.py": "ab50d0467555e6a2eb9d0367d50196e100d1d96bb4fc587046cb35a7c82be5bb",
+    "__init__.py": "da301bc5232064d63cb178879759b8de2c25f4483909795f3d53d4207b1b9e4f",
+    "numerical_checker.py": "90c7b2fd6a23f0cd3cc8b45d34b6a790456cf5348cf7cb4f4db3cee70fb8eb26",
+    "download_data.py": "fe60f1bdc898d9e33ff3aeaf96728eb27e71f8a0f33fe3ebf4f11f376cbccf18",
+    "cli.py": "b67b445da43deac47927488a9b7ab95d3393121c914b3e9f48a48da8e6a870e6",
+    "inference.py": "0cf2f8a4e3641979fc8c96f487efaa9fc62165ae040324e3c7f453e8c3c008d0",
+    "hf_dataset.py": "1ae3b5a11313363eaf524339dda5ee9fc58700cfb1a5b0fcd5abff86f39eca83",
+    "streaming.py": "3a52d9c139691c97e1b38a079c6b35e4a6d84a611971abcb9117cdf702828142",
+    "evidence.py": "cfab1ce896efb14de68541871cc569a120b00fbb4f3873fb34b8f4598977172f",
+    "evaluator.py": "92a15715007b219ffa41f04d71e8cb27e75f6a0c075d927a76433d32316d4a94",
+    "__main__.py": "9492c667494ecc3a8c91bb165d413432cbe5b9c82a254ce578c77967233c9e74"
+  },
+  "pdf_components_ms": {
+    "extraction_ms": {
+      "count": 60,
+      "mean": 1113.0988798919134,
+      "median": 859.9729370325804,
+      "p95": 2348.231957992539
+    },
+    "segmentation_ms": {
+      "count": 60,
+      "mean": 18.371344497427344,
+      "median": 12.642645975574851,
+      "p95": 39.37599994242191
+    },
+    "bm25_indexing_ms": {
+      "count": 60,
+      "mean": 34.443890990223736,
+      "median": 5.31364546623081,
+      "p95": 15.182791976258159
+    },
+    "cold_parse_and_cache_write_ms": {
+      "count": 60,
+      "mean": 1147.3570860456675,
+      "median": 1009.5831039361656,
+      "p95": 2529.0035409852862
+    },
+    "cached_parse_load_ms": {
+      "count": 60,
+      "mean": 4.740607676406701,
+      "median": 2.056541503407061,
+      "p95": 14.04008292593062
+    }
+  },
+  "ranking_ms_per_advanced_case": {
+    "count": 1488,
+    "mean": 2.8245975482477856,
+    "median": 0.7008539978414774,
+    "p95": 8.677334059029818
+  },
+  "clipping_ms_per_advanced_case": {
+    "count": 1488,
+    "mean": 1.7474785369510453,
+    "median": 0.48358296044170856,
+    "p95": 6.277458975091577
+  },
+  "evidence_ms_per_mixed_case": {
+    "eager": {
+      "count": 2976,
+      "mean": 18.425893515986214,
+      "median": 0.009083421900868416,
+      "p95": 1.7384591046720743,
+      "prediction_sha256": "dd4e3851b2eb0d399d2557d89653f9871a11925e3d84d1271688bab6b984b553"
+    },
+    "lazy": {
+      "count": 2976,
+      "mean": 10.122552049744959,
+      "median": 0.014562392607331276,
+      "p95": 57.358209043741226,
+      "prediction_sha256": "dd4e3851b2eb0d399d2557d89653f9871a11925e3d84d1271688bab6b984b553"
+    }
+  },
+  "pdfs": [
+    {
+      "path": "booklets/2020-02-09_de.pdf",
+      "sha256": "9df0813f2728c9de6dd29b132acf11d3e13bf7a011b7e6475a4c8b5155c889c8",
+      "pages": 31,
+      "extraction_ms": 344.94287497363985,
+      "segmentation_ms": 5.916833877563477,
+      "bm25_indexing_ms": 2.675957977771759,
+      "cold_parse_and_cache_write_ms": 295.6576249562204,
+      "cached_parse_load_ms": 2.1239998750388622
+    },
+    {
+      "path": "booklets/2020-02-09_fr.pdf",
+      "sha256": "e57074725ce371592bfb0760665c3d90d99b972ca48dfcb0577022276da9a54e",
+      "pages": 31,
+      "extraction_ms": 315.8748750574887,
+      "segmentation_ms": 5.9582090470939875,
+      "bm25_indexing_ms": 2.2987090051174164,
+      "cold_parse_and_cache_write_ms": 292.9029169026762,
+      "cached_parse_load_ms": 1.8738750368356705
+    },
+    {
+      "path": "booklets/2020-02-09_it.pdf",
+      "sha256": "480dd90b98de6d9f680a98d0cc165715b939e539e5e31da3dbe34846a610ad6d",
+      "pages": 31,
+      "extraction_ms": 277.6165830437094,
+      "segmentation_ms": 5.839542020112276,
+      "bm25_indexing_ms": 2.19841580837965,
+      "cold_parse_and_cache_write_ms": 278.0609158799052,
+      "cached_parse_load_ms": 2.2769998759031296
+    },
+    {
+      "path": "booklets/2020-09-27_de.pdf",
+      "sha256": "a6663984e2d5c42e4c2548fd146229440e9ed941236b1d0221891f0b5c0ca50b",
+      "pages": 88,
+      "extraction_ms": 1107.0939579512924,
+      "segmentation_ms": 18.761917017400265,
+      "bm25_indexing_ms": 6.228707963600755,
+      "cold_parse_and_cache_write_ms": 987.2677498497069,
+      "cached_parse_load_ms": 1.8548748921602964
+    },
+    {
+      "path": "booklets/2020-09-27_fr.pdf",
+      "sha256": "8e3c67fd515a7438d1ec687be65001c01a0ece56eb952fdd23f9ca23c8393355",
+      "pages": 88,
+      "extraction_ms": 1688.225416932255,
+      "segmentation_ms": 69.00270795449615,
+      "bm25_indexing_ms": 10.90620900504291,
+      "cold_parse_and_cache_write_ms": 1831.096125068143,
+      "cached_parse_load_ms": 6.454583955928683
+    },
+    {
+      "path": "booklets/2020-09-27_it.pdf",
+      "sha256": "76acc2e7d58639dccae9d52d7cdeba73418f57aec9928fa0898017f7be2e5111",
+      "pages": 88,
+      "extraction_ms": 1612.7975000999868,
+      "segmentation_ms": 19.558083964511752,
+      "bm25_indexing_ms": 15.182791976258159,
+      "cold_parse_and_cache_write_ms": 1267.3329170793295,
+      "cached_parse_load_ms": 3.5630001220852137
+    },
+    {
+      "path": "booklets/2020-11-29_de.pdf",
+      "sha256": "bc43ce8b442b0fd05821da5619afc173d3ba0e9936cef91c6a8772e600885f88",
+      "pages": 31,
+      "extraction_ms": 810.8935409691185,
+      "segmentation_ms": 7.2033340111374855,
+      "bm25_indexing_ms": 2.6967499870806932,
+      "cold_parse_and_cache_write_ms": 442.124875029549,
+      "cached_parse_load_ms": 0.9918748401105404
+    },
+    {
+      "path": "booklets/2020-11-29_fr.pdf",
+      "sha256": "62870b79f34f5d9af48ca53709090140403133edc23ef393bf7b17bcdd35c48f",
+      "pages": 31,
+      "extraction_ms": 355.1437498535961,
+      "segmentation_ms": 6.63674995303154,
+      "bm25_indexing_ms": 2.805124968290329,
+      "cold_parse_and_cache_write_ms": 345.45845817774534,
+      "cached_parse_load_ms": 0.7931671570986509
+    },
+    {
+      "path": "booklets/2020-11-29_it.pdf",
+      "sha256": "6d4b77f24df45bf73e4e4fefdff30e1a77016ccc057ed2137d04269367490f6e",
+      "pages": 31,
+      "extraction_ms": 433.376083150506,
+      "segmentation_ms": 7.929249899461865,
+      "bm25_indexing_ms": 2.7453340590000153,
+      "cold_parse_and_cache_write_ms": 660.5457500554621,
+      "cached_parse_load_ms": 0.8407500572502613
+    },
+    {
+      "path": "booklets/2021-03-07_de.pdf",
+      "sha256": "a4cc2b811cdd959cbb3353101c226cdbd2398cef17028349c241a833559dc6d2",
+      "pages": 55,
+      "extraction_ms": 657.0376248564571,
+      "segmentation_ms": 10.591625003144145,
+      "bm25_indexing_ms": 4.50945901684463,
+      "cold_parse_and_cache_write_ms": 576.0542079806328,
+      "cached_parse_load_ms": 2.3551250342279673
+    },
+    {
+      "path": "booklets/2021-03-07_fr.pdf",
+      "sha256": "127fe5bf35487ae5327cf27553838123974263f140d924fc5c1e73c0fca0bfcf",
+      "pages": 55,
+      "extraction_ms": 600.0542498659343,
+      "segmentation_ms": 12.020125053822994,
+      "bm25_indexing_ms": 4.638207843527198,
+      "cold_parse_and_cache_write_ms": 637.4021249357611,
+      "cached_parse_load_ms": 1.24962511472404
+    },
+    {
+      "path": "booklets/2021-03-07_it.pdf",
+      "sha256": "e6ffd768c3c65b9ca19566bc6bc6fda6f1f9e4324cce7898475e02bfec526e21",
+      "pages": 55,
+      "extraction_ms": 636.376874987036,
+      "segmentation_ms": 19.495957996696234,
+      "bm25_indexing_ms": 5.624624900519848,
+      "cold_parse_and_cache_write_ms": 661.6127910092473,
+      "cached_parse_load_ms": 1.6480418853461742
+    },
+    {
+      "path": "booklets/2021-06-13_de.pdf",
+      "sha256": "521e39af06717d2adeb2f787a08b533164921a952c59b7ad3e5b114fcadec744",
+      "pages": 144,
+      "extraction_ms": 1649.0308330394328,
+      "segmentation_ms": 34.29600014351308,
+      "bm25_indexing_ms": 15.225083101540804,
+      "cold_parse_and_cache_write_ms": 1525.9895420167595,
+      "cached_parse_load_ms": 3.978540888056159
+    },
+    {
+      "path": "booklets/2021-06-13_fr.pdf",
+      "sha256": "65c54df2537b8ab9d6e155c0e602d6bc2379e47741004bc66565064d0aee4ab4",
+      "pages": 144,
+      "extraction_ms": 1641.1010001320392,
+      "segmentation_ms": 39.37599994242191,
+      "bm25_indexing_ms": 14.251332962885499,
+      "cold_parse_and_cache_write_ms": 1518.8978749793023,
+      "cached_parse_load_ms": 3.086583921685815
+    },
+    {
+      "path": "booklets/2021-06-13_it.pdf",
+      "sha256": "89443719a1e8c0ea4d954754d50e81253bb2f4d2f6ce4d2ad1c19cf0edd570de",
+      "pages": 144,
+      "extraction_ms": 1532.0449999999255,
+      "segmentation_ms": 36.61708300933242,
+      "bm25_indexing_ms": 14.174542156979442,
+      "cold_parse_and_cache_write_ms": 1435.1275830995291,
+      "cached_parse_load_ms": 4.674915922805667
+    },
+    {
+      "path": "booklets/2021-09-26_de.pdf",
+      "sha256": "ebb4288817f5f5fdbde3aa24bf67688220e6c8e2f9fcf82f947a44aec046f341",
+      "pages": 39,
+      "extraction_ms": 727.02741692774,
+      "segmentation_ms": 9.835582925006747,
+      "bm25_indexing_ms": 4.4401660561561584,
+      "cold_parse_and_cache_write_ms": 1008.8374158367515,
+      "cached_parse_load_ms": 1.2291669845581055
+    },
+    {
+      "path": "booklets/2021-09-26_fr.pdf",
+      "sha256": "ae46dce97c0eb0b000339159ba998f373126f1879eff6bcfed6398d147d30ecf",
+      "pages": 39,
+      "extraction_ms": 669.0085420850664,
+      "segmentation_ms": 6.80120917968452,
+      "bm25_indexing_ms": 2.744917059317231,
+      "cold_parse_and_cache_write_ms": 626.7505420837551,
+      "cached_parse_load_ms": 0.9532091207802296
+    },
+    {
+      "path": "booklets/2021-09-26_it.pdf",
+      "sha256": "d01075b2fabc1609d8c7e2b5ede595286c504d35ea4947b1fa0709fddbb63538",
+      "pages": 39,
+      "extraction_ms": 627.6691250968724,
+      "segmentation_ms": 6.86520803719759,
+      "bm25_indexing_ms": 2.686958061531186,
+      "cold_parse_and_cache_write_ms": 690.1970829349011,
+      "cached_parse_load_ms": 1.0861670598387718
+    },
+    {
+      "path": "booklets/2021-11-28_de.pdf",
+      "sha256": "f463fb7ea4b7f663d5e2af0f67bc8e364778ee3c0a19f56caadc655bc2670a7b",
+      "pages": 47,
+      "extraction_ms": 534.5917919185013,
+      "segmentation_ms": 8.91412515193224,
+      "bm25_indexing_ms": 4.447625018656254,
+      "cold_parse_and_cache_write_ms": 520.9664169233292,
+      "cached_parse_load_ms": 0.9955831337720156
+    },
+    {
+      "path": "booklets/2021-11-28_fr.pdf",
+      "sha256": "340fecfcdcdf292824addf73002c60e91a86744648355665035a5356a38d2225",
+      "pages": 48,
+      "extraction_ms": 566.9898339547217,
+      "segmentation_ms": 12.687125010415912,
+      "bm25_indexing_ms": 7.204999914392829,
+      "cold_parse_and_cache_write_ms": 577.6449998375028,
+      "cached_parse_load_ms": 2.3712909314781427
+    },
+    {
+      "path": "booklets/2021-11-28_it.pdf",
+      "sha256": "72bc2e78fd62f8452a8fe9aebd31c5740e77d30e298ed940dcbf788b4ab8cba2",
+      "pages": 47,
+      "extraction_ms": 491.2198749370873,
+      "segmentation_ms": 9.780917083844543,
+      "bm25_indexing_ms": 4.063792061060667,
+      "cold_parse_and_cache_write_ms": 514.3073329236358,
+      "cached_parse_load_ms": 0.9272079914808273
+    },
+    {
+      "path": "booklets/2022-02-13_de.pdf",
+      "sha256": "4979a6ed7f2f6616cc692638341b00ef20bb3e74cb6a40608f6f8c968fe167a4",
+      "pages": 63,
+      "extraction_ms": 656.7035000771284,
+      "segmentation_ms": 11.008959030732512,
+      "bm25_indexing_ms": 4.406125051900744,
+      "cold_parse_and_cache_write_ms": 664.0349589288235,
+      "cached_parse_load_ms": 1.1945830192416906
+    },
+    {
+      "path": "booklets/2022-02-13_fr.pdf",
+      "sha256": "2d8cb9710acf095b5bdb2f5cf431f1bdd93e21b5e250b168170a1e249b0b7a22",
+      "pages": 63,
+      "extraction_ms": 736.3695830572397,
+      "segmentation_ms": 13.631250010803342,
+      "bm25_indexing_ms": 5.5417080875486135,
+      "cold_parse_and_cache_write_ms": 1931.5422920044512,
+      "cached_parse_load_ms": 47.600333811715245
+    },
+    {
+      "path": "booklets/2022-02-13_it.pdf",
+      "sha256": "1f3346e546e5384f70fd7df7bb80db3be2df5681bd0ff5067437fa1ee7b52a2d",
+      "pages": 63,
+      "extraction_ms": 4034.6573749557137,
+      "segmentation_ms": 179.2080830782652,
+      "bm25_indexing_ms": 1688.6602090671659,
+      "cold_parse_and_cache_write_ms": 4637.068166164681,
+      "cached_parse_load_ms": 14.430959010496736
+    },
+    {
+      "path": "booklets/2022-05-15_de.pdf",
+      "sha256": "c12ea935b73d98790649c3bb8f3f3c5ff967a999a0a4ddc969121b9dd5d47335",
+      "pages": 55,
+      "extraction_ms": 4358.814375009388,
+      "segmentation_ms": 11.287416098639369,
+      "bm25_indexing_ms": 5.17424987629056,
+      "cold_parse_and_cache_write_ms": 3351.3227498624474,
+      "cached_parse_load_ms": 2.6599587872624397
+    },
+    {
+      "path": "booklets/2022-05-15_fr.pdf",
+      "sha256": "f9c5d7830a90b9af3b0c8fde853e036a14ca1b111958342bb39ad98576adc308",
+      "pages": 55,
+      "extraction_ms": 3133.2040422130376,
+      "segmentation_ms": 11.907458072528243,
+      "bm25_indexing_ms": 5.284416023641825,
+      "cold_parse_and_cache_write_ms": 2085.9512919560075,
+      "cached_parse_load_ms": 2.89424997754395
+    },
+    {
+      "path": "booklets/2022-05-15_it.pdf",
+      "sha256": "f23c14a6ee995836f5a8e0ec5c1776e429128313f59231fc723cc09260d0a608",
+      "pages": 55,
+      "extraction_ms": 2082.236333983019,
+      "segmentation_ms": 13.150500133633614,
+      "bm25_indexing_ms": 4.585792077705264,
+      "cold_parse_and_cache_write_ms": 2290.158750023693,
+      "cached_parse_load_ms": 2.9274579137563705
+    },
+    {
+      "path": "booklets/2022-09-25_de.pdf",
+      "sha256": "c67c9bce6da1b5587ee25919cff8172d33c45081e10a96f7c0476f49a91d2b97",
+      "pages": 80,
+      "extraction_ms": 1319.8810841422528,
+      "segmentation_ms": 28.75325013883412,
+      "bm25_indexing_ms": 10.703291045501828,
+      "cold_parse_and_cache_write_ms": 1054.0956249460578,
+      "cached_parse_load_ms": 4.132375121116638
+    },
+    {
+      "path": "booklets/2022-09-25_fr.pdf",
+      "sha256": "ed311ed79502a5ffb79d33e83d6ed177cb01aa3b9d1fdb9b5e324fadb443ca78",
+      "pages": 80,
+      "extraction_ms": 1189.5770421251655,
+      "segmentation_ms": 28.1589578371495,
+      "bm25_indexing_ms": 13.469500001519918,
+      "cold_parse_and_cache_write_ms": 1276.0418748948723,
+      "cached_parse_load_ms": 7.195916958153248
+    },
+    {
+      "path": "booklets/2022-09-25_it.pdf",
+      "sha256": "7889873c9920e2d9d587d52a6067076123d15810065248349f47253fb85c151d",
+      "pages": 80,
+      "extraction_ms": 1106.853500008583,
+      "segmentation_ms": 28.07629108428955,
+      "bm25_indexing_ms": 12.715167133137584,
+      "cold_parse_and_cache_write_ms": 1231.4089161809534,
+      "cached_parse_load_ms": 3.2091669272631407
+    },
+    {
+      "path": "booklets/2023-06-18_de.pdf",
+      "sha256": "d496622d23589e2c9379d2172e0d8c60eca4bbd119588c656c39d49170862881",
+      "pages": 56,
+      "extraction_ms": 1102.480750065297,
+      "segmentation_ms": 11.911374982446432,
+      "bm25_indexing_ms": 4.99058305285871,
+      "cold_parse_and_cache_write_ms": 1039.761207997799,
+      "cached_parse_load_ms": 1.471417024731636
+    },
+    {
+      "path": "booklets/2023-06-18_fr.pdf",
+      "sha256": "925a6f553a6f67059cebacccfa7d4efcffc3a31d5441d9c978a57546b6b8bdd6",
+      "pages": 56,
+      "extraction_ms": 1006.4559997990727,
+      "segmentation_ms": 14.001457951962948,
+      "bm25_indexing_ms": 5.60341589152813,
+      "cold_parse_and_cache_write_ms": 1064.9534170515835,
+      "cached_parse_load_ms": 4.805416101589799
+    },
+    {
+      "path": "booklets/2023-06-18_it.pdf",
+      "sha256": "1f61954e466f96ae0743dec3791bd68b5a10d7ddfaa3e58a95e9bde3a6d6bc6a",
+      "pages": 56,
+      "extraction_ms": 1008.9681658428162,
+      "segmentation_ms": 12.59816694073379,
+      "bm25_indexing_ms": 5.37574989721179,
+      "cold_parse_and_cache_write_ms": 1039.2325420398265,
+      "cached_parse_load_ms": 1.9775829277932644
+    },
+    {
+      "path": "booklets/2024-03-03_de.pdf",
+      "sha256": "53c7cc72c28f80969ed56d7813ad8c05e505b1817923418d0dfa45368a6bd07e",
+      "pages": 32,
+      "extraction_ms": 507.0552499964833,
+      "segmentation_ms": 5.037749884650111,
+      "bm25_indexing_ms": 2.0698339212685823,
+      "cold_parse_and_cache_write_ms": 499.6105001773685,
+      "cached_parse_load_ms": 1.4592499937862158
+    },
+    {
+      "path": "booklets/2024-03-03_fr.pdf",
+      "sha256": "b28e64fbbdb39c3e9499056e433cbcb763c154799fff775262d0becd86d77cd9",
+      "pages": 32,
+      "extraction_ms": 471.79583297111094,
+      "segmentation_ms": 5.811417009681463,
+      "bm25_indexing_ms": 2.362458035349846,
+      "cold_parse_and_cache_write_ms": 498.5154578462243,
+      "cached_parse_load_ms": 0.9538328740745783
+    },
+    {
+      "path": "booklets/2024-03-03_it.pdf",
+      "sha256": "3d701765d014b9072a084dcd47ae4dd7bbf798a4b0f382078645b2683a4ce114",
+      "pages": 32,
+      "extraction_ms": 486.8113328702748,
+      "segmentation_ms": 5.539583973586559,
+      "bm25_indexing_ms": 2.253208076581359,
+      "cold_parse_and_cache_write_ms": 516.8642909266055,
+      "cached_parse_load_ms": 1.970707904547453
+    },
+    {
+      "path": "booklets/2024-06-09_de.pdf",
+      "sha256": "b5ced6e09502bf5956ce6219c8332a1611566b19a8d8ff7ddf3beb6c44924f92",
+      "pages": 88,
+      "extraction_ms": 1609.3248329125345,
+      "segmentation_ms": 22.458374965935946,
+      "bm25_indexing_ms": 10.43729204684496,
+      "cold_parse_and_cache_write_ms": 1540.648000082001,
+      "cached_parse_load_ms": 2.878959057852626
+    },
+    {
+      "path": "booklets/2024-06-09_fr.pdf",
+      "sha256": "8cedb2df05d10299734c86d6d37d80fbd4bb4a6685044455792c77fc73f2d7f6",
+      "pages": 88,
+      "extraction_ms": 1826.452833134681,
+      "segmentation_ms": 26.600416051223874,
+      "bm25_indexing_ms": 10.950624942779541,
+      "cold_parse_and_cache_write_ms": 1771.3754170108587,
+      "cached_parse_load_ms": 4.650208866223693
+    },
+    {
+      "path": "booklets/2024-06-09_it.pdf",
+      "sha256": "691ad90ad95cb4983dfc0bf1f7b43750af34ccc7d3f737ad19a48c263ee54676",
+      "pages": 88,
+      "extraction_ms": 1819.3321251310408,
+      "segmentation_ms": 28.03212497383356,
+      "bm25_indexing_ms": 11.122958036139607,
+      "cold_parse_and_cache_write_ms": 1889.875499997288,
+      "cached_parse_load_ms": 3.401292022317648
+    },
+    {
+      "path": "booklets/2024-09-22_de.pdf",
+      "sha256": "d8e0047ae589df3bdaa91c93fcb0f6dd0cbb5e36f7aab00fe293ad996a9bfed4",
+      "pages": 40,
+      "extraction_ms": 507.1729158516973,
+      "segmentation_ms": 5.179499974474311,
+      "bm25_indexing_ms": 1.989459153264761,
+      "cold_parse_and_cache_write_ms": 419.6770831476897,
+      "cached_parse_load_ms": 1.9297089893370867
+    },
+    {
+      "path": "booklets/2024-09-22_fr.pdf",
+      "sha256": "e6717534db788bf85e15bc505c5ab6f839cd61396be0f84a5aa035c767de8578",
+      "pages": 40,
+      "extraction_ms": 603.4726670477539,
+      "segmentation_ms": 10.226791957393289,
+      "bm25_indexing_ms": 4.267207812517881,
+      "cold_parse_and_cache_write_ms": 632.4454999994487,
+      "cached_parse_load_ms": 1.3496670871973038
+    },
+    {
+      "path": "booklets/2024-09-22_it.pdf",
+      "sha256": "581a2c4bdacc8e31bd1d9f854e16918d13f2bf2687971daa886300193de6f327",
+      "pages": 40,
+      "extraction_ms": 597.8099592030048,
+      "segmentation_ms": 13.300125021487474,
+      "bm25_indexing_ms": 5.593125009909272,
+      "cold_parse_and_cache_write_ms": 673.3793329913169,
+      "cached_parse_load_ms": 1.7192498780786991
+    },
+    {
+      "path": "booklets/2024-11-24_de.pdf",
+      "sha256": "9ea4ea66c852f580360e4b0837e0af8b5b201eedb8c2f4639fce9a7420dd4b84",
+      "pages": 72,
+      "extraction_ms": 1467.6978329662234,
+      "segmentation_ms": 15.609750058501959,
+      "bm25_indexing_ms": 6.628999952226877,
+      "cold_parse_and_cache_write_ms": 1707.0054588839412,
+      "cached_parse_load_ms": 2.549167023971677
+    },
+    {
+      "path": "booklets/2024-11-24_fr.pdf",
+      "sha256": "39d395833d051d950d37c75003b4ecbea917e221db17eed55e3cb5ffdcd364b1",
+      "pages": 72,
+      "extraction_ms": 1504.6944171190262,
+      "segmentation_ms": 17.32004201039672,
+      "bm25_indexing_ms": 7.962542120367289,
+      "cold_parse_and_cache_write_ms": 1609.9864998832345,
+      "cached_parse_load_ms": 2.638832898810506
+    },
+    {
+      "path": "booklets/2024-11-24_it.pdf",
+      "sha256": "a8d40f5f65411f258a36aa7f64941a8853fe7c23c9cb9d0609d5addd4aa4932a",
+      "pages": 72,
+      "extraction_ms": 1539.489959133789,
+      "segmentation_ms": 17.440082971006632,
+      "bm25_indexing_ms": 7.350041996687651,
+      "cold_parse_and_cache_write_ms": 1563.5386670473963,
+      "cached_parse_load_ms": 2.160708885639906
+    },
+    {
+      "path": "booklets/2025-02-09_de.pdf",
+      "sha256": "97756edd20157c63956334c8ef563af17fecfd96afa9fd8fba2777b64df36180",
+      "pages": 16,
+      "extraction_ms": 283.1787921022624,
+      "segmentation_ms": 3.362333867698908,
+      "bm25_indexing_ms": 1.4848329592496157,
+      "cold_parse_and_cache_write_ms": 285.89187492616475,
+      "cached_parse_load_ms": 0.6690409500151873
+    },
+    {
+      "path": "booklets/2025-02-09_fr.pdf",
+      "sha256": "166db1fcd0587220d3a8f92bad101523a134b77d7a8e2be4b03690c9c16f0fd0",
+      "pages": 16,
+      "extraction_ms": 447.4437499884516,
+      "segmentation_ms": 4.07804106362164,
+      "bm25_indexing_ms": 1.7187090124934912,
+      "cold_parse_and_cache_write_ms": 385.69987495429814,
+      "cached_parse_load_ms": 0.7531249430030584
+    },
+    {
+      "path": "booklets/2025-02-09_it.pdf",
+      "sha256": "68a097ce1c55950e4edb824d40d954c623a2b53112a22db455e1c9af6b419563",
+      "pages": 16,
+      "extraction_ms": 306.6305408719927,
+      "segmentation_ms": 3.4512500278651714,
+      "bm25_indexing_ms": 1.4483749400824308,
+      "cold_parse_and_cache_write_ms": 286.3758329767734,
+      "cached_parse_load_ms": 0.7017499301582575
+    },
+    {
+      "path": "booklets/2025-09-28_de.pdf",
+      "sha256": "39c020145299913685e4d0b6899fa23bb1f94938652a417e0c1da08d316ade8a",
+      "pages": 48,
+      "extraction_ms": 692.2794168349355,
+      "segmentation_ms": 9.89916711114347,
+      "bm25_indexing_ms": 4.295541904866695,
+      "cold_parse_and_cache_write_ms": 726.9703329075128,
+      "cached_parse_load_ms": 1.357958186417818
+    },
+    {
+      "path": "booklets/2025-09-28_fr.pdf",
+      "sha256": "f426e4637a10ecdb7a14296c6455918d47e90b4347a953156be1c00cf1bbfd67",
+      "pages": 48,
+      "extraction_ms": 734.8228748887777,
+      "segmentation_ms": 11.466624913737178,
+      "bm25_indexing_ms": 4.880834138020873,
+      "cold_parse_and_cache_write_ms": 690.7249582000077,
+      "cached_parse_load_ms": 1.3955000322312117
+    },
+    {
+      "path": "booklets/2025-09-28_it.pdf",
+      "sha256": "7b8d069bb8d207a1a8ec9a7af49a765d4c19153dee249b3818261d45bf2d5ed8",
+      "pages": 48,
+      "extraction_ms": 1203.2552498858422,
+      "segmentation_ms": 17.16308295726776,
+      "bm25_indexing_ms": 6.507958052679896,
+      "cold_parse_and_cache_write_ms": 3423.7232499290258,
+      "cached_parse_load_ms": 14.04008292593062
+    },
+    {
+      "path": "booklets/2025-11-30_de.pdf",
+      "sha256": "4b612b614e65e028c2c0fdaf7bf3d32ddbdcbea060b7540180969c95cf694636",
+      "pages": 32,
+      "extraction_ms": 909.0523330960423,
+      "segmentation_ms": 9.968375088647008,
+      "bm25_indexing_ms": 4.279250046238303,
+      "cold_parse_and_cache_write_ms": 1107.3897499591112,
+      "cached_parse_load_ms": 2.9369578696787357
+    },
+    {
+      "path": "booklets/2025-11-30_fr.pdf",
+      "sha256": "137ed9d255ab729265d7cfb765e9befc8a51e3fe5723e88772717ebb59504f8f",
+      "pages": 32,
+      "extraction_ms": 946.5409591794014,
+      "segmentation_ms": 20.80858312547207,
+      "bm25_indexing_ms": 5.342874908819795,
+      "cold_parse_and_cache_write_ms": 640.901500126347,
+      "cached_parse_load_ms": 1.8989590462297201
+    },
+    {
+      "path": "booklets/2025-11-30_it.pdf",
+      "sha256": "05a8b22b924597419ba1a89a06e9261a143111944be670260b9e3a0df5c9404a",
+      "pages": 32,
+      "extraction_ms": 681.7161249928176,
+      "segmentation_ms": 14.748333021998405,
+      "bm25_indexing_ms": 11.446375166997313,
+      "cold_parse_and_cache_write_ms": 786.2832921091467,
+      "cached_parse_load_ms": 2.1121250465512276
+    },
+    {
+      "path": "booklets/2026-03-08_de.pdf",
+      "sha256": "d0c794f37d6d2cb25e9969ed058e2a7d7c3e2508f7f03e2b5e90415d364f6170",
+      "pages": 72,
+      "extraction_ms": 1130.8486668858677,
+      "segmentation_ms": 15.918374992907047,
+      "bm25_indexing_ms": 8.85708280839026,
+      "cold_parse_and_cache_write_ms": 1213.2911251392215,
+      "cached_parse_load_ms": 1.889083068817854
+    },
+    {
+      "path": "booklets/2026-03-08_fr.pdf",
+      "sha256": "2ec02c4d1e2cffae67f89fc5b07af117fa455f5a925cdcd3db0938e1855d053b",
+      "pages": 72,
+      "extraction_ms": 1228.7209581118077,
+      "segmentation_ms": 17.100209137424827,
+      "bm25_indexing_ms": 7.796999998390675,
+      "cold_parse_and_cache_write_ms": 1304.6705410815775,
+      "cached_parse_load_ms": 2.3626668844372034
+    },
+    {
+      "path": "booklets/2026-03-08_it.pdf",
+      "sha256": "a6ff4964b4cfc0a9d82936cb1e1200396201d66ea29331c5c94d312b35b64a1b",
+      "pages": 72,
+      "extraction_ms": 2348.231957992539,
+      "segmentation_ms": 17.062334110960364,
+      "bm25_indexing_ms": 6.817165995016694,
+      "cold_parse_and_cache_write_ms": 1039.885374950245,
+      "cached_parse_load_ms": 2.0009579602628946
+    },
+    {
+      "path": "booklets/2026-06-14_de.pdf",
+      "sha256": "13c434202d63d32ca57f03311fb9de5fc7477d5c49ea14b06984f5d3a8591115",
+      "pages": 38,
+      "extraction_ms": 571.0077090188861,
+      "segmentation_ms": 7.825792068615556,
+      "bm25_indexing_ms": 3.067917190492153,
+      "cold_parse_and_cache_write_ms": 1010.3287920355797,
+      "cached_parse_load_ms": 1.513458089902997
+    },
+    {
+      "path": "booklets/2026-06-14_fr.pdf",
+      "sha256": "15391d5fdf2faac51ceff1f4b31f463a7b838587bc1e52ada57e85cc7e6c76d5",
+      "pages": 38,
+      "extraction_ms": 1071.17662508972,
+      "segmentation_ms": 14.518207870423794,
+      "bm25_indexing_ms": 5.650833947584033,
+      "cold_parse_and_cache_write_ms": 2529.0035409852862,
+      "cached_parse_load_ms": 6.634583929553628
+    },
+    {
+      "path": "booklets/2026-06-14_it.pdf",
+      "sha256": "b5212bf5086306a5d45058aae56be6cef2af02f76bc963b7f72cf2c71c4b6931",
+      "pages": 38,
+      "extraction_ms": 2275.5983751267195,
+      "segmentation_ms": 44.57324999384582,
+      "bm25_indexing_ms": 21.79104113020003,
+      "cold_parse_and_cache_write_ms": 1727.5563748553395,
+      "cached_parse_load_ms": 76.6806248575449
+    }
+  ],
+  "wall_seconds": 231.62563683302142,
+  "peak_rss_bytes": 155435008
+}

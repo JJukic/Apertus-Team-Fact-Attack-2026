@@ -69,9 +69,17 @@ class TestRetry(unittest.TestCase):
 
     def test_retries_stop_at_the_limit(self):
         client = _client([_ApiError(503)] * (config.LLM_MAX_RETRIES + 5))
-        out = client.infer(context="", claim="c", passages=["p"])
+        with mock.patch.object(config, "LLM_JSON_REPAIR", False):
+            out = client.infer(context="", claim="c", passages=["p"])
         self.assertIsNotNone(out.error)
         self.assertEqual(client.client.chat.completions.calls, config.LLM_MAX_RETRIES + 1)
+
+    def test_json_repair_adds_exactly_one_last_attempt(self):
+        client = _client([_ApiError(503)] * (config.LLM_MAX_RETRIES + 5))
+        with mock.patch.object(config, "LLM_JSON_REPAIR", True):
+            out = client.infer(context="", claim="c", passages=["p"])
+        self.assertIsNotNone(out.error)
+        self.assertEqual(client.client.chat.completions.calls, config.LLM_MAX_RETRIES + 2)
 
 
 class _Sequence:
@@ -88,18 +96,17 @@ class _Sequence:
 
 
 class TestThinkingBudget(unittest.TestCase):
-    def test_exhausted_budget_forces_an_answer(self):
+    def test_thinking_is_capped_and_needs_no_forced_second_answer(self):
         client = ApertusClient(api_key="test", mock=True)
         client.mock = False
-        seq = _Sequence(["The committee says that rents", '{"label": 0, "p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "evidence_ids": [1]}'])
+        seq = _Sequence(['Reasoning.<|inner_suffix|>{"label": 0, "p_entail": 1.0, "p_neutral": 0.0, "p_contra": 0.0, "evidence_ids": [1]}'])
         client.client = SimpleNamespace(chat=SimpleNamespace(completions=seq))
         with mock.patch.object(config, "THINKING", True), mock.patch.object(config, "THINKING_BUDGET", 200):
             out = client.infer(context="", claim="c", passages=["p"])
         self.assertEqual(out.label, 0)
-        self.assertEqual(len(seq.calls), 2)
-        self.assertEqual(seq.calls[0]["max_tokens"], 200)
-        self.assertTrue(seq.calls[1]["messages"][-1]["content"].endswith("<|inner_suffix|>"))
-        self.assertEqual((out.tokens_prompt, out.tokens_completion), (200, 100))
+        self.assertEqual(len(seq.calls), 1)
+        self.assertEqual(seq.calls[0]["max_tokens"], config.THINKING_MAX_TOKENS)  # output tokens are scored: capped
+        self.assertEqual((out.tokens_prompt, out.tokens_completion), (100, 50))
 
     def test_finished_reasoning_needs_no_second_call(self):
         client = ApertusClient(api_key="test", mock=True)

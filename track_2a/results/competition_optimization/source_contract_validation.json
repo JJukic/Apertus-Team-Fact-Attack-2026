@@ -1,0 +1,11 @@
+{
+  "cases": 2976,
+  "source_quotes_verified": 4600,
+  "advanced_non_neutral_cases_with_source_evidence": 966,
+  "invalid_or_missing_outputs": 0,
+  "gold_read": false,
+  "case_order_preserved": true,
+  "validation_scope": "Every submitted C1 quote equals its actual physical source page or complete source block; no translation or invented page.",
+  "predictions_sha256": "f152638b95dd003850f5dacdc1f988c6b854a4ed011d247abed37a1fcaaefa90",
+  "cases_sha256": "0c9bfc3c8b657ee197def589884a04ea913c9ef2a326dcfd3a50e087b0ca730a"
+}

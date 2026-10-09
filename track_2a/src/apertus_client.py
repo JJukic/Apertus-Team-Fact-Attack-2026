@@ -82,10 +82,14 @@ class ApertusClient:
         self.mock = mock if mock is not None else (config.MOCK_APERTUS or not bool(self.api_key))
 
         if not self.mock:
+            if not self.base_url or not self.api_key:
+                raise ValueError("BASE_URL and API_KEY are required for remote Apertus inference")
+            if "Apertus-v1.5" not in self.model_name:
+                raise ValueError("Remote inference requires an Apertus v1.5 model")
             # Standard-library client instead of the openai SDK: same call, ~1 s less start-up (scored processing time);
             # retries are handled by _create_with_retry
             from src.http_chat import HTTPChatClient
-            self.client = HTTPChatClient(base_url=self.base_url, api_key=self.api_key or "EMPTY")
+            self.client = HTTPChatClient(base_url=self.base_url, api_key=self.api_key)
         else:
             self.client = None
             if not self.api_key:
@@ -234,7 +238,7 @@ class ApertusClient:
         target = self.LANGUAGE_NAMES.get(target_lang, target_lang)
         response, _ = self._chat([
             {"role": "system", "content": f"Translate the user's sentence into {target}. Keep names, numbers and "
-                                          "who says what exactly. Output only the translation."},
+                                          "who says what exactly. Preserve negations and conditions; do not add or remove numerical values. Output only the translation."},
             {"role": "user", "content": text},
         ], max_tokens=200)
         ms = (time.time() - start) * 1000
@@ -261,20 +265,42 @@ class ApertusClient:
 
     def _create_with_retry(self, **kwargs) -> Tuple[Any, Optional[Exception]]:
         """chat.completions.create with exponential backoff (+ jitter) inside a per-request time budget."""
+        # Output stays capped (max_tokens of the caller): output tokens are scored and a runaway answer would also
+        # cost time. Per-call timeouts come from the caller; streaming is not used (no scoring benefit)
+        json_output = kwargs.pop("_json_output", False)
         start = time.time()
         attempt = 0
         while True:
             try:
-                with LLM_CLOCK:
-                    return self.client.chat.completions.create(**kwargs), None
+                return self._request_completion(**kwargs), None
             except Exception as e:
                 delay = min(30.0, 2.0 * 2 ** attempt) * random.uniform(0.5, 1.0)
                 if attempt >= self._retry_limit(e) or time.time() - start + delay > config.LLM_RETRY_BUDGET_S:
-                    logger.error(f"Apertus API query failed after {attempt + 1} attempt(s): {e}")
+                    logger.error("Apertus API failed after %s attempt(s): %s", attempt + 1, type(e).__name__)
+                    status = getattr(e, "status_code", None)
+                    if (config.LLM_JSON_REPAIR and json_output and
+                            (status is None or status in (408, 429) or status >= 500)):
+                        try:
+                            # One explicit, separately counted generation attempt.
+                            # The prompt, context, temperature and model stay fixed;
+                            # only the supported JSON grammar constraint is added.
+                            return self._request_completion(**{**kwargs, "response_format": {"type": "json_object"}}), None
+                        except Exception as repair_error:
+                            return None, repair_error
                     return None, e
                 attempt += 1
-                logger.warning(f"Apertus API attempt {attempt} failed: {e}. Retrying in {delay:.1f}s...")
+                logger.warning("Apertus API attempt %s failed: %s; retry in %.1fs", attempt, type(e).__name__, delay)
                 time.sleep(delay)
+
+    def _request_completion(self, **kwargs):
+        """One remote attempt; LLM_CLOCK counts it as time with a request in flight (backoff stays outside)."""
+        with LLM_CLOCK:
+            response = self.client.chat.completions.create(**kwargs)
+        # 'length' is not an error here: a capped answer is still parsed (the label comes first), and repeating the
+        # identical request would only return the same cut-off answer
+        if getattr(response.choices[0], "finish_reason", None) == "content_filter":
+            raise ValueError("Endpoint returned an incomplete completion")
+        return response
 
     def _chat(self, messages: List[Dict[str, str]], max_tokens: int, logprobs: bool = False):
         kwargs = dict(model=self.model_name, messages=messages, temperature=0.0, max_tokens=max_tokens, timeout=60.0)
@@ -387,8 +413,9 @@ class ApertusClient:
             messages.append({"role": "assistant", "content": "<|inner_prefix|>"})
             extra["extra_body"] = {"continue_final_message": True, "add_generation_prompt": False}
 
-        budget = config.THINKING_BUDGET if thinking else 0
+        budget = 0  # no forced second answer: thinking is capped by THINKING_MAX_TOKENS only (and off by default)
         response, last_exception = self._create_with_retry(
+            _json_output=True,
             model=self.model_name,
             messages=messages,
             temperature=0.0,
@@ -397,24 +424,7 @@ class ApertusClient:
             **extra,
         )
 
-        # Thinking budget used up before a decision: close the reasoning and let the model write the answer
         forced_prompt = forced_completion = 0
-        if response is not None and budget:
-            partial = (response.choices[0].message.content or "").rstrip()
-            if "<|inner_suffix|>" not in partial:
-                answer, _ = self._create_with_retry(
-                    model=self.model_name,
-                    messages=messages[:-1] + [{"role": "assistant", "content": f"<|inner_prefix|>{partial} …<|inner_suffix|>"}],
-                    temperature=0.0,
-                    max_tokens=160,
-                    timeout=45.0,
-                    **extra,
-                )
-                if answer is not None:
-                    response.choices[0].message.content = f"{partial} …<|inner_suffix|>{answer.choices[0].message.content or ''}"
-                    usage = getattr(answer, "usage", None)
-                    forced_prompt = getattr(usage, "prompt_tokens", 0) or 0
-                    forced_completion = getattr(usage, "completion_tokens", 0) or 0
 
         if response is None:
             latency_ms = (time.time() - start_time) * 1000
