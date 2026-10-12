@@ -10,7 +10,7 @@ _pkg_root = Path(__file__).resolve().parent.parent
 if str(_pkg_root) not in sys.path:
     sys.path.insert(0, str(_pkg_root))
 
-from src.pdf_parser import PDFParser, detect_closing_speaker, detect_section_heading
+from src.pdf_parser import PDFParser, TOC_SECTION, detect_closing_speaker, detect_section_heading
 from src import config
 
 
@@ -62,6 +62,8 @@ class TestPDFParser(unittest.TestCase):
 
 COMMITTEE = "Arguments of the initiative/referendum committee"
 FEDERAL_COUNCIL = "Arguments of the Federal Council and Parliament"
+SUMMARY = "Overview / summary"
+DETAIL = "Official explanation in detail"
 BODY = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
 
 
@@ -93,6 +95,33 @@ class TestSectionDetection(unittest.TestCase):
         paras = PDFParser().extract_paragraphs("unused.pdf", passage_chars=None, pages=pages)
         sections = {p["page_number"]: p["section"] for p in paras}
         self.assertEqual(sections, {62: COMMITTEE, 63: COMMITTEE, 64: FEDERAL_COUNCIL, 65: FEDERAL_COUNCIL, 66: None})
+
+    def test_navigation_bar_names_the_part_before_the_first_listed_one(self):
+        # real heading zones (pypdf text) of 2020-2026 booklets: the bar lists only the parts that follow the page
+        self.assertEqual(detect_section_heading(
+            f"Änderung des Jagdgesetzes\n6 Zweite Vorlage: Jagdgesetz\nVorlage im Detail  2 6\nArgumente   3 4\n{BODY}"), SUMMARY)
+        self.assertEqual(detect_section_heading(
+            f"6\nIn dettaglio\xa0 24\nGli argomenti\xa0 30\nIl testo in votazione\xa0 34\n{BODY}"), SUMMARY)
+        self.assertEqual(detect_section_heading(
+            f"26 Zweite Vorlage: Jagdgesetz\nArgumente Referendumskomitee  3 4\nArgumente Bundesrat und Parlament   3 6\n{BODY}"), DETAIL)
+        self.assertEqual(detect_section_heading(
+            f"28\nArguments Comité d’initiative\xa0  36\nArguments du Conseil fédéral\net du Parlement\xa0 38\n{BODY}"), DETAIL)
+
+    def test_table_of_contents_stays_unlabelled(self):
+        self.assertEqual(detect_section_heading(
+            f"Volksinitiative «Für eine massvolle Zuwanderung\n(Begrenzungsinitiative)»\nIn Kürze  4  –  5\nIm Detail  1 4\n{BODY}"),
+            TOC_SECTION)
+
+    def test_navigation_label_runs_on_until_the_next_heading(self):
+        pages = [
+            {"page_number": 6, "text": f"6 Zweite Vorlage: Jagdgesetz\nVorlage im Detail  2 6\nArgumente   3 4\n{BODY}"},
+            {"page_number": 7, "text": f"7\n{BODY}"},
+            {"page_number": 26, "text": f"26 Zweite Vorlage: Jagdgesetz\nArgumente Referendumskomitee  3 4\n{BODY}"},
+            {"page_number": 27, "text": f"27\n{BODY}"},
+        ]
+        paras = PDFParser().extract_paragraphs("unused.pdf", passage_chars=None, pages=pages)
+        sections = {p["page_number"]: p["section"] for p in paras}
+        self.assertEqual(sections, {6: SUMMARY, 7: SUMMARY, 26: DETAIL, 27: DETAIL})
 
 
 if __name__ == "__main__":

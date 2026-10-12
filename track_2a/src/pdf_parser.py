@@ -113,6 +113,25 @@ _SPEAKER_SECTIONS = {_SECTION_HEADINGS[0][0], _SECTION_HEADINGS[1][0]}
 
 TOC_SECTION = "__toc__"
 
+# Order of the parts of each proposal. Every part opens with a navigation bar that lists the parts still to come with
+# their page numbers ("Zweite Vorlage: Jagdgesetz | Vorlage im Detail 26 | Argumente 34" on the overview page,
+# "Argumente Referendumskomitee 34 | Argumente Bundesrat und Parlament 36 | Abstimmungstext 38" on the first detail page)
+_PART_ORDER = ["Overview / summary", "Official explanation in detail", _SECTION_HEADINGS[0][0], _SECTION_HEADINGS[1][0],
+               "Voting text (legal text)"]
+# Newer navigation bars name the arguments block without its speaker ("Argumente 34"); it starts with the committee
+_ARGUMENTS_ENTRY = re.compile(r"\b(?:argumente|arguments|gli\s+argomenti|argomenti)\b", re.IGNORECASE)
+
+
+def navigation_section(zone: str) -> str:
+    """
+    Section of a page whose heading zone lists headings with page numbers: the part just before the first listed one
+    (a navigation bar lists only the parts that follow). A list that starts with the overview is a table of contents.
+    """
+    listed = [_PART_ORDER.index(label) for label, pattern in _SECTION_HEADINGS + [(_SECTION_HEADINGS[0][0], _ARGUMENTS_ENTRY)]
+              for m in pattern.finditer(zone) if re.match(r"\s*\d", zone[m.end():m.end() + 6])]
+    first = min(listed) if listed else 0
+    return _PART_ORDER[first - 1] if first > 0 else TOC_SECTION
+
 
 def detect_closing_speaker(page_text: str) -> Optional[str]:
     """Return the speaker whose recommendation box (or committee disclaimer) closes this argument page."""
@@ -142,7 +161,7 @@ def detect_section_heading(page_text: str) -> Optional[str]:
         for m in pattern.finditer(zone):
             # Tables of contents list headings followed by page numbers ("Argumente Referendumskomitee 42")
             if re.match(r"\s*\d", zone[m.end():m.end() + 6]):
-                return TOC_SECTION
+                return navigation_section(zone)
             found.append((m.start(), label))
     if found:
         return min(found)[1]
