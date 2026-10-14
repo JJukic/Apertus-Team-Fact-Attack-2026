@@ -21,7 +21,7 @@ German, French and Italian.
 
 The earlier comparison of retrieval and evidence variants (R2 and others, all 1,488 cases, k=12) is in the
 [optimization report](docs/competition_optimization_report.md). The measurements since then (reproducible decision
-runs, a repeated baseline as noise floor, the holdout, and the experiments E1–E23) are in
+runs, a repeated baseline as noise floor, the holdout, and the experiments E1–E24) are in
 [independent_experiments.md](docs/independent_experiments.md) with their predictions in
 [results/generalization/](results/generalization/).
 
@@ -160,7 +160,7 @@ track_2a/
 ├── technical_report.md       # Architecture, evaluation, findings, limitations
 ├── .env.example              # Every setting with its default (= what the submission image runs)
 ├── docs/experiments.md       # Every experiment with its numbers
-├── docs/independent_experiments.md  # Grouped validation, noise floor, holdout, experiments E1–E23
+├── docs/independent_experiments.md  # Grouped validation, noise floor, holdout, experiments E1–E24
 ├── docs/FactAttack_Technical_Report.pdf  # Submission PDF of the report (docs/build_report_pdf.py)
 ├── results/                  # Saved benchmark runs + summary.json
 │   └── generalization/       # Decision runs: predictions, official scores, fold/language/class reports

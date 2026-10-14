@@ -131,6 +131,10 @@ in brackets point to the [experiment log](track_2a/docs/experiments.md) and the
   pages lost the named article to the 6,000-character budget. 9,000 characters for that part only: all 1,488 pairs
   0.968 → 0.974 (date bootstrap +0.002 … +0.012, 5 of 5 folds equal or better), Hit@5 0.975 → 0.983, voting-text
   claims 24 → 13 wrong of 235, input tokens +2.3 %; holdout 0.956 → 0.989.
+- **Robust to other claim wordings** [E24]: in an offline stress test with rephrased openings, claims that name
+  their source differently fall back to the retrieval instead of a wrong part (wrong part on unseen wordings 38 → 6
+  of 1,400): the source must start within the first 30 characters, and the cue list has other wordings in DE/FR/IT.
+  All 3,173 known claims keep exactly their part, so every score above is unchanged.
 - **Task B: tiered reference budget and cascade** [E17a, E19c]: references up to 9,000 characters keep 3,000
   (0.984 → 0.987, 1,732 → 1,640 input tokens). On top, a short label-only prompt answers first on at most 2,000
   reference characters; below a label probability of 0.98 (~10 % of the cases) we ask the full prompt again. All
@@ -319,7 +323,7 @@ track_2a/
 ├── app.py                    # Streamlit app (claim check, benchmark dashboard from results/)
 ├── technical_report.md       # Architecture, evaluation, limitations
 ├── docs/experiments.md       # Every experiment with its numbers
-├── docs/independent_experiments.md  # Grouped validation, noise floor, holdout, experiments E1–E23
+├── docs/independent_experiments.md  # Grouped validation, noise floor, holdout, experiments E1–E24
 ├── docs/FactAttack_Technical_Report.pdf  # Submission PDF of the report (docs/build_report_pdf.py)
 ├── results/                  # Saved benchmark runs (+ summary.json); generalization/ = decision runs
 ├── data/                     # Demo dataset, 2026-06-14 booklets, holdout claims; hf/ and other booklets are downloaded

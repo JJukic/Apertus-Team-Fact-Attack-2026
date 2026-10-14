@@ -35,16 +35,26 @@ _TOC_NOISE = re.compile(
 # Claim openings -> part. The earliest cue in the claim wins ("Le Conseil fédéral recommande d'accepter …" is a
 # Federal Council claim, "Si le vote est accepté, le Conseil fédéral …" a consequence of a yes).
 _CLAIM_CUES = [
-    (SUMMARY, re.compile(r"zusammenfassung|r[eé]sum[eé]|riassunto|riepilogo|in\s+k[uü]rze|en\s+bref|in\s+breve", re.I)),
-    (COMMITTEE, re.compile(r"komitee|initiant|comit[eé]|comitato|promotori", re.I)),
-    (FEDERAL_COUNCIL, re.compile(r"bundesrat|conseil\s+f[eé]d[eé]ral|consiglio\s+federale|parlament", re.I)),
+    (SUMMARY, re.compile(r"zusammenfassung|r[eé]sum[eé]|riassunto|riepilogo|in\s+k[uü]rze|en\s+bref|in\s+breve"
+                         r"|kurz[uü]bersicht|[uü]berblick|aper[cç]u|synth[eè]se|sintesi|panoramica", re.I)),
+    (COMMITTEE, re.compile(r"komitee|initiant|comit[eé]|comitato|promotori"
+                           r"|bef[uü]rworter|urheber|partisans?\b|auteurs?\s+de\s+l|sostenitor[ie]|autori\s+dell", re.I)),
+    (FEDERAL_COUNCIL, re.compile(r"bundesrat|conseil\s+f[eé]d[eé]ral|consiglio\s+federale|parlament"
+                                 r"|landesregierung|gouvernement|governo", re.I)),
     (LEGAL, re.compile(r"abstimmungstext|gesetzestext|verfassungstext|texte\s+(?:soumis|de\s+(?:vote|la\s+votation))"
-                       r"|test[oi]\s+(?:di|in|della|sottopost[oi])\s*(?:voto|votazione|al\s+voto)?", re.I)),
+                       r"|test[oi]\s+(?:di|in|della|sottopost[oi])\s*(?:voto|votazione|al\s+voto)?"
+                       r"|wortlaut|verfassungsartikel|gesetzesartikel|libell[eé]|article\s+constitutionnel"
+                       r"|texte\s+(?:de\s+loi|l[eé]gal)|articolo\s+costituzionale|testo\s+del\s+(?:progetto|decreto)", re.I)),
     (DETAIL, re.compile(r"angenommen|annahme|si\s+(?:le|la|cette)\s+(?:vote|votation|proposition|motion|objet)"
                         r"|en\s+cas\s+d.(?:acceptation|adoption)|l.adoption|se\s+(?:il|la)\s+(?:voto|votazione|proposta)"
-                        r"|in\s+caso\s+di\s+(?:s[iì]|accettazione|approvazione)", re.I)),
+                        r"|in\s+caso\s+di\s+(?:s[iì]|accettazione|approvazione)"
+                        r"|bei\s+einem\s+ja\b|en\s+cas\s+de\s+oui|con\s+un\s+s[iì]\b|in\s+caso\s+di\s+un\s+s[iì]", re.I)),
 ]
 _CUE_WINDOW = 80  # the source is named at the start of the claim
+# A cue counts only if it starts this early (the dataset's and the holdout's start by character 20 at the latest): a
+# source named later, or an actor mentioned in the claim's content ("L'iniziativa è stata respinta dal Consiglio
+# federale …"), leaves the claim to the regular retrieval instead of sending it to the wrong part
+_CUE_START = 30
 
 
 def _fold(text: str) -> str:
@@ -56,7 +66,8 @@ def _fold(text: str) -> str:
 def claim_part(claim: str) -> Optional[str]:
     """The part a claim names in its opening (summary, committee, federal_council, legal_text, detail), if any."""
     head = claim[:_CUE_WINDOW]
-    found = [(m.start(), part) for part, pattern in _CLAIM_CUES for m in [pattern.search(head)] if m]
+    found = [(m.start(), part) for part, pattern in _CLAIM_CUES for m in [pattern.search(head)]
+             if m and m.start() <= _CUE_START]
     return min(found)[1] if found else None
 
 

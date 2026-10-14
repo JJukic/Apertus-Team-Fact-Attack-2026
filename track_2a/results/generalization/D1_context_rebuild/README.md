@@ -17,3 +17,14 @@ mocked and the query translations come from the E12 runs' caches (`.cache/gen/qu
   (`scripts/run_decision.py --data .cache/gen/legal_gen --task A --set PART_CONTEXT_CHARS_LEGAL=0|9000 --query-cache-dir …`;
   the base runs were made before the default changed)
 - `compare_e23.py .` — paired comparison of those runs, with the saved E12 run as a noise reference
+
+## E24 — stress test of the part selection with rephrased claim openings (offline)
+
+- `stress_routing.py . gen|ho <rows.jsonl> <out.json> [part_context.py copy]` — replaces the opening that names the
+  source by other wordings (SYN: the wordings later added to the cue list; SYN_B: other wordings, used for evaluation
+  only; LATE: the source at the end; NONE: no source), routes every variant again and records same part / fallback
+  retrieval / other part and whether the gold page is in the resulting context (fallback rebuilt without the claim's
+  translation, so conservative). The optional last argument compares another cue list, e.g. the one before E24:
+  `git show 8541cb4:track_2a/src/part_context.py > part_context_E23.py`
+- `stress_dataset_old.json` / `stress_holdout_old.json`: cue list of E23; `stress_dataset_new.json` /
+  `stress_holdout_new.json`: E24

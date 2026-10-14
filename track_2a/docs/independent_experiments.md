@@ -816,3 +816,40 @@ Holdout (27 Sep 2026 booklets, 90 balanced task B claims, new booklets):
 - **Decision: adopted** (`PART_CONTEXT_CHARS_LEGAL=9000`, default in `src/config.py` and both `.env.example` files;
   `0` restores E12 exactly). Only the voting-text part changes; summary, detail, arguments and the fallback retrieval
   are untouched.
+
+## 20. E24 — robustness of the part selection to other claim wordings (2026-10-14, offline)
+
+- **Question:** the part selection (E12) recognises the source a claim names by a fixed list of words in its first
+  80 characters, written for the dataset's templates ("Das Komitee vertritt die Auffassung, …", "Si le vote est
+  approuvé, …", "Il comitato afferma che …"). How does it behave if the jury's claims are worded differently?
+- **Stress test** (`results/generalization/D1_context_rebuild/stress_routing.py`, no API): in 1,400 dataset and 88
+  holdout claims the opening that names the source was replaced — SYN: other words for the same source; SYN_B: a
+  second set of other words, used only to measure, never to extend the list; LATE: the source at the end ("…, so das
+  Komitee."); NONE: no source. Every variant was routed again; the fallback context was rebuilt without the claim's
+  translation (conservative).
+- **Finding:** with the cue list of E23 almost every rephrased claim falls back to the hybrid retrieval (gold page in
+  context 84 % instead of 99 %, the level of the submission before E12), but ~3 % went to the **wrong part**, nearly
+  always the Federal Council's, because the claim's content mentions it ("L'iniziativa è stata respinta dal Consiglio
+  federale …"); there the gold page was present in 1 of 38 cases. In all 1,578 dataset and holdout claims the source
+  starts by character 20.
+- **Change:** a cue counts only if it starts within the first 30 characters (`_CUE_START`), and the list has
+  unambiguous other wordings in DE / FR / IT (Befürworter / partisans / sostenitori, Landesregierung / gouvernement /
+  governo, Kurzübersicht / aperçu / sintesi, Wortlaut / libellé / articolo costituzionale, "Bei einem Ja" / "en cas de
+  oui" / "con un sì").
+- **Known cases unchanged:** all 3,173 claims of the dataset (tasks A and B), the holdout, its edge cases, the contract
+  and demo cases get exactly the same part as before, so every measured score stays as it is and no new run is needed.
+
+| Dataset, 1,400 rephrased claims (wrong part / gold page in context, E/C 921) | E23 cue list | **E24** |
+|---|---:|---:|
+| SYN (these wordings are now in the list: coverage, not a test) | 35 / 777 | 0 / 916 |
+| **SYN_B (wordings never used for the list)** | 38 / 775 | **6 / 798** |
+| LATE (source at the end) | 44 / 833 | 34 / 831 |
+| NONE (no source) | 44 / 778 | 34 / 781 |
+
+- Holdout (88): wrong parts 0–1 → 0 in every variant. LATE claims whose source was within 80 characters (96) now
+  use the fallback instead of the right part; their gold page stays in context (833 → 831). The remaining wrong parts
+  under NONE are claims whose content starts with an actor ("Der Bundesrat und das Parlament lehnen … ab"), which no
+  word list can tell apart.
+- **Decision: adopted.** It cannot change a known case and turns most wrong-part failures on unfamiliar wordings into
+  the fallback retrieval (~0.95 macro-F1 in E8). Not done: adding the
+  1–2 best retrieved pages outside the part as a safety net (needs a paired run; E12 showed that extra pages distract).

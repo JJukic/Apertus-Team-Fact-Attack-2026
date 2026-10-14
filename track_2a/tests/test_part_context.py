@@ -59,6 +59,22 @@ class TestClaimPart(unittest.TestCase):
         self.assertEqual(pc.claim_part("Si le vote est accepté, le Conseil fédéral devra …"), pc.DETAIL)
         self.assertIsNone(pc.claim_part("Die Schweiz hat 26 Kantone."))
 
+    def test_other_wordings_of_the_source(self):
+        cases = {
+            "Die Befürworter der Vorlage sind der Meinung, dass …": pc.COMMITTEE,
+            "Le gouvernement est d'avis que la loi …": pc.FEDERAL_COUNCIL,
+            "Stando alla sintesi, l'iniziativa …": pc.SUMMARY,
+            "Selon le libellé du projet, la Confédération …": pc.LEGAL,
+            "Bei einem Ja müssen die Kantone …": pc.DETAIL,
+        }
+        for claim, part in cases.items():
+            self.assertEqual(pc.claim_part(claim), part, claim)
+
+    def test_actor_in_the_content_is_not_a_source(self):
+        # the source is named at the very start; a later mention leaves the claim to the regular retrieval
+        self.assertIsNone(pc.claim_part("L'iniziativa sulla neutralità è stata respinta dal Consiglio federale."))
+        self.assertIsNone(pc.claim_part("Die Schweiz übernimmt heute die Sanktionen, so der Bundesrat."))
+
 
 class TestContents(unittest.TestCase):
     def test_parts_and_page_ranges(self):

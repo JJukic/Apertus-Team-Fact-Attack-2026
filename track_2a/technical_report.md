@@ -313,7 +313,8 @@ ones on all pairs. A proxy without the model predicted gains for E1, E3 and E11 
   Contradiction 9, Neutral → Contradiction 7, Entailment → Neutral 2. Before E23 only 1 of 48 errors lacked the gold page
   in the context: reading errors, not retrieval misses. Voting-text claims: 13 of 235 wrong (24 before E23).
 - **Part selection relies on the claims naming their source** and on a readable contents page (2020–2026, 62
-  booklets); otherwise it falls back to the retrieval of 8 pages (0.949 / Hit@5 0.881).
+  booklets); otherwise it falls back to the retrieval of 8 pages (0.949 / Hit@5 0.881). Rephrased openings (E24,
+  offline stress test) reach that fallback, not a wrong part (38 → 6 of 1,400).
 - **Unseen booklets:** the holdout (0.989 advanced, 0.955 beginner) covers two votes with 90 claims written by us
   (± ~0.05). The jury's set may differ in layout and claim style.
 - **License:** PyMuPDF (AGPL-3.0) is needed for the evidence quotes, so the image is AGPL.
