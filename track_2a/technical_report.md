@@ -17,23 +17,23 @@ French or Italian) and a claim (any of the three languages), it classifies the c
 **Neutral (1)** or **Contradiction (2)** and returns the booklet pages that justify the decision, together with
 token usage and inference time.
 
-On **booklets the system never saw** (our holdout: 90 claims on the 27 September 2026 vote, labels checked by a
-second person, used only to confirm the last changes), it reaches **macro-F1 0.989** and **evidence Hit@5 0.983** on the advanced
-task (booklet PDF) and **0.955** on the beginner task (reference text; 4 of 90 labels wrong). On the whole official
+On **booklets outside the dataset** (our holdout: 90 claims on the 27 September 2026 vote, labels checked by a
+second person), it reaches **macro-F1 0.989** and **evidence Hit@5 0.983** on the advanced task (booklet PDF; 0.956 /
+0.933 before E23, which two holdout errors suggested, so that gain is not confirmed independently) and **0.955** on
+the beginner task (reference text; 4 of 90 labels wrong). On the whole official
 dataset (v1.1, 1,488 pairs, 20 voting dates in 5 date-grouped folds) the same configuration scores
 **0.977 / Hit@5 0.980** and **0.982**, at 1,757 / 865 input tokens and 59 / 21 output tokens per case, with
 processing time outside the LLM calls in the millisecond range. The beginner task trades 0.005 macro-F1 (0.987 at
 1,640 input tokens before) for half the tokens (section 2.4). All scores come from the organisers' `evaluate.py` on the official CLI's output.
 
 The official score also weighs evidence, processing time and tokens (relative to the best team), so after the
-organisers' Q&A we re-tuned for it (section 2.6), each choice decided by paired runs on the same cases (5.3): 8
-instead of 12 pages (−31 % input tokens), evidence quoted from PyMuPDF pages and text blocks, BM25 retrieval with the
-claim and its translation (macro-F1 0.930 → 0.945 on test), a start-up path that keeps the scored processing time in
-milliseconds, beginner-task references cut to the matching passages and a short label-only first call that asks the
-full prompt only when it is unsure (−48 % input tokens, −0.005 F1; 2.4), four compact label rules in the advanced
-prompt (0.942 → 0.949) and, last, **contents-guided part selection** (2.2): every claim names its source in its
-opening, and the booklet's contents page locates that part of the vote, which becomes the whole context (macro-F1
-0.949 → 0.968, Hit@5 0.881 → 0.975, −55 % input tokens), plus 9,000 characters for the voting text (0.974).
+organisers' Q&A we re-tuned for it (2.6), each choice decided by paired runs on the same cases (5.3). The largest
+step is **contents-guided part selection** (2.2): every claim names its source in its opening, and the booklet's
+contents page locates that part of the vote, which becomes the whole context (macro-F1 0.949 → 0.968, Hit@5
+0.881 → 0.975, −55 % input tokens); a 9,000-character budget for the voting text (0.974) and a prompt without its
+role sentence (0.977, −34 tokens) followed. Before it: evidence from PyMuPDF pages and blocks, retrieval with the
+claim and its translation, four compact label rules, a start-up path that keeps processing time in milliseconds,
+and for the beginner task cut references and a short first call (−48 % input tokens, −0.005 F1; 2.4).
 
 The central finding for the challenge's research question: **less, but the right context wins** — the whole booklet
 (~60k tokens) reaches 0.730 macro-F1, eight retrieved pages (~3,900 tokens) 0.949, and the one part the claim refers
@@ -80,8 +80,9 @@ The dataset's claims name their source in their opening ("Laut der Zusammenfassu
 ("In Kürze 4 – 5 | Im Detail 14 | Argumente 20 | Abstimmungstext 24", likewise in French and Italian).
 `part_context.py` combines both:
 
-- **Claim → part:** the earliest cue in the claim's first 80 characters selects summary, committee, Federal Council,
-  voting text or, for the consequences of a yes, the detailed explanation.
+- **Claim → part:** the earliest cue that starts within the claim's first 30 characters (E24; every dataset and
+  holdout source starts by character 20) selects summary, committee, Federal Council, voting text or, for the
+  consequences of a yes, the detailed explanation.
 - **Contents → pages:** the contents page (also over two pages) gives each part's start page, checked against the
   heading printed on that page; navigation bars on the summary pages are not mistaken for contents. The arguments
   are split into committee and Federal Council pages with the parser's speaker labels (2.1).
@@ -99,7 +100,7 @@ the proposal; it keeps the top 8 pages, clipped to 3,000 characters. If the clai
 argument pages are always included (speaker boost).
 
 ### 2.3 Apertus as the NLI model
-The selected pages are numbered `[P1]…[P8]`. The system prompt defines the three labels, tells the model to
+The selected pages are numbered `[P1]`, `[P2]`, …. The system prompt (without a role sentence, E25) defines the three labels, tells the model to
 judge only against the passages (not world knowledge), to answer Neutral for topics or details the passages do
 not address, to check claims attributed to an actor only against that actor's text, and to read "recommends
 rejecting X" as supported when the Federal Council and Parliament recommend "No". For the advanced task, four
@@ -140,8 +141,7 @@ when its label probability is below 0.98 (~10 % of the cases) the case is asked 
 both calls' tokens count. Most of the short call's errors lie in that unsure part. All pairs: macro-F1 0.982,
 865 input and 21 output tokens (−48 %). On the holdout (two votes, ~30 distinct claims) it saves 21–22 % at 4–6
 instead of 3 wrong labels (two runs). The token score cannot be computed locally, so the net effect is estimated (about +0.06 on the
-beginner score under an assumed best-team value of ~820 tokens). `B_PROMPT=` restores (1); `B_ESCALATE_BELOW=0.999` with
-`B_SHORT_CHARS=2500` keeps the labels of (1) at −26 % tokens.
+beginner score under an assumed best-team value of ~820 tokens). `B_PROMPT=` restores (1).
 
 ### 2.5 CLI and output format
 `python -m src --input cases.jsonl --output predictions.jsonl` (the Docker entrypoint) reads the official case format (JSON or JSONL; a case has
@@ -161,14 +161,13 @@ Evidence is empty for Neutral, and its page is `null` for a reference text.
 The organisers run the image as `--input /data/cases.jsonl --output /output/predictions.jsonl` with `BASE_URL` (a
 token-counting proxy) and `API_KEY` injected, `/data` read-only. The score is `0.6 · S_A + 0.4 · S_B`, where
 S_A = 50 % macro-F1 + 20 % evidence Hit@5 + 15 % processing time + 15 % tokens and S_B = 70 % macro-F1 + 15 % time +
-15 % tokens; time and tokens count as best ÷ own over all teams, and processing time is the wall clock minus the time
+15 % tokens; time and tokens count as best ÷ own (best of the teams with macro-F1 ≥ 0.65), and processing time is the wall clock minus the time
 with an Apertus request in flight.
 
 - **Contract:** `BASE_URL` / `API_KEY` take precedence over our older variable names; the parse cache of the 60 dataset
   booklets is baked into the image read-only and new entries go to `/tmp`; a CI step runs the image exactly this way.
-- **Tokens:** the claim's part instead of 8 pages (−55 %, 2.2), after 8 instead of 12 pages (−31 %); beginner
-  references cut to the matching passages (−30 %, 2.4); condensed prompts, narrower windows, a smaller part budget and
-  fewer legal-text pages cost F1 and were rejected (5.3).
+- **Tokens:** the claim's part instead of 8 pages (−55 %), after 8 instead of 12 pages (−31 %); task B: cut
+  references and the cascade (2.4); shorter prompts and smaller budgets cost F1 (5.3).
 - **Processing time:** a standard-library HTTP client (~1 s less start-up), four cases in flight, uncached booklets
   parsed by a process pool started first; until a new booklet is parsed, a case reads only its part's pages
   (identical context and evidence in 1,566/1,566 cases). Holdout, new booklets: ~70 ms (A) / ~30 ms (B) per case.
@@ -205,11 +204,11 @@ with an Apertus request in flight.
   per fold, language pair and class, macro-F1 on de-duplicated pairs (38 % of the rows are exact duplicates) and a
   bootstrap over voting dates. Running the unchanged system twice changes 3 (advanced) / 2 (beginner) of 1,488
   labels: the endpoint is nearly deterministic, so paired label changes measure the effect of a change.
-- **Holdout on unseen booklets:** the jury evaluates on booklets outside the dataset. We wrote 90 claims (30 per
+- **Holdout on unseen booklets:** the jury's set may include booklets outside the dataset. We wrote 90 claims (30 per
   label, 10 per language pair, claim types in the dataset's proportions) on the 27 September 2026 booklets before the
   system ever ran on them; a second team member checked every label (90/90 agree). It confirmed E2 and served as a
-  regression check for E8 and E12, never to tune anything. For E23, which two of its errors suggested, only the
-  dataset counts.
+  regression check for E8, E12, E19c and E25. Two of its errors suggested E23, so for E23 only the dataset counts,
+  and the holdout's 0.989 is optimistic (0.956 before E23).
   (An earlier set of 36 claims on the same booklets was used for two decisions and later lost.)
 
 ---
@@ -246,12 +245,9 @@ Hit@5 by language pair (booklet → claim), all 1,488 pairs per task:
 | 12 pages, clipping, speaker boost, decision rules | ids | 0.946 | 5,713 | 55 | 2.8 s |
 | **Final: the claim's part (2.2), all 1,488 pairs** | **ids** | **0.977** | 1,757 | 59 | 1.4 s |
 
-\* measured while three runs shared the endpoint.
+\* measured while three runs shared the endpoint. The full booklet is the most expensive and least accurate option.
 
-The full booklet (up to ~70k tokens) is both the most expensive and the least accurate option; the part the claim
-names is the cheapest and the most accurate.
-
-### 5.3 Ablations on the dev split
+### 5.3 Ablations (dev and test split, then all pairs)
 
 | Change | Effect | Decision |
 |---|---|---|
@@ -281,10 +277,11 @@ names is the cheapest and the most accurate.
 | **E19c: cascade, short call (≤ 2,000 chars), full prompt below p = 0.98** | B 0.987 → 0.982, −48 % tokens; holdout 3 → 4–6 wrong of 90 (4 in 5.1), −21 … −22 % | **adopted** |
 | E21b: cascade at p = 0.999, 2,500 chars | B 0.987 → 0.987, −26 % tokens; holdout +18 % tokens | settings only |
 | **E23: voting text 9,000 chars (2.2)** | A 0.968 → 0.974, Hit@5 → 0.983, +2.3 % tokens | **adopted** |
+| E24: cue within 30 chars, more wordings | known claims unchanged; rephrased: wrong part 38 → 6 of 1,400 | adopted |
+| **E25** / E27: no role sentence / short prompt | A 0.977, −34 tokens / 0.941, holdout 9 wrong | **adopted** / no |
 
 Full tables: [docs/experiments.md](docs/experiments.md) and [docs/independent_experiments.md](docs/independent_experiments.md).
-Runs on 150 pairs carry about ±3 F1 points of sampling noise; close decisions were re-run on 450 pairs, the last
-ones on all pairs. A proxy without the model predicted gains for E1, E3 and E11 that the real runs did not show.
+Runs on 150 pairs carry about ±3 F1 points of noise; close decisions were re-run on 450, the last on all pairs.
 
 ### 5.4 What we learned about Apertus
 
@@ -297,7 +294,8 @@ ones on all pairs. A proxy without the model predicted gains for E1, E3 and E11 
   answers are saturated and its errors lie in the rest, which the cascade (2.4) re-asks.
 - **Distraction, not missing text, caused most errors.** With 8 retrieved pages the gold page was in the context in
   97.9 % of the Entailment/Contradiction cases and in 69 of 85 label errors; removing the other parts and votes
-  (E12) fixed 56 answers. Trimming the part itself (E14) or the prompt's wording (E13, E25, E27: a 1,341-token prompt reaches 0.941, on the holdout 9 instead of 1 wrong) costs accuracy at once; only the role sentence could go (E25).
+  (E12) fixed 56 answers. Trimming the part itself (E14) or the prompt's wording (E13, E25, E27) costs accuracy at once; only the role
+  sentence could go (E25).
 - **Speaker attribution was a context problem.** Committee claims failed in 13.4 % of cases with retrieved pages;
   with the committee's own part as the context, 3 of 275 fail.
 - **Thinking helps, at a high price.** Letting the thinking model reason before its answer fixes half of the remaining
@@ -315,11 +313,10 @@ ones on all pairs. A proxy without the model predicted gains for E1, E3 and E11 
 - **Part selection relies on the claims naming their source** and on a readable contents page (2020–2026, 62
   booklets); otherwise it falls back to the retrieval of 8 pages (0.949 / Hit@5 0.881). Rephrased openings (E24,
   offline stress test) reach that fallback, not a wrong part (38 → 6 of 1,400).
-- **Unseen booklets:** the holdout (0.989 advanced, 0.955 beginner) covers two votes with 90 claims written by us
+- **Unseen booklets:** the holdout (0.989 advanced, 0.956 before E23; 0.955 beginner) covers two votes with 90 claims written by us
   (± ~0.05). The jury's set may differ in layout and claim style.
-- **License:** PyMuPDF (AGPL-3.0) is needed for the evidence quotes, so the image is AGPL.
-- **Development data:** all 20 dates of the dataset have been used for decisions; the holdout only confirmed E2, E8,
-  E12 and E19c (on two votes). Our time and token numbers are estimates (client-side counts, in-flight clock); booklets
+- **Development data:** all 20 dates of the dataset have been used for decisions; the holdout confirmed E2, E8,
+  E12, E19c and E25 (on two votes) and suggested E23. Our time and token numbers are estimates (client-side counts, in-flight clock); booklets
   outside the 60 dataset booklets are parsed at run time.
 - **Not political advice:** outputs only describe the relationship between a claim and the booklet.
 
